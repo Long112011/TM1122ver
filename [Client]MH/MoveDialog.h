@@ -1,0 +1,74 @@
+#pragma once
+
+#include "./Interface/cDialog.h"
+
+
+class cListCtrl;
+
+class cPushupButton;
+
+
+
+
+class CMoveDialog : public cDialog
+{
+	cListCtrl*		m_pMoveLCtrl;
+	cPtrList		m_pDataList;
+	cPtrList		m_pTownList;
+	cButton*		m_pNameBtn;
+	cButton*		m_pMoveBtn;
+	cButton*		m_pDelBtn;
+	cPushupButton*	m_pPageBtn[MAX_MOVEPOINT_PAGE];
+
+	BOOL		m_bTownMove;
+	int			m_SelectRowIdx;
+
+	BOOL		m_bMovePos;
+	DWORD		m_ItemIdx;
+	DWORD		m_ItemPos;
+	
+
+	BOOL		m_bExtend;
+	DWORD		m_SelectedTab;
+	
+
+public:
+	CMoveDialog();
+	virtual ~CMoveDialog();
+
+	virtual DWORD ActionEvent(CMouse * mouseInfo);
+	void LoadTownMovePoint();
+
+
+	void Linking();
+	void SetActive( BOOL val );
+	void SetTownMoveView( BOOL bTown );
+
+	BOOL IsTownMove()					{	return m_bTownMove;	}
+
+	void RefreshMoveInfo();
+	void ResetMoveIdx();
+
+	void SetMoveInfo(SEND_MOVEDATA_INFO* pData);
+	void AddMoveInfo(MOVEDATA* pData, BOOL bTown=FALSE);
+	void DelMoveInfoSync();
+	void UpdateMoveInfo(MOVEDATA* pData);	
+	void DelMoveInfo(MOVEDATA* pData);
+	void SelectMoveIdx(int rowidx);
+
+	void MapMoveOK();
+	
+	DWORD GetSavedPoint();
+	DWORD GetSavedCount()			{	return m_pDataList.GetCount();	}
+	DWORD GetSelectedDBIdx();
+
+	BOOL IsMovePos()				{	return m_bMovePos;	}
+
+
+	void SetItemToMapServer( DWORD ItemIdx, DWORD ItemPos, BOOL bMovePos )		{	m_ItemIdx=ItemIdx;	m_ItemPos=ItemPos;	m_bMovePos=bMovePos;	}
+	BOOL CheckSameName( char* pName );
+	void SetExtend( BOOL bExtend );
+	void SetButton( DWORD Idx );
+
+	void MapChange(WORD wMoveMapNum);
+};

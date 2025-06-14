@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/3/trunk/ColdUI/source/UTSampleAbout
+END
+UTSampleAbout.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/3/trunk/ColdUI/source/UTSampleAbout/UTSampleAbout.cpp
+END
+UTSampleAbout.rc
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/3/trunk/ColdUI/source/UTSampleAbout/UTSampleAbout.rc
+END
+HtmlCtrl.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/3/trunk/ColdUI/source/UTSampleAbout/HtmlCtrl.cpp
+END
+UTSampleAbout.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/3/trunk/ColdUI/source/UTSampleAbout/UTSampleAbout.h
+END
+HtmlCtrl.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/3/trunk/ColdUI/source/UTSampleAbout/HtmlCtrl.h
+END
+UTSampleAboutResource.h
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/3/trunk/ColdUI/source/UTSampleAbout/UTSampleAboutResource.h
+END

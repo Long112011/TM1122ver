@@ -1,0 +1,39 @@
+#include "resource.h"
+#define APSTUDIO_READONLY_SYMBOLS
+//#include "afxres.h"
+#undef APSTUDIO_READONLY_SYMBOLS
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+IDI_GAMEICON            ICON                    "mh.ICO"
+//IDB_BITMAP1            BITMAP                    "log.BMP"
+//IDI_TAITANICON          ICON                    "Taitan.ico"															
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x17L//0x3fL
+ FILEFLAGS 0x0L
+ FILEOS 0x4L//0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080904b0"//041204b0
+        BEGIN
+            VALUE "CompanyName", " "
+            VALUE "FileDescription", "MHClient-Connect"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "MHClient-Connect"
+            VALUE "LegalCopyright", "Copyright 2004"
+            VALUE "OriginalFilename", "MHClient-Connect.exe"
+            VALUE "ProductName", "  MHClient-Connect"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+	VALUE "Translation", 0x809 /*0x412*/, 1200
+    END
+END
+#endif    
+#ifndef APSTUDIO_INVOKED
+#endif

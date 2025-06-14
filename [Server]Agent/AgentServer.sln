@@ -1,0 +1,34 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AgentServer", "AgentServer.vcproj", "{828539A2-7057-4412-BAC0-9B854EBA7DAF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug_CHINA|Win32 = Debug_CHINA|Win32
+		Debug_HK|Win32 = Debug_HK|Win32
+		Debug_JAPAN|Win32 = Debug_JAPAN|Win32
+		Debug_TL|Win32 = Debug_TL|Win32
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{828539A2-7057-4412-BAC0-9B854EBA7DAF}.Debug_CHINA|Win32.ActiveCfg = Debug_CHINA|Win32
+		{828539A2-7057-4412-BAC0-9B854EBA7DAF}.Debug_CHINA|Win32.Build.0 = Debug_CHINA|Win32
+		{828539A2-7057-4412-BAC0-9B854EBA7DAF}.Debug_HK|Win32.ActiveCfg = Debug_HK|Win32
+		{828539A2-7057-4412-BAC0-9B854EBA7DAF}.Debug_HK|Win32.Build.0 = Debug_HK|Win32
+		{828539A2-7057-4412-BAC0-9B854EBA7DAF}.Debug_JAPAN|Win32.ActiveCfg = Debug_JAPAN|Win32
+		{828539A2-7057-4412-BAC0-9B854EBA7DAF}.Debug_JAPAN|Win32.Build.0 = Debug_JAPAN|Win32
+		{828539A2-7057-4412-BAC0-9B854EBA7DAF}.Debug_TL|Win32.ActiveCfg = Debug_TL|Win32
+		{828539A2-7057-4412-BAC0-9B854EBA7DAF}.Debug_TL|Win32.Build.0 = Debug_TL|Win32
+		{828539A2-7057-4412-BAC0-9B854EBA7DAF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{828539A2-7057-4412-BAC0-9B854EBA7DAF}.Debug|Win32.Build.0 = Debug|Win32
+		{828539A2-7057-4412-BAC0-9B854EBA7DAF}.Release|Win32.ActiveCfg = Release|Win32
+		{828539A2-7057-4412-BAC0-9B854EBA7DAF}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
+		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}
+	EndGlobalSection
+EndGlobal

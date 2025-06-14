@@ -1,0 +1,463 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{10f39008-3028-42ba-8e65-d69156dc0b69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\JackpotMgr">
+      <UniqueIdentifier>{2162c6a4-a1a1-4d50-9ac3-84f6c360a824}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\BobusangMgr">
+      <UniqueIdentifier>{d98f18f6-2475-49e5-9630-1a45e983ca8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PunishMgr">
+      <UniqueIdentifier>{325a2bfc-8a20-42ca-b7a1-dcd5fa78df25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Module">
+      <UniqueIdentifier>{a75796d1-e5ec-4dc0-ba11-efeea70140f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Module\Security">
+      <UniqueIdentifier>{1527608b-9228-4495-ba23-358d0c29ef62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{4c22e189-865e-4a70-9278-9e57f8bfd707}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\TargetList">
+      <UniqueIdentifier>{210b5efa-6ec9-4b36-ac98-d7f1d7d7dfb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EngineLib">
+      <UniqueIdentifier>{71e2e15b-ccdc-4c8d-a1d0-38a8f13f610a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EngineLib\4DyuchiGRX_common">
+      <UniqueIdentifier>{feb021d6-c991-4eb7-88ba-1fd8c31fd745}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EngineLib\4DyuchiGXGFunc">
+      <UniqueIdentifier>{61d10811-8da6-4737-a08a-99f23d06ed3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{271c377a-9d37-4fe7-bb9f-0e117ef426ef}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="PublicGameSystem">
+      <UniqueIdentifier>{82b4d1f0-863a-41d5-b060-74de48a6c2db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JACK">
+      <UniqueIdentifier>{a975c191-efd1-4f3a-b27c-ab438115ba63}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AgentDBMsgParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgentNetworkMsgParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CommonNetworkMsgParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="filteringtable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GMToolManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MHTimeManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MsgTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlustimeMgr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShoutManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TimerManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TopManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TrafficLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UserTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JackpotManager_Agent.cpp">
+      <Filter>Source Files\JackpotMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="BobusangManager_Agent.cpp">
+      <Filter>Source Files\BobusangMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="PunishManager.cpp">
+      <Filter>Source Files\PunishMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]ServerModule\BootManager.cpp">
+      <Filter>Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]ServerModule\CommonDBMsgParser.cpp">
+      <Filter>Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]ServerModule\Console.cpp">
+      <Filter>Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]ServerModule\DataBase.cpp">
+      <Filter>Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]ServerModule\MiniDumper.cpp">
+      <Filter>Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]ServerModule\Network.cpp">
+      <Filter>Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]ServerModule\NetWorkPortTransfer.cpp">
+      <Filter>Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]ServerModule\ServerListManager.cpp">
+      <Filter>Module</Filter>
+    </ClCompile>
+    <ClCompile Include="Crypt.cpp">
+      <Filter>Module\Security</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]Header\CommonCalcFunc.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]Header\CommonGameFunc.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]Header\vector.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]Header\TargetList\TargetData.cpp">
+      <Filter>Common\TargetList</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]Header\TargetList\TargetList.cpp">
+      <Filter>Common\TargetList</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]Header\TargetList\TargetListIterator.cpp">
+      <Filter>Common\TargetList</Filter>
+    </ClCompile>
+    <ClCompile Include="GambleManager.cpp">
+      <Filter>PublicGameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]JACK\JackJack.cpp">
+      <Filter>JACK</Filter>
+    </ClCompile>
+    <ClCompile Include="GMPowerList.cpp" />
+    <ClCompile Include="HackShieldManager.cpp" />
+    <ClCompile Include="NProtectManager.cpp" />
+    <ClCompile Include="SkillDalayManager.cpp" />
+    <ClCompile Include="..\[CC]JACK\Crc32Static.cpp">
+      <Filter>JACK</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]JACK\MHFile.cpp">
+      <Filter>JACK</Filter>
+    </ClCompile>
+    <ClCompile Include="AUTOBACKUP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]Header\Server_CMD.cpp" />
+    <ClCompile Include="FireWallManager.cpp" />
+    <ClCompile Include="..\[CC]JACK\DateMngr.cpp">
+      <Filter>JACK</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]JACK\HantarManager.cpp">
+      <Filter>JACK</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AgentDBMsgParser.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AgentNetworkMsgParser.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonNetworkMsgParser.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="filteringtable.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GMToolManager.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MHTimeManager.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MsgTable.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlustimeMgr.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerSystem.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerTable.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShoutManager.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TimerManager.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TopManager.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TrafficLog.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UserTable.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JackpotManager_Agent.h">
+      <Filter>Source Files\JackpotMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="BobusangManager_Agent.h">
+      <Filter>Source Files\BobusangMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="PunishManager.h">
+      <Filter>Source Files\PunishMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\BootManager.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\CommonDBMsgParser.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\Console.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\console_type.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\DataBase.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\DB.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\DBThreadInterface.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\define.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\iconsole.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\iconsole_guid.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\inetwork.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\MiniDumper.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\net_define.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\Network.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\network_guid.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\NetWorkPortTransfer.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\Noncopyable.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\ServerListManager.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\TConsole_Def.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\TConsole_Guids.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\TConsole_Interface.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]ServerModule\typedef.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="Crypt.h">
+      <Filter>Module\Security</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Ability\AbilityCommonHeader.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\AddableInfo.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\ClientGameDefine.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\ClientGameStruct.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\CommonCalcFunc.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\CommonDefine.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\CommonGameDefine.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\CommonGameFunc.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\CommonGameStruct.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\CommonStruct.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\CommonStructMS.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\Protocol.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\ServerGameDefine.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\ServerGameStruct.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\vector.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\TargetList\TargetData.h">
+      <Filter>Common\TargetList</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\TargetList\TargetList.h">
+      <Filter>Common\TargetList</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\TargetList\TargetListIterator.h">
+      <Filter>Common\TargetList</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGRX_common\FileStorage_typedef.h">
+      <Filter>EngineLib\4DyuchiGRX_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGRX_common\GXSCHEDULE_PROC_MSG.h">
+      <Filter>EngineLib\4DyuchiGRX_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGRX_common\IAudio.h">
+      <Filter>EngineLib\4DyuchiGRX_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGRX_common\IAudio_GUID.h">
+      <Filter>EngineLib\4DyuchiGRX_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGRX_common\IExecutive.h">
+      <Filter>EngineLib\4DyuchiGRX_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGRX_common\IExecutive_GUID.h">
+      <Filter>EngineLib\4DyuchiGRX_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGRX_common\IFileStorage.h">
+      <Filter>EngineLib\4DyuchiGRX_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGRX_common\IFileStorage_GUID.h">
+      <Filter>EngineLib\4DyuchiGRX_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGRX_common\IGeometry.h">
+      <Filter>EngineLib\4DyuchiGRX_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGRX_common\IGeometry_GUID.h">
+      <Filter>EngineLib\4DyuchiGRX_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGRX_common\IRenderer.h">
+      <Filter>EngineLib\4DyuchiGRX_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGRX_common\IRenderer_GUID.h">
+      <Filter>EngineLib\4DyuchiGRX_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGRX_common\mesh_flag.h">
+      <Filter>EngineLib\4DyuchiGRX_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGRX_common\motion_flag.h">
+      <Filter>EngineLib\4DyuchiGRX_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGRX_common\StdAfx.h">
+      <Filter>EngineLib\4DyuchiGRX_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGRX_common\typedef.h">
+      <Filter>EngineLib\4DyuchiGRX_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGXGFunc\global.h">
+      <Filter>EngineLib\4DyuchiGXGFunc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\4DyuchiGXGFunc\type.h">
+      <Filter>EngineLib\4DyuchiGXGFunc</Filter>
+    </ClInclude>
+    <ClInclude Include="GambleManager.h">
+      <Filter>PublicGameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]JACK\JackHeaderStruct.h">
+      <Filter>JACK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]JACK\JackJack.h">
+      <Filter>JACK</Filter>
+    </ClInclude>
+    <ClInclude Include="AntiCpSvrFunc.h" />
+    <ClInclude Include="ggsrv25.h" />
+    <ClInclude Include="GMPowerList.h" />
+    <ClInclude Include="HackShieldManager.h" />
+    <ClInclude Include="NProtectManager.h" />
+    <ClInclude Include="SkillDalayManager.h" />
+    <ClInclude Include="..\[CC]JACK\Common.h">
+      <Filter>JACK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]JACK\Crc32Static.h">
+      <Filter>JACK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]JACK\MHFile.h">
+      <Filter>JACK</Filter>
+    </ClInclude>
+    <ClInclude Include="AUTOBACKUP.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\Server_CMD.h" />
+    <ClInclude Include="FireWallManager.h" />
+    <ClInclude Include="..\[CC]JACK\DateMngr.h">
+      <Filter>JACK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]JACK\HantarManager.h">
+      <Filter>JACK</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\4DyuchiGRX_common\math.inl">
+      <Filter>EngineLib\4DyuchiGRX_common</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\4DyuchiGXGFunc\SS3DGFunc.lib">
+      <Filter>EngineLib\4DyuchiGXGFunc</Filter>
+    </Library>
+  </ItemGroup>
+</Project>

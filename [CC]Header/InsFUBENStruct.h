@@ -1,0 +1,5 @@
+#define INFB_MISSION_STRING			"./Resource/FubenScript/InsDGMissionString.bin"
+#define INFB_ENTRANCE_CONDITION		"./Resource/FubenScript/InsDG_EntranceCondition.bin"
+#define INFB_FUBEN_INFO				"./Resource/FubenScript/InsDungeonInfo.bin"
+#define INFB_ENTRANCE_CONDITION_V13 "./Resource/FubenScript/InsDG_EntranceCondition_v13.bin"
+#define INFB_FUBEN_MISSION			"./Resource/FubenScript/InsDGMission.bin"

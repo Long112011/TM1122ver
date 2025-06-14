@@ -1,0 +1,297 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (P.R.C.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 18, 1\r\n"
+    "#pragma code_page(949)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\PackingTool.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""l.kor\\afxres.rc""          // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\PackingTool.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_PACKINGTOOL_DIALOG DIALOGEX 0, 0, 400, 250
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Packing Tool"
+FONT 10, "MingLiU", 0, 0, 0x1
+BEGIN
+
+
+
+CTEXT           "", IDC_STATIC_FONT, 0, 68, 283, 151
+GROUPBOX        "File", IDC_GROUP1, 1, 0, 104, 88
+
+
+
+CONTROL         "Encrypt", IDC_BUTTON_SAVE_BIN, "Button", BS_OWNERDRAW |NOT WS_TABSTOP, 4, 9, 47, 12
+CONTROL         "Encrypt As", IDC_BUTTON_SAVE_TO_BIN, "Button", BS_OWNERDRAW |NOT WS_TABSTOP, 54, 9, 47, 12
+
+CONTROL         "Exit", IDC_BUTTON1, "Button", BS_OWNERDRAW | NOT WS_TABSTOP, 4, 23, 47, 12
+CONTROL         "Decrypt as", IDC_BUTTON_SAVE_TO_TXT, "Button", BS_OWNERDRAW |NOT WS_TABSTOP, 54, 23, 47, 12
+
+CONTROL         "OpenBin", IDC_BUTTON_OPEN_BIN, "Button", BS_OWNERDRAW |NOT WS_TABSTOP, 4, 56, 47, 12
+CONTROL         "Change Font", IDC_SELECT_FONT, "Button", BS_OWNERDRAW |NOT WS_TABSTOP, 54, 56, 47, 12
+
+
+EDITTEXT        IDC_EDIT_FINDSTR, 2, 38, 82, 14, ES_AUTOHSCROLL
+CONTROL         "Find", IDC_BUTTON_FINDSTR, "Button", BS_OWNERDRAW |NOT WS_TABSTOP, 85, 38, 18, 14
+
+	
+
+	
+
+	CONTROL         "Clear List", IDC_BUTTON_DELALL, "Button", BS_OWNERDRAW | NOT WS_TABSTOP, 4, 74, 44, 12
+	
+    RTEXT           "static",IDC_STATIC_FILENUM,50,76,44,8
+
+	LISTBOX         IDC_LIST_FILE, 1, 68, 103, 279, LBS_NOINTEGRALHEIGHT | LBS_WANTKEYBOARDINPUT | WS_VSCROLL | WS_HSCROLL
+
+	//LISTBOX         IDC_LINE_NUMBER, 109, 68, 40, 279, LBS_NOINTEGRALHEIGHT | ES_AUTOVSCROLL | ES_AUTOHSCROLL | WS_VSCROLL | WS_HSCROLL
+
+	//EDITTEXT        IDC_LINE_NUMBER, 109, 3, 0, 0, ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL | NOT WS_TABSTOP
+
+	EDITTEXT        IDC_EDIT, 109, 3, 0, 0, ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL | NOT WS_TABSTOP
+
+   
+	
+
+   
+
+   
+
+	
+
+   
+
+    PUSHBUTTON      "New",IDC_BUTTON_NEW,8,261,36,15,NOT WS_VISIBLE | NOT WS_TABSTOP
+    PUSHBUTTON      "OpenTxt",IDC_BUTTON_OPEN,8,261,36,15,NOT WS_VISIBLE | NOT WS_TABSTOP
+
+	PUSHBUTTON      "SaveAs", IDC_BUTTON_SAVE_AS_BIN, 8, 261, 43, 15, NOT WS_VISIBLE
+	PUSHBUTTON      "SaveDSOF", IDC_BUTTON_SAVEDSOF, 8, 261, 47, 13, NOT WS_VISIBLE
+
+	LTEXT           "Current File : ", IDC_STATIC, 7, 0, 61, 8, NOT WS_VISIBLE
+	LTEXT           "static", IDC_STATIC_CURFILE, 71, 0, 437, 8, NOT WS_VISIBLE
+	LTEXT           "FileNum : ", IDC_STATIC, 7, 65, 33, 8, NOT WS_VISIBLE
+END
+
+IDD_DIALOG_EXT DIALOGEX 0, 0, 175, 74
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "dialog"
+FONT 10, "MingLiU", 0, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_EDIT_EXT,69,28,82,12,ES_AUTOHSCROLL
+    CTEXT           "Semua file dalam list",IDC_STATIC,7,7,161,8
+    LTEXT           "format : *.",IDC_STATIC,23,32,44,8
+    PUSHBUTTON      "Ok",IDOK,94,55,36,12
+    PUSHBUTTON      "Cancel",IDCANCEL,132,55,36,12
+END
+
+IDD_DIALOG_NEW DIALOG  0, 0, 275, 66
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "??"
+FONT 9, "MingLiU"
+BEGIN
+    DEFPUSHBUTTON   "????",ID_SEARCH,212,7,56,16
+    PUSHBUTTON      "??",IDCANCEL,212,28,56,16
+    CTEXT           "?? ?? :",IDC_STATIC,7,7,51,8
+    EDITTEXT        IDC_EDIT_FILE,61,7,135,12,ES_AUTOHSCROLL | ES_WANTRETURN
+END
+
+IDD_DIALOG_SELECTFONT DIALOGEX 0, 0, 175, 74
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "dialog"
+FONT 10, "MingLiU", 0, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_EDIT_EXT,69,28,82,12,ES_AUTOHSCROLL
+    CTEXT           "Semua file dalam list",IDC_STATIC,7,7,161,8
+    LTEXT           "format : *.",IDC_STATIC,23,32,44,8
+    PUSHBUTTON      "Ok",IDOK,94,55,36,12
+    PUSHBUTTON      "Cancel",IDCANCEL,132,55,36,12
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041204B0"
+        BEGIN
+            VALUE "FileDescription", "PackingTool - v4.0 Dark Theme by JACK"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "PackingTool"
+            VALUE "LegalCopyright", "Copyright (C) 2022"
+            VALUE "OriginalFilename", "PackingTool.EXE"
+            VALUE "ProductName", "PackingTool"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x412, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_PACKINGTOOL_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 508
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 347
+    END
+
+    IDD_DIALOG_EXT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 168
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 67
+    END
+
+    IDD_DIALOG_NEW, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 268
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 59
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR1 ACCELERATORS 
+BEGIN
+    "N",            ID_SEARCH,              VIRTKEY, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_ABOUTBOX            "PackingTool"
+END
+
+#endif    // Chinese (P.R.C.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+IDB_BITMAP1             BITMAP  DISCARDABLE     "res\\Scrollbar.bmp"
+IDB_FONT                BITMAP                  "res\\font.bmp"
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
+#ifdef _WIN32
+LANGUAGE 18, 1
+#pragma code_page(949)
+#endif //_WIN32
+#include "res\PackingTool.rc2"  // non-Microsoft Visual C++ edited resources
+#include "l.kor\afxres.rc"          // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

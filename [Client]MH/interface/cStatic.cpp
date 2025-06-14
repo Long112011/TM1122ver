@@ -307,7 +307,7 @@ void cStatic::Render()
 				CFONT_OBJ->RenderNoticeMsg(m_wFontIdx, m_szStaticText, lstrlen(m_szStaticText), &rect, RGBA_MERGE(m_fgColor, m_alpha * m_dwOptionAlpha / 100), RGBA_MERGE(m_shadowColor, m_alpha * m_dwOptionAlpha / 100));
 			
 				
-			//if (m_bFaceImage)//KIV
+			if (m_bFaceImage)//草泥马的表情 给我屏蔽！
 			{				
 				memset(strBuf2,0,256);
 				memcpy(strBuf2,m_szStaticText,strlen(m_szStaticText));

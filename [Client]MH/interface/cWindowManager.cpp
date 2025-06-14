@@ -549,79 +549,275 @@ void cWindowManager::Release()
 }
 void cWindowManager::Init()
 {
-	if (AddFontResourceEx(FONTPATH, FR_PRIVATE, 0) != 0)
-	{
-		CreateFontObjectToFile();
-		m_pScriptManager		= new cScriptManager;
-		m_pWindowList			= new cPtrList;
-		m_pEditBoxListRef		= new cPtrList;
-		m_pIconDlgListRef		= new cPtrList;
-		m_pDestroyWindowRef		= new cPtrList;
-		m_pScreenTextList		= new cPtrList;
-		m_pPlayerChatTooltip	= new cPtrList;
-		m_pScriptManager->InitParseTypeData();
-		cMsgBox::InitMsgBox();
-	}
-	else
-	{
-		MessageBox(_g_hWnd, FONTPATH, "Font failed to load!", MB_OK);
-	}
-}
-BOOL cWindowManager::CreateFontObjectToFile()
-{
-	char line[256] = { 0, };
-	CMHFile fp;
-	if (!fp.Init("./Image/Font.bin", "rb"))
-		return FALSE;
+	m_pScriptManager = new cScriptManager;
+	m_pWindowList = new cPtrList;
+	m_pEditBoxListRef = new cPtrList;
+	m_pIconDlgListRef = new cPtrList;
+	m_pDestroyWindowRef = new cPtrList;
+	m_pScreenTextList = new cPtrList;
+	m_pPlayerChatTooltip = new cPtrList;
+	m_pScriptManager->InitParseTypeData();
+	AddFontResourceEx("./Resource/Client/gamefont.ttc", FR_PRIVATE, 0);
 	LOGFONT	font;
-	int		nIdx = 0;
+	extern HWND _g_hWnd;
+	//font.lfHeight = -MulDiv(9, GetDeviceCaps(GetDC( _g_hWnd ), LOGPIXELSY), 72);
+	font.lfHeight = -MulDiv(9, 96, 72);	//直接指定默认96 DPI
+	//font.lfHeight = -12;
+
+	font.lfWidth = -font.lfHeight / 2;
 	font.lfEscapement = 0;
 	font.lfOrientation = 0;
-	//font.lfStrikeOut = 0;
-	font.lfCharSet = DEFAULT_CHARSET;
-	font.lfOutPrecision =  0;
-	font.lfClipPrecision = 0;
+	font.lfWeight = 400;
+	font.lfItalic = 0;
+	font.lfUnderline = 0;
+	font.lfStrikeOut = 0;
+
+	// auto check the charset 2014-05-10!  CHINESEBIG5_CHARSET  GB2312_CHARSET 
+#ifdef _BIG5SYSTEM_
+	font.lfCharSet = CHINESEBIG5_CHARSET;
+#else
+	font.lfCharSet = GB2312_CHARSET;	//默认设定作简体中文,支援双语言
+#endif
+	font.lfOutPrecision = 0;
 	font.lfQuality = PROOF_QUALITY;
-	font.lfPitchAndFamily =  0;
-	while (fp.IsEOF() == FALSE)
-	{
-		fp.GetString(line);
-		if (line[0] == '@')
-		{
-			fp.GetLineX(line, 256);
-			continue;
-		}
-		if (strcmp(line, "#FONTCHARSET") == 0)
-			font.lfCharSet = fp.GetInt();
-		else if (strcmp(line, "#FONT") == 0)
-		{
-			if (nIdx == FONTMAX - 1)
-			{
-				MessageBox(0, "More than it should detected!...", fp.GetFileName(), MB_OK);
-				continue;
-			}
-			
-			nIdx = fp.GetInt();
-			fp.GetStringInQuotation(line);
-			lstrcpy(font.lfFaceName, line);
-			int fontsize = fp.GetInt();
-			font.lfHeight = -MulDiv(fontsize, 96, 72);
-			font.lfWidth = -font.lfHeight / 2;
-			font.lfWeight = fp.GetInt();
-			font.lfUnderline = fp.GetInt();
-			font.lfItalic = fp.GetInt();
-			font.lfStrikeOut = fp.GetByte();
-			CFONT_OBJ->CreateFontObject(&font, nIdx);
-		}
-		 
-	}
-	if (nIdx < FONTMAX - 1)
-	{
-		MessageBox(0, "Font line tak complete \nPlease check!...", fp.GetFileName(), MB_OK);
-	}
-	fp.Release();
-	return TRUE;
+	font.lfPitchAndFamily = 0;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT0);
+
+	//font.lfHeight = -MulDiv(9,GetDeviceCaps(GetDC(_g_hWnd),LOGPIXELSY),72);
+	//font.lfHeight = -12;
+	font.lfHeight = -14;
+	font.lfWeight = 500;
+	font.lfWidth = -font.lfHeight / 2;
+	font.lfQuality = PROOF_QUALITY;
+	font.lfPitchAndFamily = FIXED_PITCH | FF_SWISS;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT5);
+
+	//font.lfHeight = -MulDiv(9,GetDeviceCaps(GetDC(_g_hWnd),LOGPIXELSY),72);
+	//font.lfHeight = -9;
+	font.lfHeight = -MulDiv(9, 96, 72);	//直接指定默认96 DPI
+	font.lfWidth = -font.lfHeight / 2;
+	font.lfUnderline = 1;
+	font.lfWeight = 600;
+	//font.lfQuality = PROOF_QUALITY;
+	font.lfWeight = PROOF_QUALITY;
+	lstrcpy(font.lfFaceName, "MingLiU");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT4);
+
+	font.lfUnderline = 0;
+	font.lfHeight = -14;
+	font.lfWidth = -font.lfHeight / 2;
+	font.lfQuality = PROOF_QUALITY;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT1);
+
+	/*	font.lfUnderline = 0;
+		font.lfHeight = -14;
+		font.lfWidth = -font.lfHeight / 2;
+		font.lfQuality = PROOF_QUALITY;
+		lstrcpy(font.lfFaceName, "宋体");
+		CFONT_OBJ->CreateFontObject(&font, cFont::FONT2);*/
+
+	font.lfUnderline = 0;
+	font.lfHeight = -14;
+	font.lfWeight = FW_BOLD;
+	font.lfWidth = -font.lfHeight / 2;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT2);
+
+	font.lfHeight = -35;
+	font.lfWeight = FW_HEAVY;
+	font.lfWidth = -font.lfHeight / 2;
+	font.lfQuality = PROOF_QUALITY;
+	font.lfPitchAndFamily = FIXED_PITCH | FF_SWISS;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT3);
+
+	font.lfHeight = -14;
+	font.lfWeight = FW_HEAVY;
+	font.lfWidth = -font.lfHeight / 2;
+	font.lfQuality = PROOF_QUALITY;
+	font.lfPitchAndFamily = FIXED_PITCH | FF_SWISS;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT6);
+
+	font.lfHeight = -14;
+	font.lfWeight = 500;
+	font.lfWidth = -font.lfHeight / 2;
+	font.lfQuality = PROOF_QUALITY;
+	font.lfPitchAndFamily = FIXED_PITCH | FF_SWISS;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT7);
+
+	font.lfHeight = -14;
+	font.lfWeight = FW_HEAVY;
+	font.lfWidth = -font.lfHeight / 2;
+	font.lfQuality = PROOF_QUALITY;
+	font.lfPitchAndFamily = FIXED_PITCH | FF_SWISS;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT8);
+
+	/*	font.lfHeight = -14;
+		font.lfWeight = FW_NORMAL;
+		font.lfWidth = -font.lfHeight / 2;
+		font.lfQuality = PROOF_QUALITY;
+		font.lfPitchAndFamily = FIXED_PITCH | FF_SWISS;
+		lstrcpy(font.lfFaceName, "宋体");
+		CFONT_OBJ->CreateFontObject(&font, cFont::FONT9);	//过图提示公屏字体 2020-07-03*/
+
+	font.lfHeight = -MulDiv(9, GetDeviceCaps(GetDC(_g_hWnd), LOGPIXELSY), 72);
+	font.lfWeight = 550;
+	font.lfWidth = -font.lfHeight / 2;
+	font.lfQuality = PROOF_QUALITY;
+	font.lfPitchAndFamily = FIXED_PITCH | FF_SWISS;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT9);
+
+	font.lfHeight = -14;
+	font.lfWeight = FW_NORMAL;
+	font.lfWidth = -font.lfHeight / 2;
+	font.lfQuality = PROOF_QUALITY;
+	font.lfPitchAndFamily = FIXED_PITCH | FF_SWISS;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT10);
+
+	font.lfUnderline = 0;	//新增字体(11) 测试
+	font.lfHeight = -14;
+	font.lfWidth = -font.lfHeight / 2;
+	font.lfQuality = PROOF_QUALITY;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT11);
+
+	font.lfUnderline = 0;
+	font.lfHeight = -10;
+	font.lfWeight = FW_BOLD;
+	font.lfWidth = -font.lfHeight / 2;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT12);
+
+	font.lfHeight = -14;
+	font.lfWeight = FW_BOLD;
+	font.lfWidth = -font.lfHeight / 2;
+	font.lfQuality = PROOF_QUALITY;
+	font.lfPitchAndFamily = FIXED_PITCH | FF_SWISS;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT13);
+
+	font.lfHeight = -MulDiv(9, GetDeviceCaps(GetDC(_g_hWnd), LOGPIXELSY), 72);
+	font.lfWeight = 900;
+	font.lfWidth = 0;
+	font.lfQuality = CLEARTYPE_QUALITY;
+	font.lfPitchAndFamily = FIXED_PITCH | FF_SWISS;
+	lstrcpy(font.lfFaceName, "MingLiU");
+
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT14);
+
+	font.lfHeight = -MulDiv(11, GetDeviceCaps(GetDC(_g_hWnd), LOGPIXELSY), 68);	//GMNotifyManagerそ驰杠砰
+	font.lfWidth = -font.lfHeight / 2;
+	font.lfWeight = 400;
+	font.lfOutPrecision = 0;
+	font.lfQuality = PROOF_QUALITY;
+	font.lfPitchAndFamily = 0;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");	//灿砰
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT15);
+
+	font.lfUnderline = 0;
+	font.lfHeight = -11;
+	font.lfWeight = FW_HEAVY;
+	font.lfWidth = -font.lfHeight / 2;
+	font.lfPitchAndFamily = FIXED_PITCH | FF_SWISS;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT16);
+
+	font.lfUnderline = 0;
+	font.lfHeight = -18;
+	font.lfWeight = FW_HEAVY;
+	font.lfWidth = -font.lfHeight / 2;
+	font.lfPitchAndFamily = FIXED_PITCH | FF_SWISS;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT17);
+
+	font.lfHeight = -MulDiv(11, GetDeviceCaps(GetDC(_g_hWnd), LOGPIXELSY), 68);	//CH材
+	font.lfWidth = -font.lfHeight / 2;
+	font.lfWeight = 551;
+	font.lfOutPrecision = 0;
+	font.lfQuality = PROOF_QUALITY;
+	font.lfPitchAndFamily = 0;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");	//灿砰
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT18);
+
+	font.lfHeight = -MulDiv(35, GetDeviceCaps(GetDC(_g_hWnd), LOGPIXELSY), 72);
+	font.lfWidth = -font.lfHeight / 2;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT19);
+
+	font.lfHeight = -30;
+	font.lfWeight = FW_HEAVY;
+	font.lfWidth = -font.lfHeight / 2;
+	font.lfQuality = PROOF_QUALITY;
+	font.lfPitchAndFamily = FIXED_PITCH | FF_SWISS;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT20);
+
+	cMsgBox::InitMsgBox();
 }
+//BOOL cWindowManager::CreateFontObjectToFile()
+//{
+//	char line[256] = { 0, };
+//	CMHFile fp;
+//	if (!fp.Init("./Image/Font.bin", "rb"))
+//		return FALSE;
+//	LOGFONT	font;
+//	int		nIdx = 0;
+//	font.lfEscapement = 0;
+//	font.lfOrientation = 0;
+//	//font.lfStrikeOut = 0;
+//	font.lfCharSet = DEFAULT_CHARSET;
+//	font.lfOutPrecision =  0;
+//	font.lfClipPrecision = 0;
+//	font.lfQuality = PROOF_QUALITY;
+//	font.lfPitchAndFamily =  0;
+//	while (fp.IsEOF() == FALSE)
+//	{
+//		fp.GetString(line);
+//		if (line[0] == '@')
+//		{
+//			fp.GetLineX(line, 256);
+//			continue;
+//		}
+//		if (strcmp(line, "#FONTCHARSET") == 0)
+//			font.lfCharSet = fp.GetInt();
+//		else if (strcmp(line, "#FONT") == 0)
+//		{
+//			if (nIdx == FONTMAX - 1)
+//			{
+//				MessageBox(0, "More than it should detected!...", fp.GetFileName(), MB_OK);
+//				continue;
+//			}
+//			
+//			nIdx = fp.GetInt();
+//			fp.GetStringInQuotation(line);
+//			lstrcpy(font.lfFaceName, line);
+//			int fontsize = fp.GetInt();
+//			font.lfHeight = -MulDiv(fontsize, 96, 72);
+//			font.lfWidth = -font.lfHeight / 2;
+//			font.lfWeight = fp.GetInt();
+//			font.lfUnderline = fp.GetInt();
+//			font.lfItalic = fp.GetInt();
+//			font.lfStrikeOut = fp.GetByte();
+//			CFONT_OBJ->CreateFontObject(&font, nIdx);
+//		}
+//		 
+//	}
+//	if (nIdx < FONTMAX - 1)
+//	{
+//		MessageBox(0, "Font line tak complete \nPlease check!...", fp.GetFileName(), MB_OK);
+//	}
+//	fp.Release();
+//	return TRUE;
+//}
 DWORD cWindowManager::GetScreenX()
 {
 	return GAMERESRCMNGR->m_GameDesc.dispInfo.dwWidth;

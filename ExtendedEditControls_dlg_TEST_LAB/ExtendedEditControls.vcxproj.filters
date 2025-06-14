@@ -1,0 +1,686 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{a04d436e-457c-4890-bb49-ead649367d93}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{56810503-c468-4d15-b4a0-fcc2e3e8845e}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="main">
+      <UniqueIdentifier>{b0dbe204-a567-4f65-931a-fdb66f7395bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control">
+      <UniqueIdentifier>{bdebea60-23e1-48c2-ac32-1091ebd524b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control\color_Control">
+      <UniqueIdentifier>{bb1465df-a061-41ef-b6d8-e680f1b6efb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control\soui_Control">
+      <UniqueIdentifier>{6cdf046e-6229-4cb1-913a-9fa08f468f4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control\input_control">
+      <UniqueIdentifier>{44eefd5d-353b-4741-8931-c67758647488}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control\ox_Control">
+      <UniqueIdentifier>{b866835d-5aba-44b7-a581-9b10f2fa2be1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control\tab_control">
+      <UniqueIdentifier>{55625708-5e35-4329-a262-bdacb5031aee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control\xListBox_Control">
+      <UniqueIdentifier>{b0971ba9-9e29-40ea-8d2e-deaa4dba9ecc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control\ScintillaWnd">
+      <UniqueIdentifier>{e8177aba-5d9e-4488-a68a-b52815beb7fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control\ScintillaWnd\SciLexer">
+      <UniqueIdentifier>{5de5f749-ff2c-422c-98ff-c6f36c28db66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control\ScintillaWnd\SciLexer\include">
+      <UniqueIdentifier>{4387d261-e78f-4b03-99fa-dacbd262f515}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control\ScintillaWnd\SciLexer\win32">
+      <UniqueIdentifier>{e51dd93d-214b-48cd-87c7-c1403294c7cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control\file_Control">
+      <UniqueIdentifier>{ee503f7f-a60b-41d4-a9e6-99cc6153eead}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control\DarkMode">
+      <UniqueIdentifier>{9f995696-2b8c-4d2a-b66a-94c0faf2979a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cmdline">
+      <UniqueIdentifier>{9ece51bf-4bf3-416e-9a7d-f4b6f1a79da5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\singleInstances">
+      <UniqueIdentifier>{d3436a41-bcbe-43c3-b659-1e142e45a729}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{591cb9a7-573e-4333-9dcf-fee6135004ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control\c_Control">
+      <UniqueIdentifier>{690fb6a0-f351-4d12-a0db-007b88013d56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog">
+      <UniqueIdentifier>{6c582aa2-a949-41db-b360-6c2fd02e68aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog\openMultiBinDlg">
+      <UniqueIdentifier>{281bbbc9-eefb-4505-a540-0d765306e7e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog\quickFindDlg">
+      <UniqueIdentifier>{e14d6221-3fee-473f-b736-3345b089b754}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog\previewEditDlg">
+      <UniqueIdentifier>{bcecc452-6020-49d2-b99d-db4304987876}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog\saveAsDlg">
+      <UniqueIdentifier>{441a8971-1ae2-423f-8d31-c6ee1e70fb3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog\styleDlg">
+      <UniqueIdentifier>{818e205b-823c-4d7c-b209-5979a9fcf6fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog\toastDlg">
+      <UniqueIdentifier>{ea20b406-d4c2-45e2-8de6-8a65af332394}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog\splasherDlg">
+      <UniqueIdentifier>{9939dfc6-fc8a-4ba9-9eff-dc5ac0b26684}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control\colourhook_Control">
+      <UniqueIdentifier>{dbdf90ba-e279-44b6-bdd0-058e50a4afde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="modeless">
+      <UniqueIdentifier>{72d8855f-3477-4093-90e3-39e0515a052c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control\TinyXML">
+      <UniqueIdentifier>{07684423-ac70-4ed0-98ca-40a3003c852b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="control\xml">
+      <UniqueIdentifier>{236c71d4-0cfb-48a1-be27-e5457dadcb5f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="include\OXBitmapButton.cpp">
+      <Filter>control\ox_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="include\OXColorPickerButton.cpp">
+      <Filter>control\ox_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="include\OXColorPickerCtrl.cpp">
+      <Filter>control\ox_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="include\OXFontPickerButton.cpp">
+      <Filter>control\ox_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="include\OXPopupBarCtrl.cpp">
+      <Filter>control\ox_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="include\OXStatic.cpp">
+      <Filter>control\ox_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="include\UTBStrOp.cpp">
+      <Filter>control\ox_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="FontPreviewCombo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MHFileEx.cpp">
+      <Filter>control\file_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="MHFileMng.cpp">
+      <Filter>control\file_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorEdit.cpp">
+      <Filter>control\color_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorListBox.cpp">
+      <Filter>control\color_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorStatic.cpp">
+      <Filter>control\color_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorComboBox.cpp">
+      <Filter>control\color_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="Common.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="ScintillaWnd.cpp">
+      <Filter>control\ScintillaWnd</Filter>
+    </ClCompile>
+    <ClCompile Include="Tokenizer.cpp">
+      <Filter>control\ScintillaWnd</Filter>
+    </ClCompile>
+    <ClCompile Include="tabctrl.cpp">
+      <Filter>control\tab_control</Filter>
+    </ClCompile>
+    <ClCompile Include="DarkMode.cpp">
+      <Filter>control\DarkMode</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorButton.cpp">
+      <Filter>control\color_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="C_Button.cpp">
+      <Filter>control\c_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="C_Frame.cpp">
+      <Filter>control\c_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="Clipboard.cpp">
+      <Filter>control\xListBox_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="XListBox.cpp">
+      <Filter>control\xListBox_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="Button_Input.cpp">
+      <Filter>control\input_control</Filter>
+    </ClCompile>
+    <ClCompile Include="StylerDlg.cpp">
+      <Filter>dialog\styleDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveAsDlg.cpp">
+      <Filter>dialog\saveAsDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="include\OXEdit.cpp">
+      <Filter>control\ox_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="LineNumberStatic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cmdline.cpp">
+      <Filter>Source Files\cmdline</Filter>
+    </ClCompile>
+    <ClCompile Include="OPini.cpp">
+      <Filter>dialog\styleDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="QuickFindWnd.cpp">
+      <Filter>dialog\quickFindDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="SearchComboBox.cpp">
+      <Filter>dialog\quickFindDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="ComboBoxBrowseCtrl.cpp">
+      <Filter>dialog\quickFindDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="PreviewEditDlg.cpp">
+      <Filter>dialog\previewEditDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\AutoComplete.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\CallTip.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\CellBuffer.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\CharClassify.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\ContractionState.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\Document.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\DocumentAccessor.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\Editor.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\ExternalLexer.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\Indicator.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\KeyMap.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\KeyWords.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\LexCPP.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\LineMarker.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\PropSet.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\RESearch.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\ScintillaBase.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\Style.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\StyleContext.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\UniConversion.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\ViewStyle.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\WindowAccessor.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\src\XPM.cxx">
+      <Filter>control\ScintillaWnd\SciLexer</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\win32\PlatWin.cxx">
+      <Filter>control\ScintillaWnd\SciLexer\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="scintilla\win32\ScintillaWin.cxx">
+      <Filter>control\ScintillaWnd\SciLexer\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="singleinstance.cpp">
+      <Filter>Source Files\singleInstances</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenMultiBin.cpp">
+      <Filter>dialog\openMultiBinDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="Splasher.cpp">
+      <Filter>dialog\splasherDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoEdit.cpp">
+      <Filter>dialog\toastDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="DayValidate.cpp">
+      <Filter>dialog\toastDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="InfoWnd.cpp">
+      <Filter>dialog\toastDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="colourHook.cpp">
+      <Filter>control\colourhook_Control</Filter>
+    </ClCompile>
+    <ClCompile Include="Server_CMD.cpp">
+      <Filter>Source Files\cmdline</Filter>
+    </ClCompile>
+    <ClCompile Include="Modeless.cpp">
+      <Filter>modeless</Filter>
+    </ClCompile>
+    <ClCompile Include="TinyXml\tinyxml.cpp">
+      <Filter>control\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="TinyXml\tinystr.cpp">
+      <Filter>control\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="TinyXml\tinyxmlerror.cpp">
+      <Filter>control\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="TinyXml\tinyxmlparser.cpp">
+      <Filter>control\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="XMLSettings.cpp">
+      <Filter>control\xml</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OXBitmapButton.h">
+      <Filter>control\ox_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OXColorPickerButton.h">
+      <Filter>control\ox_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OXColorPickerCtrl.h">
+      <Filter>control\ox_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OXDllExt.h">
+      <Filter>control\ox_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OXFontPickerButton.h">
+      <Filter>control\ox_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OXMainRes.h">
+      <Filter>control\ox_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OXPopupBarCtrl.h">
+      <Filter>control\ox_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OXStatic.h">
+      <Filter>control\ox_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UTB64Bit.h">
+      <Filter>control\ox_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utbstrop.h">
+      <Filter>control\ox_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="FontPreviewCombo.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MHFileEx.h">
+      <Filter>control\file_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="MHFileMng.h">
+      <Filter>control\file_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>control\color_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorEdit.h">
+      <Filter>control\color_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorListBox.h">
+      <Filter>control\color_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorStatic.h">
+      <Filter>control\color_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorComboBox.h">
+      <Filter>control\color_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="Utf8.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonDefine.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="ScintillaWnd.h">
+      <Filter>control\ScintillaWnd</Filter>
+    </ClInclude>
+    <ClInclude Include="Tokenizer.h">
+      <Filter>control\ScintillaWnd</Filter>
+    </ClInclude>
+    <ClInclude Include="tabctrl.hpp">
+      <Filter>control\tab_control</Filter>
+    </ClInclude>
+    <ClInclude Include="DarkMode.h">
+      <Filter>control\DarkMode</Filter>
+    </ClInclude>
+    <ClInclude Include="IatHook.h">
+      <Filter>control\DarkMode</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorButton.h">
+      <Filter>control\color_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="WordStyleDlgRes.h">
+      <Filter>dialog\styleDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="C_Button.h">
+      <Filter>control\c_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="C_Frame.h">
+      <Filter>control\c_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="Clipboard.h">
+      <Filter>control\xListBox_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="XListBox.h">
+      <Filter>control\xListBox_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="Button_Input.h">
+      <Filter>control\input_control</Filter>
+    </ClInclude>
+    <ClInclude Include="StylerDlg.h">
+      <Filter>dialog\styleDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingStruct.h">
+      <Filter>dialog\styleDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveAsDlg.h">
+      <Filter>dialog\saveAsDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OXEdit.h">
+      <Filter>control\ox_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="LineNumberStatic.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cmdline.h">
+      <Filter>Source Files\cmdline</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\Accelerator.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\FocusManager.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\hostmsg.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SCaret.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SDefine.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SDropTargetDispatcher.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SHostDialog.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SHostWnd.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SimpleWnd.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SItemPanel.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SMsgLoop.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SObjectFactory.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SPanel.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SSingleton.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SSingleton2.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SSingletonMap.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SSkin.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SSkinObjBase.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SWindowMgr.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\Swnd.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SwndAccessible.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SwndContainer-i.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SwndContainerImpl.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SwndStyle.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="SApp.h">
+      <Filter>control\soui_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="OPini.h">
+      <Filter>dialog\styleDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="QuickFindWnd.h">
+      <Filter>dialog\quickFindDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="QuickFindInfo.h">
+      <Filter>dialog\quickFindDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="SearchComboBox.h">
+      <Filter>dialog\quickFindDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="ComboBoxBrowseCtrl.h">
+      <Filter>dialog\quickFindDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="PreviewEditDlg.h">
+      <Filter>dialog\previewEditDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="ScintillaStruct.h">
+      <Filter>control\ScintillaWnd</Filter>
+    </ClInclude>
+    <ClInclude Include="scintilla\include\Accessor.h">
+      <Filter>control\ScintillaWnd\SciLexer\include</Filter>
+    </ClInclude>
+    <ClInclude Include="scintilla\include\KeyWords.h">
+      <Filter>control\ScintillaWnd\SciLexer\include</Filter>
+    </ClInclude>
+    <ClInclude Include="scintilla\include\Platform.h">
+      <Filter>control\ScintillaWnd\SciLexer\include</Filter>
+    </ClInclude>
+    <ClInclude Include="scintilla\include\PropSet.h">
+      <Filter>control\ScintillaWnd\SciLexer\include</Filter>
+    </ClInclude>
+    <ClInclude Include="scintilla\include\SciLexer.h">
+      <Filter>control\ScintillaWnd\SciLexer\include</Filter>
+    </ClInclude>
+    <ClInclude Include="scintilla\include\Scintilla.h">
+      <Filter>control\ScintillaWnd\SciLexer\include</Filter>
+    </ClInclude>
+    <ClInclude Include="scintilla\include\ScintillaWidget.h">
+      <Filter>control\ScintillaWnd\SciLexer\include</Filter>
+    </ClInclude>
+    <ClInclude Include="scintilla\include\SString.h">
+      <Filter>control\ScintillaWnd\SciLexer\include</Filter>
+    </ClInclude>
+    <ClInclude Include="scintilla\include\WindowAccessor.h">
+      <Filter>control\ScintillaWnd\SciLexer\include</Filter>
+    </ClInclude>
+    <ClInclude Include="scintilla\win32\PlatformRes.h">
+      <Filter>control\ScintillaWnd\SciLexer\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="singleinstance.h">
+      <Filter>Source Files\singleInstances</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenMultiBin.h">
+      <Filter>dialog\openMultiBinDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="Splasher.h">
+      <Filter>dialog\splasherDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoEdit.h">
+      <Filter>dialog\toastDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="DayValidate.h">
+      <Filter>dialog\toastDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="InfoWnd.h">
+      <Filter>dialog\toastDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="colourHook.h">
+      <Filter>control\colourhook_Control</Filter>
+    </ClInclude>
+    <ClInclude Include="SMovingChildStruct.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="ListViewUtil.h">
+      <Filter>control\DarkMode</Filter>
+    </ClInclude>
+    <ClInclude Include="Server_CMD.h">
+      <Filter>Source Files\cmdline</Filter>
+    </ClInclude>
+    <ClInclude Include="UAHMenuBar.h">
+      <Filter>control\DarkMode</Filter>
+    </ClInclude>
+    <ClInclude Include="Modeless.h">
+      <Filter>modeless</Filter>
+    </ClInclude>
+    <ClInclude Include="TinyXml\tinyxml.h">
+      <Filter>control\TinyXML</Filter>
+    </ClInclude>
+    <ClInclude Include="TinyXml\tinystr.h">
+      <Filter>control\TinyXML</Filter>
+    </ClInclude>
+    <ClInclude Include="XMLSettings.h">
+      <Filter>control\xml</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\ExtendedEditControls.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\test.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="res\ExtendedEditControls.rc2">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="ExtendedEditControls.exe.manifest">
+      <Filter>Resource Files</Filter>
+    </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ExtendedEditControls.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="WordStyleDlg.rc">
+      <Filter>dialog\styleDlg</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="SaveAsResource.rc">
+      <Filter>dialog\saveAsDlg</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="ToolBarMenu.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="PreviewEditResource.rc">
+      <Filter>dialog\previewEditDlg</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="QuickFindView.inl">
+      <Filter>dialog\quickFindDlg</Filter>
+    </None>
+  </ItemGroup>
+</Project>

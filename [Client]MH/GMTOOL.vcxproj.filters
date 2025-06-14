@@ -635,9 +635,6 @@
     <Filter Include="NewSystemByAOF">
       <UniqueIdentifier>{0aec5b42-430d-40be-92bf-8b94abca2bb3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="JACK">
-      <UniqueIdentifier>{9ca9f8d2-0575-425c-aac6-72f2609a4845}</UniqueIdentifier>
-    </Filter>
     <Filter Include="NewSystem">
       <UniqueIdentifier>{1f599ee9-29bc-4f18-ae35-53ca23846c24}</UniqueIdentifier>
     </Filter>
@@ -664,6 +661,12 @@
     </Filter>
     <Filter Include="aFadeDlg">
       <UniqueIdentifier>{59f71ae7-f320-4507-a85f-6bc855151701}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LONG">
+      <UniqueIdentifier>{9ca9f8d2-0575-425c-aac6-72f2609a4845}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameManager\天墨功能">
+      <UniqueIdentifier>{457a9df0-43f1-4473-bc04-6a9a34128adb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -2498,7 +2501,7 @@
       <Filter>NewSystemByAOF</Filter>
     </ClCompile>
     <ClCompile Include="..\[CC]JACK\JackJack.cpp">
-      <Filter>JACK</Filter>
+      <Filter>LONG</Filter>
     </ClCompile>
     <ClCompile Include="AdPointDlg.cpp">
       <Filter>NewSystem</Filter>
@@ -2589,7 +2592,7 @@
       <Filter>NewSystem\ItemDrop</Filter>
     </ClCompile>
     <ClCompile Include="..\[CC]JACK\Crc32Static.cpp">
-      <Filter>JACK</Filter>
+      <Filter>LONG</Filter>
     </ClCompile>
     <ClCompile Include="CXBOXController.cpp">
       <Filter>NewSystem</Filter>
@@ -2670,12 +2673,15 @@
       <Filter>Etc</Filter>
     </ClCompile>
     <ClCompile Include="..\[CC]JACK\gettimeofday.cpp">
-      <Filter>JACK</Filter>
+      <Filter>LONG</Filter>
     </ClCompile>
     <ClCompile Include="..\[CC]JACK\DateMngr.cpp">
-      <Filter>JACK</Filter>
+      <Filter>LONG</Filter>
     </ClCompile>
     <ClCompile Include="TopDungeon.cpp" />
+    <ClCompile Include="TMNewAi.cpp">
+      <Filter>GameManager\天墨功能</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MiniDumper.h">
@@ -4626,10 +4632,10 @@
       <Filter>NewSystemByAOF</Filter>
     </ClInclude>
     <ClInclude Include="..\[CC]JACK\JackHeaderStruct.h">
-      <Filter>JACK</Filter>
+      <Filter>LONG</Filter>
     </ClInclude>
     <ClInclude Include="..\[CC]JACK\JackJack.h">
-      <Filter>JACK</Filter>
+      <Filter>LONG</Filter>
     </ClInclude>
     <ClInclude Include="AdPointDlg.h">
       <Filter>NewSystem</Filter>
@@ -4728,10 +4734,10 @@
       <Filter>Etc</Filter>
     </ClInclude>
     <ClInclude Include="..\[CC]JACK\Common.h">
-      <Filter>JACK</Filter>
+      <Filter>LONG</Filter>
     </ClInclude>
     <ClInclude Include="..\[CC]JACK\Crc32Static.h">
-      <Filter>JACK</Filter>
+      <Filter>LONG</Filter>
     </ClInclude>
     <ClInclude Include="CXBOXController.h">
       <Filter>NewSystem</Filter>
@@ -4806,10 +4812,10 @@
       <Filter>PlugIns</Filter>
     </ClInclude>
     <ClInclude Include="..\[CC]JACK\gettimeofday.h">
-      <Filter>JACK</Filter>
+      <Filter>LONG</Filter>
     </ClInclude>
     <ClInclude Include="..\[CC]JACK\standard.h">
-      <Filter>JACK</Filter>
+      <Filter>LONG</Filter>
     </ClInclude>
     <ClInclude Include="FadeDlg.h">
       <Filter>aFadeDlg</Filter>
@@ -4821,9 +4827,12 @@
       <Filter>Etc</Filter>
     </ClInclude>
     <ClInclude Include="..\[CC]JACK\DateMngr.h">
-      <Filter>JACK</Filter>
+      <Filter>LONG</Filter>
     </ClInclude>
     <ClInclude Include="TopDungeon.h" />
+    <ClInclude Include="TMNewAi.H">
+      <Filter>GameManager\天墨功能</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">

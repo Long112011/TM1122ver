@@ -1,0 +1,15 @@
+
+#include "windows.h"
+#include "resource.h"
+
+IDD_DIALOG_POPUP_EXT DIALOGEX 1, 1, 175, 40
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP// | WS_CAPTION | WS_SYSMENU
+CAPTION "dialog"
+FONT 9, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_EDIT_EXT,52,11,119,12,ES_AUTOHSCROLL
+	CTEXT           "", IDC_POPUP_CSTATIC, 8, 1, 161, 8
+	LTEXT           "file extension :", IDC_POPUP_LSTATIC, 4, 12, 44, 8
+    PUSHBUTTON      "Ok",IDOK,135,25,36,12
+    PUSHBUTTON      "Cancel",IDCANCEL,98,25,36,12
+END

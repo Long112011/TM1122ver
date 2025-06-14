@@ -1,0 +1,234 @@
+
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+
+#include "afxres.h"
+
+#undef APSTUDIO_READONLY_SYMBOLS
+
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+
+IDR_MAINFRAME           ICON                    "res\\ExtendedEditControls.ico"
+
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "FileDescription", "PackingTool Rebuild by JACK"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "trinityms.org"
+            VALUE "LegalCopyright", "Copyright (C) 2023"
+            VALUE "OriginalFilename", "PackingTool.EXE"
+            VALUE "ProductName", "PackingTool"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+ID_DESCRIPTION_FILE DIALOGEX 0, 0, 400, 250
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME 
+
+CAPTION "PackingTool"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+
+	EDITTEXT        IDC_EDIT1, 92, 7, 20, 14, NOT WS_VISIBLE
+
+	CONTROL         "", IDC_TAB, "SysTabControl32", WS_TABSTOP | 0x8 | NOT WS_VISIBLE, 0, 0, 0, 0
+	LTEXT           "Static", IDC_TEXT, 55, 50, 140, 12, NOT WS_VISIBLE
+
+	
+
+	PUSHBUTTON      "encrypt", IPAKMAN_BUTTON_ENCRYPT, 4, 9, 47, 12, WS_GROUP | NOT WS_VISIBLE
+	PUSHBUTTON      "encryptAs", IPAKMAN_BUTTON_ENCRYPTAS, 54, 9, 47, 12, WS_GROUP | NOT WS_VISIBLE
+	PUSHBUTTON      "exit", IPAKMAN_BUTTON_EXIT, 4, 23, 47, 12, NOT WS_VISIBLE
+	PUSHBUTTON      "DecryptAs", ID_FILE_SAVEAS, 54, 23, 47, 12, WS_GROUP | NOT WS_VISIBLE
+	PUSHBUTTON      "OpenBin", ID_FILE_OPEN, 4, 56, 47, 12, WS_GROUP | NOT WS_VISIBLE
+	PUSHBUTTON      "Settings", IDC_BUTTON_SETTING, 54, 56, 47, 12, WS_GROUP | NOT WS_VISIBLE
+
+	
+
+	PUSHBUTTON      "clear", IPAKMAN_BUTTON_CLEAR, 4, 74, 44, 12, WS_GROUP | NOT WS_VISIBLE
+
+	LISTBOX         IDC_LIST_FILE, 1, 68, 103, 279, LBS_OWNERDRAWVARIABLE | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP //| WS_THICKFRAME
+
+
+
+
+	
+	
+	CONTROL       "", IDC_EDIT_FINDSTR, "Edit", ES_AUTOHSCROLL, 1, 1, 81, 14
+	DEFPUSHBUTTON      "find", IPAKMAN_BUTTON_FIND, 83, 1, 18, 14, WS_GROUP
+	
+	GROUPBOX        "", IPAKMAN_PAKMAN_GROUP1, 1, 12, 99, 22
+	RTEXT           "&0", IPAKMAN_STATIC_FILENUMERROR,	50, 17, 44, 8
+	RTEXT           "&0", IPAKMAN_STATIC_FILENUM,		50, 25, 44, 8
+	LTEXT           "(null)", IPAKMAN_STATIC_EOLCONVERSION, 5, 21, 55, 8
+	
+	CONTROL         "", IDC_SCINCTRL, "Scintilla",
+	ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP,
+	109, 0, 0, 0//7, 7, 257, 158
+
+	
+
+	LTEXT           "", IDC_STATIC_Tip, 31, 287, 8, 8, NOT WS_VISIBLE
+	LTEXT           "", IDC_STATIC_FILESIZETIP, 105, 301, 8, 8, NOT WS_VISIBLE
+	CTEXT           "", IDC_STATIC_VER, 81, 79, 8, 8, NOT WS_VISIBLE	
+	
+	
+
+	
+END
+
+
+
+//#include "WordStyleDlg.rc"
+//#ifndef IDJ_STATIC 
+//#define IDJ_STATIC -1
+//#endif
+
+
+
+
+
+
+IDR_COLOREDITCTX MENU DISCARDABLE
+BEGIN
+POPUP "Ctx"
+BEGIN
+MENUITEM "Undo", ID_EDIT_UNDO
+MENUITEM "Redo", ID_EDIT_REDO
+MENUITEM SEPARATOR
+MENUITEM "Cut", ID_EDIT_CUT
+MENUITEM "&Copy", ID_EDIT_COPY
+MENUITEM "Paste", ID_EDIT_PASTE
+MENUITEM SEPARATOR
+MENUITEM "Select &All", ID_EDIT_SELECT_ALL
+END
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+//IDS_ABOUTBOX            "&About ComboBoxTutorial..."
+IDS_STRING102           "Text editor"
+IDS_STRING103           "Line number margin"
+IDS_STRING104           "Current line background"
+IDS_STRING105           "Selected text colour"
+IDS_STRING106           "Shell window"
+
+IDS_STRING200	"WORD"
+IDS_STRING201	"STRING"
+IDS_STRING202	"CHARACTER"
+IDS_STRING203	"PREPROCESSOR"
+IDS_STRING204	"COMMENT"
+IDS_STRING205	"COMMENTLINE"
+IDS_STRING206	"COMMENTDOC"
+IDS_STRING207	"NUMBER"
+IDS_STRING208	"OPERATOR"
+IDS_STRING209	"UUID"
+IDS_STRING210	"Brace Matching"
+
+END
+
+
+IDR_XLISTBOX MENU DISCARDABLE
+BEGIN
+POPUP "XListBox"
+BEGIN
+MENUITEM "&Select All", ID_EDIT_SELECT_ALL
+MENUITEM "&Copy", ID_EDIT_COPY
+MENUITEM "D&elete", ID_EDIT_CLEAR
+MENUITEM "P&aste", ID_EDIT_PASTE
+END
+END
+
+IDR_MENUBAR MENU DISCARDABLE
+BEGIN
+	POPUP "&File"
+	BEGIN
+		MENUITEM "&Open Multiple...", ID_FILE_OPEN
+		MENUITEM SEPARATOR
+		MENUITEM "Save All a Cop&y As Plain Text... (non-encrypted)", ID_FILE_SAVEAS
+		MENUITEM "Save All a Cop&y As Binary files... (AES-encrypted)", IPAKMAN_BUTTON_ENCRYPTAS
+		MENUITEM SEPARATOR
+		MENUITEM "Clos&e All", IPAKMAN_BUTTON_CLEAR
+		MENUITEM SEPARATOR
+		MENUITEM "E&xit", IPAKMAN_BUTTON_EXIT	
+	END
+
+	POPUP "&Edit"
+	BEGIN
+		MENUITEM "&Undo", ID_EDIT_UNDO
+		MENUITEM "&Redo", ID_EDIT_REDO
+		MENUITEM SEPARATOR
+		MENUITEM "Cu&t", ID_EDIT_CUT
+		MENUITEM "&Copy", ID_EDIT_COPY
+		MENUITEM "&Paste", ID_EDIT_PASTE
+		MENUITEM "&Select All", ID_EDIT_SELECT_ALL
+		MENUITEM SEPARATOR
+		MENUITEM "&Fix Current File Line Endings", IPAKMAN_STATIC_EOLCONVERSION
+		MENUITEM "&Fix All File Line Endings", IPAKMAN_STATIC_ALLEOLCONVERSION
+	END
+
+	POPUP "Se&ttings"
+	BEGIN
+		MENUITEM "Style Configurator...", IDC_BUTTON_SETTING
+	END
+	//BEGIN
+	MENUITEM "ENCRYPT", IPAKMAN_BUTTON_ENCRYPT
+	//END
+END
+
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+IDB_SPLASH              BITMAP  DISCARDABLE     "res\\test.bmp"
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+//#include "res\ExtendedEditControls.rc2"
+
+#include "afxres.rc"
+//#include "include\OXBitmapButton.rc"
+//#include "include\OXPopupBarCtrl.rc"
+
+
+#endif
+
+#endif    // not APSTUDIO_INVOKED
+

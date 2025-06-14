@@ -221,7 +221,7 @@ BOOL COBalloonName::Render(LONG absX, LONG absY)
 				{
 					RECT rectFlash = { (long)(absX + m_lPosX), (long)(absY + m_lTall), 1, 1 };
 					int nSize = strlen(m_szObjectName) + 2;
-					rectFlash.left -= 4;
+					rectFlash.left -= 2;
 					rectFlash.top -= 1;
 					CFONT_OBJ->RenderNoticeMsg(7, m_szObjectName,
 												nSize, &rectFlash, RGBA_MERGE(RGB_HALF(255, 255, 255), 255), RGBA_MERGE(m_fgColor3, 255));
@@ -410,15 +410,15 @@ BOOL COBalloonName::Render(LONG absX, LONG absY)
 	if (*m_szFameRank != 0)
 	{
 		if (*m_szStageLogo == 0)
-			PosY = PosY + 9;
+			PosY = PosY + 11;
 		else
-			PosY = PosY + 9;
+			PosY = PosY + 11; 
 		RECT FameRankrect = { (long)(absX + m_lFameRankPosX), (long)(absY + m_lFameRankTall - PosY - 2), 1, 1 };
 		int nSize = strlen(m_szFameRank) + 2;
 		//CFONT_OBJ->RenderFont(m_wFontIdx, m_szFameRank, nSize, &FameRankrect, RGBA_MERGE(RGB_HALF(70, 70, 70), 180));
 		//FameRankrect.left -= 1;
-		//FameRankrect.top -= 1;
-		CFONT_OBJ->RenderFontWithShadow(m_wFontIdx, m_szFameRank, nSize, &FameRankrect, RGBA_MERGE(RGB_HALF(255, 255, 255), 180));
+		FameRankrect.top -= 2;
+		CFONT_OBJ->RenderFontWithShadow(m_wFontIdx, m_szFameRank, nSize, &FameRankrect, RGBA_MERGE(RGB_HALF(2, 255, 255), 180));
 		PosY = PosY + 5;
 	}
 	else PosY = PosY + 2;
@@ -453,7 +453,7 @@ BOOL COBalloonName::Render(LONG absX, LONG absY)
 		{
 			VECTOR2 curpos, Scaling;
 			Scaling.x = Scaling.y = 1.f;
-			PosY = PosY + (long)((TopListImage.GetImageSrcRect()->bottom) - (TopListImage.GetImageSrcRect()->top)) - 2;
+			PosY = PosY + (long)((TopListImage.GetImageSrcRect()->bottom) - (TopListImage.GetImageSrcRect()->top))+2 ;
 			curpos.x = (long)(absX - (TopListImage.GetImageSrcRect()->right - TopListImage.GetImageSrcRect()->left) / 2) - 1;
 			curpos.y = (long)(absY + m_lTopTall - PosY);
 			TopListImage.RenderSprite(&Scaling, NULL, 0, &curpos, RGBA_MERGE(COLORALPHA, 255));
@@ -462,7 +462,7 @@ BOOL COBalloonName::Render(LONG absX, LONG absY)
 		{
 			VECTOR2 curpos, Scaling;
 			Scaling.x = Scaling.y = 1.f;
-			PosY = PosY + (long)((ForTopOneImage.GetImageSrcRect()->bottom) - (ForTopOneImage.GetImageSrcRect()->top)) - 1;
+			PosY = PosY + (long)((ForTopOneImage.GetImageSrcRect()->bottom) - (ForTopOneImage.GetImageSrcRect()->top)) -1;
 			curpos.x = (long)(absX - (ForTopOneImage.GetImageSrcRect()->right - ForTopOneImage.GetImageSrcRect()->left) / 2) - 1;
 			curpos.y = (long)(absY + m_lTopTall - PosY);
 			ForTopOneImage.RenderSprite(&Scaling, NULL, 0, &curpos, RGBA_MERGE(COLORALPHA, 255));

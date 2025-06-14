@@ -1,0 +1,28 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PackingTool", "PackingTool.vcproj", "{09ABE509-9B23-4D2F-B2F3-F7B5A5CB953B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		DebugForChina|Win32 = DebugForChina|Win32
+		JACK|Win32 = JACK|Win32
+		Release|Win32 = Release|Win32
+		ReleaseForChina|Win32 = ReleaseForChina|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{09ABE509-9B23-4D2F-B2F3-F7B5A5CB953B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{09ABE509-9B23-4D2F-B2F3-F7B5A5CB953B}.Debug|Win32.Build.0 = Debug|Win32
+		{09ABE509-9B23-4D2F-B2F3-F7B5A5CB953B}.DebugForChina|Win32.ActiveCfg = Debug|Win32
+		{09ABE509-9B23-4D2F-B2F3-F7B5A5CB953B}.DebugForChina|Win32.Build.0 = Debug|Win32
+		{09ABE509-9B23-4D2F-B2F3-F7B5A5CB953B}.JACK|Win32.ActiveCfg = JACK|Win32
+		{09ABE509-9B23-4D2F-B2F3-F7B5A5CB953B}.JACK|Win32.Build.0 = JACK|Win32
+		{09ABE509-9B23-4D2F-B2F3-F7B5A5CB953B}.Release|Win32.ActiveCfg = Release|Win32
+		{09ABE509-9B23-4D2F-B2F3-F7B5A5CB953B}.Release|Win32.Build.0 = Release|Win32
+		{09ABE509-9B23-4D2F-B2F3-F7B5A5CB953B}.ReleaseForChina|Win32.ActiveCfg = Release|Win32
+		{09ABE509-9B23-4D2F-B2F3-F7B5A5CB953B}.ReleaseForChina|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

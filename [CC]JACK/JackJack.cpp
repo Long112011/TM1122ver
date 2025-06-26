@@ -125,12 +125,12 @@ char * JackJack::GetFullVersion()
 
 	int week = DATEMGR->GetWeek(BUILD_DAY, BUILD_MONTH, BUILD_YEAR);
 	 
-	wsprintf(ggggg, "%s%s%s.%d.%d",
-		JACKMGR->DecryptForServer(ClientVersion).c_str(),
-		JACKMGR->DecryptForServer(THEUNDERSCORE).c_str(),
-		JACKMGR->DecryptForServer(MASTERVERSION).c_str(),
-		2,//BUILD_MONTH,//JACKMGR->DecryptForServer(PARTOFMONTH).c_str(),
-		6//week
+	wsprintf(ggggg, "%s",
+		JACKMGR->DecryptForServer(ClientVersion).c_str()
+		//JACKMGR->DecryptForServer(THEUNDERSCORE).c_str(),
+		//JACKMGR->DecryptForServer(MASTERVERSION).c_str(),
+		//2,//BUILD_MONTH,//JACKMGR->DecryptForServer(PARTOFMONTH).c_str(),
+		//6//week
 		//JACKMGR->GetWeek()-1
 		);
 	return ggggg;

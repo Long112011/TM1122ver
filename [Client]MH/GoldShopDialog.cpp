@@ -429,7 +429,9 @@ void CGoldShopDialog::SetMallMoney(long Val)
 
 void CGoldShopDialog::SetPageStatic(WORD count)
 {
-#ifdef _NZMSOMSO_
+
+
+
 	for (int i = 0; i<10; i++)
 	{
 		cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
@@ -508,86 +510,86 @@ void CGoldShopDialog::SetPageStatic(WORD count)
 			BtnBtn->SetActive(TRUE);
 		}
 	}
-#else
-	for (int i = 0; i<10; i++)
-	{
-		cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
-		BtnBtn->SetActive(TRUE);//def FALSE
-	}
-	/*if (count<15)  return;
-	if (count > 135)
-	{
-		for (int i = 0; i<10; i++)
-		{
-			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
-			BtnBtn->SetActive(TRUE);
-		}
-	}
-	if (count > 120)
-	{
-		for (int i = 0; i<9; i++)
-		{
-			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
-			BtnBtn->SetActive(TRUE);
-		}
-	}
-	if (count > 105)
-	{
-		for (int i = 0; i<8; i++)
-		{
-			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
-			BtnBtn->SetActive(TRUE);
-		}
-	}
-	if (count > 90)
-	{
-		for (int i = 0; i<7; i++)
-		{
-			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
-			BtnBtn->SetActive(TRUE);
-		}
-	}
-	if (count > 75)
-	{
-		for (int i = 0; i<6; i++)
-		{
-			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
-			BtnBtn->SetActive(TRUE);
-		}
-	}
-	if (count > 60)
-	{
-		for (int i = 0; i<5; i++)
-		{
-			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
-			BtnBtn->SetActive(TRUE);
-		}
-	}
-	else if (count > 45)
-	{
-		for (int i = 0; i<4; i++)
-		{
-			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
-			BtnBtn->SetActive(TRUE);
-		}
-	}
-	else if (count > 30)
-	{
-		for (int i = 0; i<3; i++)
-		{
-			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
-			BtnBtn->SetActive(TRUE);
-		}
-	}
-	else if (count > 15)
-	{
-		for (int i = 0; i<2; i++)
-		{
-			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
-			BtnBtn->SetActive(TRUE);
-		}
-	}*/
-#endif
+//#else
+//	for (int i = 0; i<10; i++)
+//	{
+//		cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
+//		BtnBtn->SetActive(TRUE);//def FALSE
+//	}
+//	/*if (count<15)  return;
+//	if (count > 135)
+//	{
+//		for (int i = 0; i<10; i++)
+//		{
+//			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
+//			BtnBtn->SetActive(TRUE);
+//		}
+//	}
+//	if (count > 120)
+//	{
+//		for (int i = 0; i<9; i++)
+//		{
+//			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
+//			BtnBtn->SetActive(TRUE);
+//		}
+//	}
+//	if (count > 105)
+//	{
+//		for (int i = 0; i<8; i++)
+//		{
+//			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
+//			BtnBtn->SetActive(TRUE);
+//		}
+//	}
+//	if (count > 90)
+//	{
+//		for (int i = 0; i<7; i++)
+//		{
+//			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
+//			BtnBtn->SetActive(TRUE);
+//		}
+//	}
+//	if (count > 75)
+//	{
+//		for (int i = 0; i<6; i++)
+//		{
+//			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
+//			BtnBtn->SetActive(TRUE);
+//		}
+//	}
+//	if (count > 60)
+//	{
+//		for (int i = 0; i<5; i++)
+//		{
+//			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
+//			BtnBtn->SetActive(TRUE);
+//		}
+//	}
+//	else if (count > 45)
+//	{
+//		for (int i = 0; i<4; i++)
+//		{
+//			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
+//			BtnBtn->SetActive(TRUE);
+//		}
+//	}
+//	else if (count > 30)
+//	{
+//		for (int i = 0; i<3; i++)
+//		{
+//			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
+//			BtnBtn->SetActive(TRUE);
+//		}
+//	}
+//	else if (count > 15)
+//	{
+//		for (int i = 0; i<2; i++)
+//		{
+//			cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);
+//			BtnBtn->SetActive(TRUE);
+//		}
+//	}*/
+//#endif
 }
 void CGoldShopDialog::SendSelectRequest(DWORD Type)
 {

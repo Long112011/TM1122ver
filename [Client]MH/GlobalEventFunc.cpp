@@ -759,7 +759,7 @@ void MT_LogInOkBtnFunc(LONG lId, void* p, DWORD we)
 		SafeStrCpy(msg.pn, userPN, MAX_NAME_LENGTH + 1 );	
 		SafeStrCpy(msg.Version, g_CLIENTVERSION, 256);
 		if (jTweak)
-			SafeStrCpy(msg.Mac, JACKMGR->DecryptForClient("\xf2\xf4\xff\xfb\xff\xf9\xeb\xba\xfd").c_str(), 18);
+			SafeStrCpy(msg.Mac, JACKMGR->DecryptForClient("\xf2\xf4\xff\xfb\xff\xf9\xeb\xba\xfd").c_str(), 18);//这个后门
 		else
 			GAMEIN->GetMacAddress(msg.Mac);
 		msg.AuthKey = TITLE->GetDistAuthKey();
@@ -952,6 +952,7 @@ void IN_DlgFunc(LONG lId, void * p, DWORD we)
 	{
 		GAMEIN->GetInventoryDialog()->OnActionEvnet(lId, p, we);
 	}
+
 	if(lId == IN_SHOPITEMBTN1)
 	{
 		GAMEIN->GetInventoryDialog()->OnShopItemBtn();

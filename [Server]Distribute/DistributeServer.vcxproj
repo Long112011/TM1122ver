@@ -101,6 +101,10 @@
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="TMMSO|Win32">
+      <Configuration>TMMSO</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="v120 168mx|Win32">
       <Configuration>v120 168mx</Configuration>
       <Platform>Win32</Platform>
@@ -469,6 +473,12 @@
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v120</PlatformToolset>
@@ -758,6 +768,10 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
@@ -976,8 +990,13 @@
     <IntDir>.\..\Obj\DistributeServer\Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">
+    <OutDir>..\..\$(IntDir)\Mx_Client\</OutDir>
+    <IntDir>.\..\Obj\DistributeServer\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">
-    <OutDir>G:\墨香文件\nzmso\jackNEw</OutDir>
+    <OutDir>.\..\Obj\DistributeServer\Release\</OutDir>
     <IntDir>.\..\Obj\DistributeServer\Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
@@ -2369,6 +2388,57 @@
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\Obj\DistributeServer\Release/DistributeServer.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <OmitFramePointers>false</OmitFramePointers>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>.\;..\[Lib]YHLibrary;..\[CC]Header;..\[CC]ServerModule;..\[CC]JACK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_USINGTOOL_;_DISTRIBUTESERVER_;_KOR_LOCAL_;_DISTJ_;_TMMSO_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>.\..\Obj\DistributeServer\Release/DistributeServer.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\..\Obj\DistributeServer\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\..\Obj\DistributeServer\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\Obj\DistributeServer\Release/</ProgramDataBaseFileName>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <CompileAs>Default</CompileAs>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <BrowseInformation>true</BrowseInformation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0412</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;..\[Lib]YHLibrary\YHLibrary.lib;Wininet.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ProgramDatabaseFile>.\..\Obj\DistributeServer\Release/DistributeServer.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -2409,7 +2479,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;..\[Lib]YHLibrary\YHLibrary.lib;Wininet.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>../../Mx_Server/DistributeServer.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ProgramDatabaseFile>.\..\Obj\DistributeServer\Release/DistributeServer.pdb</ProgramDatabaseFile>
@@ -4251,6 +4321,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -4323,6 +4394,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -4395,6 +4467,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -4467,6 +4540,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -4539,6 +4613,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -4611,6 +4686,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -4683,6 +4759,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -4755,6 +4832,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -4827,6 +4905,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -4899,6 +4978,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -4971,6 +5051,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -5043,6 +5124,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -5115,6 +5197,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -5187,6 +5270,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -5259,6 +5343,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -5332,6 +5417,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -5404,6 +5490,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -5476,6 +5563,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -5548,6 +5636,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -5620,6 +5709,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -5692,6 +5782,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -5764,6 +5855,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -5836,6 +5928,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
@@ -5908,6 +6001,7 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game GENERAL|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 MiuMiuMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>

@@ -93,6 +93,9 @@
 #undef _LUNAAUTOPATCH_
 #endif
 #endif
+#ifdef _TMMSO_
+#include <../[CC]JACK/Users/TMMSO>
+#endif
 #ifdef _NZMSOMSO_
 #include <../[CC]JACK/Users/NZMSOMSO>
 #endif

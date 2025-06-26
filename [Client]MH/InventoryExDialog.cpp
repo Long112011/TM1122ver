@@ -109,6 +109,10 @@ CInventoryExDialog::CInventoryExDialog()
 	m_StoredLastGridPosition = 0;
 	m_SelectedItemRbtn = 0;
 	m_pChangeLookBtn = NULL;
+
+	p_Money = NULL;	//返回金钱/泡点/元宝到背包
+	p_PaoDian = NULL;
+	p_Gold = NULL;
 }
 CInventoryExDialog::~CInventoryExDialog()
 {
@@ -118,6 +122,10 @@ CInventoryExDialog::~CInventoryExDialog()
 	m_pMPageBtn[0] = NULL;
 	m_pMPageBtn[1] = NULL;
 	m_pChangeLookBtn = NULL;
+
+	p_Money = NULL;	//返回金钱/泡点/元宝到背包
+	p_PaoDian = NULL;
+	p_Gold = NULL;
 }
 void CInventoryExDialog::TestNewDialog(int i, CMoneyPacketDialog* pDlg)
 {
@@ -2384,6 +2392,7 @@ void CInventoryExDialog::Linking()
 {
 	if (!m_fSpread)
 	{
+
 		cImage Image;
 		SCRIPTMGR->GetImage(63, &Image, PFT_HARDPATH);
 		m_pMPageBtn[0] = (cPushupButton*)GetWindowForID(IN_SHOPITEMBTN1);
@@ -2404,6 +2413,9 @@ void CInventoryExDialog::Linking()
 		m_pClearInvBtn[MALLINV] = (cButton*)GetWindowForID(IN_CLEARBAIBAO);
 		m_pClearInvBtn[ITEMINV] = (cButton*)GetWindowForID(IN_CLEARITEM);
 		m_fSpread = TRUE;
+		p_Money = (cStatic*)GetWindowForID(IN_BACKMONEY);	//返回金钱/泡点/元宝
+		p_PaoDian = (cStatic*)GetWindowForID(IN_BACKPODIAN);
+		p_Gold = (cStatic*)GetWindowForID(IN_BACKGOLD);
 	}
 }
 CItem * CInventoryExDialog::GetItemLike(WORD wItemIdx)
@@ -3140,6 +3152,26 @@ BOOL CInventoryExDialog::FakeMoveItem(CItem * pFromItem, WORD ToPos)
 		}
 	}
 	return FakeGeneralItemMove(ToPos, pFromItem, pToItem);
+}
+void CInventoryExDialog::SetBackMoney(long Val)
+{
+	p_Money->SetStaticText(AddComma(Val));
+	//	p_Money->SetAlign(TXT_CENTER);
+	p_Money->SetAlign(TXT_RIGHT);
+}
+
+void CInventoryExDialog::SetBackGoldMoney(long Val)
+{
+	p_Gold->SetStaticText(AddComma(Val));
+	//	p_Gold->SetAlign(TXT_CENTER);
+	p_Gold->SetAlign(TXT_RIGHT);
+}
+
+void CInventoryExDialog::SetBackMallMoney(long Val)
+{
+	p_PaoDian->SetStaticText(AddComma(Val));
+	//	p_PaoDian->SetAlign(TXT_CENTER);
+	p_PaoDian->SetAlign(TXT_RIGHT);
 }
 BOOL CInventoryExDialog::FakeMoveItem(LONG mouseX, LONG mouseY, CItem * pFromItem)
 {

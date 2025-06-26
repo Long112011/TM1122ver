@@ -665,9 +665,6 @@
     <Filter Include="LONG">
       <UniqueIdentifier>{9ca9f8d2-0575-425c-aac6-72f2609a4845}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameManager\天墨功能">
-      <UniqueIdentifier>{457a9df0-43f1-4473-bc04-6a9a34128adb}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MHClient.cpp">
@@ -2679,9 +2676,6 @@
       <Filter>LONG</Filter>
     </ClCompile>
     <ClCompile Include="TopDungeon.cpp" />
-    <ClCompile Include="TMNewAi.cpp">
-      <Filter>GameManager\天墨功能</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MiniDumper.h">
@@ -4830,9 +4824,6 @@
       <Filter>LONG</Filter>
     </ClInclude>
     <ClInclude Include="TopDungeon.h" />
-    <ClInclude Include="TMNewAi.H">
-      <Filter>GameManager\天墨功能</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">

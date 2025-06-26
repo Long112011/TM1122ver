@@ -2433,6 +2433,7 @@ BOOL CGameResourceManager::LoadModFileList(MOD_LIST pModList[GENDER_MAX])
 	char filename[64];
 	DWORD idx = 0;
 	idx = 0;
+	char ModFileName[MAX_NAME_LENGTH + 1];	//模型名
 #ifdef _FILE_BIN_
 	sprintf(filename,"Resource/Client/ModList_M.bin");
 	if(!file.Init(filename,"rb"))
@@ -2449,6 +2450,7 @@ BOOL CGameResourceManager::LoadModFileList(MOD_LIST pModList[GENDER_MAX])
 	{
 		if(idx >= pModList[GENDER_MALE].MaxModFile) break;
 		pModList[GENDER_MALE].ModFile[idx] = file.GetString();
+		SafeStrCpy(ModFileName, file.GetString(), MAX_NAME_LENGTH + 1);	//模型名称
 		++idx;
 	}		
 	file.Release();
@@ -2469,6 +2471,7 @@ BOOL CGameResourceManager::LoadModFileList(MOD_LIST pModList[GENDER_MAX])
 	{
 		if(idx >= pModList[GENDER_FEMALE].MaxModFile) break;
 		pModList[GENDER_FEMALE].ModFile[idx] = file.GetString();
+		SafeStrCpy(ModFileName, file.GetString(), MAX_NAME_LENGTH + 1);	//模型名称
 		++idx;
 	}		
 	file.Release();

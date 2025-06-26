@@ -173,15 +173,19 @@ BOOL CGraphicEngine::CreateExecutive(HWND hWnd,DISPLAY_INFO* pDispInfo,DWORD Max
 				PACKFILE_NAME_TABLE table[] = 
 				{
 					//{"jack_map.pak",			0},	
-					{"Effect.pak",		0},
-					{"Character.pak",	0},
-					{"Monster.pak",		0},
-					{"Titan.pak",		0},
-					{"Jack.pak",		0},
-					{"Map.pak",			0},					
-					{"Npc.pak",			0},
-					{"Pet.pak",			0},	
-					{ "MOD.pak",		0 },
+					{"./3DData/Effect.pak",		0},
+					{"./3DData/Character.pak",	0},
+					{"./3DData/Monster.pak",		0},
+					{"./3DData/Map.pak",			0},	
+					{"./3DData/Npc.pak",			0},
+					{"./3DData/Pet.pak",			0},	
+					{"./3DData/Effect2.pak",		0},
+					{"./3DData/Monster2.pak",		0},
+					{"./3DData/character2.pak",		0},
+					{"./3DData/Map2.pak",			0},
+					{"./3DData/Npc2.pak",			0},
+					{"./3DData/Pet2.pak",			0},
+
 					
 				};
 				m_pExecutive->InitializeFileStorageWithoutRegistry("SS3DFileStorage.dll", 40000, 10240, MAX_PATH, FILE_ACCESS_METHOD_FILE_OR_PACK, table, _countof(table));

@@ -119,6 +119,12 @@ public:
 	void CheckItemForTidyBtn();
 
 	void TestNewDialog(int i, CMoneyPacketDialog* pDlg);
+
+	void SetBackMoney(long Val);	//返回金钱
+
+	void SetBackGoldMoney(long Val);	//返回元宝
+
+	void SetBackMallMoney(long Val);	//返回泡点
 private:
 
 	void	FakeBuyItem(LONG mouseX, LONG mouseY, CDealItem * icon);
@@ -176,6 +182,9 @@ private:
 
 	DWORD	m_SelectedItemRbtn;
 
+	cStatic* p_Money;	//返回金额到钱包
+	cStatic* p_PaoDian;	//返回泡点到钱包
+	cStatic* p_Gold;	//返回元宝到钱包
 // quest
 public:
 	cMsgBox*			m_pQuestMsgBox;
@@ -212,4 +221,6 @@ public:
 	void SetUnlockAll();
 
 	bool	IsChangeLookButtonPushed();
+
+	void SetInventoryExDialogWH(BOOL IsShop);	//百宝开启宽度调节
 };

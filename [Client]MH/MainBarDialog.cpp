@@ -866,6 +866,10 @@ void CMainBarDialog::PushMenu( WORD idx )
 			}
 			else 
 			{
+				GAMEIN->GetInventoryDialog()->SetBackGoldMoney(HERO->GetGoldMoney());
+				GAMEIN->GetInventoryDialog()->SetBackMallMoney(HERO->GetMallMoney());
+				GAMEIN->GetInventoryDialog()->SetBackMoney(HERO->GetMoney());
+
 				pHandler->SetActive( TRUE );
 				GAMEIN->UpdataGoldMoney();
 				GAMEEVENTMGR->AddEvent( eGameEvent_InvenInterface );

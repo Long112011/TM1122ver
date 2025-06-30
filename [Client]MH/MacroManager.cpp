@@ -175,7 +175,7 @@
 
 #include "InstancesDungeon/InsDungeonManager.h"
 #include "LuckerDialog.h"
-
+#include "NewUpGrareAlexXDlg.h"
 #include "TopDungeon.h"
 BOOL bDockDebug = TRUE;
 extern BOOL jTweak;
@@ -843,7 +843,8 @@ void CMacroManager::KeyboardInput(CKeyboard* keyInfo)
 			{
 				CAMERA->SetCameraMode(eCM_EyeView);
 			}
-		}		
+		}
+
 		if (keyInfo->GetKeyDown(KEY_F7))
 		{
 			USERINFOMGR->SaveUserInfo(eUIK_USERSTATE | eUIK_INTERFACE/* | eUIK_RECONNECT*/);
@@ -851,6 +852,12 @@ void CMacroManager::KeyboardInput(CKeyboard* keyInfo)
 		}
 		if (keyInfo->GetKeyDown(KEY_F8))
 		{
+#ifdef _GMTOOL_
+			if (!GAMEIN->GetNewUpGrareAlexXDlg()->IsActive())
+				GAMEIN->GetNewUpGrareAlexXDlg()->SetActive(TRUE);
+			else if (GAMEIN->GetNewUpGrareAlexXDlg()->IsActive())
+				GAMEIN->GetNewUpGrareAlexXDlg()->SetActive(FALSE);
+#endif 
 		//	extern char* WINIDSEARCH(int b);
 		//	char IDtemp2[64] = { 0 };
 		//	sprintf(IDtemp2, "%s", (char*)WINIDSEARCH(4));

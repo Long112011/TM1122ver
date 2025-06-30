@@ -73,6 +73,7 @@
 
 #include "InsDungeonManager.h"
 #include "InsDungeonMapManager.h"
+#include "NewUpGrareAlexXMGR.h"
 
 extern HWND g_hWnd;
 extern BOOL g_bCloseWindow;
@@ -6045,4 +6046,9 @@ void MP_INSDUNGEONMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 {
 	MSGBASE* pmsg = (MSGBASE*)pMsg;
 	INSDUNGEONMGR->NetworkMsgParse(dwConnectionIndex, pmsg->Protocol, pMsg);
+}
+void MP_NEWUPGRARE_ALEXXMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
+{
+	MSGBASE* pmsg = (MSGBASE*)pMsg;
+	NEWUPGRAREALEXX_MGR->NetworkMsgParse(dwConnectionIndex, pmsg->Protocol, pMsg);
 }

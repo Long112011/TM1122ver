@@ -25,7 +25,7 @@ class CBuyItem : public cIcon
 
 	cImage m_ScrollImg[22];
 	int m_CurScrollImage;
-		
+	DWORD m_GradeAlexX;
 public:
 	CBuyItem();
 	virtual ~CBuyItem();
@@ -47,6 +47,9 @@ public:
     virtual void    SetGrow(DWORD Val)  {m_bGrow=Val;}
 
 	virtual void Render();
+
+	virtual DWORD   GetGradeAlexX() { return  m_GradeAlexX; }
+	virtual void    SetGradeAlexX(DWORD Val) { m_GradeAlexX = Val; }
 };
 
 #endif // !defined(AFX_BUYITEM_H__3002E03D_BE93_4267_B015_37BB522D150A__INCLUDED_)

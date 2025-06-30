@@ -103,11 +103,11 @@ void CChatDialog::LoadFaceList()
 		pIcon->SetDepend(FALSE);
 		pIcon->SetMovable(false);
 		m_ImageGrid->AddIcon(i,pIcon);
-		//char bTtemp[16]={0,};
-		//sprintf(bTtemp, "&%02d",i);
-		//cImage ToolTipImage;
-		//SCRIPTMGR->GetImage( 63, &ToolTipImage, PFT_HARDPATH );
-		//pIcon->SetToolTip(bTtemp,RGBA_MAKE(255, 255, 0, 255), &ToolTipImage, TTCLR_DEFAULT);
+		char bTtemp[16] = { 0, };
+		sprintf(bTtemp, "'&%02d'", i);
+		cImage ToolTipImage;
+		SCRIPTMGR->GetImage(63, &ToolTipImage, PFT_HARDPATH);
+		pIcon->SetToolTip(bTtemp, RGBA_MAKE(255, 255, 0, 255), &ToolTipImage, TTCLR_DEFAULT);
 	}
 	m_ImageGrid->SetActive(FALSE);
 }
@@ -420,7 +420,7 @@ void CChatDialog::OnActionEvent(LONG lId, void * p, DWORD we)
 				if(Pos>=0)
 				{
 					char ImgCode[10];
-					sprintf(ImgCode,"&%02d",Pos);
+					sprintf(ImgCode, "&%02d", Pos);
 					m_pChatEditBox->SetEditText(strcat(m_pChatEditBox->GetEditText(),ImgCode));
 					m_pChatEditBox->SetFocusEdit( TRUE );
 				}

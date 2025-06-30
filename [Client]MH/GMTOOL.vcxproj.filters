@@ -665,6 +665,9 @@
     <Filter Include="LONG">
       <UniqueIdentifier>{9ca9f8d2-0575-425c-aac6-72f2609a4845}</UniqueIdentifier>
     </Filter>
+    <Filter Include="新功能">
+      <UniqueIdentifier>{d6ded7c5-4563-4dae-a830-8c3078ec95dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MHClient.cpp">
@@ -2676,6 +2679,15 @@
       <Filter>LONG</Filter>
     </ClCompile>
     <ClCompile Include="TopDungeon.cpp" />
+    <ClCompile Include="CharacterPVPDialog.cpp">
+      <Filter>Interface\DIALOG</Filter>
+    </ClCompile>
+    <ClCompile Include="NewUpGrareAlexXC_MGR.cpp">
+      <Filter>新功能</Filter>
+    </ClCompile>
+    <ClCompile Include="NewUpGrareAlexXDlg.cpp">
+      <Filter>新功能</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MiniDumper.h">
@@ -4824,6 +4836,15 @@
       <Filter>LONG</Filter>
     </ClInclude>
     <ClInclude Include="TopDungeon.h" />
+    <ClInclude Include="CharacterPVPDialog.h">
+      <Filter>Interface\DIALOG</Filter>
+    </ClInclude>
+    <ClInclude Include="NewUpGrareAlexXC_MGR.h">
+      <Filter>新功能</Filter>
+    </ClInclude>
+    <ClInclude Include="NewUpGrareAlexXDlg.h">
+      <Filter>新功能</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">

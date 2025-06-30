@@ -62,67 +62,47 @@ void CAttackManager::sendDieMsg(CObject * pAttacker,CObject* pTarget)
 
 	PACKEDDATA_OBJ->QuickSend(pTarget,&m2c,sizeof(m2c));
 }
-
-
-DWORD CAttackManager::GetComboPhyDamage(CObject* pAttacker,CObject* pTargetObject,float PhyAttackRate,float fCriticalRate,
-										RESULTINFO* pDamageInfo,DWORD AmplifiedPower,float fDecreaseDamageRate )
+///ÐÂµÄpvp
+DWORD CAttackManager::GetComboPhyDamage(CObject* pAttacker, CObject* pTargetObject, float PhyAttackRate, float fCriticalRate,
+	RESULTINFO* pDamageInfo, DWORD AmplifiedPower, float fDecreaseDamageRate)
 {
-	pDamageInfo->bCritical = m_ATTACKCALC.getCritical(pAttacker,pTargetObject,fCriticalRate);
-	double attackPhyDamage = m_ATTACKCALC.getPhysicalAttackPower(pAttacker,PhyAttackRate,pDamageInfo->bCritical);
+	pDamageInfo->bCritical = m_ATTACKCALC.getCritical(pAttacker, pTargetObject, fCriticalRate);
+	double attackPhyDamage = m_ATTACKCALC.getPhysicalAttackPower(pAttacker, PhyAttackRate, pDamageInfo->bCritical);
 
-	// RaMa - Å©¸®Æ¼ÄÃÀÏ¶§ ½ºÅÏÈ®·ü Ãß°¡ÇØ¾ßÇÔ
-	//#ifndef _JAPAN_LOCAL_	//´Ù¸¥°÷(getPlayerPhysicalAttackPower) ¸·¾Ò´Ù.
-	if(pDamageInfo->bCritical)
+	// ±©»÷ÅÐ¶¨´¦Àí
+	if (pDamageInfo->bCritical)
 	{
 		attackPhyDamage *= 1.5f;
-		/*
-		// ½ºÅÏ
-		if( pAttacker->GetObjectKind() == eObjectKind_Player )
-		if((rand()%100) < ((CPlayer*)pAttacker)->GetShopItemStats()->StunByCri)
-		{
-		// RaMa - 04.11.18
-		// ¾ÆÀÌÅÛ¸ô¿¡°üÇÑ ¼¼ºÎ°èÈ¹¼­´Â ´ÙÀ½ÁÖÁß( ~11.27)¿¡ ¹Þ±â·Î ÇÔ.
-		// pTargetObject->StartSpecialState( eSpecialState_Stun, 10, 0, 0, 0, FindEffectNum("monster_stun_s.beff"), 0 );
-		}
-		}*/
-		//SW060906 ½Å±ÔÆê
-		if( (pAttacker->GetObjectKind() & eObjectKind_Monster) && pTargetObject->GetObjectKind() == eObjectKind_Player )
+
+		if ((pAttacker->GetObjectKind() & eObjectKind_Monster) && pTargetObject->GetObjectKind() == eObjectKind_Player)
 		{
 			((CPlayer*)pTargetObject)->GetPetManager()->GetPetBuffResultRt(ePB_ReduceCriticalDmg, &attackPhyDamage);
 		}
 
-		// magi82 - UniqueItem(070627)
-		if( pAttacker->GetObjectKind() == eObjectKind_Player )
+		if (pAttacker->GetObjectKind() == eObjectKind_Player)
 		{
 			attackPhyDamage += (double)(((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriDamage);
-			if(attackPhyDamage < 0.f)
+			if (attackPhyDamage < 0.f)
 				attackPhyDamage = 1.f;
 		}
 	}
-	//#endif
 
 	attackPhyDamage += AmplifiedPower;
-
-	//041213 KES
 	attackPhyDamage *= fDecreaseDamageRate;
-	//
 
-	//PvP ÀÏ¶§´Â °ø°Ý·ÂÀÇ 50%¸¸
-	if( pAttacker->GetObjectKind() == eObjectKind_Player &&
-
-		pTargetObject->GetObjectKind() == eObjectKind_Player )
-#ifdef _JAPAN_LOCAL_
-		attackPhyDamage *= 0.25f;
-#else
-		attackPhyDamage *= 0.5f;
-#endif
+	// ===== PvP ¼Ó³É£¨ÐÂÔö£©=====
+	if (pAttacker->GetObjectKind() == eObjectKind_Player &&
+		pTargetObject->GetObjectKind() == eObjectKind_Player)
+	{
+		attackPhyDamage *= (1.0f + ((CPlayer*)pAttacker)->GetItemStats()->PVPAttack);
+		attackPhyDamage *= (1.0f + ((CPlayer*)pAttacker)->GetAvatarOption()->PVPAttack);
+	}
+	// ===========================
 
 #ifdef _JAPAN_LOCAL_
-
 	DWORD ShieldDamage = pTargetObject->CalcShieldDamage((DWORD)(attackPhyDamage * SHIELD_COMBO_DAMAGE));
 	attackPhyDamage -= ShieldDamage;
 #else
-	// 06. 03 ±¹³»¹«½Ö - ÀÌ¿µÁØ
 	DWORD ShieldDamage = 0;
 	DWORD ReduceDamage = pTargetObject->CalcShieldDamage((DWORD)(attackPhyDamage * SHIELD_COMBO_DAMAGE), ShieldDamage);
 	attackPhyDamage -= ReduceDamage;
@@ -130,67 +110,56 @@ DWORD CAttackManager::GetComboPhyDamage(CObject* pAttacker,CObject* pTargetObjec
 
 	pDamageInfo->ShieldDamage += ShieldDamage;
 
-	double defencePhyLevel = m_ATTACKCALC.getPhyDefenceLevel(pTargetObject,pAttacker);
-	attackPhyDamage *= (1-defencePhyLevel);
+	double defencePhyLevel = m_ATTACKCALC.getPhyDefenceLevel(pTargetObject, pAttacker);
+	attackPhyDamage *= (1.0 - defencePhyLevel);
 
-	// RaMa - 04.11.24   ->µ¥¹ÌÁöºñÀ²
-	if(pAttacker->GetObjectKind() == eObjectKind_Player && pTargetObject->GetObjectKind() & eObjectKind_Monster)	
+	if (pAttacker->GetObjectKind() == eObjectKind_Player && pTargetObject->GetObjectKind() & eObjectKind_Monster)
 	{
 		attackPhyDamage *= gEventRate[eEvent_DamageRate];
 	}
-	if(pAttacker->GetObjectKind() & eObjectKind_Monster && pTargetObject->GetObjectKind() == eObjectKind_Player)
+	if (pAttacker->GetObjectKind() & eObjectKind_Monster && pTargetObject->GetObjectKind() == eObjectKind_Player)
 	{
 		attackPhyDamage *= gEventRate[eEvent_DamageReciveRate];
 	}
 
-	if(attackPhyDamage < 1)
+	if (attackPhyDamage < 1)
 		attackPhyDamage = 1;
 
 	float fdam = 0.0f;
-	// RaMa - 04.11.10    -> ShopItemOptionÃß°¡
-	if(pAttacker->GetObjectKind() == eObjectKind_Player)
+	if (pAttacker->GetObjectKind() == eObjectKind_Player)
 	{
-		attackPhyDamage *= (((CPlayer*)pAttacker)->GetShopItemStats()->ComboDamage*0.01f+1.0f);
+		attackPhyDamage *= (((CPlayer*)pAttacker)->GetShopItemStats()->ComboDamage * 0.01f + 1.0f);
 
-		//SW060719 ¹®ÆÄÆ÷ÀÎÆ®
-		if( ((CPlayer*)pAttacker)->GetGuildIdx() )
-			GUILDMGR->GetGuildPlustimeRt( ((CPlayer*)pAttacker)->GetGuildIdx(), eGPT_DamageUp, &attackPhyDamage );
+		if (((CPlayer*)pAttacker)->GetGuildIdx())
+			GUILDMGR->GetGuildPlustimeRt(((CPlayer*)pAttacker)->GetGuildIdx(), eGPT_DamageUp, &attackPhyDamage);
 
-		//PET %°ø°Ý·Â
 		((CPlayer*)pAttacker)->GetPetManager()->GetPetBuffResultRt(ePB_Demage_Percent, &attackPhyDamage);
 
-		// RaMa - 05.10.10 -> ÇØ°ñ°¡¸é ¿É¼ÇÃß°¡
-		if( pTargetObject->GetObjectKind() & eObjectKind_Monster )
+		if (pTargetObject->GetObjectKind() & eObjectKind_Monster)
 		{
-			//if( g_pServerSystem->GetMapNum() == BOSSMONSTER_MAP ||
-			//	g_pServerSystem->GetMapNum() == BOSSMONSTER_2NDMAP )	goto CalcEnd;
-			if( g_pServerSystem->GetMap()->IsMapKind(eBossMap) )
+			if (g_pServerSystem->GetMap()->IsMapKind(eBossMap))
 				goto CalcEnd;
 
-			fdam = ((CPlayer*)pAttacker)->GetAvatarOption()->TargetPhyDefDown*0.01f;
-			attackPhyDamage *= (fdam+1.0f);
+			fdam = ((CPlayer*)pAttacker)->GetAvatarOption()->TargetPhyDefDown * 0.01f;
+			attackPhyDamage *= (fdam + 1.0f);
 		}
-		// RaMa - 06.11.13 -> ¹«½Ö¸ðµåÀÏ¶§ °ø°Ý·ÂÁõ°¡ ¾Æ¹ÙÅ¸
-		if( ((CPlayer*)pAttacker)->IsMussangMode() && ((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage )
-			attackPhyDamage *= (((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage*0.01f+1.0f);
 
-		// magi82 - UniqueItem(070627)
+		if (((CPlayer*)pAttacker)->IsMussangMode() && ((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage)
+			attackPhyDamage *= (((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage * 0.01f + 1.0f);
+
 		attackPhyDamage += (double)(((CPlayer*)pAttacker)->GetUniqueItemStats()->nPhyDamage);
-		if(attackPhyDamage < 0.f)
+		if (attackPhyDamage < 0.f)
 			attackPhyDamage = 1.f;
-	}	
-	else if( pAttacker->GetObjectKind() & eObjectKind_Monster )
+	}
+	else if (pAttacker->GetObjectKind() & eObjectKind_Monster)
 	{
-		// RaMa - 05.10.10 -> ÇØ°ñ°¡¸é ¿É¼ÇÃß°¡
-		if( pTargetObject->GetObjectKind() == eObjectKind_Player )
+		if (pTargetObject->GetObjectKind() == eObjectKind_Player)
 		{
-			//if( g_pServerSystem->GetMapNum() == BOSSMONSTER_MAP ||
-			//	g_pServerSystem->GetMapNum() == BOSSMONSTER_2NDMAP )	goto CalcEnd;
-			if( g_pServerSystem->GetMap()->IsMapKind(eBossMap) )
+			if (g_pServerSystem->GetMap()->IsMapKind(eBossMap))
 				goto CalcEnd;
 
-			fdam = ((CPlayer*)pTargetObject)->GetAvatarOption()->TargetAtkDown*0.01f;
-			attackPhyDamage *= (1.0f-fdam);
+			fdam = ((CPlayer*)pTargetObject)->GetAvatarOption()->TargetAtkDown * 0.01f;
+			attackPhyDamage *= (1.0f - fdam);
 		}
 	}
 
@@ -198,31 +167,296 @@ CalcEnd:
 	return (DWORD)attackPhyDamage;
 }
 
+//¾ÉµÄ
+//DWORD CAttackManager::GetComboPhyDamage(CObject* pAttacker,CObject* pTargetObject,float PhyAttackRate,float fCriticalRate,
+//										RESULTINFO* pDamageInfo,DWORD AmplifiedPower,float fDecreaseDamageRate )
+//{
+//	pDamageInfo->bCritical = m_ATTACKCALC.getCritical(pAttacker,pTargetObject,fCriticalRate);
+//	double attackPhyDamage = m_ATTACKCALC.getPhysicalAttackPower(pAttacker,PhyAttackRate,pDamageInfo->bCritical);
+//
+//	// RaMa - Å©¸®Æ¼ÄÃÀÏ¶§ ½ºÅÏÈ®·ü Ãß°¡ÇØ¾ßÇÔ
+//	//#ifndef _JAPAN_LOCAL_	//´Ù¸¥°÷(getPlayerPhysicalAttackPower) ¸·¾Ò´Ù.
+//	if(pDamageInfo->bCritical)
+//	{
+//		attackPhyDamage *= 1.5f;
+//		/*
+//		// ½ºÅÏ
+//		if( pAttacker->GetObjectKind() == eObjectKind_Player )
+//		if((rand()%100) < ((CPlayer*)pAttacker)->GetShopItemStats()->StunByCri)
+//		{
+//		// RaMa - 04.11.18
+//		// ¾ÆÀÌÅÛ¸ô¿¡°üÇÑ ¼¼ºÎ°èÈ¹¼­´Â ´ÙÀ½ÁÖÁß( ~11.27)¿¡ ¹Þ±â·Î ÇÔ.
+//		// pTargetObject->StartSpecialState( eSpecialState_Stun, 10, 0, 0, 0, FindEffectNum("monster_stun_s.beff"), 0 );
+//		}
+//		}*/
+//		//SW060906 ½Å±ÔÆê
+//		if( (pAttacker->GetObjectKind() & eObjectKind_Monster) && pTargetObject->GetObjectKind() == eObjectKind_Player )
+//		{
+//			((CPlayer*)pTargetObject)->GetPetManager()->GetPetBuffResultRt(ePB_ReduceCriticalDmg, &attackPhyDamage);
+//		}
+//
+//		// magi82 - UniqueItem(070627)
+//		if( pAttacker->GetObjectKind() == eObjectKind_Player )
+//		{
+//			attackPhyDamage += (double)(((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriDamage);
+//			if(attackPhyDamage < 0.f)
+//				attackPhyDamage = 1.f;
+//		}
+//	}
+//	//#endif
+//
+//	attackPhyDamage += AmplifiedPower;
+//
+//	//041213 KES
+//	attackPhyDamage *= fDecreaseDamageRate;
+//	//
+//
+//	//PvP ÀÏ¶§´Â °ø°Ý·ÂÀÇ 50%¸¸
+//	if( pAttacker->GetObjectKind() == eObjectKind_Player &&
+//
+//		pTargetObject->GetObjectKind() == eObjectKind_Player )
+//#ifdef _JAPAN_LOCAL_
+//		attackPhyDamage *= 0.25f;
+//#else
+//		attackPhyDamage *= 0.5f;
+//#endif
+//
+//#ifdef _JAPAN_LOCAL_
+//
+//	DWORD ShieldDamage = pTargetObject->CalcShieldDamage((DWORD)(attackPhyDamage * SHIELD_COMBO_DAMAGE));
+//	attackPhyDamage -= ShieldDamage;
+//#else
+//	// 06. 03 ±¹³»¹«½Ö - ÀÌ¿µÁØ
+//	DWORD ShieldDamage = 0;
+//	DWORD ReduceDamage = pTargetObject->CalcShieldDamage((DWORD)(attackPhyDamage * SHIELD_COMBO_DAMAGE), ShieldDamage);
+//	attackPhyDamage -= ReduceDamage;
+//#endif
+//
+//	pDamageInfo->ShieldDamage += ShieldDamage;
+//
+//	double defencePhyLevel = m_ATTACKCALC.getPhyDefenceLevel(pTargetObject,pAttacker);
+//	attackPhyDamage *= (1-defencePhyLevel);
+//
+//	// RaMa - 04.11.24   ->µ¥¹ÌÁöºñÀ²
+//	if(pAttacker->GetObjectKind() == eObjectKind_Player && pTargetObject->GetObjectKind() & eObjectKind_Monster)	
+//	{
+//		attackPhyDamage *= gEventRate[eEvent_DamageRate];
+//	}
+//	if(pAttacker->GetObjectKind() & eObjectKind_Monster && pTargetObject->GetObjectKind() == eObjectKind_Player)
+//	{
+//		attackPhyDamage *= gEventRate[eEvent_DamageReciveRate];
+//	}
+//
+//	if(attackPhyDamage < 1)
+//		attackPhyDamage = 1;
+//
+//	float fdam = 0.0f;
+//	// RaMa - 04.11.10    -> ShopItemOptionÃß°¡
+//	if(pAttacker->GetObjectKind() == eObjectKind_Player)
+//	{
+//		attackPhyDamage *= (((CPlayer*)pAttacker)->GetShopItemStats()->ComboDamage*0.01f+1.0f);
+//
+//		//SW060719 ¹®ÆÄÆ÷ÀÎÆ®
+//		if( ((CPlayer*)pAttacker)->GetGuildIdx() )
+//			GUILDMGR->GetGuildPlustimeRt( ((CPlayer*)pAttacker)->GetGuildIdx(), eGPT_DamageUp, &attackPhyDamage );
+//
+//		//PET %°ø°Ý·Â
+//		((CPlayer*)pAttacker)->GetPetManager()->GetPetBuffResultRt(ePB_Demage_Percent, &attackPhyDamage);
+//
+//		// RaMa - 05.10.10 -> ÇØ°ñ°¡¸é ¿É¼ÇÃß°¡
+//		if( pTargetObject->GetObjectKind() & eObjectKind_Monster )
+//		{
+//			//if( g_pServerSystem->GetMapNum() == BOSSMONSTER_MAP ||
+//			//	g_pServerSystem->GetMapNum() == BOSSMONSTER_2NDMAP )	goto CalcEnd;
+//			if( g_pServerSystem->GetMap()->IsMapKind(eBossMap) )
+//				goto CalcEnd;
+//
+//			fdam = ((CPlayer*)pAttacker)->GetAvatarOption()->TargetPhyDefDown*0.01f;
+//			attackPhyDamage *= (fdam+1.0f);
+//		}
+//		// RaMa - 06.11.13 -> ¹«½Ö¸ðµåÀÏ¶§ °ø°Ý·ÂÁõ°¡ ¾Æ¹ÙÅ¸
+//		if( ((CPlayer*)pAttacker)->IsMussangMode() && ((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage )
+//			attackPhyDamage *= (((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage*0.01f+1.0f);
+//
+//		// magi82 - UniqueItem(070627)
+//		attackPhyDamage += (double)(((CPlayer*)pAttacker)->GetUniqueItemStats()->nPhyDamage);
+//		if(attackPhyDamage < 0.f)
+//			attackPhyDamage = 1.f;
+//	}	
+//	else if( pAttacker->GetObjectKind() & eObjectKind_Monster )
+//	{
+//		// RaMa - 05.10.10 -> ÇØ°ñ°¡¸é ¿É¼ÇÃß°¡
+//		if( pTargetObject->GetObjectKind() == eObjectKind_Player )
+//		{
+//			//if( g_pServerSystem->GetMapNum() == BOSSMONSTER_MAP ||
+//			//	g_pServerSystem->GetMapNum() == BOSSMONSTER_2NDMAP )	goto CalcEnd;
+//			if( g_pServerSystem->GetMap()->IsMapKind(eBossMap) )
+//				goto CalcEnd;
+//
+//			fdam = ((CPlayer*)pTargetObject)->GetAvatarOption()->TargetAtkDown*0.01f;
+//			attackPhyDamage *= (1.0f-fdam);
+//		}
+//	}
+//
+//CalcEnd:
+//	return (DWORD)attackPhyDamage;
+//}
 
 
-DWORD CAttackManager::GetMugongPhyDamage(CObject* pAttacker,CObject* pTargetObject,float PhyAttackRate,float fCriticalRate,
-										 RESULTINFO* pDamageInfo,DWORD AmplifiedPower,float fDecreaseDamageRate )
+////¾ÉµÄ//////////////////////////////////////////
+//DWORD CAttackManager::GetMugongPhyDamage(CObject* pAttacker,CObject* pTargetObject,float PhyAttackRate,float fCriticalRate,
+//										 RESULTINFO* pDamageInfo,DWORD AmplifiedPower,float fDecreaseDamageRate )
+//{
+//	pDamageInfo->bCritical = m_ATTACKCALC.getCritical(pAttacker,pTargetObject,fCriticalRate);
+//	double attackPhyDamage = m_ATTACKCALC.getPhysicalAttackPower(pAttacker,PhyAttackRate,pDamageInfo->bCritical );
+//
+//	// RaMa - Å©¸®Æ¼ÄÃÀÏ¶§ ½ºÅÏÈ®·ü Ãß°¡ÇØ¾ßÇÔ
+//	//#ifndef _JAPAN_LOCAL_ //´Ù¸¥°÷(getPlayerPhysicalAttackPower) ¸·¾Ò´Ù.
+//	if(pDamageInfo->bCritical)
+//	{
+//		attackPhyDamage *= 1.5f;
+//		/*
+//		// ½ºÅÏ
+//		if( pAttacker->GetObjectKind() == eObjectKind_Player )
+//		if((rand()%100) < ((CPlayer*)pAttacker)->GetShopItemStats()->StunByCri)
+//		{
+//		// RaMa - 04.11.18
+//		// ¾ÆÀÌÅÛ¸ô¿¡°üÇÑ ¼¼ºÎ°èÈ¹¼­´Â ´ÙÀ½ÁÖÁß( ~11.27)¿¡ ¹Þ±â·Î ÇÔ.
+//		// pTargetObject->StartSpecialState( eSpecialState_Stun, 10, 0, 0, 0, FindEffectNum("monster_stun_s.beff"), 0 );
+//		}
+//		*/
+//		//SW060906 ½Å±ÔÆê
+//		if( (pAttacker->GetObjectKind() & eObjectKind_Monster) && pTargetObject->GetObjectKind() == eObjectKind_Player )
+//		{
+//			((CPlayer*)pTargetObject)->GetPetManager()->GetPetBuffResultRt(ePB_ReduceCriticalDmg, &attackPhyDamage);
+//		}
+//
+//		if ((pAttacker->GetObjectKind() & eObjectKind_Player) && pTargetObject->GetObjectKind() == eObjectKind_Player)
+//		{
+//			((CPlayer*)pTargetObject)->GetPetManager()->GetPetBuffResultRt(ePB_ReduceCriticalDmg, &attackPhyDamage);
+//		}
+//
+//		// magi82 - UniqueItem(070627)
+//		if( pAttacker->GetObjectKind() == eObjectKind_Player )
+//		{
+//			attackPhyDamage += (double)(((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriDamage);
+//			if(attackPhyDamage < 0.f)
+//				attackPhyDamage = 1.f;
+//		}
+//	}
+//	//#endif
+//
+//	attackPhyDamage += AmplifiedPower;
+//
+//	//041213 KES
+//	attackPhyDamage *= fDecreaseDamageRate;
+//	//
+//
+//	//PvP ÀÏ¶§´Â °ø°Ý·ÂÀÇ 50%¸¸
+//	if( pAttacker->GetObjectKind() == eObjectKind_Player &&
+//		pTargetObject->GetObjectKind() == eObjectKind_Player )
+//#ifdef _JAPAN_LOCAL_
+//		attackPhyDamage *= 0.25f;
+//#else
+//		attackPhyDamage *= 0.5f;
+//#endif
+//
+//#ifdef _JAPAN_LOCAL_
+//	DWORD ShieldDamage = pTargetObject->CalcShieldDamage((DWORD)(attackPhyDamage * SHIELD_OUT_MUGONG_DAMAGE));
+//	attackPhyDamage -= ShieldDamage;
+//#else
+//	// 06. 03 ±¹³»¹«½Ö - ÀÌ¿µÁØ
+//	DWORD ShieldDamage = 0;
+//	DWORD ReduceDamage = pTargetObject->CalcShieldDamage((DWORD)(attackPhyDamage * SHIELD_OUT_MUGONG_DAMAGE), ShieldDamage);
+//	attackPhyDamage -= ReduceDamage;
+//#endif
+//
+//	pDamageInfo->ShieldDamage += ShieldDamage;
+//
+//	double defencePhyLevel = m_ATTACKCALC.getPhyDefenceLevel(pTargetObject,pAttacker);
+//	attackPhyDamage *= (1-defencePhyLevel);
+//
+//	// RaMa - 04.11.24   ->µ¥¹ÌÁöºñÀ²
+//	if(pAttacker->GetObjectKind() == eObjectKind_Player && pTargetObject->GetObjectKind() & eObjectKind_Monster)
+//	{
+//		attackPhyDamage *= gEventRate[eEvent_DamageRate];
+//	}
+//	if(pAttacker->GetObjectKind() & eObjectKind_Monster && pTargetObject->GetObjectKind() == eObjectKind_Player)
+//	{
+//		attackPhyDamage *= gEventRate[eEvent_DamageReciveRate];
+//	}
+//
+//	if(attackPhyDamage < 1)
+//		attackPhyDamage = 1;
+//
+//
+//	float fdam = 0.0f;
+//	// RaMa - 04.11.10    -> ShopItemOptionÃß°¡, AvatarItemOptionÃß°¡(05.08.16)
+//	if(pAttacker->GetObjectKind() == eObjectKind_Player)
+//	{
+//		fdam = (((CPlayer*)pAttacker)->GetShopItemStats()->WoigongDamage*0.01f) + 
+//			(((CPlayer*)pAttacker)->GetAvatarOption()->WoigongDamage*0.01f);
+//		attackPhyDamage *= (fdam+1.0f);
+//
+//		//SW060719 ¹®ÆÄÆ÷ÀÎÆ®
+//		if( ((CPlayer*)pAttacker)->GetGuildIdx() )
+//			GUILDMGR->GetGuildPlustimeRt( ((CPlayer*)pAttacker)->GetGuildIdx(), eGPT_DamageUp, &attackPhyDamage );
+//
+//		////PET %°ø°Ý·Â========================================================
+//		((CPlayer*)pAttacker)->GetPetManager()->GetPetBuffResultRt(ePB_Demage_Percent, &attackPhyDamage);
+//
+//		// RaMa - 05.10.10 -> ÇØ°ñ°¡¸é ¿É¼ÇÃß°¡
+//		if( pTargetObject->GetObjectKind() & eObjectKind_Monster )
+//		{
+//			//if( g_pServerSystem->GetMapNum() != BOSSMONSTER_MAP &&
+//			//	g_pServerSystem->GetMapNum() != BOSSMONSTER_2NDMAP )
+//			if( FALSE == g_pServerSystem->GetMap()->IsMapKind(eBossMap) )
+//			{
+//				fdam = ((CPlayer*)pAttacker)->GetAvatarOption()->TargetPhyDefDown*0.01f;
+//				attackPhyDamage *= (fdam+1.0f);
+//			}
+//		}
+//		// RaMa - 06.11.13 -> ¹«½Ö¸ðµåÀÏ¶§ °ø°Ý·ÂÁõ°¡ ¾Æ¹ÙÅ¸
+//		if( ((CPlayer*)pAttacker)->IsMussangMode() && ((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage )
+//			attackPhyDamage *= (((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage*0.01f+1.0f);
+//
+//		// magi82 - UniqueItem(070627)
+//		attackPhyDamage += (double)(((CPlayer*)pAttacker)->GetUniqueItemStats()->nPhyDamage);
+//		if(attackPhyDamage < 0.f)
+//			attackPhyDamage = 1.f;
+//	}	
+//	else if( pAttacker->GetObjectKind() & eObjectKind_Monster )
+//	{
+//		// RaMa - 05.10.10 -> ÇØ°ñ°¡¸é ¿É¼ÇÃß°¡
+//		if( pTargetObject->GetObjectKind() == eObjectKind_Player )
+//
+//		{
+//			//if( g_pServerSystem->GetMapNum() != BOSSMONSTER_MAP &&
+//			//	g_pServerSystem->GetMapNum() != BOSSMONSTER_2NDMAP )
+//			if( FALSE == g_pServerSystem->GetMap()->IsMapKind(eBossMap) )
+//			{
+//				fdam = ((CPlayer*)pTargetObject)->GetAvatarOption()->TargetAtkDown*0.01f;
+//				attackPhyDamage *= (1.0f-fdam);
+//			}
+//		}
+//	}
+//
+//	//CalcEnd:
+//
+//	return (DWORD)attackPhyDamage;
+//}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+DWORD CAttackManager::GetMugongPhyDamage(CObject* pAttacker, CObject* pTargetObject, float PhyAttackRate, float fCriticalRate,
+	RESULTINFO* pDamageInfo, DWORD AmplifiedPower, float fDecreaseDamageRate)
 {
-	pDamageInfo->bCritical = m_ATTACKCALC.getCritical(pAttacker,pTargetObject,fCriticalRate);
-	double attackPhyDamage = m_ATTACKCALC.getPhysicalAttackPower(pAttacker,PhyAttackRate,pDamageInfo->bCritical );
+	pDamageInfo->bCritical = m_ATTACKCALC.getCritical(pAttacker, pTargetObject, fCriticalRate);
+	double attackPhyDamage = m_ATTACKCALC.getPhysicalAttackPower(pAttacker, PhyAttackRate, pDamageInfo->bCritical);
 
-	// RaMa - Å©¸®Æ¼ÄÃÀÏ¶§ ½ºÅÏÈ®·ü Ãß°¡ÇØ¾ßÇÔ
-	//#ifndef _JAPAN_LOCAL_ //´Ù¸¥°÷(getPlayerPhysicalAttackPower) ¸·¾Ò´Ù.
-	if(pDamageInfo->bCritical)
+	if (pDamageInfo->bCritical)
 	{
 		attackPhyDamage *= 1.5f;
-		/*
-		// ½ºÅÏ
-		if( pAttacker->GetObjectKind() == eObjectKind_Player )
-		if((rand()%100) < ((CPlayer*)pAttacker)->GetShopItemStats()->StunByCri)
-		{
-		// RaMa - 04.11.18
-		// ¾ÆÀÌÅÛ¸ô¿¡°üÇÑ ¼¼ºÎ°èÈ¹¼­´Â ´ÙÀ½ÁÖÁß( ~11.27)¿¡ ¹Þ±â·Î ÇÔ.
-		// pTargetObject->StartSpecialState( eSpecialState_Stun, 10, 0, 0, 0, FindEffectNum("monster_stun_s.beff"), 0 );
-		}
-		*/
-		//SW060906 ½Å±ÔÆê
-		if( (pAttacker->GetObjectKind() & eObjectKind_Monster) && pTargetObject->GetObjectKind() == eObjectKind_Player )
+
+		if ((pAttacker->GetObjectKind() & eObjectKind_Monster) && pTargetObject->GetObjectKind() == eObjectKind_Player)
 		{
 			((CPlayer*)pTargetObject)->GetPetManager()->GetPetBuffResultRt(ePB_ReduceCriticalDmg, &attackPhyDamage);
 		}
@@ -232,36 +466,29 @@ DWORD CAttackManager::GetMugongPhyDamage(CObject* pAttacker,CObject* pTargetObje
 			((CPlayer*)pTargetObject)->GetPetManager()->GetPetBuffResultRt(ePB_ReduceCriticalDmg, &attackPhyDamage);
 		}
 
-		// magi82 - UniqueItem(070627)
-		if( pAttacker->GetObjectKind() == eObjectKind_Player )
+		if (pAttacker->GetObjectKind() == eObjectKind_Player)
 		{
 			attackPhyDamage += (double)(((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriDamage);
-			if(attackPhyDamage < 0.f)
+			if (attackPhyDamage < 0.f)
 				attackPhyDamage = 1.f;
 		}
 	}
-	//#endif
 
 	attackPhyDamage += AmplifiedPower;
-
-	//041213 KES
 	attackPhyDamage *= fDecreaseDamageRate;
-	//
 
-	//PvP ÀÏ¶§´Â °ø°Ý·ÂÀÇ 50%¸¸
-	if( pAttacker->GetObjectKind() == eObjectKind_Player &&
-		pTargetObject->GetObjectKind() == eObjectKind_Player )
-#ifdef _JAPAN_LOCAL_
-		attackPhyDamage *= 0.25f;
-#else
-		attackPhyDamage *= 0.5f;
-#endif
+	//  ÐÂÔö PvP ¹¥»÷¼Ó³É£¨ÎÞ gEventRateFile£©
+	if (pAttacker->GetObjectKind() == eObjectKind_Player &&
+		pTargetObject->GetObjectKind() == eObjectKind_Player)
+	{
+		attackPhyDamage *= (1.0f + ((CPlayer*)pAttacker)->GetItemStats()->PVPAttack);
+		attackPhyDamage *= (1.0f + ((CPlayer*)pAttacker)->GetAvatarOption()->PVPAttack);
+	}
 
 #ifdef _JAPAN_LOCAL_
 	DWORD ShieldDamage = pTargetObject->CalcShieldDamage((DWORD)(attackPhyDamage * SHIELD_OUT_MUGONG_DAMAGE));
 	attackPhyDamage -= ShieldDamage;
 #else
-	// 06. 03 ±¹³»¹«½Ö - ÀÌ¿µÁØ
 	DWORD ShieldDamage = 0;
 	DWORD ReduceDamage = pTargetObject->CalcShieldDamage((DWORD)(attackPhyDamage * SHIELD_OUT_MUGONG_DAMAGE), ShieldDamage);
 	attackPhyDamage -= ReduceDamage;
@@ -269,230 +496,347 @@ DWORD CAttackManager::GetMugongPhyDamage(CObject* pAttacker,CObject* pTargetObje
 
 	pDamageInfo->ShieldDamage += ShieldDamage;
 
-	double defencePhyLevel = m_ATTACKCALC.getPhyDefenceLevel(pTargetObject,pAttacker);
-	attackPhyDamage *= (1-defencePhyLevel);
+	double defencePhyLevel = m_ATTACKCALC.getPhyDefenceLevel(pTargetObject, pAttacker);
+	attackPhyDamage *= (1.0 - defencePhyLevel);
 
-	// RaMa - 04.11.24   ->µ¥¹ÌÁöºñÀ²
-	if(pAttacker->GetObjectKind() == eObjectKind_Player && pTargetObject->GetObjectKind() & eObjectKind_Monster)
+	if (pAttacker->GetObjectKind() == eObjectKind_Player && pTargetObject->GetObjectKind() & eObjectKind_Monster)
 	{
 		attackPhyDamage *= gEventRate[eEvent_DamageRate];
 	}
-	if(pAttacker->GetObjectKind() & eObjectKind_Monster && pTargetObject->GetObjectKind() == eObjectKind_Player)
+	if (pAttacker->GetObjectKind() & eObjectKind_Monster && pTargetObject->GetObjectKind() == eObjectKind_Player)
 	{
 		attackPhyDamage *= gEventRate[eEvent_DamageReciveRate];
 	}
 
-	if(attackPhyDamage < 1)
+	if (attackPhyDamage < 1)
 		attackPhyDamage = 1;
 
-
 	float fdam = 0.0f;
-	// RaMa - 04.11.10    -> ShopItemOptionÃß°¡, AvatarItemOptionÃß°¡(05.08.16)
-	if(pAttacker->GetObjectKind() == eObjectKind_Player)
+	if (pAttacker->GetObjectKind() == eObjectKind_Player)
 	{
-		fdam = (((CPlayer*)pAttacker)->GetShopItemStats()->WoigongDamage*0.01f) + 
-			(((CPlayer*)pAttacker)->GetAvatarOption()->WoigongDamage*0.01f);
-		attackPhyDamage *= (fdam+1.0f);
+		fdam = (((CPlayer*)pAttacker)->GetShopItemStats()->WoigongDamage * 0.01f) +
+			(((CPlayer*)pAttacker)->GetAvatarOption()->WoigongDamage * 0.01f);
+		attackPhyDamage *= (fdam + 1.0f);
 
-		//SW060719 ¹®ÆÄÆ÷ÀÎÆ®
-		if( ((CPlayer*)pAttacker)->GetGuildIdx() )
-			GUILDMGR->GetGuildPlustimeRt( ((CPlayer*)pAttacker)->GetGuildIdx(), eGPT_DamageUp, &attackPhyDamage );
+		if (((CPlayer*)pAttacker)->GetGuildIdx())
+			GUILDMGR->GetGuildPlustimeRt(((CPlayer*)pAttacker)->GetGuildIdx(), eGPT_DamageUp, &attackPhyDamage);
 
-		////PET %°ø°Ý·Â========================================================
 		((CPlayer*)pAttacker)->GetPetManager()->GetPetBuffResultRt(ePB_Demage_Percent, &attackPhyDamage);
 
-		// RaMa - 05.10.10 -> ÇØ°ñ°¡¸é ¿É¼ÇÃß°¡
-		if( pTargetObject->GetObjectKind() & eObjectKind_Monster )
+		if (pTargetObject->GetObjectKind() & eObjectKind_Monster)
 		{
-			//if( g_pServerSystem->GetMapNum() != BOSSMONSTER_MAP &&
-			//	g_pServerSystem->GetMapNum() != BOSSMONSTER_2NDMAP )
-			if( FALSE == g_pServerSystem->GetMap()->IsMapKind(eBossMap) )
+			if (FALSE == g_pServerSystem->GetMap()->IsMapKind(eBossMap))
 			{
-				fdam = ((CPlayer*)pAttacker)->GetAvatarOption()->TargetPhyDefDown*0.01f;
-				attackPhyDamage *= (fdam+1.0f);
+				fdam = ((CPlayer*)pAttacker)->GetAvatarOption()->TargetPhyDefDown * 0.01f;
+				attackPhyDamage *= (fdam + 1.0f);
 			}
 		}
-		// RaMa - 06.11.13 -> ¹«½Ö¸ðµåÀÏ¶§ °ø°Ý·ÂÁõ°¡ ¾Æ¹ÙÅ¸
-		if( ((CPlayer*)pAttacker)->IsMussangMode() && ((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage )
-			attackPhyDamage *= (((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage*0.01f+1.0f);
+		if (((CPlayer*)pAttacker)->IsMussangMode() && ((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage)
+			attackPhyDamage *= (((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage * 0.01f + 1.0f);
 
-		// magi82 - UniqueItem(070627)
 		attackPhyDamage += (double)(((CPlayer*)pAttacker)->GetUniqueItemStats()->nPhyDamage);
-		if(attackPhyDamage < 0.f)
+		if (attackPhyDamage < 0.f)
 			attackPhyDamage = 1.f;
-	}	
-	else if( pAttacker->GetObjectKind() & eObjectKind_Monster )
+	}
+	else if (pAttacker->GetObjectKind() & eObjectKind_Monster)
 	{
-		// RaMa - 05.10.10 -> ÇØ°ñ°¡¸é ¿É¼ÇÃß°¡
-		if( pTargetObject->GetObjectKind() == eObjectKind_Player )
-
+		if (pTargetObject->GetObjectKind() == eObjectKind_Player)
 		{
-			//if( g_pServerSystem->GetMapNum() != BOSSMONSTER_MAP &&
-			//	g_pServerSystem->GetMapNum() != BOSSMONSTER_2NDMAP )
-			if( FALSE == g_pServerSystem->GetMap()->IsMapKind(eBossMap) )
+			if (FALSE == g_pServerSystem->GetMap()->IsMapKind(eBossMap))
 			{
-				fdam = ((CPlayer*)pTargetObject)->GetAvatarOption()->TargetAtkDown*0.01f;
-				attackPhyDamage *= (1.0f-fdam);
+				fdam = ((CPlayer*)pTargetObject)->GetAvatarOption()->TargetAtkDown * 0.01f;
+				attackPhyDamage *= (1.0f - fdam);
 			}
 		}
 	}
 
-	//CalcEnd:
-
 	return (DWORD)attackPhyDamage;
 }
-DWORD CAttackManager::GetMugongAttrDamage(CObject* pAttacker,CObject* pTargetObject,
-										  WORD Attrib,DWORD AttAttackMin,DWORD AttAttackMax,float AttAttackRate,
-										  float fCriticalRate,RESULTINFO* pDamageInfo,float fDecreaseDamageRate )
+
+//[ÊôÐÔ¹¥»÷ÉËº¦¼ÆËã][2017/12/7]
+DWORD CAttackManager::GetMugongAttrDamage(CObject* pAttacker, CObject* pTargetObject,
+	WORD Attrib, DWORD AttAttackMin, DWORD AttAttackMax, float AttAttackRate,
+	float fCriticalRate, RESULTINFO* pDamageInfo, float fDecreaseDamageRate)
 {
-#ifdef _HK_LOCAL_	//hk block
+#ifdef _HK_LOCAL_
 	pDamageInfo->bDecisive = FALSE;
 #else
-	pDamageInfo->bDecisive = m_ATTACKCALC.getDecisive(pAttacker,pTargetObject,fCriticalRate);
+	pDamageInfo->bDecisive = m_ATTACKCALC.getDecisive(pAttacker, pTargetObject, fCriticalRate);
 #endif
-	double attackAttrDamage = m_ATTACKCALC.getAttributeAttackPower(pAttacker,Attrib,AttAttackMin,AttAttackMax,AttAttackRate);
-	//041213 KES
+
+	double attackAttrDamage = m_ATTACKCALC.getAttributeAttackPower(pAttacker, Attrib, AttAttackMin, AttAttackMax, AttAttackRate);
 	attackAttrDamage *= fDecreaseDamageRate;
 
-	if(pDamageInfo->bDecisive)
+	//   ÐÂÔö£ºPvP ÊôÐÔ¹¥»÷¼Ó³É£¨¹¥»÷Õß£©
+	if (pAttacker->GetObjectKind() == eObjectKind_Player && pTargetObject->GetObjectKind() == eObjectKind_Player)
 	{
-		attackAttrDamage += attackAttrDamage*0.6f;//attackAttrDamage *= 2.25f;//KIV
+		attackAttrDamage *= (1.0f + ((CPlayer*)pAttacker)->GetItemStats()->PVPAttack);
+		attackAttrDamage *= (1.0f + ((CPlayer*)pAttacker)->GetAvatarOption()->PVPAttack);
+	}
 
-		//SW060906 ½Å±ÔÆê
-		if( (pAttacker->GetObjectKind() & eObjectKind_Monster) && pTargetObject->GetObjectKind() == eObjectKind_Player )
+	if (pDamageInfo->bDecisive)
+	{
+		attackAttrDamage += attackAttrDamage * 0.6f;
+
+		if ((pAttacker->GetObjectKind() & eObjectKind_Monster) && pTargetObject->GetObjectKind() == eObjectKind_Player)
 		{
 			((CPlayer*)pTargetObject)->GetPetManager()->GetPetBuffResultRt(ePB_ReduceCriticalDmg, &attackAttrDamage);
 		}
 
-		// magi82 - UniqueItem(070627)
-		if( pAttacker->GetObjectKind() == eObjectKind_Player )
+		if (pAttacker->GetObjectKind() == eObjectKind_Player)
 		{
 			attackAttrDamage += (double)(((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriDamage);
-			if(attackAttrDamage < 0.f)
+			if (attackAttrDamage < 0.f)
 				attackAttrDamage = 1.f;
 		}
 	}
-	//
-	//PvP ÀÏ¶§´Â °ø°Ý·ÂÀÇ 50%¸¸
-#ifdef _JAPAN_LOCAL_	
-	//	int nRel = eCAR_None;
-	if( pAttacker->GetObjectKind() == eObjectKind_Player &&
-		pTargetObject->GetObjectKind() == eObjectKind_Player )
-	{
-		attackAttrDamage *= 0.25f;
-
-		//		if( Attrib >= 1 && Attrib <= 7 )
-		//			nRel = ((CPlayer*)pTargetObject)->WhatIsAttrRelation(Attrib);
-	}
-#else
-	if( pAttacker->GetObjectKind() == eObjectKind_Player &&
-		pTargetObject->GetObjectKind() == eObjectKind_Player )
-	{
-		attackAttrDamage *= 0.15f;//attackAttrDamage *= 0.5f;//KIV
-	}
-#endif
 
 #ifdef _JAPAN_LOCAL_
 	DWORD ShieldDamage = pTargetObject->CalcShieldDamage((DWORD)(attackAttrDamage * SHIELD_IN_MUGONG_DAMAGE));
 	attackAttrDamage -= ShieldDamage;
 #else
-	// 06. 03 ±¹³»¹«½Ö - ÀÌ¿µÁØ
 	DWORD ShieldDamage = 0;
 	DWORD ReduceDamage = pTargetObject->CalcShieldDamage((DWORD)(attackAttrDamage * SHIELD_IN_MUGONG_DAMAGE), ShieldDamage);
 	attackAttrDamage -= ReduceDamage;
 #endif
 
-	pDamageInfo->ShieldDamage += ShieldDamage;	
-
+	pDamageInfo->ShieldDamage += ShieldDamage;
 
 	float RegVal = pTargetObject->GetAttDefense(Attrib);
 
-	//////////////////////////////////////////////////////////////////////////
-	// 06. 06. 2Â÷ ÀüÁ÷ - ÀÌ¿µÁØ
-	// ¹«°ø º¯È¯ Ãß°¡
-	// ¼Ó¼º¹æ¾î·Â
-	if(pTargetObject->GetObjectKind() == eObjectKind_Player)
+	//   ÐÂÔö£ºPvP ÊôÐÔ·ÀÓù¼Ó³É£¨·ÀÊØÕß£©
+	if (pAttacker->GetObjectKind() == eObjectKind_Player &&
+		pTargetObject->GetObjectKind() == eObjectKind_Player)
+	{
+		RegVal *= (1.0f + ((CPlayer*)pTargetObject)->GetItemStats()->PVPADef);
+		RegVal *= (1.0f + ((CPlayer*)pTargetObject)->GetAvatarOption()->PVPADef);
+	}
+
+	if (pTargetObject->GetObjectKind() == eObjectKind_Player)
 	{
 		float val = 1 + ((CPlayer*)pTargetObject)->GetSkillStatsOption()->AttDef;
-
-		if( val < 0 )
+		if (val < 0.0f)
 			val = 0.0f;
-
 		RegVal = RegVal * val;
 	}
-	//////////////////////////////////////////////////////////////////////////
 
-	if( RegVal > 1 )		RegVal = 1;
-	if( RegVal < 0 )		RegVal = 0;
+	if (RegVal > 1) RegVal = 1;
+	if (RegVal < 0) RegVal = 0;
 
 	RegVal *= 0.7f;
-	
-	double resAttrDamage = (attackAttrDamage * (1 - RegVal) );
 
-	// RaMa - 04.11.24   ->µ¥¹ÌÁöºñÀ²
-	if(pAttacker->GetObjectKind() == eObjectKind_Player && pTargetObject->GetObjectKind() & eObjectKind_Monster)
+	double resAttrDamage = (attackAttrDamage * (1 - RegVal));
+
+	if (pAttacker->GetObjectKind() == eObjectKind_Player && pTargetObject->GetObjectKind() & eObjectKind_Monster)
 	{
-		resAttrDamage = (resAttrDamage*gEventRate[eEvent_DamageRate]);
+		resAttrDamage *= gEventRate[eEvent_DamageRate];
 	}
-	if(pAttacker->GetObjectKind() & eObjectKind_Monster && pTargetObject->GetObjectKind() == eObjectKind_Player)
+	if (pAttacker->GetObjectKind() & eObjectKind_Monster && pTargetObject->GetObjectKind() == eObjectKind_Player)
 	{
-		resAttrDamage = (resAttrDamage*gEventRate[eEvent_DamageReciveRate]);
+		resAttrDamage *= gEventRate[eEvent_DamageReciveRate];
 	}
 
 	float fdam = 0.0f;
-	// RaMa - 04.11.10    -> ShopItemOptionÃß°¡, AvatarItemOptionÃß°¡(05.08.16)
-	if(pAttacker->GetObjectKind() == eObjectKind_Player)
+	if (pAttacker->GetObjectKind() == eObjectKind_Player)
 	{
-		fdam = (((CPlayer*)pAttacker)->GetShopItemStats()->NeagongDamage*0.01f)+
-			(((CPlayer*)pAttacker)->GetAvatarOption()->NeagongDamage*0.01f);
-		resAttrDamage = (resAttrDamage*(fdam+1.0f));
+		fdam = (((CPlayer*)pAttacker)->GetShopItemStats()->NeagongDamage * 0.01f) +
+			(((CPlayer*)pAttacker)->GetAvatarOption()->NeagongDamage * 0.01f);
+		resAttrDamage *= (fdam + 1.0f);
 
-		//SW060719 ¹®ÆÄÆ÷ÀÎÆ®
-		if( ((CPlayer*)pAttacker)->GetGuildIdx() )
-			GUILDMGR->GetGuildPlustimeRt( ((CPlayer*)pAttacker)->GetGuildIdx(), eGPT_DamageUp, &resAttrDamage );
+		if (((CPlayer*)pAttacker)->GetGuildIdx())
+			GUILDMGR->GetGuildPlustimeRt(((CPlayer*)pAttacker)->GetGuildIdx(), eGPT_DamageUp, &resAttrDamage);
 
-		//PET %°ø°Ý·Â
 		((CPlayer*)pAttacker)->GetPetManager()->GetPetBuffResultRt(ePB_Demage_Percent, &resAttrDamage);
 
-		// RaMa - 05.10.10 -> ÇØ°ñ°¡¸é ¿É¼ÇÃß°¡
-		if( pTargetObject->GetObjectKind() & eObjectKind_Monster )
+		if (pTargetObject->GetObjectKind() & eObjectKind_Monster)
 		{
-			//if( g_pServerSystem->GetMapNum() == BOSSMONSTER_MAP ||
-			//	g_pServerSystem->GetMapNum() == BOSSMONSTER_2NDMAP )	goto CalcEnd;
-			if( g_pServerSystem->GetMap()->IsMapKind(eBossMap) )
+			if (g_pServerSystem->GetMap()->IsMapKind(eBossMap))
 				goto CalcEnd;
 
-			fdam = ((CPlayer*)pAttacker)->GetAvatarOption()->TargetAttrDefDown*0.01f;
-			resAttrDamage = (resAttrDamage*(fdam+1.0f));
+			fdam = ((CPlayer*)pAttacker)->GetAvatarOption()->TargetAttrDefDown * 0.01f;
+			resAttrDamage *= (fdam + 1.0f);
 		}
 
-		// RaMa - 06.11.13 -> ¹«½Ö¸ðµåÀÏ¶§ °ø°Ý·ÂÁõ°¡ ¾Æ¹ÙÅ¸
-		if( ((CPlayer*)pAttacker)->IsMussangMode() && ((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage )
-			resAttrDamage *= (((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage*0.01f+1.0f);
+		if (((CPlayer*)pAttacker)->IsMussangMode() && ((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage)
+			resAttrDamage *= (((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage * 0.01f + 1.0f);
 
-		// magi82 - UniqueItem(070627)
 		resAttrDamage *= (((CPlayer*)pAttacker)->GetUniqueItemStats()->nAttR * 0.01f + 1.0f);
-	}	
-	else if( pAttacker->GetObjectKind() & eObjectKind_Monster )
+	}
+	else if (pAttacker->GetObjectKind() & eObjectKind_Monster)
 	{
-		// RaMa - 05.10.10 -> ÇØ°ñ°¡¸é ¿É¼ÇÃß°¡
-		if( pTargetObject->GetObjectKind() == eObjectKind_Player )
+		if (pTargetObject->GetObjectKind() == eObjectKind_Player)
 		{
-			//if( g_pServerSystem->GetMapNum() == BOSSMONSTER_MAP ||
-			//	g_pServerSystem->GetMapNum() == BOSSMONSTER_2NDMAP )	goto CalcEnd;
-			if( g_pServerSystem->GetMap()->IsMapKind(eBossMap) )
+			if (g_pServerSystem->GetMap()->IsMapKind(eBossMap))
 				goto CalcEnd;
 
-			fdam = ((CPlayer*)pTargetObject)->GetAvatarOption()->TargetAtkDown*0.01f;
-			resAttrDamage = (resAttrDamage*(1.0f-fdam));
+			fdam = ((CPlayer*)pTargetObject)->GetAvatarOption()->TargetAtkDown * 0.01f;
+			resAttrDamage *= (1.0f - fdam);
 		}
 	}
 
-CalcEnd:	
-
+CalcEnd:
 	return (DWORD)resAttrDamage;
 }
 
+/////¾ÉµÄ//////
+//DWORD CAttackManager::GetMugongAttrDamage(CObject* pAttacker,CObject* pTargetObject,
+//										  WORD Attrib,DWORD AttAttackMin,DWORD AttAttackMax,float AttAttackRate,
+//										  float fCriticalRate,RESULTINFO* pDamageInfo,float fDecreaseDamageRate )
+//{
+//#ifdef _HK_LOCAL_	//hk block
+//	pDamageInfo->bDecisive = FALSE;
+//#else
+//	pDamageInfo->bDecisive = m_ATTACKCALC.getDecisive(pAttacker,pTargetObject,fCriticalRate);
+//#endif
+//	double attackAttrDamage = m_ATTACKCALC.getAttributeAttackPower(pAttacker,Attrib,AttAttackMin,AttAttackMax,AttAttackRate);
+//	//041213 KES
+//	attackAttrDamage *= fDecreaseDamageRate;
+//
+//	if(pDamageInfo->bDecisive)
+//	{
+//		attackAttrDamage += attackAttrDamage*0.6f;//attackAttrDamage *= 2.25f;//KIV
+//
+//		//SW060906 ½Å±ÔÆê
+//		if( (pAttacker->GetObjectKind() & eObjectKind_Monster) && pTargetObject->GetObjectKind() == eObjectKind_Player )
+//		{
+//			((CPlayer*)pTargetObject)->GetPetManager()->GetPetBuffResultRt(ePB_ReduceCriticalDmg, &attackAttrDamage);
+//		}
+//
+//		// magi82 - UniqueItem(070627)
+//		if( pAttacker->GetObjectKind() == eObjectKind_Player )
+//		{
+//			attackAttrDamage += (double)(((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriDamage);
+//			if(attackAttrDamage < 0.f)
+//				attackAttrDamage = 1.f;
+//		}
+//	}
+//	//
+//	//PvP ÀÏ¶§´Â °ø°Ý·ÂÀÇ 50%¸¸
+//#ifdef _JAPAN_LOCAL_	
+//	//	int nRel = eCAR_None;
+//	if( pAttacker->GetObjectKind() == eObjectKind_Player &&
+//		pTargetObject->GetObjectKind() == eObjectKind_Player )
+//	{
+//		attackAttrDamage *= 0.25f;
+//
+//		//		if( Attrib >= 1 && Attrib <= 7 )
+//		//			nRel = ((CPlayer*)pTargetObject)->WhatIsAttrRelation(Attrib);
+//	}
+//#else
+//	if( pAttacker->GetObjectKind() == eObjectKind_Player &&
+//		pTargetObject->GetObjectKind() == eObjectKind_Player )
+//	{
+//		attackAttrDamage *= 0.15f;//attackAttrDamage *= 0.5f;//KIV
+//	}
+//#endif
+//
+//#ifdef _JAPAN_LOCAL_
+//	DWORD ShieldDamage = pTargetObject->CalcShieldDamage((DWORD)(attackAttrDamage * SHIELD_IN_MUGONG_DAMAGE));
+//	attackAttrDamage -= ShieldDamage;
+//#else
+//	// 06. 03 ±¹³»¹«½Ö - ÀÌ¿µÁØ
+//	DWORD ShieldDamage = 0;
+//	DWORD ReduceDamage = pTargetObject->CalcShieldDamage((DWORD)(attackAttrDamage * SHIELD_IN_MUGONG_DAMAGE), ShieldDamage);
+//	attackAttrDamage -= ReduceDamage;
+//#endif
+//
+//	pDamageInfo->ShieldDamage += ShieldDamage;	
+//
+//
+//	float RegVal = pTargetObject->GetAttDefense(Attrib);
+//
+//	//////////////////////////////////////////////////////////////////////////
+//	// 06. 06. 2Â÷ ÀüÁ÷ - ÀÌ¿µÁØ
+//	// ¹«°ø º¯È¯ Ãß°¡
+//	// ¼Ó¼º¹æ¾î·Â
+//	if(pTargetObject->GetObjectKind() == eObjectKind_Player)
+//	{
+//		float val = 1 + ((CPlayer*)pTargetObject)->GetSkillStatsOption()->AttDef;
+//
+//		if( val < 0 )
+//			val = 0.0f;
+//
+//		RegVal = RegVal * val;
+//	}
+//	//////////////////////////////////////////////////////////////////////////
+//
+//	if( RegVal > 1 )		RegVal = 1;
+//	if( RegVal < 0 )		RegVal = 0;
+//
+//	RegVal *= 0.7f;
+//	
+//	double resAttrDamage = (attackAttrDamage * (1 - RegVal) );
+//
+//	// RaMa - 04.11.24   ->µ¥¹ÌÁöºñÀ²
+//	if(pAttacker->GetObjectKind() == eObjectKind_Player && pTargetObject->GetObjectKind() & eObjectKind_Monster)
+//	{
+//		resAttrDamage = (resAttrDamage*gEventRate[eEvent_DamageRate]);
+//	}
+//	if(pAttacker->GetObjectKind() & eObjectKind_Monster && pTargetObject->GetObjectKind() == eObjectKind_Player)
+//	{
+//		resAttrDamage = (resAttrDamage*gEventRate[eEvent_DamageReciveRate]);
+//	}
+//
+//	float fdam = 0.0f;
+//	// RaMa - 04.11.10    -> ShopItemOptionÃß°¡, AvatarItemOptionÃß°¡(05.08.16)
+//	if(pAttacker->GetObjectKind() == eObjectKind_Player)
+//	{
+//		fdam = (((CPlayer*)pAttacker)->GetShopItemStats()->NeagongDamage*0.01f)+
+//			(((CPlayer*)pAttacker)->GetAvatarOption()->NeagongDamage*0.01f);
+//		resAttrDamage = (resAttrDamage*(fdam+1.0f));
+//
+//		//SW060719 ¹®ÆÄÆ÷ÀÎÆ®
+//		if( ((CPlayer*)pAttacker)->GetGuildIdx() )
+//			GUILDMGR->GetGuildPlustimeRt( ((CPlayer*)pAttacker)->GetGuildIdx(), eGPT_DamageUp, &resAttrDamage );
+//
+//		//PET %°ø°Ý·Â
+//		((CPlayer*)pAttacker)->GetPetManager()->GetPetBuffResultRt(ePB_Demage_Percent, &resAttrDamage);
+//
+//		// RaMa - 05.10.10 -> ÇØ°ñ°¡¸é ¿É¼ÇÃß°¡
+//		if( pTargetObject->GetObjectKind() & eObjectKind_Monster )
+//		{
+//			//if( g_pServerSystem->GetMapNum() == BOSSMONSTER_MAP ||
+//			//	g_pServerSystem->GetMapNum() == BOSSMONSTER_2NDMAP )	goto CalcEnd;
+//			if( g_pServerSystem->GetMap()->IsMapKind(eBossMap) )
+//				goto CalcEnd;
+//
+//			fdam = ((CPlayer*)pAttacker)->GetAvatarOption()->TargetAttrDefDown*0.01f;
+//			resAttrDamage = (resAttrDamage*(fdam+1.0f));
+//		}
+//
+//		// RaMa - 06.11.13 -> ¹«½Ö¸ðµåÀÏ¶§ °ø°Ý·ÂÁõ°¡ ¾Æ¹ÙÅ¸
+//		if( ((CPlayer*)pAttacker)->IsMussangMode() && ((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage )
+//			resAttrDamage *= (((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage*0.01f+1.0f);
+//
+//		// magi82 - UniqueItem(070627)
+//		resAttrDamage *= (((CPlayer*)pAttacker)->GetUniqueItemStats()->nAttR * 0.01f + 1.0f);
+//	}	
+//	else if( pAttacker->GetObjectKind() & eObjectKind_Monster )
+//	{
+//		// RaMa - 05.10.10 -> ÇØ°ñ°¡¸é ¿É¼ÇÃß°¡
+//		if( pTargetObject->GetObjectKind() == eObjectKind_Player )
+//		{
+//			//if( g_pServerSystem->GetMapNum() == BOSSMONSTER_MAP ||
+//			//	g_pServerSystem->GetMapNum() == BOSSMONSTER_2NDMAP )	goto CalcEnd;
+//			if( g_pServerSystem->GetMap()->IsMapKind(eBossMap) )
+//				goto CalcEnd;
+//
+//			fdam = ((CPlayer*)pTargetObject)->GetAvatarOption()->TargetAtkDown*0.01f;
+//			resAttrDamage = (resAttrDamage*(1.0f-fdam));
+//		}
+//	}
+//
+//CalcEnd:	
+//
+//	return (DWORD)resAttrDamage;
+//}
+// 
+
+
+
+
+
+//////ÒÑ¾­¼ÓÁËÉÁ±ÜpvpÃ»ÓÐÐÂ½¨
 void CAttackManager::Attack(BOOL bMugong, CObject* pAttacker,CObject* pTarget,DWORD AmplifiedPower,
 							float PhyAttackRate,
 							WORD Attrib,DWORD AttAttackMin,DWORD AttAttackMax,float AttAttackRate,
@@ -502,8 +846,20 @@ void CAttackManager::Attack(BOOL bMugong, CObject* pAttacker,CObject* pTarget,DW
 {	
 	pDamageInfo->Clear();
 
-	//È¸ÇÇ	//SW060330 ÀÌµ¿ Object->CalcRealDamage(... ¿¡¼­..
+	// »ñÈ¡Ä¿±êÉÁ±ÜÂÊ
 	float fDodgeRate = pTarget->GetDodgeRate();
+
+	//  PvP ÉÁ±ÜÐÞÕýÂß¼­£¨¹¥»÷ÕßÃüÖÐ & Ä¿±êÉÁ±Ü£©
+	if (pAttacker->GetObjectKind() == eObjectKind_Player && pTarget->GetObjectKind() == eObjectKind_Player)
+	{
+		// ¹¥»÷ÕßÃüÖÐ¼Ó³É£¨¼õÉÙÄ¿±êÉÁ±Ü£©
+		fDodgeRate -= ((CPlayer*)pAttacker)->GetItemStats()->PVPHit;
+		fDodgeRate -= ((CPlayer*)pAttacker)->GetAvatarOption()->PVPHit;
+
+		// Ä¿±êÉÁ±Ü¼Ó³É£¨Ôö¼ÓÉÁ±Ü£©
+		fDodgeRate += ((CPlayer*)pTarget)->GetItemStats()->PVPADodge;
+		fDodgeRate += ((CPlayer*)pTarget)->GetAvatarOption()->PVPADodge;
+	}
 
 	if(fDodgeRate != 0)
 	{
@@ -824,19 +1180,37 @@ void CAttackManager::RecoverNaeRyuk(CObject* pOperator,CObject* pObject,WORD m_A
 }
 
 
-void CAttackManager::AttackAbs( CObject* pAttacker, CObject* pTarget, int nAbsKind, float AttackRate, RESULTINFO* pDamageInfo )
+void CAttackManager::AttackAbs(CObject* pAttacker, CObject* pTarget, int nAbsKind, float AttackRate, RESULTINFO* pDamageInfo)
 {
-
-	if( nAbsKind == 0 ) return;
+	if (nAbsKind == 0)
+		return;
 
 	pDamageInfo->Clear();
 
-	//È¸ÇÇ	//SW060330 ÀÌµ¿ Object->CalcRealDamage(... ¿¡¼­..
+	// »ñÈ¡Ä¿±êÉÁ±ÜÂÊ
 	float fDodgeRate = pTarget->GetDodgeRate();
 
-	if(fDodgeRate != 0)
+	//  PvP ÉÁ±ÜÐÞÕý£¨¹¥»÷ÕßÃüÖÐ & Ä¿±êÉÁ±Ü£©
+	if (pAttacker->GetObjectKind() == eObjectKind_Player &&
+		pTarget->GetObjectKind() == eObjectKind_Player)
 	{
-		if(CheckRandom(fDodgeRate,pTarget->GetLevel(),pAttacker->GetLevel()) == TRUE)
+		// ÃüÖÐ·½¼õÉÁ±Ü
+		fDodgeRate -= ((CPlayer*)pAttacker)->GetItemStats()->PVPHit;
+		fDodgeRate -= ((CPlayer*)pAttacker)->GetAvatarOption()->PVPHit;
+
+		// ±»»÷·½¼ÓÉÁ±Ü
+		fDodgeRate += ((CPlayer*)pTarget)->GetItemStats()->PVPADodge;
+		fDodgeRate += ((CPlayer*)pTarget)->GetAvatarOption()->PVPADodge;
+
+		//  ¿ÉÑ¡£ºÏÞÖÆÉÁ±ÜÂÊ²»³¬¹ý·¶Î§£¨±ÜÃâ³¬³ö¸ÅÂÊ£©//ÏÞÖÆ 100%
+		if (fDodgeRate < 0.0f) fDodgeRate = 0.0f;
+		if (fDodgeRate > 1.0f) fDodgeRate = 1.0f;
+	}
+
+	// ÅÐ¶¨ÉÁ±Ü
+	if (fDodgeRate != 0)
+	{
+		if (CheckRandom(fDodgeRate, pTarget->GetLevel(), pAttacker->GetLevel()) == TRUE)
 		{
 			pDamageInfo->bDodge = TRUE;
 			pDamageInfo->RealDamage = 0;
@@ -845,12 +1219,12 @@ void CAttackManager::AttackAbs( CObject* pAttacker, CObject* pTarget, int nAbsKi
 		}
 	}
 
-	if(pTarget->GetObjectKind() == eObjectKind_Player)
+	// ³èÎïÉÁ±Ü
+	if (pTarget->GetObjectKind() == eObjectKind_Player)
 	{
-		//Æê ¹öÇÁ È¸ÇÇ
 		BOOL rtDodge = FALSE;
 		((CPlayer*)pTarget)->GetPetManager()->GetPetBuffResultRt(ePB_Dodge, &rtDodge);
-		if( TRUE == rtDodge )
+		if (TRUE == rtDodge)
 		{
 			pDamageInfo->bDodge = TRUE;
 			pDamageInfo->RealDamage = 0;
@@ -858,94 +1232,81 @@ void CAttackManager::AttackAbs( CObject* pAttacker, CObject* pTarget, int nAbsKi
 			return;
 		}
 	}
-	if(pTarget->GetInited() == FALSE)
-		return;
 
-	if(pTarget->GetState() == eObjectState_Die || pTarget->GetState() == eObjectState_Immortal)
+	// »ù´¡×´Ì¬ÑéÖ¤
+	if (!pTarget->GetInited() ||
+		pTarget->GetState() == eObjectState_Die ||
+		pTarget->GetState() == eObjectState_Immortal ||
+		pAttacker->GetGridID() != pTarget->GetGridID())
 	{
 		return;
 	}
 
-	if( pAttacker->GetGridID() != pTarget->GetGridID() )
+	// PK Ä£Ê½ÅÐ¶Ï
+	if (pAttacker->GetObjectKind() == eObjectKind_Player &&
+		((CPlayer*)pAttacker)->IsPKMode() &&
+		pTarget->GetObjectKind() == eObjectKind_Player &&
+		AttackRate > 0.0f &&
+		!((CPlayer*)pTarget)->IsPKMode())
 	{
-		return;
+		((CPlayer*)pAttacker)->SetPKStartTimeReset();
 	}
 
+	// ¼ÆËãÉËº¦
+	DWORD TargetLife = pTarget->GetLife();
+	DWORD TargetShield = pTarget->GetShield();
+	DWORD MinusLife = 0;
+	DWORD MinusShield = 0;
 
-	//¿©±â°¡ ¸Â³ª? KES confirm	//ºñ¹«´Â ¾î¶»°Ô ÇÏÁö?
-	if( pAttacker->GetObjectKind() == eObjectKind_Player )
-		if( ((CPlayer*)pAttacker)->IsPKMode() )
-		{
-			if( pTarget->GetObjectKind() == eObjectKind_Player )
-				if( AttackRate > 0.0f  )
-					if( ((CPlayer*)pTarget)->IsPKMode() == FALSE )
-						((CPlayer*)pAttacker)->SetPKStartTimeReset();
-		}
+	if (nAbsKind & eAAK_LIFE)
+	{
+		MinusLife = (DWORD)(TargetLife * AttackRate);
+	}
+	else if (nAbsKind & eAAK_SHIELD)
+	{
+		MinusShield = (DWORD)(TargetShield * AttackRate);
+	}
 
-		DWORD TargetLife = pTarget->GetLife();
-		DWORD MinusLife = 0;
-		DWORD TargetShield = pTarget->GetShield();
-		DWORD MinusShield = 0;
+	pDamageInfo->RealDamage = MinusLife;
+	pDamageInfo->ShieldDamage = MinusShield;
 
-		if( nAbsKind & eAAK_LIFE )
-		{
-			MinusLife = (DWORD)(TargetLife * AttackRate);
-		}
-		else if( nAbsKind & eAAK_SHIELD )	//ÀÏ´Ü µ¿½Ã¿¡ Ã¼·Â/È£½Å À» »ç¿ëÇÒ ¼ö ¾ø´Ù.
-		{
-			MinusShield = (DWORD)(TargetShield * AttackRate);
-		}
+	DWORD newLife = pTarget->Damage(pAttacker, pDamageInfo);
 
-		pDamageInfo->RealDamage = MinusLife;
-		pDamageInfo->ShieldDamage = MinusShield;
-
-		/*
-		BOOL bVampiric = TRUE;
-		if(bVampiric)
-		{
-		pAttacker->CalcVampiric(pDamageInfo);
-		}
-		*/	
-		DWORD newLife = pTarget->Damage(pAttacker,pDamageInfo);
-		/*	
-		if(pDamageInfo->CounterDamage != 0)
-		{
-		// ¹Ý°ÝÀº ¹«¼Ó¼º µ¥¹ÌÁöÀÌ´Ù. (cf: ¹«¼Ó¼ºÀº ¹Ý°Ý´çÇÏÁö ¾ÊÀ¸¹Ç·Î ¹Ý°ÝÀÇ ¹Ý°ÝÀº ÀÖÀ»¼ö ¾ø´Ù.)
-		RESULTINFO counterdmginfo;
-		PhyDamage = 0;
-		AttrDamage = pDamageInfo->CounterDamage;
-		counterdmginfo.CounterDamage = 0;
-		pAttacker->CalcRealDamage(pAttacker,PhyDamage,AttrDamage,&counterdmginfo);
-
-		DWORD attackerlife = pAttacker->Damage(pTarget,&counterdmginfo);
-		if(attackerlife == 0)
-		{
-		ATTACKMGR->sendDieMsg(pTarget,pAttacker);
-		pAttacker->Die(pTarget);
-		}
-		}
-		*/
-		if(newLife == 0)
-		{
-			ATTACKMGR->sendDieMsg(pAttacker,pTarget);
-			pTarget->Die(pAttacker);
-		}
+	if (newLife == 0)
+	{
+		ATTACKMGR->sendDieMsg(pAttacker, pTarget);
+		pTarget->Die(pAttacker);
+	}
 }
 
 
 
-void CAttackManager::AttackJinbub( CObject* pAttacker, CObject* pTarget, DWORD AttackPower, 
-								  DWORD AttackMin,DWORD AttackMax, RESULTINFO* pDamageInfo,
-								  float fDecreaseDamageRate )
+
+void CAttackManager::AttackJinbub(CObject* pAttacker, CObject* pTarget, DWORD AttackPower,
+	DWORD AttackMin, DWORD AttackMax, RESULTINFO* pDamageInfo, float fDecreaseDamageRate)
 {
 	pDamageInfo->Clear();
 
-	//È¸ÇÇ	//SW060330 ÀÌµ¿ Object->CalcRealDamage(... ¿¡¼­..
 	float fDodgeRate = pTarget->GetDodgeRate();
 
-	if(fDodgeRate != 0)
+	//  PvP ÃüÖÐ / ÉÁ±Ü¼Ó³Éµ÷Õû
+	if (pAttacker->GetObjectKind() == eObjectKind_Player &&
+		pTarget->GetObjectKind() == eObjectKind_Player)
 	{
-		if(CheckRandom(fDodgeRate,pTarget->GetLevel(),pAttacker->GetLevel()) == TRUE)
+		fDodgeRate -= ((CPlayer*)pAttacker)->GetItemStats()->PVPHit;
+		fDodgeRate -= ((CPlayer*)pAttacker)->GetAvatarOption()->PVPHit;
+
+		fDodgeRate += ((CPlayer*)pTarget)->GetItemStats()->PVPADodge;
+		fDodgeRate += ((CPlayer*)pTarget)->GetAvatarOption()->PVPADodge;
+
+		// ÏÞÖÆÉÁ±ÜÂÊ·¶Î§ÔÚ 0.0f ~ 1.0f
+		if (fDodgeRate < 0.0f) fDodgeRate = 0.0f;
+		if (fDodgeRate > 1.0f) fDodgeRate = 1.0f;
+	}
+
+	if (fDodgeRate != 0)
+	{
+		if (CheckRandom(fDodgeRate, pTarget->GetLevel(), pAttacker->GetLevel()) == TRUE)
 		{
 			pDamageInfo->bDodge = TRUE;
 			pDamageInfo->RealDamage = 0;
@@ -954,12 +1315,11 @@ void CAttackManager::AttackJinbub( CObject* pAttacker, CObject* pTarget, DWORD A
 		}
 	}
 
-	if(pTarget->GetObjectKind() == eObjectKind_Player)
+	if (pTarget->GetObjectKind() == eObjectKind_Player)
 	{
-		//Æê ¹öÇÁ È¸ÇÇ
 		BOOL rtDodge = FALSE;
 		((CPlayer*)pTarget)->GetPetManager()->GetPetBuffResultRt(ePB_Dodge, &rtDodge);
-		if( TRUE == rtDodge )
+		if (TRUE == rtDodge)
 		{
 			pDamageInfo->bDodge = TRUE;
 			pDamageInfo->RealDamage = 0;
@@ -968,82 +1328,56 @@ void CAttackManager::AttackJinbub( CObject* pAttacker, CObject* pTarget, DWORD A
 		}
 	}
 
+	if (!pTarget->GetInited()) return;
+	if (pTarget->GetState() == eObjectState_Die || pTarget->GetState() == eObjectState_Immortal) return;
+	if (pAttacker->GetGridID() != pTarget->GetGridID()) return;
+	if (AttackPower == 0) return;
 
-	if(pTarget->GetInited() == FALSE)
-		return;
-
-	if(pTarget->GetState() == eObjectState_Die || pTarget->GetState() == eObjectState_Immortal)
+	if (pAttacker->GetObjectKind() == eObjectKind_Player)
 	{
-		return;
-	}
-
-	if( pAttacker->GetGridID() != pTarget->GetGridID() )
-	{
-		return;
-	}
-
-	if( AttackPower == 0 )
-		return;
-
-	//¿©±â°¡ ¸Â³ª? KES confirm	//ºñ¹«´Â ¾î¶»°Ô ÇÏÁö?
-	if( pAttacker->GetObjectKind() == eObjectKind_Player )
-		if( ((CPlayer*)pAttacker)->IsPKMode() )
+		if (((CPlayer*)pAttacker)->IsPKMode())
 		{
-			if( pTarget )
-				if( pTarget->GetObjectKind() == eObjectKind_Player )
-					if( ((CPlayer*)pTarget)->IsPKMode() == FALSE )
-						((CPlayer*)pAttacker)->SetPKStartTimeReset();
-		}
-
-		//==================
-		if( AttackMax < AttackMin )
-			AttackMin = AttackMax;
-
-		DWORD PlusAttack = random( AttackMin, AttackMax );
-
-		DWORD RealAttack = GetJinbubDamage( pAttacker, pTarget, AttackPower+PlusAttack,
-			pDamageInfo, fDecreaseDamageRate );
-
-
-		// °ø¼ºÀü½Ã¿¡´Â µ¥¹ÌÁö Àû¿ë
-		float fsiegedamage = 0.2f;
-//#ifdef _HK_LOCAL_
-#ifdef _KOR_LOCAL_
-		fsiegedamage = 0.5f;
-#endif
-		if( g_pServerSystem->GetMapNum() == SIEGEWARMGR->GetSiegeMapNum() )
-		{
-			if( pAttacker->GetObjectKind() == eObjectKind_Player && pTarget->GetObjectKind() == eObjectKind_Player )
+			if (pTarget && pTarget->GetObjectKind() == eObjectKind_Player &&
+				!((CPlayer*)pTarget)->IsPKMode())
 			{
-				// °è»êÇØ¼­ 0ÀÌ ³ª¿Ã¶§¸¦ À§ÇØ¼­ +1
-				if( RealAttack )
-					RealAttack = (WORD)(RealAttack*fsiegedamage + 1);
-				if( pDamageInfo->RealDamage )
-					pDamageInfo->RealDamage = (DWORD)(pDamageInfo->RealDamage*fsiegedamage + 1);
-				if( pDamageInfo->ShieldDamage )
-
-					pDamageInfo->ShieldDamage = (DWORD)(pDamageInfo->ShieldDamage*fsiegedamage + 1);
+				((CPlayer*)pAttacker)->SetPKStartTimeReset();
 			}
 		}
+	}
 
-		//1. °ø°Ý·Â °­È­ ¾ø´Ù.
-		//2.È¸ÇÇ/¿î±âÁßµ¥¹ÌÁö/¹æ¾î¹öÇÁ °è»ê (¹°¸®°ø°ÝÀÌ´Ù.)
-		pTarget->CalcRealDamage( pAttacker, (WORD)RealAttack, 0, pDamageInfo );
-		//3.¹Ý°ÝÀº ¾ø´Ù.
-		//4.°ø°Ý¹Þ¾ÒÀ»½Ã ÇÇ Èí¼ö.
-		pTarget->CalcReverseVampiric(pDamageInfo);	//ÀÌÆåÆ® Ã³¸®´Â ¾ÈÇÑ´Ù --;
-		//5.ÇÇ»¡±â ¾ø´Ù.
-		DWORD newLife = pTarget->Damage(pAttacker,pDamageInfo);
+	if (AttackMax < AttackMin)
+		AttackMin = AttackMax;
 
-		//6.¹Ý°ÝÀº ¾ø´Ù.
+	DWORD PlusAttack = random(AttackMin, AttackMax);
+	DWORD RealAttack = GetJinbubDamage(pAttacker, pTarget, AttackPower + PlusAttack, pDamageInfo, fDecreaseDamageRate);
 
-		//============
-		if(newLife == 0)
+	float fsiegedamage = 0.5f;
+	if (g_pServerSystem->GetMapNum() == SIEGEWARMGR->GetSiegeMapNum())
+	{
+		if (pAttacker->GetObjectKind() == eObjectKind_Player &&
+			pTarget->GetObjectKind() == eObjectKind_Player)
 		{
-			ATTACKMGR->sendDieMsg(pAttacker,pTarget);
-			pTarget->Die(pAttacker);
+			if (RealAttack)
+				RealAttack = (DWORD)(RealAttack * fsiegedamage + 1);
+			if (pDamageInfo->RealDamage)
+				pDamageInfo->RealDamage = (DWORD)(pDamageInfo->RealDamage * fsiegedamage + 1);
+			if (pDamageInfo->ShieldDamage)
+				pDamageInfo->ShieldDamage = (DWORD)(pDamageInfo->ShieldDamage * fsiegedamage + 1);
 		}
+	}
+
+	pTarget->CalcRealDamage(pAttacker, (WORD)RealAttack, 0, pDamageInfo);
+	pTarget->CalcReverseVampiric(pDamageInfo);
+
+	DWORD newLife = pTarget->Damage(pAttacker, pDamageInfo);
+
+	if (newLife == 0)
+	{
+		ATTACKMGR->sendDieMsg(pAttacker, pTarget);
+		pTarget->Die(pAttacker);
+	}
 }
+
 
 DWORD CAttackManager::GetJinbubDamage(CObject* pAttacker,CObject* pTargetObject,DWORD AttackPower,
 									  RESULTINFO* pDamageInfo,float fDecreaseDamageRate)

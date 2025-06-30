@@ -320,6 +320,10 @@
 
 #include "FadeDlg.h"
 #include "TopDungeon.h"
+#include "CharacterPVPDialog.h"
+
+#include "NewUpGrareAlexXDlg.h"
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -921,6 +925,14 @@ cWindow * cScriptManager::GetDlgInfoFromFile(char * filePath, char* mode)
 						__asm int 3;
 					break;
 				}
+			case eCHARINFOPVPDLG:
+			{
+				if ((fp.GetString())[0] == '{')
+					dlg = (cDialog*)GetInfoFromFile((cWindow*)(new CCharacterPvpDialog), &fp);
+				else
+					__asm int 3;
+				break;
+			}
 			case eMUGONGSURYUNDLG:
 				{
 					if((fp.GetString())[0] == '{')
@@ -2750,13 +2762,22 @@ cWindow * cScriptManager::GetDlgInfoFromFile(char * filePath, char* mode)
 						__asm int 3;
 					break;
 				}
+			case eALEXX_NEWUPGRARDALEXX_DLG:
+			{
+				if ((fp.GetString())[0] == '{')
+					dlg = (cDialog*)GetInfoFromFile((cWindow*)(new CNewUpGrareAlexXDlg), &fp);
+				else
+					__asm int 3;
+				break;
+			}
 			case eFADEDLG:
+			{
 				if ((fp.GetString())[0] == '{')
 					dlg = GetInfoFromFile(new CFadeDlg, &fp);
 				else
 					__asm int 3;
 				break;
-
+			}
 
 
 
@@ -4578,6 +4599,17 @@ cWindow * cScriptManager::GetInfoFromFile(cWindow * wnd, CMHFile * fp)
 		if(-1 != FUNCSEARCH(funcName))
 			win->SetcbFunc(g_mt_func[FUNCSEARCH(funcName)]._func);
 	BREAK
+		CASE(WT_CHARINFOPVPDIALOG)
+		CCharacterDialog* win = (CCharacterDialog*)wnd;
+	win->SetValidXY(validXY.x, validXY.y);
+	win->Init(point.x, point.y, point.w, point.h, &BasicImage, IDSEARCH(IDName));
+	win->SetMovable(fMovable);
+	win->SetCaptionRect(&captionRect);
+	win->SetAlpha(alphaDepth);
+	if (-1 != FUNCSEARCH(funcName))
+		win->SetcbFunc(g_mt_func[FUNCSEARCH(funcName)]._func);
+	BREAK
+		
 	CASE(WT_MUGONGSURYUNDIALOG)
 		CMugongSuryunDialog * win = (CMugongSuryunDialog *)wnd;
 		win->SetValidXY(validXY.x,validXY.y);

@@ -537,6 +537,7 @@ struct ITEMBASE : public ICONBASE
 		memset(PowerUp,0,MAX_NAME_LENGTH);
 		memset(Green,0,MAX_NAME_LENGTH);
 	}
+	DWORD ItemGradeAlexX;
 };
 struct SLOTINFO
 {
@@ -1114,7 +1115,42 @@ struct IMAGENAMEINFO
 	int  Height;
 	int  Speed;
 };
+//////////////////////////////////////////+30
+struct MSG_NEWYPGRARE_ALEXX : public MSGBASE
+{
+	DWORD ItemDBIdx;
+	int ItemPosition;
+	DWORD Material_count_1;
+	DWORD Material_count_1_DB;
+	int Material_count_1_POS;
+	DWORD Material_count_2;
+	DWORD Material_count_2_DB;
+	int Material_count_2_POS;
+	DWORD Material_count_3;
+	DWORD Material_count_3_DB;
+	int Material_count_3_POS;
+	DWORD Material_count_4;
+	DWORD Material_count_4_DB;
+	int Material_count_4_POS;
+	DWORD Stone_count;
+	DWORD Stone_DB;
+	int Stone_POS;
+	DWORD money;
+};
 
+struct MSG_NEWYPGRARE_ALEXX_BACKGAME : public MSGBASE
+{
+	WORD	wTargetItemIdx;
+	DWORD	WhatError;
+	DWORD	result;
+};
+struct MSG_NEWYPGRARE_ALEXX_DELITEM : public MSGBASE
+{
+	POSTYPE Pos;
+	WORD	ItemIdx;
+	DWORD count;
+};
+////////////////////////////////////////////////////////
 struct CHARACTER_TOTALINFO
 {
 	DWORD	Life;						
@@ -1273,7 +1309,19 @@ struct AVATARITEMOPTION
 	WORD		MussangCharge;		
 	BYTE		NaeruykspendbyKG;	
     WORD		ShieldRecoverRate;	
-	BYTE		MussangDamage;		
+	BYTE		MussangDamage;	
+
+	// 天墨技术团 PVP 相关属性
+	float PVPCri;      // PVP 暴击
+	float PVPAttack;   // PVP 伤害加成
+	float PVPDef;      // PVP 物理防御
+	float PVPADef;     // PVP 属性防御
+	float PVPADodge;   // PVP 闪避
+	float PVPHit;      // PVP 命中
+
+	//// 新增晕眩抗性 & 晕眩时间减少
+	float PVPStunResist;     // PVP 眩晕抗性（0.2 = 20% 免疫眩晕）
+	float PVPStunTimeReduce; // PVP 眩晕时间减少（0.01 = 1% 缩短时间）
 };
 struct SEND_MONSTER_TOTALINFO	:	public MSGBASE
 {
@@ -1553,7 +1601,7 @@ struct ITEMOBTAINARRAY : public MSGBASE
 		dwObjectID	= dwID;
 		BuyType = buytype;
 	}
-	void AddItem( DWORD DBIdx, WORD ItemIdx, DURTYPE Durability, POSTYPE bPosition, POSTYPE QuickPosition, ITEMPARAM Param, DWORD RareIdx = 0,WORD ItemStatic=0,DWORD ItemGrow=0) 
+	void AddItem( DWORD DBIdx, WORD ItemIdx, DURTYPE Durability, POSTYPE bPosition, POSTYPE QuickPosition, ITEMPARAM Param, DWORD RareIdx = 0,WORD ItemStatic=0,DWORD ItemGrow=0, DWORD ItemGradeAlexX = 0)
 	{
 		ItemInfo[ItemNum].dwDBIdx		= DBIdx;
 		ItemInfo[ItemNum].wIconIdx		= ItemIdx;
@@ -1564,6 +1612,7 @@ struct ITEMOBTAINARRAY : public MSGBASE
 		ItemInfo[ItemNum].RareIdx		= RareIdx;
 		ItemInfo[ItemNum].ItemStatic	=ItemStatic; 
 		ItemInfo[ItemNum].ItemGrow		=ItemGrow;
+		ItemInfo[ItemNum].ItemGradeAlexX = ItemGradeAlexX;
 		ItemNum++;
 	}
 	void AddItem(const ITEMBASE *pInfo)//kiv
@@ -2117,6 +2166,8 @@ struct STREETSTALLITEM
 	char		Locked;
 	char		Fill;
 	ITEMPARAM ItemParam;
+
+	DWORD       dwGradeAlexX;
 };
 struct STREETSTALL_INFO : public MSGBASE
 {
@@ -5330,6 +5381,8 @@ struct STREETSTALL_ITEM_INFO
 	DWORD	dwRareIdx;
 	DWORD	dwStoneIdx;   
 	DWORD   dwGrow;       
+
+	DWORD	dwGradeAlexX;
 };
 struct MSG_STREETSTALL_ITEMVIEW : public MSGBASE
 {

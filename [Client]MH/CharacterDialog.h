@@ -135,7 +135,7 @@ class CCharacterDialog  : public cDialog
 #endif
 
 	int					m_MinusPoint;
-
+	cButton* m_pPvpDialog;
 public:
 	CCharacterDialog();
 	virtual ~CCharacterDialog();
@@ -181,6 +181,7 @@ public:
 	void RefreshInfo();
 
 	void SetStage( BYTE Stage );
+	void SetPvpDialogActive(BOOL val);
 };
 
 #endif // !defined(AFX_CHARACTERDIALOG_H__EF27ABB3_EA18_4466_88E9_4035E3807912__INCLUDED_)

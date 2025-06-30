@@ -110,6 +110,11 @@ public:
 
 	virtual inline char* GetPowerUp(  ) {return   m_ItemBaseInfo.PowerUp;}
 	virtual inline char* GetGreen(  ) {return   m_ItemBaseInfo.Green;}
+
+	virtual inline DWORD GetGradeAlexX() { return m_ItemBaseInfo.ItemGradeAlexX; }
+	virtual inline void SetGradeAlexX(DWORD Val) { m_ItemBaseInfo.ItemGradeAlexX = Val; }
+	virtual inline DWORD GetGradeAlexXWTF() { return m_ItemBaseInfo.ItemGradeAlexX + 1; }
+
 };
 
 #endif // !defined(AFX_ITEM_H__68113CBB_0A76_42D7_90B6_C64FBAF3E85C__INCLUDED_)

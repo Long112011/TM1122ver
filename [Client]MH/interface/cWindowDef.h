@@ -150,6 +150,7 @@ enum WINDOW_TYPE
 	WT_DIALOG = 64,
 	/*dlg custom window type*/
 	WT_CHARINFODIALOG = 65,
+	WT_CHARINFOPVPDIALOG = 66,//pvp
 	WT_MAINDIALOG = 67,
 	WT_CHATDIALOG = 68,
 

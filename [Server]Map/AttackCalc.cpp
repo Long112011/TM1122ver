@@ -78,64 +78,94 @@ DWORD CAttackCalc::GetPlayerExpPoint( int level_gap, DWORD MonsterExp )
 	else
 		return (DWORD)Exp;
 }
-
-BOOL	CAttackCalc::getCritical(CObject* pAttacker,CObject* pTarget,float fCriticalRate)
+//新的pvp加成暴击///////////////////////////////////////////////////////////////////////////////////////////
+BOOL CAttackCalc::getCritical(CObject* pAttacker, CObject* pTarget, float fCriticalRate)
 {
-	int nRand = rand() % 100;//kiv
+	int nRand = rand() % 100;
 
 	DWORD attackercritical = pAttacker->GetCritical();
-
 	LEVELTYPE targetlevel = pTarget->GetLevel();
 
 	float fCriticalrate = (attackercritical + 20.f) / (targetlevel * 20.f + 300.f);
-	if(fCriticalrate > 0.2f)
+	if (fCriticalrate > 0.2f)
 		fCriticalrate = 0.2f;
-	
+
 	WORD wCriticalPercent = (WORD)(fCriticalrate * 100);
 
-	if(fCriticalRate)
-		wCriticalPercent += GetPercent(fCriticalRate,pAttacker->GetLevel(),pTarget->GetLevel());
+	if (fCriticalRate)
+		wCriticalPercent += GetPercent(fCriticalRate, pAttacker->GetLevel(), pTarget->GetLevel());
 
 	// magi82 - UniqueItem(070629)
-	if(pAttacker->GetObjectKind() == eObjectKind_Player)
+	if (pAttacker->GetObjectKind() == eObjectKind_Player)
 	{
-		if( ((int)wCriticalPercent + ((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriRate) < 0 )
-		{
+		int uniqueCriRate = ((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriRate;
+		if (((int)wCriticalPercent + uniqueCriRate) < 0)
 			wCriticalPercent = 0;
-		}
 		else
-		{
-			wCriticalPercent += ((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriRate;
-		}
+			wCriticalPercent += uniqueCriRate;
 	}
 
+	// [新增] 天墨 PvP 爆击率加成（仅在 PvP 情况下）
+	if (pAttacker->GetObjectKind() == eObjectKind_Player &&
+		pTarget->GetObjectKind() == eObjectKind_Player)
+	{
+		float fPvpCri1 = ((CPlayer*)pAttacker)->GetItemStats()->PVPCri;
+		float fPvpCri2 = ((CPlayer*)pAttacker)->GetAvatarOption()->PVPCri;
+
+		wCriticalPercent = (WORD)(wCriticalPercent * (1.0f + fPvpCri1));
+		wCriticalPercent = (WORD)(wCriticalPercent * (1.0f + fPvpCri2));
+	}
+
+	// kiv: 扣减目标抗性
 	if (pTarget->GetObjectKind() == eObjectKind_Player)
-	{//kiv
-		((CPlayer*)pTarget)->GetPetManager()->GetPetBuffResultRt(/*ePB_ReduceCriticalRate*/ePB_ReduceCriticalDmg, &nRand);//kiv
+	{
+		((CPlayer*)pTarget)->GetPetManager()->GetPetBuffResultRt(ePB_ReduceCriticalDmg, &nRand);
 	}
 
-	return (nRand < wCriticalPercent);//return (rand()%100 < wCriticalPercent);//kiv
+	return (nRand < wCriticalPercent);
 }
-
-BOOL	CAttackCalc::getDecisive(CObject* pAttacker,CObject* pTarget,float fCriticalRate)
+BOOL	CAttackCalc::getDecisive(CObject* pAttacker, CObject* pTarget, float fCriticalRate)
 {
 	DWORD attackercritical = pAttacker->GetDecisive();
 
+	//#ifdef _JAPAN_LOCAL_
+	//	LEVELTYPE targetlevel = pTarget->GetLevel();
+	//	LEVELTYPE attackerlevel = pAttacker->GetLevel();
+	//
+	//	float fCri = (float)( attackercritical + 20 ) / (float)( targetlevel * 5 + 100 );
+	//	if( fCri > 0.15f ) fCri = 0.15f;
+	//
+	//	if( attackerlevel < targetlevel )
+	//	{
+	//		fCri = fCri + fCriticalRate - (float)(targetlevel - attackerlevel)*0.02f;
+	//		if( fCri < 0.f )	fCri = 0.f;
+	//	}
+	//	else
+	//	{
+	//		fCri = fCri + fCriticalRate + (float)(attackerlevel - targetlevel)*0.004f;
+	//	}
+	//
+	//	float fRand = (float)(rand()%100) / 100.f;
+	//		
+	//	if( fCri < fRand )
+	//		return FALSE;
+	//	else
+	//		return TRUE;
+	//#else
 	LEVELTYPE targetlevel = pTarget->GetLevel();
 
 	float fCriticalrate = (attackercritical + 20.f) / (targetlevel * 20.f + 300.f);
-	if(fCriticalrate > 0.2f)
+	if (fCriticalrate > 0.2f)
 		fCriticalrate = 0.2f;
-	
+
 	WORD wCriticalPercent = (WORD)(fCriticalrate * 100);
 
-	if(fCriticalRate)
-		wCriticalPercent += GetPercent(fCriticalRate,pAttacker->GetLevel(),pTarget->GetLevel());
+	if (fCriticalRate)
+		wCriticalPercent += GetPercent(fCriticalRate, pAttacker->GetLevel(), pTarget->GetLevel());
 
-	// magi82 - UniqueItem(070629)
-	if(pAttacker->GetObjectKind() == eObjectKind_Player)
+	if (pAttacker->GetObjectKind() == eObjectKind_Player)
 	{
-		if( ((int)wCriticalPercent + ((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriRate) < 0 )
+		if (((int)wCriticalPercent + ((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriRate) < 0)
 		{
 			wCriticalPercent = 0;
 		}
@@ -144,9 +174,86 @@ BOOL	CAttackCalc::getDecisive(CObject* pAttacker,CObject* pTarget,float fCritica
 			wCriticalPercent += ((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriRate;
 		}
 	}
-
-	return (rand()%100 < wCriticalPercent);
+	//天墨 PVP妮┦阑璸衡
+	if (pAttacker->GetObjectKind() == eObjectKind_Player &&
+		pTarget->GetObjectKind() == eObjectKind_Player)
+	{
+		wCriticalPercent *= (1 + ((CPlayer*)pAttacker)->GetItemStats()->PVPCri);
+		wCriticalPercent *= (1 + ((CPlayer*)pAttacker)->GetAvatarOption()->PVPCri);
+	}
+	return (rand() % 100 < wCriticalPercent);
+	//#endif
 }
+///////////////////////////////////////////////////////////////////////////////////////////
+//旧的暴击加成
+//BOOL	CAttackCalc::getCritical(CObject* pAttacker,CObject* pTarget,float fCriticalRate)
+//{
+//	int nRand = rand() % 100;//kiv
+//
+//	DWORD attackercritical = pAttacker->GetCritical();
+//
+//	LEVELTYPE targetlevel = pTarget->GetLevel();
+//
+//	float fCriticalrate = (attackercritical + 20.f) / (targetlevel * 20.f + 300.f);
+//	if(fCriticalrate > 0.2f)
+//		fCriticalrate = 0.2f;
+//	
+//	WORD wCriticalPercent = (WORD)(fCriticalrate * 100);
+//
+//	if(fCriticalRate)
+//		wCriticalPercent += GetPercent(fCriticalRate,pAttacker->GetLevel(),pTarget->GetLevel());
+//
+//	// magi82 - UniqueItem(070629)
+//	if(pAttacker->GetObjectKind() == eObjectKind_Player)
+//	{
+//		if( ((int)wCriticalPercent + ((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriRate) < 0 )
+//		{
+//			wCriticalPercent = 0;
+//		}
+//		else
+//		{
+//			wCriticalPercent += ((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriRate;
+//		}
+//	}
+//
+//	if (pTarget->GetObjectKind() == eObjectKind_Player)
+//	{//kiv
+//		((CPlayer*)pTarget)->GetPetManager()->GetPetBuffResultRt(/*ePB_ReduceCriticalRate*/ePB_ReduceCriticalDmg, &nRand);//kiv
+//	}
+//
+//	return (nRand < wCriticalPercent);//return (rand()%100 < wCriticalPercent);//kiv
+//}
+
+//BOOL	CAttackCalc::getDecisive(CObject* pAttacker,CObject* pTarget,float fCriticalRate)
+//{
+//	DWORD attackercritical = pAttacker->GetDecisive();
+//
+//	LEVELTYPE targetlevel = pTarget->GetLevel();
+//
+//	float fCriticalrate = (attackercritical + 20.f) / (targetlevel * 20.f + 300.f);
+//	if(fCriticalrate > 0.2f)
+//		fCriticalrate = 0.2f;
+//	
+//	WORD wCriticalPercent = (WORD)(fCriticalrate * 100);
+//
+//	if(fCriticalRate)
+//		wCriticalPercent += GetPercent(fCriticalRate,pAttacker->GetLevel(),pTarget->GetLevel());
+//
+//	// magi82 - UniqueItem(070629)
+//	if(pAttacker->GetObjectKind() == eObjectKind_Player)
+//	{
+//		if( ((int)wCriticalPercent + ((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriRate) < 0 )
+//		{
+//			wCriticalPercent = 0;
+//		}
+//		else
+//		{
+//			wCriticalPercent += ((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriRate;
+//		}
+//	}
+//
+//	return (rand()%100 < wCriticalPercent);
+//}
 
 double CAttackCalc::getPlayerPhysicalAttackPower(CPlayer * pPlayer,float PhyAttackRate, BOOL bCritical )
 {
@@ -429,80 +536,157 @@ double	CAttackCalc::getAttributeAttackPower(CObject * pObject, WORD Attrib, DWOR
 	}
 
 }
-
-double	CAttackCalc::getPhyDefenceLevel(CObject* pObject, CObject* pAttacker)
+double CAttackCalc::getPhyDefenceLevel(CObject* pObject, CObject* pAttacker)
 {
 	double phyDefence = pObject->GetPhyDefense();
-	
-	// magi82 - UniqueItem(070626)
-	if( pAttacker->GetObjectKind() == eObjectKind_Player )
+
+	// UniqueItem 对敌减防效果
+	if (pAttacker->GetObjectKind() == eObjectKind_Player)
 	{
-		phyDefence = phyDefence * ( 1.0f - (((CPlayer*)pAttacker)->GetUniqueItemStats()->nEnemyDefen * 0.01f) );
+		phyDefence = phyDefence * (1.0f - (((CPlayer*)pAttacker)->GetUniqueItemStats()->nEnemyDefen * 0.01f));
 	}
 
-	// RaMa - 05.02.04  -> 措瘤狼 何利
-	if( pObject->GetObjectKind() == eObjectKind_Player )
+	// 玩家目标才处理以下加成
+	if (pObject->GetObjectKind() == eObjectKind_Player)
 	{
-		phyDefence += (phyDefence*((CPlayer*)pObject)->GetShopItemStats()->RegistPhys)/100;
+		// 商城防御加成
+		phyDefence += (phyDefence * ((CPlayer*)pObject)->GetShopItemStats()->RegistPhys) / 100;
 
-		//////////////////////////////////////////////////////////////////////////
-		// 06. 06. 2瞒 傈流 - 捞康霖
-		// 公傍 函券 眠啊
-		// 拱府规绢仿
+		// 技能防御加成
 		float val = 1.0f + ((CPlayer*)pObject)->GetSkillStatsOption()->PhyDef;
-
-		if(val < 0)
+		if (val < 0.0f)
 			val = 0.0f;
 
-		phyDefence = phyDefence * val;
-		//////////////////////////////////////////////////////////////////////////
+		phyDefence *= val;
 
-		if( ((CPlayer*)pObject)->GetPartyIdx() )
+		// 队伍防御加成
+		if (((CPlayer*)pObject)->GetPartyIdx())
 		{
-			CParty* pParty = PARTYMGR->GetParty( ((CPlayer*)pObject)->GetPartyIdx() );
-			if( pParty )
+			CParty* pParty = PARTYMGR->GetParty(((CPlayer*)pObject)->GetPartyIdx());
+			if (pParty)
 			{
-				int count = pParty->GetMemberCountofMap( pObject->GetID() );
-				if( count && gPartyEvent[ePartyEvent_DefenceRate].Rate[count-1] )
-					phyDefence = (DWORD)(phyDefence*gPartyEvent[ePartyEvent_DefenceRate].Rate[count-1]);
+				int count = pParty->GetMemberCountofMap(pObject->GetID());
+				if (count && gPartyEvent[ePartyEvent_DefenceRate].Rate[count - 1])
+				{
+					phyDefence = (DWORD)(phyDefence * gPartyEvent[ePartyEvent_DefenceRate].Rate[count - 1]);
+				}
 			}
 		}
 	}
-	
+
 	LEVELTYPE AttackerLevel = pAttacker->GetLevel();
+	double phyDefenceLevel = (phyDefence * 2.0 + 50) / (AttackerLevel * 20 + 150);
 
-
-
-	double phyDefenceLevel = (phyDefence*2.0 + 50) / ( AttackerLevel*20 + 150 );
-
-
-	if(phyDefenceLevel < 0.0 )
+	if (phyDefenceLevel < 0.0)
 	{
 		ASSERT(0);
 		phyDefenceLevel = 0;
 	}
 
-	if(phyDefenceLevel > 0.9)
-		phyDefenceLevel = 0.9;
-
-	//SW070127 鸥捞藕
-	if( pObject->GetObjectKind() == eObjectKind_Player )
+	// === 新增 PvP 防御加成，仅限玩家对玩家 ===
+	if (pAttacker->GetObjectKind() == eObjectKind_Player &&
+		pObject->GetObjectKind() == eObjectKind_Player)
 	{
-		if( ((CPlayer*)pObject)->InTitan() )
+		phyDefenceLevel *= (1.0f + ((CPlayer*)pObject)->GetItemStats()->PVPDef);
+		phyDefenceLevel *= (1.0f + ((CPlayer*)pObject)->GetAvatarOption()->PVPDef);
+	}
+
+	// Titan 模式独立逻辑
+	if (pObject->GetObjectKind() == eObjectKind_Player)
+	{
+		if (((CPlayer*)pObject)->InTitan())
 		{
-			WORD titanDefense =	((CPlayer*)pObject)->GetTitanManager()->GetTitanStats()->PhysicalDefense;
-			WORD shopItemTitanDefense = 0;	//眠啊 累诀
+			WORD titanDefense = ((CPlayer*)pObject)->GetTitanManager()->GetTitanStats()->PhysicalDefense;
+			WORD shopItemTitanDefense = 0;
 
-			WORD totalTitanDefense = (titanDefense + shopItemTitanDefense);
+			WORD totalTitanDefense = titanDefense + shopItemTitanDefense;
+			DWORD tmp = (((CPlayer*)pObject)->GetLevel() * 30 + 75) * 2;
 
-			DWORD	tmp = ( ( ((CPlayer*)pObject)->GetLevel() * 30 + 75 ) * 2 );
-			phyDefenceLevel = (totalTitanDefense + 25) / ( ( pAttacker->GetLevel() * 30 + 75 ) * 2 );
+			phyDefenceLevel = (totalTitanDefense + 25) / ((pAttacker->GetLevel() * 30 + 75) * 2);
 
-			phyDefenceLevel = (titanDefense > 0.8 ? 0.8 : titanDefense);
+			if (phyDefenceLevel > 0.8)
+				phyDefenceLevel = 0.8;
 		}
 	}
 
 	return phyDefenceLevel;
 }
+
+
+//旧的防御
+//double	CAttackCalc::getPhyDefenceLevel(CObject* pObject, CObject* pAttacker)
+//{
+//	double phyDefence = pObject->GetPhyDefense();
+//	
+//	// magi82 - UniqueItem(070626)
+//	if( pAttacker->GetObjectKind() == eObjectKind_Player )
+//	{
+//		phyDefence = phyDefence * ( 1.0f - (((CPlayer*)pAttacker)->GetUniqueItemStats()->nEnemyDefen * 0.01f) );
+//	}
+//
+//	// RaMa - 05.02.04  -> 措瘤狼 何利
+//	if( pObject->GetObjectKind() == eObjectKind_Player )
+//	{
+//		phyDefence += (phyDefence*((CPlayer*)pObject)->GetShopItemStats()->RegistPhys)/100;
+//
+//		//////////////////////////////////////////////////////////////////////////
+//		// 06. 06. 2瞒 傈流 - 捞康霖
+//		// 公傍 函券 眠啊
+//		// 拱府规绢仿
+//		float val = 1.0f + ((CPlayer*)pObject)->GetSkillStatsOption()->PhyDef;
+//
+//		if(val < 0)
+//			val = 0.0f;
+//
+//		phyDefence = phyDefence * val;
+//		//////////////////////////////////////////////////////////////////////////
+//
+//		if( ((CPlayer*)pObject)->GetPartyIdx() )
+//		{
+//			CParty* pParty = PARTYMGR->GetParty( ((CPlayer*)pObject)->GetPartyIdx() );
+//			if( pParty )
+//			{
+//				int count = pParty->GetMemberCountofMap( pObject->GetID() );
+//				if( count && gPartyEvent[ePartyEvent_DefenceRate].Rate[count-1] )
+//					phyDefence = (DWORD)(phyDefence*gPartyEvent[ePartyEvent_DefenceRate].Rate[count-1]);
+//			}
+//		}
+//	}
+//	
+//	LEVELTYPE AttackerLevel = pAttacker->GetLevel();
+//
+//
+//
+//	double phyDefenceLevel = (phyDefence*2.0 + 50) / ( AttackerLevel*20 + 150 );
+//
+//
+//	if(phyDefenceLevel < 0.0 )
+//	{
+//		ASSERT(0);
+//		phyDefenceLevel = 0;
+//	}
+//
+//	if(phyDefenceLevel > 0.9)
+//		phyDefenceLevel = 0.9;
+//
+//	//SW070127 鸥捞藕
+//	if( pObject->GetObjectKind() == eObjectKind_Player )
+//	{
+//		if( ((CPlayer*)pObject)->InTitan() )
+//		{
+//			WORD titanDefense =	((CPlayer*)pObject)->GetTitanManager()->GetTitanStats()->PhysicalDefense;
+//			WORD shopItemTitanDefense = 0;	//眠啊 累诀
+//
+//			WORD totalTitanDefense = (titanDefense + shopItemTitanDefense);
+//
+//			DWORD	tmp = ( ( ((CPlayer*)pObject)->GetLevel() * 30 + 75 ) * 2 );
+//			phyDefenceLevel = (totalTitanDefense + 25) / ( ( pAttacker->GetLevel() * 30 + 75 ) * 2 );
+//
+//			phyDefenceLevel = (titanDefense > 0.8 ? 0.8 : titanDefense);
+//		}
+//	}
+//
+//	return phyDefenceLevel;
+//}
 
 

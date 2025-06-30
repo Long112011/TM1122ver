@@ -325,6 +325,9 @@ class CInsDGRankInfoDialog;
 class cHousingWebDlg;
 
 class CFadeDlg;
+class CCharacterPvpDialog;
+class CNewUpGrareAlexXDlg;
+
 
 #define GAMEIN USINGTON(CGameIn)
 
@@ -357,6 +360,7 @@ private:
 	CDealDialog			* m_pDealDlg;
 
 	CCharacterDialog	* m_pCharDlg;
+	CCharacterPvpDialog* m_pCharPvPDlg;	
 	CChatDialog			* m_pChatDlg;
 
 	// SW050715
@@ -689,6 +693,10 @@ private:
 
 	CFadeDlg*				m_pFadeDlg;
 
+	//AlexX
+	CNewUpGrareAlexXDlg* m_NewUpGrareAlexX;
+
+
 	BOOL	m_bInitForGame;
 	int		m_GameInInitKind;	
 	DWORD	m_MovePoint;
@@ -720,7 +728,7 @@ public:
 	void NetworkMsgParse(BYTE Category,BYTE Protocol,void* pMsg);
 
 	void SetMovePoint(DWORD point){ m_MovePoint = point; }
-	
+	void NewUpGrareAlexX(BYTE Category, BYTE Protocol, void* pMsg);
 	BOOL IsGameInAcked()		{	return m_bGameInAcked;	}
 	int GetGameInInitKind()	{ return m_GameInInitKind; 	}
 
@@ -736,7 +744,8 @@ public:
 	///// custom
 	CMonsterGuageDlg	*	GetMonsterGuageDlg()	{ return m_pMonsterGuageDlg;	}
 	void	SetMonsterGuageDlg(CMonsterGuageDlg	* dlg)	{ m_pMonsterGuageDlg = dlg;	}
-
+	CCharacterPvpDialog* GetCharacterPvPDialog() { return m_pCharPvPDlg; } //pvp Ù–‘
+	void SetCharacterPvPDialog(CCharacterPvpDialog* dlg) { m_pCharPvPDlg = dlg; }
 	CCharacterDialog * GetCharacterDialog(){ return m_pCharDlg; }
 	void SetCharacterDialog(CCharacterDialog * dlg){ m_pCharDlg=dlg; }
 	CMainBarDialog	* GetMainInterfaceDialog(){ return m_pMainDlg; }
@@ -1511,6 +1520,9 @@ public:
 
 	void SetFadeDlg(CFadeDlg* pDlg)							{ m_pFadeDlg = pDlg; }
 	CFadeDlg* GetFadeDlg()										{ return m_pFadeDlg; }
+
+	CNewUpGrareAlexXDlg* GetNewUpGrareAlexXDlg() { return  m_NewUpGrareAlexX; }
+	void SetNewUpGrareAlexXDlg(CNewUpGrareAlexXDlg* dlg) { m_NewUpGrareAlexX = dlg; }
 
 	void UpdataGoldMoney();
 	BOOL CopyToClipboard(const char* pszData, const int nDataLen);

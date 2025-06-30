@@ -140,7 +140,7 @@
 #include "InsDungeonMapManager.h"
 #include "InsDungeonRegenDataManager.h"
 #include "InsDungeon.h"
-
+#include "NewUpGrareAlexXMGR.h"
 #include "..\[CC]Header\Server_CMD.h"
 
 void __stdcall ProcessDBMessage(DWORD dwEventIndex);
@@ -652,7 +652,8 @@ void CServerSystem::Start(WORD ServerNum)
 	
 	INSDUNGEONREGENDATAMGR->LoadInsDungeonRegenList();
 	INSDUNGEONMGR->Init();
-
+	NEWUPGRAREALEXX_MGR->LoadUpGradeItem_info();
+	ITEMMGR->LoadAlexXUpGradeItemPercent();
 	//SetWindowText(g_hWnd, TitleText);
 
 	int i=0 ;
@@ -753,7 +754,7 @@ void CServerSystem::Start(WORD ServerNum)
 	g_pServerMsgParser[MP_INSDUNGEON] = MP_INSDUNGEONMsgParser;
 
 	g_pServerMsgParser[MP_MALLLIST] = MP_MALLLISTMsgParser;
-
+	g_pServerMsgParser[MP_NEWUPGRARE_ALEXX] = MP_NEWUPGRARE_ALEXXMsgParser;
 	CHANNELSYSTEM->Init( ServerNum );
 
 	g_pAISystem = new CAISystem;

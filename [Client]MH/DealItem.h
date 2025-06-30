@@ -51,6 +51,8 @@ public:
 	int GetCount()	{	return m_nItemCount;	}
 	void Render();
 
+	virtual inline void SetGradeAlexX(DWORD Val) {}
+	virtual inline DWORD GetGradeAlexX() { return 0; }
 private:
 	WORD m_wItemIdx;
 

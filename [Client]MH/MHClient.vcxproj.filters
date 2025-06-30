@@ -2693,6 +2693,9 @@
     <ClCompile Include="TopDungeon.cpp">
       <Filter>Interface\DIALOG\RankDialog</Filter>
     </ClCompile>
+    <ClCompile Include="CharacterPVPDialog.cpp">
+      <Filter>Interface\DIALOG</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MiniDumper.h">
@@ -4854,6 +4857,9 @@
     </ClInclude>
     <ClInclude Include="TopDungeon.h">
       <Filter>Interface\DIALOG\RankDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterPVPDialog.h">
+      <Filter>Interface\DIALOG</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

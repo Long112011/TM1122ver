@@ -505,7 +505,7 @@ void CExchangeManager::NetworkMsgParse( BYTE Protocol, void* pMsg )
 			pExItem->SetDurability( msg->ItemInfo.Durability );
 			pExItem->SetRareness( msg->ItemInfo.RareIdx );
 			pExItem->SetStoneIdx(msg->ItemInfo.StoneIdx);   // 2014-12-15 ¸½µ½
-
+			pExItem->SetGradeAlexX(msg->ItemInfo.ItemGradeAlexX);
 			WINDOWMGR->AddWindow( pExItem );
 
 			GAMEIN->GetExchangeDialog()->AddItem( 0, msg->wAbsPosition, pExItem );
@@ -559,6 +559,7 @@ void CExchangeManager::NetworkMsgParse( BYTE Protocol, void* pMsg )
 			pItem->SetStoneIdx(msg->ItemInfo.StoneIdx);   // 2014-12-15 µ½
 			pItem->SetGrow(msg->ItemInfo.ItemGrow);
 
+			pItem->SetGradeAlexX(msg->ItemInfo.ItemGradeAlexX);
 
 			ITEMMGR->GetItemOptionsAndToolTipFromInfoMsg(pItem, msg);
 

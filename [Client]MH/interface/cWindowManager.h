@@ -171,6 +171,7 @@ public:
 	void CreateMiniMapDlg();
 	void CreateMiniNoteDlg();
 	void CreateReviveDlg();
+
 	void CreateWantNpcDlg();
 	void CreateWantRegistDlg();
 	void CreateQuestTotalDlg();
@@ -409,6 +410,10 @@ public:
 	void CreateFadeDlg();
 
 	void CreateDungeonRankingDlg();
+	void CreateCharPvPDlg();
+
+	void CreateNewUpGrareAlexXDlg();
+
 	//++++ Common dialog +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	// dynamic create and auto release
 //	cWindow * CreateMoneyDlg();

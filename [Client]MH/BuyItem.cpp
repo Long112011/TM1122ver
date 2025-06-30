@@ -27,6 +27,7 @@ CBuyItem::CBuyItem()
 	{
 		SCRIPTMGR->GetImage(108+i, &m_ScrollImg[i], PFT_JACKPATH);
 	}
+	m_GradeAlexX = 0;
 }
 
 CBuyItem::~CBuyItem()
@@ -53,7 +54,7 @@ void CBuyItem::InitItem(ITEMBASE ItemInfo, WORD Volume, DWORD Money,DWORD Gold)
 	SetIconType( eIconType_LinkedItem );
 	SetData( ItemInfo.wIconIdx );
 	SetGrow( ItemInfo.ItemGrow );  //CoNaN 初始化设置成长数据! 2016-08-20
-
+	SetGradeAlexX(ItemInfo.ItemGradeAlexX);
 	ITEMMGR->SetToolTipIcon(this);
 }
 

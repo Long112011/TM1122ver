@@ -85,7 +85,7 @@ BOOL CStreetStallManager::LinkItem( CItem* pItem, ITEMBASE* pBase )
 	pExItem->SetRareness( pBase->RareIdx );
 	pExItem->SetStoneIdx(pBase->StoneIdx);  // 2014-12-15 到摆摊!
 	pExItem->SetGrow(pBase->ItemGrow);      // 2015-01-15 到摆摊！
-	
+	pExItem->SetGradeAlexX(pBase->ItemGradeAlexX);
 	pos = GAMEIN->GetStreetStallDialog()->AddItem( pExItem );
 	
 	if( pos == -1 ) 
@@ -832,7 +832,7 @@ void CStreetStallManager::LinkBuyItem( STREETSTALL_INFO* pStallInfo )
 			pExItem->SetItemParam( pStallInfo->Item[i].ItemParam );
 			pExItem->SetStoneIdx(pStallInfo->Item[i].dwStoneIdx);   // 2014-12-15 到摆摊!
 			pExItem->SetGrow(pStallInfo->Item[i].dwGrow);           // 2015-01-16 到摆摊!
-
+			pExItem->SetGradeAlexX(pStallInfo->Item[i].dwGradeAlexX);
 			//!!!
 			if( ITEMMGR->IsTitanEquipItem( pStallInfo->Item[i].wIconIdx ) )
 			{
@@ -1151,7 +1151,7 @@ void CStreetStallManager::NetworkMsgParse( BYTE Protocol, void* pMsg )
 
 			pExItem->SetLock( TRUE );
 			pExItem->SetMovable( FALSE );
-
+			pExItem->SetGradeAlexX(msg->ItemInfo.ItemGradeAlexX);
 			ITEMMGR->GetItemOptionsAndToolTipFromInfoMsg(pExItem, (MSG_LINKITEMOPTIONS*)msg);
 
 			char buf[32];
@@ -2098,7 +2098,7 @@ BOOL CStreetStallManager::SendSellItemMsg()
 	base.ItemParam = pItem->GetItemParam();
 	base.StoneIdx  = pItem->GetStoneIdx();   // 2014-12-15 获取
 	base.ItemGrow  = pItem->GetGrow();       // 2015-01-17 获取
-	
+	base.ItemGradeAlexX = pItem->GetGradeAlexX();
 	STREETSTALL_BUYINFO SellMsg;
 	
 	SellMsg.Category = MP_STREETSTALL;

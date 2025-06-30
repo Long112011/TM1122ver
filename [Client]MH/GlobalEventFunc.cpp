@@ -258,6 +258,9 @@
 #include "InstancesDungeon/InsDGEntranceInfoDialog.h"
 #include "InstancesDungeon/InsDGPartyMakeDialog.h"
 #include "InstancesDungeon/InsDGRankDialog.h"
+#include "CharacterPVPDialog.h"
+#include "NewUpGrareAlexXDlg.h"
+
 extern HWND _g_hWnd;
 extern BOOL jTweak;
 //extern BOOL   g_IsExit;
@@ -496,6 +499,8 @@ FUNC g_mt_func[] =
 	{ LoginIDDialog_hide, "LoginIDDialog_hide" },
 
 	{CS_BtnChangePass,"CS_BtnChangePass"},
+
+	{ ALEXX_NewUpGrareAlexX_DlgFunc,"ALEXX_NewUpGrareAlexX_DlgFunc" },
 	
 	{NULL, ""},	
 };
@@ -1063,17 +1068,37 @@ void MGI_SuryunDlgFunc(LONG lId, void * p, DWORD we)
 #include "FameManager.h"
 void CI_DlgFunc(LONG lId, void * p, DWORD we)
 {
-	if( we & WE_BTNCLICK && lId == CI_BESTTIP )
+	if (we & WE_BTNCLICK )
 	{
-		FAMETYPE val = HERO->GetFame();
 
-		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2670));
 
-		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2669),
-						FAMEMGR->GetSTR(val),
-						FAMEMGR->GetAGI(val),
-						FAMEMGR->GetCON(val),
-						FAMEMGR->GetINT(val));
+		if (lId == MY_INFO_BTN_OPEN_PVP_DIALOG)
+		{
+			GAMEIN->GetCharacterPvPDialog()->SetActive(TRUE);
+			GAMEIN->GetCharacterDialog()->SetPvpDialogActive(FALSE);
+		}
+		else if (lId == MY_INFO_PVP_BTN_CLOSE)
+		{
+			GAMEIN->GetCharacterPvPDialog()->SetActive(FALSE);
+			GAMEIN->GetCharacterDialog()->SetPvpDialogActive(TRUE);
+		}
+		else if (lId == CI_BESTTIP)
+		{
+			FAMETYPE val = HERO->GetFame();
+
+	
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2670));
+
+	
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2669),
+		
+				FAMEMGR->GetSTR(val),
+		
+				FAMEMGR->GetAGI(val),
+		FAMEMGR->GetCON(val),
+		FAMEMGR->GetINT(val)); 
+		}
+	
 
 		//GAMEIN->GetTipBrowserDlg()->Show();
 	}
@@ -5734,4 +5759,8 @@ void CS_BtnChangePass(LONG lId, void* p, DWORD we)
 {
 	if(we & WE_BTNCLICK && lId == MT_RESTPWD)
 		GAMEIN->GetRestPwdDlg()->Show();
+}
+void ALEXX_NewUpGrareAlexX_DlgFunc(LONG lId, void* p, DWORD we)
+{
+	GAMEIN->GetNewUpGrareAlexXDlg()->OnActionEvent(lId, p, we);
 }

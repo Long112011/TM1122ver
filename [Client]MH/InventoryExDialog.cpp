@@ -2418,6 +2418,63 @@ void CInventoryExDialog::Linking()
 		p_Gold = (cStatic*)GetWindowForID(IN_BACKGOLD);
 	}
 }
+CItem* CInventoryExDialog::GetItemLike30(WORD wItemIdx, WORD& OutPos)
+{
+	ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(wItemIdx);
+	if (pItemInfo->ItemKind & eSHOP_ITEM)
+	{
+		for (int i = 0; i < (SLOT_SHOPINVEN_NUM/*/2*/ + TABCELL_SHOPINVEN_PLUS_NUM)/*m_pItemShopInven->GetCellNum()*/; i++)
+		{
+			if (m_pItemShopInven->InPt(i + TP_SHOPINVEN_START))
+			{
+				if (!m_pItemShopInven->IsAddable(i))
+				{
+					CItem* pItem = (CItem*)m_pItemShopInven->GetIconForIdx(i);
+					if (pItem->GetItemIdx() == wItemIdx && !pItem->IsLocked())
+					{
+						OutPos = TP_SHOPINVEN_START + i;
+						return pItem;
+					}
+
+				}
+			}
+			else if (m_pItemShopInvenPlus->InPt(i + TP_SHOPINVEN_START))
+			{
+				if (!m_pItemShopInvenPlus->IsAddable(i - 20))
+				{
+					CItem* pItem = (CItem*)m_pItemShopInvenPlus->GetIconForIdx(i - 20);
+					if (pItem->GetItemIdx() == wItemIdx && !pItem->IsLocked())
+					{
+						OutPos = TP_SHOPINVEN_START + i;
+						return pItem;
+					}
+
+				}
+			}
+		}
+	}
+
+	BYTE TabNum = GetTabNum();
+	for (BYTE i = 0; i < TabNum; ++i)
+	{
+		cIconGridDialog* gridDlg = (cIconGridDialog*)GetTabSheet(i);
+
+		for (WORD j = 0; j < gridDlg->GetCellNum(); ++j)
+		{
+			if (!gridDlg->IsAddable(j))
+			{
+				CItem* pItem = (CItem*)gridDlg->GetIconForIdx(TP_INVENTORY_START + j);
+				if (pItem->GetItemIdx() == wItemIdx)
+				{
+					OutPos = TP_INVENTORY_START + i;
+					return pItem;
+				}
+			}
+		}
+	}
+	OutPos = 0;
+	return NULL;
+}
 CItem * CInventoryExDialog::GetItemLike(WORD wItemIdx)
 {
 	ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(wItemIdx);

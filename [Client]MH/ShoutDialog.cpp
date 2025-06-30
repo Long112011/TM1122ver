@@ -72,7 +72,7 @@ void CShoutDialog::OnActionEvent(LONG lId, void * p, DWORD we)
 				if(Pos>=0)
 				{
 					char ImgCode[10];
-					sprintf(ImgCode,"{{%02d",Pos);
+					sprintf(ImgCode, "&%02d", Pos);
 					m_pMsgBox->SetEditText(strcat(m_pMsgBox->GetEditText(),ImgCode));
 				}
 			}

@@ -342,7 +342,11 @@ public:
 	void RefreshLevelupPoint();
 	void SetHeroLevelupPoint( LEVELTYPE dwPoint )	{	m_HeroTotalInfo.LevelUpPoint = dwPoint;	}
 	DWORD GetHeroLevelUpPoint()					{	return m_HeroTotalInfo.LevelUpPoint;	}
-	
+
+	//ÊôÐÔ¹¥»÷Á¦
+	DWORD DoGetAttAttackPowerMax(WORD Attrib);
+	DWORD DoGetAttAttackPowerMin(WORD Attrib);
+	DWORD GetAttribPlusPercent(WORD Attrib);
 #ifdef _JAPAN_LOCAL_
 	DWORD GetExtraInvenSlot()					{	return m_CharacterInfo.ExtraInvenSlot;		}
 	DWORD GetExtraPyogukSlot()					{	return m_CharacterInfo.ExtraPyogukSlot;		}

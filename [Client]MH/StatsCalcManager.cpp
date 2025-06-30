@@ -34,6 +34,7 @@
 #include "TitanInventoryDlg.h"
 
 #include "FameManager.h"
+#include "NewUpGrareAlexXC_MGR.h"
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 
@@ -175,7 +176,14 @@ void CStatsCalcManager::CalcItemStats(PLAYERTYPE* pPlayer)
 		item_stats->MaxLife += (DWORD)(pItemInfo->Life*ApplyRate);
 		item_stats->MaxShield += (DWORD)(pItemInfo->Shield*ApplyRate);
 		item_stats->MaxNaeRyuk += (DWORD)(pItemInfo->NaeRyuk*ApplyRate);
-		
+		item_stats->PVPDef += 100 * (pItemInfo->PVPDef * ApplyRate);
+		item_stats->PVPADef += 100 * (pItemInfo->PVPADef * ApplyRate);
+		item_stats->PVPCri += 100 * (pItemInfo->PVPCri * ApplyRate);
+		item_stats->PVPADodge += 100 * (pItemInfo->PVPADodge * ApplyRate);
+		item_stats->PVPHit += 100 * (pItemInfo->PVPHit * ApplyRate);
+		item_stats->PVPAttack += 100 * (pItemInfo->PVPAttack * ApplyRate);
+		item_stats->PVPStunResist += 100 * (pItemInfo->PVPStunResist * ApplyRate);
+		item_stats->PVPStunTimeReduce += 100 * (pItemInfo->PVPStunTimeReduce * ApplyRate);
 		if(ITEMMGR->IsOptionItem(pTargetItemBase->wIconIdx, pTargetItemBase->Durability))
 		{
 //			DWORD chrid;
@@ -347,8 +355,169 @@ void CStatsCalcManager::CalcItemStats(PLAYERTYPE* pPlayer)
 			{
 				ASSERTMSG(pStoneOptionInfo,"GetItemStoneOption() is NULL");
 			}
-		}
 
+		}
+		if (pTargetItemBase->ItemGradeAlexX > 0)
+		{
+			DWORD Grade = pTargetItemBase->ItemGradeAlexX;
+			ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(pTargetItemBase->wIconIdx);
+			float increase_factor = 1.0; // ¡ÓË¹´¤èÒàÃÔèÁµé¹à»ç¹ 1.0 ËÃ×Í¤èÒÍ×è¹æ µÒÁ·Õè¤Ø³µéÍ§¡ÒÃ
+			// ãªé§Ò¹ increase_factor ËÅÑ§¨Ò¡¡ÓË¹´¤èÒàÃÔèÁµé?
+			//increase_factor = increase_factor * 1.03; // à¾ÔèÁ¤èÒà»ç¹ 3%
+			//increase_factor = increase_factor * 1.11; //og
+
+			if (pItemInfo->GenGol > 0)
+			{
+				increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[GENGOL_MINCHUB_CHERYUK_SIMMEK] * 1.00;
+				item_stats->GenGol += (WORD)(pItemInfo->GenGol * pow(increase_factor, Grade));
+			}
+			if (pItemInfo->MinChub > 0)
+			{
+				increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[GENGOL_MINCHUB_CHERYUK_SIMMEK] * 1.00;
+				item_stats->MinChub += (WORD)(pItemInfo->MinChub * pow(increase_factor, Grade));
+			}
+			if (pItemInfo->CheRyuk > 0)
+			{
+				increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[GENGOL_MINCHUB_CHERYUK_SIMMEK] * 1.00;
+				item_stats->CheRyuk += (WORD)(pItemInfo->CheRyuk * pow(increase_factor, Grade));
+			}
+			if (pItemInfo->SimMek > 0)
+			{
+				increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[GENGOL_MINCHUB_CHERYUK_SIMMEK] * 1.00;
+				item_stats->SimMaek += (WORD)(pItemInfo->SimMek * pow(increase_factor, Grade));
+			}
+			if (pItemInfo->Life > 0)
+			{
+				increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[LITE_SHIELD_NAERYUK_PHYDEF] * 1.00;
+				item_stats->MaxLife += (DWORD)(pItemInfo->Life * pow(increase_factor, Grade));
+			}
+			if (pItemInfo->Shield > 0)
+			{
+				increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[LITE_SHIELD_NAERYUK_PHYDEF] * 1.00;
+				item_stats->MaxShield += (DWORD)(pItemInfo->Shield * pow(increase_factor, Grade));
+			}
+			if (pItemInfo->NaeRyuk > 0)
+			{
+				increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[LITE_SHIELD_NAERYUK_PHYDEF] * 1.00;
+				item_stats->MaxNaeRyuk += (DWORD)(pItemInfo->NaeRyuk * pow(increase_factor, Grade));
+			}
+			if (pItemInfo->PhyDef > 0)
+			{
+				increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[LITE_SHIELD_NAERYUK_PHYDEF] * 1.00;
+				item_stats->PhysicalDefense += (WORD)(pItemInfo->PhyDef * pow(increase_factor, Grade));
+			}
+			if (pItemInfo->CriticalPercent > 0)
+			{
+				increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[CRITICAL] * 1.00;
+				item_stats->Critical += (DWORD)((pItemInfo->CriticalPercent * pow(increase_factor, Grade) * ApplyRate));
+			}
+			/**/
+			if (pItemInfo->MeleeAttackMin > 0)
+			{
+				increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[MELEE_RANGE_ATTACK] * 1.00;
+				item_stats->MeleeAttackPowerMin += (WORD)((pItemInfo->MeleeAttackMin * pow(increase_factor, Grade) * ApplyRate));
+			}
+			if (pItemInfo->MeleeAttackMax > 0)
+			{
+				increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[MELEE_RANGE_ATTACK] * 1.00;
+				item_stats->MeleeAttackPowerMax += (WORD)((pItemInfo->MeleeAttackMax * pow(increase_factor, Grade) * ApplyRate));
+			}
+			/**/
+			if (pItemInfo->RangeAttackMin > 0)
+			{
+				increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[MELEE_RANGE_ATTACK] * 1.00;
+				item_stats->RangeAttackPowerMin += (WORD)((pItemInfo->RangeAttackMin * pow(increase_factor, Grade) * ApplyRate));
+			}
+			if (pItemInfo->RangeAttackMax > 0)
+			{
+				increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[MELEE_RANGE_ATTACK] * 1.00;
+				item_stats->RangeAttackPowerMax += (WORD)((pItemInfo->RangeAttackMax * pow(increase_factor, Grade) * ApplyRate));
+			}
+			/**/
+			ATTRIBUTEREGIST AlexX_WhatTheFuckAttrAttack;
+			ATTRIBUTEREGIST AlexX_WhatTheFuckAttrRegist;
+
+			/*if (pItemInfo->AttrAttack.GetElement_Val(ATTR_FIRE) > 0)
+			{
+			increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[ELEMENT_ATTACK_REGIST] * 1.00;
+			AlexX_WhatTheFuckAttrAttack.SetElement_Val(ATTR_FIRE, pItemInfo->AttrAttack.GetElement_Val(ATTR_FIRE) * pow(increase_factor, Grade));
+			}
+			if (pItemInfo->AttrAttack.GetElement_Val(ATTR_WATER) > 0)
+			{
+			increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[ELEMENT_ATTACK_REGIST] * 1.00;
+			AlexX_WhatTheFuckAttrAttack.SetElement_Val(ATTR_WATER, pItemInfo->AttrAttack.GetElement_Val(ATTR_WATER) * pow(increase_factor, Grade));
+			}
+			if (pItemInfo->AttrAttack.GetElement_Val(ATTR_TREE) > 0)
+			{
+			increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[ELEMENT_ATTACK_REGIST] * 1.00;
+			AlexX_WhatTheFuckAttrAttack.SetElement_Val(ATTR_TREE, pItemInfo->AttrAttack.GetElement_Val(ATTR_TREE) * pow(increase_factor, Grade));
+			}
+			if (pItemInfo->AttrAttack.GetElement_Val(ATTR_IRON) > 0)
+			{
+			increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[ELEMENT_ATTACK_REGIST] * 1.00;
+			AlexX_WhatTheFuckAttrAttack.SetElement_Val(ATTR_IRON, pItemInfo->AttrAttack.GetElement_Val(ATTR_IRON) * pow(increase_factor, Grade));
+			}
+			if (pItemInfo->AttrAttack.GetElement_Val(ATTR_EARTH) > 0)
+			{
+			increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[ELEMENT_ATTACK_REGIST] * 1.00;
+			AlexX_WhatTheFuckAttrAttack.SetElement_Val(ATTR_EARTH, pItemInfo->AttrAttack.GetElement_Val(ATTR_EARTH) * pow(increase_factor, Grade));
+			}
+
+			if (pItemInfo->AttrRegist.GetElement_Val(ATTR_FIRE) > 0)
+			{
+			increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[ELEMENT_ATTACK_REGIST] * 1.00;
+			AlexX_WhatTheFuckAttrRegist.SetElement_Val(ATTR_FIRE, pItemInfo->AttrRegist.GetElement_Val(ATTR_FIRE) * pow(increase_factor, Grade));
+			}
+			if (pItemInfo->AttrRegist.GetElement_Val(ATTR_WATER) > 0)
+			{
+			increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[ELEMENT_ATTACK_REGIST] * 1.00;
+			AlexX_WhatTheFuckAttrRegist.SetElement_Val(ATTR_WATER, pItemInfo->AttrRegist.GetElement_Val(ATTR_WATER) * pow(increase_factor, Grade));
+			}
+			if (pItemInfo->AttrRegist.GetElement_Val(ATTR_TREE) > 0)
+			{
+			increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[ELEMENT_ATTACK_REGIST] * 1.00;
+			AlexX_WhatTheFuckAttrRegist.SetElement_Val(ATTR_TREE, pItemInfo->AttrRegist.GetElement_Val(ATTR_TREE) * pow(increase_factor, Grade));
+			}
+			if (pItemInfo->AttrRegist.GetElement_Val(ATTR_IRON) > 0)
+			{
+			increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[ELEMENT_ATTACK_REGIST] * 1.00;
+			AlexX_WhatTheFuckAttrRegist.SetElement_Val(ATTR_IRON, pItemInfo->AttrRegist.GetElement_Val(ATTR_IRON) * pow(increase_factor, Grade));
+			}
+			if (pItemInfo->AttrRegist.GetElement_Val(ATTR_EARTH) > 0)
+			{
+			increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[ELEMENT_ATTACK_REGIST] * 1.00;
+			AlexX_WhatTheFuckAttrRegist.SetElement_Val(ATTR_EARTH, pItemInfo->AttrRegist.GetElement_Val(ATTR_EARTH) * pow(increase_factor, Grade));
+			}
+
+			item_stats->AttributeAttack.AddATTRIBUTE_VAL(AlexX_WhatTheFuckAttrAttack, ApplyRate);
+			item_stats->AttributeResist.AddATTRIBUTE_VAL(AlexX_WhatTheFuckAttrRegist, ApplyRate);*/
+
+			bool kuy1 = false;
+			bool kuy2 = false;
+			for (int WhatTheFuck = ATTR_FIRE; WhatTheFuck <= ATTR_MAX; ++WhatTheFuck)
+			{
+				// T T AlexX So Sad
+				increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[ELEMENT_ATTACK_REGIST] * 1.00;
+
+				float val1 = (pItemInfo->AttrAttack.GetElement_Val(WhatTheFuck) * pow(increase_factor, Grade)) - pItemInfo->AttrAttack.GetElement_Val(WhatTheFuck);
+				AlexX_WhatTheFuckAttrAttack.SetElement_Val(WhatTheFuck, val1);
+				if (pItemInfo->AttrAttack.GetElement_Val(WhatTheFuck) > 0)
+				{
+					kuy1 = true;
+				}
+
+				float val2 = (pItemInfo->AttrRegist.GetElement_Val(WhatTheFuck) * pow(increase_factor, Grade)) - pItemInfo->AttrRegist.GetElement_Val(WhatTheFuck);
+				AlexX_WhatTheFuckAttrRegist.SetElement_Val(WhatTheFuck, val2);
+				if (pItemInfo->AttrRegist.GetElement_Val(WhatTheFuck) > 0)
+				{
+					kuy2 = true;
+				}
+			}
+			if (kuy1)
+				item_stats->AttributeAttack.AddATTRIBUTE_VAL(AlexX_WhatTheFuckAttrAttack, ApplyRate);
+			if (kuy2)
+				item_stats->AttributeResist.AddATTRIBUTE_VAL(AlexX_WhatTheFuckAttrRegist, ApplyRate);
+		}
 		// Ð§¹û¸½ 2015-01-15 
 
 		/*if(pTargetItemBase->ItemGrow>0)
@@ -381,7 +550,7 @@ void CStatsCalcManager::CalcItemStats(PLAYERTYPE* pPlayer)
 	}
 
 
-	item_stats->AttributeResist.CheckLimit(1);	// ÀúÇ×·ÂÀº ÃÖ´ë°ªÀÌ 1
+	item_stats->AttributeResist.CheckLimit(10);	///ÏÞÖÆ·¨¿¹ÉÏÏÞ
 
 	// 06. 03. ±¹³»¹«½Ö - ÀÌ¿µÁØ
 	if(MUSSANGMGR->IsMussangMode())

@@ -1310,6 +1310,29 @@ void CPlayer::CalcAvatarOption()
 		// 묵혼모드발동시 데미지증가
         if( pItemInfo->RangeAttackMax > 0 )
 			m_AvatarOption.MussangDamage += pItemInfo->RangeAttackMax;
+		if (pItemInfo->PVPCri > 0)
+			m_AvatarOption.PVPCri += pItemInfo->PVPCri * 100;
+
+		if (pItemInfo->PVPAttack > 0)
+			m_AvatarOption.PVPAttack += pItemInfo->PVPAttack * 100;
+
+		if (pItemInfo->PVPDef > 0)
+			m_AvatarOption.PVPDef += pItemInfo->PVPDef * 100;
+
+		if (pItemInfo->PVPADef > 0)
+			m_AvatarOption.PVPADef += pItemInfo->PVPADef * 100;
+
+		if (pItemInfo->PVPADodge > 0)
+			m_AvatarOption.PVPADodge += pItemInfo->PVPADodge * 100;
+
+		if (pItemInfo->PVPHit > 0)
+			m_AvatarOption.PVPHit += pItemInfo->PVPHit * 100;
+
+		if (pItemInfo->PVPStunResist > 0)
+			m_AvatarOption.PVPStunResist += pItemInfo->PVPStunResist * 100;
+
+		if (pItemInfo->PVPStunTimeReduce > 0)
+			m_AvatarOption.PVPStunTimeReduce += pItemInfo->PVPStunTimeReduce * 100;
 	}
 
 	// Character Dialog

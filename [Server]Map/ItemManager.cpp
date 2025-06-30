@@ -70,6 +70,7 @@ CItemManager::CItemManager()
 	m_SetItemOptionList.Initialize(MAX_SETITEM_KIND_NUM);
 
 	m_TipItemList.Initialize(200);
+	m_UpGradeItemPercentList.Initialize(100);//+30
 	LoadTipItem();
 }
 CItemManager::~CItemManager()
@@ -137,6 +138,14 @@ CItemManager::~CItemManager()
 		pSetItemOption = NULL;
 	}
 	m_SetItemOptionList.RemoveAll();
+
+	ITEM_INFO_UPGRADE_PRECENT* pUpGradeItemPercentList = NULL;
+	m_UpGradeItemPercentList.SetPositionHead();
+	while (pUpGradeItemPercentList = m_UpGradeItemPercentList.GetData())
+	{
+		delete pUpGradeItemPercentList;
+	}
+	m_UpGradeItemPercentList.RemoveAll();
 }
 ITEMOBTAINARRAYINFO * CItemManager::Alloc(CPlayer * pPlayer, WORD c, WORD p, DWORD dwObjectID, DWORD dwFurnisherIdx, WORD wType, WORD ObtainNum, DBResult CallBackFunc, DBResultEx CallBackFuncEx, int BuyType)
 {
@@ -3367,6 +3376,25 @@ void CItemManager::LoadItemList()
 	file.Release();
 	LoadTipItem();
 }
+void CItemManager::LoadAlexXUpGradeItemPercent()
+{
+	CMHFile file;
+	if (!file.Init("Resource/AlexX_UpGradeItemPercent.bin", "rb"))
+		return;
+
+	ITEM_INFO_UPGRADE_PRECENT* TempInfo = NULL;
+	while (1)
+	{
+		if (file.IsEOF())
+			break;
+		TempInfo = new ITEM_INFO_UPGRADE_PRECENT;
+		TempInfo->ItemLv = file.GetDword();
+		TempInfo->MaxPercent = file.GetWord();
+		TempInfo->Money = file.GetWord();
+		m_UpGradeItemPercentList.Add(TempInfo, TempInfo->ItemLv);
+	}
+	file.Release();
+}
 void CItemManager::ReloadItemList()
 {
 	ITEM_INFO * pInfo = NULL;
@@ -3699,6 +3727,15 @@ void CItemManager::SetItemInfo(WORD ItemIdx, ITEM_INFO* pInfo, CMHFile* pFile)
 	pInfo->NaeRyukRecoverRate = pFile->GetFloat();
 	pInfo->ItemType = pFile->GetWord();
 	pInfo->wSetItemKind = pFile->GetWord();
+	//ÌìÄ« pvp itemlist ¼ÓÈë
+	pInfo->PVPCri = pFile->GetFloat();
+	pInfo->PVPAttack = pFile->GetFloat();
+	pInfo->PVPDef = pFile->GetFloat();
+	pInfo->PVPADef = pFile->GetFloat();
+	pInfo->PVPADodge = pFile->GetFloat();
+	pInfo->PVPHit = pFile->GetFloat();
+	pInfo->PVPStunResist = pFile->GetFloat();
+	pInfo->PVPStunTimeReduce = pFile->GetFloat();
 }
 void CItemManager::NetworkMsgParse(DWORD dwConnectionIndex, BYTE Protocol, void* pMsg)
 {
@@ -7815,6 +7852,22 @@ void CItemManager::StoneItemDBResultEx(CPlayer * pPlayer, DWORD wItemDBIdx, POST
 	msg.StoneInfo = *pStoneInfo;
 	pPlayer->SendMsg(&msg, sizeof(msg));
 }
+int CItemManager::NewUpGrareItem(CPlayer* pPlayer, MSG_NEWYPGRARE_ALEXX* pMsg)
+{
+	MSG_NEWYPGRARE_ALEXX* pmsg = (MSG_NEWYPGRARE_ALEXX*)pMsg;
+
+	//const ITEMBASE * pStoneBase = GetItemInfoAbsIn(pPlayer, pmsg->);
+
+	const ITEMBASE* pTargetBase = GetItemInfoAbsIn(pPlayer, pmsg->ItemPosition);
+
+	ItemGradeAlexXUpdate(pPlayer->GetID(), pTargetBase->dwDBIdx, pTargetBase->ItemGradeAlexX + 1);
+	return 1;
+}
+
+ITEM_INFO_UPGRADE_PRECENT* CItemManager::GetUpGradeItemPercentList(DWORD lv)
+{
+	return m_UpGradeItemPercentList.GetData(lv);
+}
 int CItemManager::SetItemLock(CPlayer * pPlayer, DWORD ItemIdx, WORD ItemPos, DWORD StoneIdx, WORD StonePos)
 {
 	const ITEMBASE * pTargetItemBase = GetItemInfoAbsIn(pPlayer, ItemPos);
@@ -7968,6 +8021,17 @@ void CItemManager::GrowItemDBResult(CPlayer* pPlayer, DWORD wTargetItemDBIdx, PO
 	msg.dwData1 = wTargetItemDBIdx;
 	msg.dwData2 = wTargetItemPos;
 	msg.dwData3 = dwItemGrow;
+	pPlayer->SendMsg(&msg, sizeof(msg));
+}
+void CItemManager::GradeAlexXItemDBResult(CPlayer* pPlayer, DWORD wTargetItemDBIdx, POSTYPE wTargetItemPos, WORD wItemGradeAlexX)
+{
+	MSG_DWORD4 msg;
+	msg.Category = MP_ITEMEXT;
+	msg.Protocol = MP_ITEM_GRADEALEXX_ACK;
+	msg.dwObjectID = pPlayer->GetID();
+	msg.dwData1 = wTargetItemDBIdx;
+	msg.dwData2 = wTargetItemPos;
+	msg.dwData3 = wItemGradeAlexX;
 	pPlayer->SendMsg(&msg, sizeof(msg));
 }
 /*BOOL CItemManager::CanMixItem(WORD wItemIndex)

@@ -21,6 +21,8 @@
 
 class CVirtualItem : public CBaseItem  
 {
+	bool IsWTF;
+
 public:
 	CVirtualItem();
 	virtual ~CVirtualItem();
@@ -39,6 +41,10 @@ public:
 	// 2015-01-14 »ñÈ¡
 	DWORD    GetGrow()				{   return  m_pItemLink->GetGrow();}
 	void SetLinkItem(CBaseItem * pItem);
+
+	DWORD   GetGradeAlexX() { return  m_pItemLink->GetGradeAlexX(); }
+	void SetIsWTF(bool Val) { IsWTF = Val; }
+
 	CBaseItem * GetLinkItem()
 	{
 		return m_pItemLink;

@@ -260,6 +260,19 @@ void CItem::Render()
 		}
 #endif
 	}
+	if (GetGradeAlexX())
+	{
+		if (pInfo->ItemKind >= eYOUNGYAK_ITEM && pInfo->ItemKind <= eCHANGE_ITEM_LOCK)
+		{
+			char text[64];
+			//std::string plusNum = match.str();
+			sprintf(text, "+%d", GetGradeAlexX());
+			RECT rectShadow = { (LONG)m_absPos.x - 0, (LONG)m_absPos.y - 1, 1, 1 };
+			CFONT_OBJ->RenderFont(13, text, strlen(text), &rectShadow, RGB_HALF(10, 10, 10));
+			RECT rect = { (LONG)m_absPos.x - 1, (LONG)m_absPos.y - 2, 1, 1 };
+			CFONT_OBJ->RenderFont(13, text, strlen(text), &rect, RGBA_MERGE(RGB_HALF(255, 255, 0), 255));
+		}
+	}
 	if (GetItemKind() == eYOUNGYAK_ITEM)  //[³ÔËŽ»ØšâäÖÈ¾][2017/11/27]
 	{
 		YOUNGYAK_ITEM_DELAY_TYPE * Tmp = NULL;
@@ -295,6 +308,7 @@ void CItem::Render()
 			}*/
 		}
 	}
+
 	if(m_ItemBaseInfo.ItemStatic == ITEM_STATIC_LUCK)
 	{
 		SCRIPTMGR->GetImage( 18, &m_JackIcon, PFT_JACKPATH );

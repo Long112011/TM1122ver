@@ -224,6 +224,8 @@
 
 #include "FadeDlg.h"
 #include "TopDungeon.h"
+#include "CharacterPVPDialog.h"
+#include "NewUpGrareAlexXDlg.h"
 
 extern HWND _g_hWnd;
 extern BOOL m_SafeIconShow;
@@ -426,6 +428,8 @@ void cWindowManager::CreateGameIn()
 	CreateFadeDlg();
 
 	CreateDungeonRankingDlg();
+	CreateCharPvPDlg();
+	CreateNewUpGrareAlexXDlg();
 
 #ifdef	_DEBUGTICK
 	DWORD	dwEndTick = GetTickCount();
@@ -505,6 +509,7 @@ void cWindowManager::Init2()
 	m_pDestroyWindowRef = new cPtrList;
 	m_pScreenTextList = new cPtrList;
 	m_pPlayerChatTooltip = new cPtrList;
+	m_pDestroyWindowRef = new cPtrList;
 	m_pScriptManager->InitParseTypeData();
 	cMsgBox::InitMsgBox();
 	
@@ -763,6 +768,63 @@ void cWindowManager::Init()
 
 	cMsgBox::InitMsgBox();
 }
+
+BOOL cWindowManager::CreateFontObjectToFile()
+{
+	char line[256] = { 0, };
+	CMHFile fp;
+	if (!fp.Init("./Image/Font.bin", "rb"))
+		return FALSE;
+	LOGFONT	font;
+	int		nIdx = 0;
+	font.lfEscapement = 0;
+	font.lfOrientation = 0;
+	//font.lfStrikeOut = 0;
+	font.lfCharSet = DEFAULT_CHARSET;
+	font.lfOutPrecision = 0;
+	font.lfClipPrecision = 0;
+	font.lfQuality = PROOF_QUALITY;
+	font.lfPitchAndFamily = 0;
+	while (fp.IsEOF() == FALSE)
+	{
+		fp.GetString(line);
+		if (line[0] == '@')
+		{
+			fp.GetLineX(line, 256);
+			continue;
+		}
+		if (strcmp(line, "#FONTCHARSET") == 0)
+			font.lfCharSet = fp.GetInt();
+		else if (strcmp(line, "#FONT") == 0)
+		{
+			if (nIdx == FONTMAX - 1)
+			{
+				MessageBox(0, "More than it should detected!...", fp.GetFileName(), MB_OK);
+				continue;
+			}
+
+			nIdx = fp.GetInt();
+			fp.GetStringInQuotation(line);
+			lstrcpy(font.lfFaceName, line);
+			int fontsize = fp.GetInt();
+			font.lfHeight = -MulDiv(fontsize, 96, 72);
+			font.lfWidth = -font.lfHeight / 2;
+			font.lfWeight = fp.GetInt();
+			font.lfUnderline = fp.GetInt();
+			font.lfItalic = fp.GetInt();
+			font.lfStrikeOut = fp.GetByte();
+			CFONT_OBJ->CreateFontObject(&font, nIdx);
+		}
+
+	}
+	if (nIdx < FONTMAX - 1)
+	{
+		MessageBox(0, "Font line tak complete \nPlease check!...", fp.GetFileName(), MB_OK);
+	}
+	fp.Release();
+	return TRUE;
+}
+
 //BOOL cWindowManager::CreateFontObjectToFile()
 //{
 //	char line[256] = { 0, };
@@ -1488,6 +1550,17 @@ void cWindowManager::CreateCharDlg()
 	AddWindow(window);
 	GAMEIN->SetCharacterDialog((CCharacterDialog *)window);
 	GAMEIN->GetCharacterDialog()->Linking();
+}
+void cWindowManager::CreateCharPvPDlg()
+{
+	cWindow* window = GetDlgInfoFromFile("./image/InterfaceScript/MyInfoPVP.bin", "rb");
+	VECTOR2 Pos1;
+	Pos1.x = ((float)GET_MAINWIN_W / 2 - window->GetWidth() / 2);
+	Pos1.y = ((float)GET_MAINWIN_H / 2 - window->GetHeight() / 2);
+	window->SetAbsXY(Pos1.x, Pos1.y);
+	AddWindow(window);
+	GAMEIN->SetCharacterPvPDialog((CCharacterPvpDialog*)window);
+	GAMEIN->GetCharacterPvPDialog()->Linking();
 }
 void cWindowManager::CreateMugongSuryunDlg()
 {
@@ -2499,6 +2572,10 @@ void cWindowManager::Preprocess()
 			LONG x = MOUSE->GetMouseX();
 			LONG y = MOUSE->GetMouseY();
 			m_pDragDialog->SetAbsXY(x - m_OldX, y - m_OldY);
+			cWindow* window = GetWindowForIDEx(m_id);
+			//if (window->GetType() == WT_CHARINFODIALOG)
+			//	GAMEIN->GetCharacterPvPDialog()->SetAbsXY(m_pDragDialog->GetAbsX() + 303, m_pDragDialog->GetAbsY() + 18);
+
 			DISPLAY_INFO	dispInfo;
 			GAMERESRCMNGR->GetDispInfo(&dispInfo);
 			RECT rect = { 0, 0, dispInfo.dwWidth, dispInfo.dwHeight };
@@ -2509,6 +2586,8 @@ void cWindowManager::Preprocess()
 				m_pDragDialog->SetAbsXY(magPos.x, magPos.y);
 			if (cJackAnimationManager::MagProcess(&rect, (cWindow*)m_pDragDialog, &magPos))
 				m_pDragDialog->SetAbsXY(magPos.x, magPos.y);
+			if (window->GetType() == WT_CHARINFODIALOG)
+				GAMEIN->GetCharacterPvPDialog()->SetAbsXY(magPos.x + 303, magPos.y + 18);
 		}
 	}
 }
@@ -3794,4 +3873,20 @@ void cWindowManager::CreateDungeonRankingDlg()
 	CTopDungeon * pDlg = (CTopDungeon*)window;
 	GAMEIN->SetTopDungeon(pDlg);
 	GAMEIN->GetTopDungeon()->Linking();
+}
+void cWindowManager::CreateNewUpGrareAlexXDlg()
+{
+	cWindow* window = NULL;
+	window = GetDlgInfoFromFile("./image/InterfaceScript/NewUpGrareAlexXDlg.bin", "rb");
+	ASSERT(window);
+
+	VECTOR2 Pos1;
+	Pos1.x = ((float)GET_MAINWIN_W / 2 - window->GetWidth() / 2);
+	Pos1.y = ((float)GET_MAINWIN_H / 2 - window->GetHeight() / 2);
+	window->SetAbsXY(Pos1.x, Pos1.y);
+	AddWindow(window);
+	CNewUpGrareAlexXDlg* pDlg = (CNewUpGrareAlexXDlg*)window;
+	GAMEIN->SetNewUpGrareAlexXDlg(pDlg);
+	GAMEIN->GetNewUpGrareAlexXDlg()->Linking();
+
 }

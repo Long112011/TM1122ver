@@ -40,11 +40,13 @@ CVirtualItem::CVirtualItem()
 	{
 		SCRIPTMGR->GetImage(108+i, &m_ScrollImg[i], PFT_JACKPATH);
 	}
+	IsWTF = 0;
 }
 
 CVirtualItem::~CVirtualItem()
 
 {
+	IsWTF = 0;
 	m_pItemLink = NULL;
 }
 void CVirtualItem::SetLinkItem(CBaseItem * pItem)
@@ -170,6 +172,41 @@ void CVirtualItem::Render()
 		CFONT_OBJ->RenderFont(0,nums,strlen(nums),&rect,RGBA_MERGE(m_dwImageRGB, m_alpha * m_dwOptionAlpha / 100 ));		// color hard coding : taiyo 
 	}
 #endif
+	if (GetGradeAlexX() != 0)
+	{
+		if (pInfo->ItemKind >= eYOUNGYAK_ITEM && pInfo->ItemKind <= eCHANGE_ITEM_LOCK)
+		{
+			char text[64];
+			//std::string plusNum = match.str();
+			if (IsWTF)
+			{
+				sprintf(text, "+%d", GetGradeAlexX() + 1);
+			}
+			else
+			{
+				sprintf(text, "+%d", GetGradeAlexX());
+			}
+			RECT rectShadow = { (LONG)m_absPos.x - 0, (LONG)m_absPos.y - 1, 1, 1 };
+			CFONT_OBJ->RenderFont(13, text, strlen(text), &rectShadow, RGB_HALF(10, 10, 10));
+			RECT rect = { (LONG)m_absPos.x - 1, (LONG)m_absPos.y - 2, 1, 1 };
+			CFONT_OBJ->RenderFont(13, text, strlen(text), &rect, RGBA_MERGE(RGB_HALF(255, 255, 0), 255));
+		}
+	}
+	else if (GetGradeAlexX() == 0)
+	{
+		char text[64];
+		if (IsWTF)
+		{
+			if (pInfo->ItemKind >= eYOUNGYAK_ITEM && pInfo->ItemKind <= eCHANGE_ITEM_LOCK)
+			{
+				sprintf(text, "+%d", GetGradeAlexX() + 1);
+				RECT rectShadow = { (LONG)m_absPos.x - 0, (LONG)m_absPos.y - 1, 1, 1 };
+				CFONT_OBJ->RenderFont(13, text, strlen(text), &rectShadow, RGB_HALF(10, 10, 10));
+				RECT rect = { (LONG)m_absPos.x - 1, (LONG)m_absPos.y - 2, 1, 1 };
+				CFONT_OBJ->RenderFont(13, text, strlen(text), &rect, RGBA_MERGE(RGB_HALF(255, 255, 0), 255));
+			}
+		}
+	}
 }
 
 

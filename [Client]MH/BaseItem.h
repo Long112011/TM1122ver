@@ -55,6 +55,8 @@ public:
 	virtual inline DWORD    GetGrow()  {return  0;}
 	virtual inline void     SetGrow(DWORD Val)  {}
 
+	virtual inline void SetGradeAlexX(DWORD Val) {}
+	virtual inline DWORD GetGradeAlexX() { return 0; }
 };
 
 #endif // !defined(AFX_BASEITEM_H__DBA8F3D4_D724_47CC_AB85_FB6382D443FD__INCLUDED_)

@@ -139,7 +139,7 @@ ERROR_ITEM CItemSlot::InsertItemAbs(CPlayer * pPlayer, POSTYPE absPos, ITEMBASE 
 
 // 2014-11-14 UpdateItemAbs 
 
-ERROR_ITEM CItemSlot::UpdateItemAbs(CPlayer * pPlayer, POSTYPE whatAbsPos, DWORD dwDBIdx, WORD wItemIdx, POSTYPE position, POSTYPE quickPosition, DURTYPE Dur, WORD flag, WORD state, DWORD RareDBIdx,DWORD StoneIdx,DWORD Grow,char * PowerUp,char * Green)
+ERROR_ITEM CItemSlot::UpdateItemAbs(CPlayer * pPlayer, POSTYPE whatAbsPos, DWORD dwDBIdx, WORD wItemIdx, POSTYPE position, POSTYPE quickPosition, DURTYPE Dur, WORD flag, WORD state, DWORD RareDBIdx,DWORD StoneIdx,DWORD Grow,char * PowerUp,char * Green, DWORD GradeAlexX)
 {
 	bIsMovePack = false;//kiv
 	if( !IsPosIn(whatAbsPos) )	return EI_OUTOFPOS;
@@ -196,7 +196,8 @@ ERROR_ITEM CItemSlot::UpdateItemAbs(CPlayer * pPlayer, POSTYPE whatAbsPos, DWORD
 
 	if(flag & UB_GREEN)
 		strcpy(m_ItemBaseArray[whatAbsPos].Green,Green);
-
+	if (flag & UB_GRADEALEXX)
+		m_ItemBaseArray[whatAbsPos].ItemGradeAlexX = GradeAlexX;
 	// magi82 - 노점상 한번이라도 낱개로 팔면 그다음부터 통째로 팔아지지않는 버그 수정
 	m_SlotInfoArray[whatAbsPos].wState = ( state & ~(SS_LOCKOMIT|SS_CHKDBIDX) );
 	m_SlotInfoArray[whatAbsPos].bLock = FALSE;

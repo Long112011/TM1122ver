@@ -28,7 +28,7 @@
 #include "GameIn.h"
 #include "MainBarDialog.h"
 #include "ChatManager.h"
-
+#include "CharacterPVPDialog.h"
 #include "famemanager.h"
 #ifdef _JAPAN_LOCAL_
 #include "Hero.h"
@@ -106,12 +106,17 @@ void CCharacterDialog::Linking()
 	m_pPointMinusBtn[SIMMEK_POINT] = (cButton *)GetWindowForID(CI_SIMMEK_POINT2);
 	m_pPointMinusBtn[MINCHUB_POINT] = (cButton *)GetWindowForID(CI_MINCHUB_POINT2);
 	m_pPointMinusBtn[CHERYUK_POINT] = (cButton *)GetWindowForID(CI_CHERYUK_POINT2);
+	
+	m_pPvpDialog = (cButton*)GetWindowForID(MY_INFO_BTN_OPEN_PVP_DIALOG);
 
 	for(int n=0;n<ATTR_MAX;++n)
 	{
 		m_AttrDefComponent.pStatic.SetElement_Val(ATTR_FIRE+n,(cStatic *)GetWindowForID(CI_CHARHWA+n));
 		m_AttrDefComponent.pGuage.SetElement_Val(ATTR_FIRE+n,(cGuagen *)GetWindowForID(CI_DEFENCE_HWA+n));
 	}
+
+	m_pPvpDialog->SetActive(TRUE);
+
 }
 void CCharacterDialog::Init(LONG x, LONG y, WORD wid, WORD hei, cImage * basicImage, LONG ID)
 {
@@ -119,7 +124,7 @@ void CCharacterDialog::Init(LONG x, LONG y, WORD wid, WORD hei, cImage * basicIm
 	//m_type = WT_CHARINFODIALOG;
 }
 
-void CCharacterDialog::UpdateData()
+void CCharacterDialog::UpdateData()//更新属性列表功能
 {
 	BASEOBJECT_INFO ObjInfo;
 	CHARACTER_TOTALINFO ChaInfo;
@@ -170,6 +175,8 @@ void CCharacterDialog::UpdateData()
 
 	if( IsActive() == TRUE )
 		RefreshPointInfo();
+
+	GAMEIN->GetCharacterPvPDialog()->UpdateData();
 }
 
 void CCharacterDialog::UpdateForStageAbility()
@@ -577,6 +584,14 @@ void CCharacterDialog::SetActive( BOOL val )
 		if( val == TRUE )
 			pDlg->SetAlram( OPT_CHARACTERDLGICON, FALSE );
 	}	
+	CCharacterPvpDialog* pDlg1 = GAMEIN->GetCharacterPvPDialog();
+	if (pDlg1)
+	{
+		if (val == FALSE)
+			pDlg1->SetActive(FALSE);
+	}
+	if (val == FALSE)
+		SetPvpDialogActive(TRUE);
 }
 
 void CCharacterDialog::RefreshInfo()
@@ -592,6 +607,8 @@ void CCharacterDialog::RefreshInfo()
 	SetCritical();
 	SetReSet();   // refresh reset idx 2014-05-06
 	SetIdx();
+
+	GAMEIN->GetCharacterPvPDialog()->RefreshInfo();
 }
 
 void CCharacterDialog::SetStage( BYTE Stage )
@@ -605,7 +622,10 @@ void CCharacterDialog::SetStage( BYTE Stage )
 	case eStage_Tal:		m_ppStatic.stage->SetStaticText( CHATMGR->GetChatMsg(893) );		break;
 	}
 }
-
+void CCharacterDialog::SetPvpDialogActive(BOOL val)
+{
+	m_pPvpDialog->SetActive(val);
+}
 
 
 

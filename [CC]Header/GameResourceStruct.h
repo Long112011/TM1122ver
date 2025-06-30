@@ -404,7 +404,28 @@ struct ITEM_INFO
 	WORD wAcquireSkillIdx2;	
 	WORD wDeleteSkillIdx;	
 	WORD wSetItemKind;		
+
+	// 天墨技术团 PVP 相关属性
+	float PVPCri;      // PVP 暴击
+	float PVPAttack;   // PVP 伤害加成
+	float PVPDef;      // PVP 物理防御
+	float PVPADef;     // PVP 属性防御
+	float PVPADodge;   // PVP 闪避
+	float PVPHit;      // PVP 命中
+
+	//// 新增晕眩抗性 & 晕眩时间减少
+	float PVPStunResist;     // PVP 眩晕抗性（0.2 = 20% 免疫眩晕）
+	float PVPStunTimeReduce; // PVP 眩晕时间减少（0.01 = 1% 缩短时间）
 };
+
+/*UpGradeItemPercent*///+30
+struct ITEM_INFO_UPGRADE_PRECENT
+{
+	DWORD ItemLv;
+	DWORD MaxPercent;
+	DWORD Money;
+};
+
 struct SET_ITEM_OPTION
 {
 	WORD wIndex;									

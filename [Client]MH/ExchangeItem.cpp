@@ -18,6 +18,7 @@ CExchangeItem::CExchangeItem()
 	{
 		SCRIPTMGR->GetImage(108+i, &m_ScrollImg[i], PFT_JACKPATH);
 	}
+	m_GradeAlexX = 0;
 }
 CExchangeItem::~CExchangeItem()
 {

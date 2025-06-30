@@ -249,6 +249,13 @@ public:
 	unsigned int GetTotalEmptySlotNum(CItemSlot* pSlot); //060612 Add by wonju
 	WORD GetCanBuyNumInSpace(CPlayer * pPlayer, CItemSlot * pSlot, DWORD whatItemIdx, DURTYPE whatItemNum, WORD * EmptyCellPos, WORD & EmptyCellNum,WORD buyType=0);
 
+	int NewUpGrareItem(CPlayer* pPlayer, MSG_NEWYPGRARE_ALEXX* pMsg);
+	ITEM_INFO_UPGRADE_PRECENT* GetUpGradeItemPercentList(DWORD lv);
+
+	//
+	void GradeAlexXItemDBResult(CPlayer* pPlayer, DWORD wTargetItemDBIdx, POSTYPE wTargetItemPos, WORD wItemGradeAlexX);
+	//
+
 private:
 
 	WORD GetCanBuyNumInMoney(CPlayer * pPlayer, WORD butNum, MONEYTYPE Price);
@@ -293,7 +300,7 @@ private:
 	CYHHashTable<ITEM_INFO> m_UnfitItemInfoListForShout;
 	CYHHashTable<sTIPITEMINFO>		m_TipItemList;
 	
-
+	CYHHashTable<ITEM_INFO_UPGRADE_PRECENT> m_UpGradeItemPercentList;
 
 public:
 	int		ObtainItemFromQuest( CPlayer* pPlayer, WORD wItemKind, DWORD dwItemNum );
@@ -345,6 +352,7 @@ public:
 
 	//void LoadMixItemInfo();
 	//BOOL CanMixItem(WORD wItemIndex);
+	void LoadAlexXUpGradeItemPercent();		
 };
 
 

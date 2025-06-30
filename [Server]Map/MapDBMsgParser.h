@@ -383,7 +383,7 @@ enum   DBMESSAGEIDFUNC
 
 	eInstanceDungeonRankUpdate,
 	eInstanceDungeonRankLoad,
-
+		eItemUpdateGradeAlexX,
 	MaxQuery
 };
 #define STORED_TEST_QUERY	"UP_GAME_TEST_QUERY"
@@ -639,7 +639,7 @@ enum   DBMESSAGEIDFUNC
 #define STORED_LASTMAP_UPDATE    "dbo.JACK_LASTMAP_UPDATE"
 
 #define STORED_LOGINEVENT_UPDATE		"dbo.JACK_LOGINEVENT_UPDATE"
-
+#define STORED_ITEM_UPDATE_GradeAlexX             "dbo.MP_ITEM_Update_GradeAlexX"
 enum AuctionPage
 {
 	eAT_DBIdx, eAT_ItemDBIdx, eAT_ItemIdx, eAT_SellNum,  eAT_SellerID, eAT_EndDate, eAT_EndTime,
@@ -689,7 +689,7 @@ enum CHMugong
 enum CHItem	
 {
 	eCI_ObjectID = 0, eCI_DBIDX, eCI_IDX, eCI_Position, eCI_QPosition, eCI_Durability, eCI_Param, eCI_RareIdx,eCI_StoneIdx, eCI_Static,eCI_Grow,
-	eCI_PowerUp,eCI_Green,//1
+	eCI_PowerUp,eCI_Green, eCI_GradeAlexX//1
 };
 
 enum CHItemRare
@@ -982,7 +982,7 @@ enum Munpaboardinfo
 
 enum Munpaitem
 {
-	eMu_IMunpaID, eMu_IDBIDX, eMu_IIDX, eMu_IPosition, eMu_IDurability, eMu_IRareIdx,eMu_IStoneIdx,eMu_IStatic,eMu_IGrow, //weiye 2015-10-25 仓库和成长数据
+	eMu_IMunpaID, eMu_IDBIDX, eMu_IIDX, eMu_IPosition, eMu_IDurability, eMu_IRareIdx,eMu_IStoneIdx,eMu_IStatic,eMu_IGrow, eMu_GradeAlexX //weiye 2015-10-25 仓库和成长数据
 };
 
 enum Munpacreateboardinfo
@@ -1016,7 +1016,7 @@ enum PyogukItemInfo
 {
 	ePI_DBIdx, ePI_IconIdx, ePI_Positon, ePI_QPosition, ePI_Durability, ePI_RareIdx,ePI_StoneIdx,ePI_Static,ePI_Grow,  // 2014-11-15 数据附加 , 数据, 成长数据
 
-	ePI_PowerUp,ePI_Green,
+	ePI_PowerUp,ePI_Green, ePI_GradeAlexX
 };
 
 enum Pyogukitem
@@ -1028,7 +1028,7 @@ enum ePetInvenItemInfo
 {
 	//ePIII_DBIdx, ePIII_IconIdx, ePIII_Position, ePIII_Durability, ePIII_RareIdx,
 	ePIII_ObjectID = 0, ePIII_DBIDX, ePIII_IDX, ePIII_Position, ePIII_QPosition, ePIII_Durability, ePIII_MunpaIdx, ePIII_PyogukIdx, ePIII_ShopIdx, ePIII_Param, ePIII_RareIdx,ePIII_StoneIdx,ePIII_STATIC,ePIII_Grow, // 数据附加到宠物包袱! 数据，成长数据附加 2014-11-19
-	ePIII_PowerUp,ePIII_Green,
+	ePIII_PowerUp,ePIII_Green, ePII_GradeAlexX
 };
 
 enum Friendlogout
@@ -1100,7 +1100,7 @@ enum ShopItem
 {
 	eMItm_ItemDBIdx, eMItm_ItemIdx, eMItm_Position, eMItm_Durability, eMItm_Param,eMItm_Static,eMItm_Grow,  // 和成长附加 2015-01-14
 
-	eMI_PowerUp,eMI_Green,
+	eMI_PowerUp,eMI_Green, eMItm_GradeAlexX
 };
 enum ShopItemUseInfo
 {
@@ -2020,6 +2020,9 @@ void CharacterLoginEventUpdate(CPlayer* pPlayer);
 void UpdateInstanceDungeonRank(DWORD dwCharacterIdx, INSDG_RANK_INFO* pRankInfo);
 void LoadInstanceDungeonRank(DWORD dwPlayerID);
 void RLoadInstanceDungeonRank(LPQUERY pData, LPDBMESSAGE pMessage);
+
+void ItemGradeAlexXUpdate(DWORD dwCharacterIdx, DWORD dwItemDBIdx, DWORD dwGradeAlexX);
+void RItemGradeAlexXUpdate(LPQUERY pData, LPDBMESSAGE pMessage);
 
 #endif //__MAPBMSGPARSER_H__
 

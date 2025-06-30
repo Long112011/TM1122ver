@@ -1089,39 +1089,49 @@ void CShopItemManager::CalcAvatarOption(BOOL bCalcStats)
 			pAvatarOption->ShieldRecoverRate += pItemInfo->RangeAttackMin;
 		if (pItemInfo->RangeAttackMax > 0)
 			pAvatarOption->MussangDamage += pItemInfo->RangeAttackMax;
+		pAvatarOption->PVPCri += pItemInfo->PVPCri;
+		pAvatarOption->PVPAttack += pItemInfo->PVPAttack;
+		pAvatarOption->PVPDef += pItemInfo->PVPDef;
+		pAvatarOption->PVPADef += pItemInfo->PVPADef;
+		pAvatarOption->PVPHit += pItemInfo->PVPHit;
+		pAvatarOption->PVPADodge += pItemInfo->PVPADodge;
+		pAvatarOption->PVPStunResist += pItemInfo->PVPStunResist;
+		pAvatarOption->PVPStunTimeReduce += pItemInfo->PVPStunTimeReduce;
 	}
-	if (WEATHERMGR->GetWeatherState() == eWS_Snow)
-	{
-		if (pAvatar[eAvatar_Hat] == SHOPITEM_COS_CAT_HAT)
-		{
-			pAvatarOption->Life += 50;
-			pAvatarOption->Shield += 50;
-			pAvatarOption->Naeruyk += 50;
-			pAvatarOption->RecoverRate += 10;
-			pAvatarOption->NaeruykspendbyKG = 1;
-		}
-		if (pAvatar[eAvatar_Dress] == SHOPITEM_COS_CAT_DRESS)
-		{
-			pAvatarOption->Life += 50;
-			pAvatarOption->Shield += 50;
-			pAvatarOption->Naeruyk += 50;
-			pAvatarOption->KyunggongSpeed += 50;
-			pAvatarOption->TargetPhyDefDown += 5;
-			pAvatarOption->TargetAttrDefDown += 5;
-		}
-		if (pAvatar[eAvatar_Dress] == SHOPITEM_COS_WEDDING_MAN ||
-			pAvatar[eAvatar_Dress] == SHOPITEM_COS_WEDDING_MAN)
-		{
-			pAvatarOption->Life += 100;
-			pAvatarOption->Shield += 100;
-			pAvatarOption->Naeruyk += 100;
-			pAvatarOption->RecoverRate += 10;
-			pAvatarOption->NaeruykspendbyKG = 1;
-			pAvatarOption->KyunggongSpeed += 50;
-			pAvatarOption->TargetPhyDefDown += 5;
-			pAvatarOption->TargetAttrDefDown += 5;
-		}
-	}
+	//if (WEATHERMGR->GetWeatherState() == eWS_Snow)
+	//{
+	//	if (pAvatar[eAvatar_Hat] == SHOPITEM_COS_CAT_HAT)
+	//	{
+	//		pAvatarOption->Life += 50;
+	//		pAvatarOption->Shield += 50;
+	//		pAvatarOption->Naeruyk += 50;
+	//		pAvatarOption->RecoverRate += 10;
+	//		pAvatarOption->NaeruykspendbyKG = 1;
+	//	}
+	//	if (pAvatar[eAvatar_Dress] == SHOPITEM_COS_CAT_DRESS)
+	//	{
+	//		pAvatarOption->Life += 50;
+	//		pAvatarOption->Shield += 50;
+	//		pAvatarOption->Naeruyk += 50;
+	//		pAvatarOption->KyunggongSpeed += 50;
+	//		pAvatarOption->TargetPhyDefDown += 5;
+	//		pAvatarOption->TargetAttrDefDown += 5;
+	//	}
+	//	if (pAvatar[eAvatar_Dress] == SHOPITEM_COS_WEDDING_MAN ||
+	//		pAvatar[eAvatar_Dress] == SHOPITEM_COS_WEDDING_MAN)
+	//	{
+	//		pAvatarOption->Life += 100;
+	//		pAvatarOption->Shield += 100;
+	//		pAvatarOption->Naeruyk += 100;
+	//		pAvatarOption->RecoverRate += 10;
+	//		pAvatarOption->NaeruykspendbyKG = 1;
+	//		pAvatarOption->KyunggongSpeed += 50;
+	//		pAvatarOption->TargetPhyDefDown += 5;
+	//		pAvatarOption->TargetAttrDefDown += 5;
+	//	}
+	//}
+	//ÌìÄ« pvp itemlist ¼ÓÈë
+
 	if (bCalcStats)
 		m_pPlayer->CalcState();
 }

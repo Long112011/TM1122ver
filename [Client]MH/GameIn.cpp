@@ -231,7 +231,7 @@
 #include "RegistryManager.h"
 
 #include "FPSDialog.h"
-
+#include "NewUpGrareAlexXDlg.h"
 #include "TopDungeon.h"
 #ifdef _TESTCLIENT_
 #include "AppearanceManager.h"
@@ -260,6 +260,7 @@ extern bool g_ThisIsFirstLogin;
 extern int m_CameraPos;
 extern bool b_WaitFirstEvent;
 GLOBALTON(CGameIn)
+
 
 
 CGameIn::CGameIn()
@@ -484,6 +485,8 @@ CGameIn::CGameIn()
 	m_wInsDungeonMapNum = 0;
 
 	m_pFadeDlg = NULL;
+
+	m_NewUpGrareAlexX = NULL;
 }
 
 CGameIn::~CGameIn()
@@ -986,6 +989,8 @@ void CGameIn::ReleaseForGame()
 	m_FPSDialog = NULL;
 
 	m_JackRebornInfo = NULL;
+
+	m_NewUpGrareAlexX = NULL;
 }
 
 void CGameIn::Release(CGameState* pNextGameState)
@@ -1163,6 +1168,24 @@ void CGameIn::AfterRender()
 		INSDUNGEONMGR->Render();
 		//MAP->RenderTileData_Debug();
 	}	
+}
+void CGameIn::NewUpGrareAlexX(BYTE Category, BYTE Protocol, void* pMsg)
+{
+	switch (Protocol)
+	{
+	case MP_NEWUPGRARE_ALEXX_NEWUPGRARE_ACK:
+	{
+		MSG_NEWYPGRARE_ALEXX_BACKGAME* pmsg = (MSG_NEWYPGRARE_ALEXX_BACKGAME*)pMsg;
+		GetNewUpGrareAlexXDlg()->MP_BakcGame_Msg(pmsg);
+	}
+	break;
+	case MP_NEWUPGRARE_ALEXX_NEWUPGRARE_DELITEM:
+	{
+		MSG_NEWYPGRARE_ALEXX_DELITEM* pmsg = (MSG_NEWYPGRARE_ALEXX_DELITEM*)pMsg;
+		GetNewUpGrareAlexXDlg()->MP_BakcGame_DelItem_Msg(pmsg);
+	}
+	break;
+	}
 }
 
 void CGameIn::NetworkMsgParse(BYTE Category,BYTE Protocol,void* pMsg)

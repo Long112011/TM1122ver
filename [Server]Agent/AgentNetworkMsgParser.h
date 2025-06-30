@@ -127,6 +127,10 @@ void UserConn_DungeonEntrace_Syn(DWORD dwConnectionIndex, char* pMsg, DWORD dwLe
 
 void MP_INSDUNGEONUserMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength);
 void MP_INSDUNGEONServerMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength);
+
+
+void MP_NEWUPGRARE_ALEXXMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength);
+
 #endif //__AGENTNETWORKMSGPARSER_H__
 
 

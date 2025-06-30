@@ -2135,6 +2135,34 @@ void CHero::SetStage( BYTE Stage )
 
 	ABILITYMGR->UpdateAbilityState( ABILITYUPDATE_CHARACTERSTAGE_CHANGED, 0, GetAbilityGroup() );
 }
+DWORD CHero::DoGetAttAttackPowerMax(WORD Attrib)// 属性攻击添加力最大值 
+{
+	DWORD MaxV = 0;
+	WORD SimMek = GetSimMek();
+	DWORD MaxLVV = (GetLevel() + 5) + 5;
+	DWORD AttribPlus = GetAttribPlusPercent(Attrib);
+
+	MaxV = MaxLVV + AttribPlus * 100 + SimMek / 2;
+	return MaxV;
+}
+
+
+DWORD CHero::DoGetAttAttackPowerMin(WORD Attrib)// 属性攻击添加力最小值
+{
+	DWORD MinV = 0;
+	WORD SimMek = GetSimMek();
+	DWORD MinLVV = (GetLevel() + 5) - 5;
+	DWORD AttribPlus = GetAttribPlusPercent(Attrib);
+
+	MinV = MinLVV + AttribPlus * 100 + SimMek / 2;
+	return MinV;
+}
+
+DWORD CHero::GetAttribPlusPercent(WORD Attrib)
+{
+	return GetItemStats()->AttributeAttack.GetElement_Val(Attrib) +//属性攻击
+		GetAbilityStats()->AttAttackUp.GetElement_Val(Attrib) + (GetSimMek() * 0.001);
+}
 
 BOOL CHero::IsSkipSkill()
 {

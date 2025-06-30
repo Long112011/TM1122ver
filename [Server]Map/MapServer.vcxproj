@@ -4835,6 +4835,7 @@ copy ..\Obj\Mapserver\MapServer___Win32_Debug_Console\MapServer.pdb ..\ServerRel
       <Optimization Condition="'$(Configuration)|$(Platform)'=='LATEST RunupMxo|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release _GhostMSO_|Win32'">MaxSpeed</Optimization>
     </ClCompile>
+    <ClCompile Include="NewUpGrareAlexXMGR.cpp" />
     <ClCompile Include="OptionManager.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='DEV|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug_CHINA|Win32'">Disabled</Optimization>
@@ -25271,6 +25272,7 @@ copy ..\Obj\Mapserver\MapServer___Win32_Debug_Console\MapServer.pdb ..\ServerRel
     <ClInclude Include="MapNetworkMsgParser.h" />
     <ClInclude Include="MemoryChecker.h" />
     <ClInclude Include="MHError.h" />
+    <ClInclude Include="NewUpGrareAlexXMGR.h" />
     <ClInclude Include="OptionManager.h" />
     <ClInclude Include="SafeArea.h" />
     <ClInclude Include="ServerSystem.h" />

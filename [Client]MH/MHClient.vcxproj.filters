@@ -674,6 +674,15 @@
     <Filter Include="aFadeDlg">
       <UniqueIdentifier>{dea53ac1-6ec4-41a5-8671-f3923f3ee843}</UniqueIdentifier>
     </Filter>
+    <Filter Include="新功能">
+      <UniqueIdentifier>{719479bd-f66b-4ef6-9ae1-c4bc998cf582}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="新功能\30版本">
+      <UniqueIdentifier>{24c195e0-0b5c-4c7a-ab99-ccc6fa0f19af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="新功能\pvp">
+      <UniqueIdentifier>{e13d6df6-d67a-442f-885b-2b24a05403e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MHClient.cpp">
@@ -2693,8 +2702,11 @@
     <ClCompile Include="TopDungeon.cpp">
       <Filter>Interface\DIALOG\RankDialog</Filter>
     </ClCompile>
+    <ClCompile Include="OfficialUpGradeDlg.cpp">
+      <Filter>新功能\30版本</Filter>
+    </ClCompile>
     <ClCompile Include="CharacterPVPDialog.cpp">
-      <Filter>Interface\DIALOG</Filter>
+      <Filter>新功能\pvp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -4858,8 +4870,11 @@
     <ClInclude Include="TopDungeon.h">
       <Filter>Interface\DIALOG\RankDialog</Filter>
     </ClInclude>
+    <ClInclude Include="OfficialUpGradeDlg.h">
+      <Filter>新功能\30版本</Filter>
+    </ClInclude>
     <ClInclude Include="CharacterPVPDialog.h">
-      <Filter>Interface\DIALOG</Filter>
+      <Filter>新功能\pvp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

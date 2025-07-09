@@ -50,9 +50,8 @@ public:
 	}
 	int GetCount()	{	return m_nItemCount;	}
 	void Render();
-
-	virtual inline void SetGradeAlexX(DWORD Val) {}
-	virtual inline DWORD GetGradeAlexX() { return 0; }
+	virtual inline void SetGrade30(DWORD Val) {}//原本没有的	
+	virtual inline DWORD GetGrade30() { return 0; }//原本没有的
 private:
 	WORD m_wItemIdx;
 

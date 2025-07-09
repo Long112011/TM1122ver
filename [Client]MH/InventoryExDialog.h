@@ -86,7 +86,6 @@ public:
 
 	DURTYPE	GetTotalItemDurability(WORD wItemIdx);	
 	CItem * GetItemLike(WORD wItemIdx);
-	CItem* GetItemLike30(WORD wItemIdx, WORD& OutPos);
 
 
 	// RaMa - 04.12.09
@@ -223,5 +222,5 @@ public:
 
 	bool	IsChangeLookButtonPushed();
 
-	void SetInventoryExDialogWH(BOOL IsShop);	//百宝开启宽度调节
+
 };

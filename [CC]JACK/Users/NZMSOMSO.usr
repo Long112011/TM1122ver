@@ -1,0 +1,14 @@
+//----------------------------------------------------------
+//	MSO NAME : TMMSO
+//	registered on : 0304, 22nd September 2023
+//----------------------------------------------------------
+#define	ClientVersion	"\xd8\xcb\xc4\xcd\xdc\xdb\xc8\x90"
+#define	NetServer	"OMSO*4"
+#define	NetClient	"\xd9\xdc\xda\xd1\xb9\xa2"
+#define	Encrypto	20230822
+#define	Encrypts	20230823
+#define	EncryptNumber	99
+#define	SQLUSER	"OMSO*4"
+#define	SQLPASS	"OMSO*4"
+
+#define _VIP_SYSTEM_

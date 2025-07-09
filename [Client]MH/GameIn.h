@@ -325,10 +325,9 @@ class CInsDGRankInfoDialog;
 class cHousingWebDlg;
 
 class CFadeDlg;
+
 class CCharacterPvpDialog;
-class CNewUpGrareAlexXDlg;
-
-
+class COfficialUpGradeDlg;
 #define GAMEIN USINGTON(CGameIn)
 
 class CGameIn : public CGameState  
@@ -688,14 +687,10 @@ private:
 	CInsDGPartyMakeDialog* m_pInsDGPartyMakeDlg;		//2008. 8. 5. CBH - 인던 입장시 파티가 엇을때 띄우는 다이얼로그
 	CInsDGRankDialog* m_pInsDGRankDialog;		//2008. 9. 2. CBH - 인스턴스 던전 랭크 다이얼로그
 	CInsDGRankInfoDialog* m_pInsDGRankInfoDialog;
-
+	COfficialUpGradeDlg* m_OfficialUpGradeDlg;
 	cHousingWebDlg*			m_pHousingWebDlg;
 
 	CFadeDlg*				m_pFadeDlg;
-
-	//AlexX
-	CNewUpGrareAlexXDlg* m_NewUpGrareAlexX;
-
 
 	BOOL	m_bInitForGame;
 	int		m_GameInInitKind;	
@@ -728,7 +723,7 @@ public:
 	void NetworkMsgParse(BYTE Category,BYTE Protocol,void* pMsg);
 
 	void SetMovePoint(DWORD point){ m_MovePoint = point; }
-	void NewUpGrareAlexX(BYTE Category, BYTE Protocol, void* pMsg);
+	
 	BOOL IsGameInAcked()		{	return m_bGameInAcked;	}
 	int GetGameInInitKind()	{ return m_GameInInitKind; 	}
 
@@ -1521,12 +1516,13 @@ public:
 	void SetFadeDlg(CFadeDlg* pDlg)							{ m_pFadeDlg = pDlg; }
 	CFadeDlg* GetFadeDlg()										{ return m_pFadeDlg; }
 
-	CNewUpGrareAlexXDlg* GetNewUpGrareAlexXDlg() { return  m_NewUpGrareAlexX; }
-	void SetNewUpGrareAlexXDlg(CNewUpGrareAlexXDlg* dlg) { m_NewUpGrareAlexX = dlg; }
-
 	void UpdataGoldMoney();
 	BOOL CopyToClipboard(const char* pszData, const int nDataLen);
 	
+
+	//////////////////////////////////////////////////////////////////////////
+	COfficialUpGradeDlg* GetOfficialUpGradeDlg() { return m_OfficialUpGradeDlg; }
+	void SetOfficialUpGradeDlg(COfficialUpGradeDlg* dlg) { m_OfficialUpGradeDlg = dlg; }
 
 	SYSTEMTIME	GameinServerTime;			//서버에서 받아온 캐릭터 로그인 시간
 	DWORD				m_Clientdate;		//클라이언트에서 받아온 캐릭터 로그인 날짜

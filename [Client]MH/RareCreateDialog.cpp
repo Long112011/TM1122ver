@@ -452,45 +452,90 @@ ITEM_RARE_Max_INFO CRareCreateDialog::GetRARE_Max_INFO(int Index)
 		return RARE_Max_INFO[0];
 	}
 }
+//void CRareCreateDialog::SetRARE_Max_INFO(int Index)
+//{
+//	ITEM_RARE_Max_INFO Max_INFO = GetRARE_Max_INFO(Index);
+//	char line[128] = { 0, };
+//	char szDescText[384] = { 0, };
+//	if (Max_INFO.CheRyukMax>0)
+//	{
+//		wsprintf(line, "[Physical attributes]: %d ^n", Max_INFO.CheRyukMax);
+//		strcat(szDescText, line);
+//	}
+//	if (Max_INFO.ThreeMax > 0)
+//	{
+//		wsprintf(line, "[force | sensitivity | heart]: %d ^n", Max_INFO.ThreeMax);
+//		strcat(szDescText, line);
+//	}
+//	if (Max_INFO.LifeMax > 0)
+//	{
+//		wsprintf(line, "[blood|guard|inner]: %d ^n", Max_INFO.LifeMax);
+//		strcat(szDescText, line);
+//	}
+//	if (Max_INFO.PhyAttackMax > 0)
+//	{
+//		wsprintf(line, "[weapon attack]: %d ^n", Max_INFO.PhyAttackMax);
+//		strcat(szDescText, line);
+//	}
+//	if (Max_INFO.PhyDefenseMax > 0)
+//	{
+//		wsprintf(line, "[physical defense]: %d ^n", Max_INFO.PhyDefenseMax);
+//		strcat(szDescText, line);
+//	}
+//	if (Max_INFO.AttrAttackMax > 0)
+//	{
+//		wsprintf(line, "[Five elements attack]: %d ^n", Max_INFO.AttrAttackMax);
+//		strcat(szDescText, line);
+//	}
+//	if (Max_INFO.AttrRegistMax > 0)
+//	{
+//		wsprintf(line, "[Five Elements Defense]: %d ^n", Max_INFO.AttrRegistMax);
+//		strcat(szDescText, line);
+//	}
+//	RareMax_Info->SetStaticText(szDescText);
+//}
 void CRareCreateDialog::SetRARE_Max_INFO(int Index)
 {
 	ITEM_RARE_Max_INFO Max_INFO = GetRARE_Max_INFO(Index);
 	char line[128] = { 0, };
 	char szDescText[384] = { 0, };
-	if (Max_INFO.CheRyukMax>0)
+
+	if (Max_INFO.CheRyukMax > 0)
 	{
-		wsprintf(line, "[Physical attributes]: %d ^n", Max_INFO.CheRyukMax);
+		sprintf(line, CHATMGR->GetChatMsg(2758), Max_INFO.CheRyukMax);
 		strcat(szDescText, line);
 	}
 	if (Max_INFO.ThreeMax > 0)
 	{
-		wsprintf(line, "[force | sensitivity | heart]: %d ^n", Max_INFO.ThreeMax);
+		sprintf(line, CHATMGR->GetChatMsg(2759), Max_INFO.ThreeMax);
 		strcat(szDescText, line);
 	}
 	if (Max_INFO.LifeMax > 0)
 	{
-		wsprintf(line, "[blood|guard|inner]: %d ^n", Max_INFO.LifeMax);
+		sprintf(line, CHATMGR->GetChatMsg(2760), Max_INFO.LifeMax);
 		strcat(szDescText, line);
 	}
 	if (Max_INFO.PhyAttackMax > 0)
 	{
-		wsprintf(line, "[weapon attack]: %d ^n", Max_INFO.PhyAttackMax);
+		sprintf(line, CHATMGR->GetChatMsg(2761), Max_INFO.PhyAttackMax);
 		strcat(szDescText, line);
 	}
 	if (Max_INFO.PhyDefenseMax > 0)
 	{
-		wsprintf(line, "[physical defense]: %d ^n", Max_INFO.PhyDefenseMax);
+		sprintf(line, CHATMGR->GetChatMsg(2762), Max_INFO.PhyDefenseMax);
 		strcat(szDescText, line);
 	}
 	if (Max_INFO.AttrAttackMax > 0)
 	{
-		wsprintf(line, "[Five elements attack]: %d ^n", Max_INFO.AttrAttackMax);
+		sprintf(line, CHATMGR->GetChatMsg(2763), Max_INFO.AttrAttackMax);
 		strcat(szDescText, line);
 	}
 	if (Max_INFO.AttrRegistMax > 0)
 	{
-		wsprintf(line, "[Five Elements Defense]: %d ^n", Max_INFO.AttrRegistMax);
+		sprintf(line, CHATMGR->GetChatMsg(2764), Max_INFO.AttrRegistMax);
 		strcat(szDescText, line);
 	}
+
 	RareMax_Info->SetStaticText(szDescText);
 }
+

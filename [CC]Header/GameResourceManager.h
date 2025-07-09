@@ -266,6 +266,11 @@ public:
 	void LoadDungeonKeyList();
 	void ReleaseDungeonKeyList();
 	stDungeonKey* GetDungeonKey(DWORD dwKeyIndex);
+
+	CYHHashTable<UpGradeDataList>		DataListUpGrade;
+	BOOL LoadDataUpGrade();
+	UpGradeDataList* GetDataUpGrade(WORD ItemGrade);//+30level
+
 #ifdef _CLIENT_RESOURCE_FIELD_
 	MOD_LIST			m_ModFileList[GENDER_MAX];
 	MOD_LIST			m_HairModList[GENDER_MAX];

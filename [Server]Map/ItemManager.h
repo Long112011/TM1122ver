@@ -29,12 +29,20 @@ struct MATERIAL_ARRAY;
 //class ITEM_MIX_RES;
 class ITEM_REINFORCE_INFO;
 
-//#define MAX_MIX_PERCENT	10000
-//#define MAX_MIX_LARGE_PERCENT	1000000
+#define MAX_MIX_PERCENT	10000
+#define MAX_MIX_LARGE_PERCENT	1000000
 #define ITEMMGR CItemManager::GetInstance()
 
 #define EVENTITEM_SHIELD_RECOVER 53031
 #define EVENTITEM_ALL_RECOVER 53032
+#define ITEM_STONE_1 52035
+#define ITEM_STONE_1_RED 52036
+#define ITEM_STONE_2 52037
+#define ITEM_STONE_2_RED 52038
+#define ITEM_STONE_3 52039
+#define ITEM_STONE_3_RED 52040
+#define ITEM_STONE_4 52041
+#define ITEM_STONE_4_RED 52042
 
 class CItemSlot;
 
@@ -249,13 +257,6 @@ public:
 	unsigned int GetTotalEmptySlotNum(CItemSlot* pSlot); //060612 Add by wonju
 	WORD GetCanBuyNumInSpace(CPlayer * pPlayer, CItemSlot * pSlot, DWORD whatItemIdx, DURTYPE whatItemNum, WORD * EmptyCellPos, WORD & EmptyCellNum,WORD buyType=0);
 
-	int NewUpGrareItem(CPlayer* pPlayer, MSG_NEWYPGRARE_ALEXX* pMsg);
-	ITEM_INFO_UPGRADE_PRECENT* GetUpGradeItemPercentList(DWORD lv);
-
-	//
-	void GradeAlexXItemDBResult(CPlayer* pPlayer, DWORD wTargetItemDBIdx, POSTYPE wTargetItemPos, WORD wItemGradeAlexX);
-	//
-
 private:
 
 	WORD GetCanBuyNumInMoney(CPlayer * pPlayer, WORD butNum, MONEYTYPE Price);
@@ -300,7 +301,7 @@ private:
 	CYHHashTable<ITEM_INFO> m_UnfitItemInfoListForShout;
 	CYHHashTable<sTIPITEMINFO>		m_TipItemList;
 	
-	CYHHashTable<ITEM_INFO_UPGRADE_PRECENT> m_UpGradeItemPercentList;
+
 
 public:
 	int		ObtainItemFromQuest( CPlayer* pPlayer, WORD wItemKind, DWORD dwItemNum );
@@ -352,7 +353,9 @@ public:
 
 	//void LoadMixItemInfo();
 	//BOOL CanMixItem(WORD wItemIndex);
-	void LoadAlexXUpGradeItemPercent();		
+
+	int UpGradeOfficial_Func(CPlayer* pPlayer, MSG_OFFICIAL_ITEM_SYN* pmsg);
+	BOOL EnoughMixMaterial_FFT(WORD needItemIdx, WORD needItemNum, MATERIAL_ARRAY_FFT* pMaterialArray, WORD wMaterialNum);
 };
 
 

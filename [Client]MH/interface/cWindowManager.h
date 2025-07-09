@@ -135,6 +135,7 @@ public:
 
 	void CreateItemStepReinforceDialog();
 
+
 	void CreateOtherCharacterInfo();  // Create Other CharacterInfo 2014-08-11
 
 	void CreateOtherCharacterEquip(); // Create Other CharacterEquip pag 2014-08-11
@@ -171,7 +172,6 @@ public:
 	void CreateMiniMapDlg();
 	void CreateMiniNoteDlg();
 	void CreateReviveDlg();
-
 	void CreateWantNpcDlg();
 	void CreateWantRegistDlg();
 	void CreateQuestTotalDlg();
@@ -412,7 +412,7 @@ public:
 	void CreateDungeonRankingDlg();
 	void CreateCharPvPDlg();
 
-	void CreateNewUpGrareAlexXDlg();
+	void CreateOfficialUpGradeDlg();
 
 	//++++ Common dialog +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	// dynamic create and auto release

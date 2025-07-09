@@ -57,6 +57,10 @@
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="TMMSOnEW|Win32">
+      <Configuration>TMMSOnEW</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="TMMSO|Win32">
       <Configuration>TMMSO</Configuration>
       <Platform>Win32</Platform>
@@ -369,6 +373,12 @@
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v120_xp</PlatformToolset>
@@ -591,6 +601,9 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -790,6 +803,11 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">
     <OutDir>.\Release\</OutDir>
     <IntDir>.\Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
@@ -1950,6 +1968,46 @@
       <Culture>0x0412</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;MHCONSOLE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>.\Release/MHConsole.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <Link>
+      <OutputFile>..\..\CLIENT2\SERVER_dll\MHConsole.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ModuleDefinitionFile>.\MHConsole.def</ModuleDefinitionFile>
+      <ProgramDatabaseFile>.\Release/MHConsole.pdb</ProgramDatabaseFile>
+      <ImportLibrary>.\Release/MHConsole.lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release/MHConsole.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0412</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
@@ -2943,6 +3001,7 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">MaxSpeed</Optimization>
@@ -2990,6 +3049,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
@@ -3037,6 +3097,7 @@
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">true</BrowseInformation>
+      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">true</BrowseInformation>
@@ -3096,6 +3157,7 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">MaxSpeed</Optimization>
@@ -3143,6 +3205,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
@@ -3190,6 +3253,7 @@
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">true</BrowseInformation>
+      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">true</BrowseInformation>
@@ -3249,6 +3313,7 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">MaxSpeed</Optimization>
@@ -3296,6 +3361,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
@@ -3343,6 +3409,7 @@
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">true</BrowseInformation>
+      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">true</BrowseInformation>
@@ -3402,6 +3469,7 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">MaxSpeed</Optimization>
@@ -3449,6 +3517,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
@@ -3496,6 +3565,7 @@
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">true</BrowseInformation>
+      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">true</BrowseInformation>
@@ -3555,6 +3625,7 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">MaxSpeed</Optimization>
@@ -3602,6 +3673,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
@@ -3649,6 +3721,7 @@
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">true</BrowseInformation>
+      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">true</BrowseInformation>
@@ -3708,6 +3781,7 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">MaxSpeed</Optimization>
@@ -3755,6 +3829,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
@@ -3802,6 +3877,7 @@
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">true</BrowseInformation>
+      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">true</BrowseInformation>
@@ -3861,6 +3937,7 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">MaxSpeed</Optimization>
@@ -3908,6 +3985,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;MHCONSOLE_EXPORTS</PreprocessorDefinitions>
@@ -3955,6 +4033,7 @@
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 NZMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='TMMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='game NZMSO|Win32'">true</BrowseInformation>
+      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='game MIUMIU|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 RedMSO|Win32'">true</BrowseInformation>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='v120 RoyalMSO|Win32'">true</BrowseInformation>

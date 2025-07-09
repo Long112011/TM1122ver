@@ -179,6 +179,7 @@
 #include "ItemStoneDkDialog.h"     
 #include "ItemStoneXqDialog.h"
 #include "ItemStepReinforceDialog.h"
+#include "OfficialUpGradeDlg.h"
 #include "OtherCharacterInfo.h" 
 #include "OtherCharacterEquip.h"  
 #include "../cDivideBoxEx.h"        
@@ -225,7 +226,6 @@
 #include "FadeDlg.h"
 #include "TopDungeon.h"
 #include "CharacterPVPDialog.h"
-#include "NewUpGrareAlexXDlg.h"
 
 extern HWND _g_hWnd;
 extern BOOL m_SafeIconShow;
@@ -312,6 +312,7 @@ void cWindowManager::CreateGameIn()
 	CreateItemStoneDkDialog();
 	CreateItemStoneXqDialog();
 	CreateItemStepReinforceDialog();
+
 	CreateOtherCharacterInfo();
 	CreateOtherCharacterEquip();
 	CreateItemLockDlg();
@@ -429,7 +430,7 @@ void cWindowManager::CreateGameIn()
 
 	CreateDungeonRankingDlg();
 	CreateCharPvPDlg();
-	CreateNewUpGrareAlexXDlg();
+	CreateOfficialUpGradeDlg();
 
 #ifdef	_DEBUGTICK
 	DWORD	dwEndTick = GetTickCount();
@@ -514,22 +515,6 @@ void cWindowManager::Init2()
 	cMsgBox::InitMsgBox();
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -766,65 +751,16 @@ void cWindowManager::Init()
 	lstrcpy(font.lfFaceName, "MS Sans Serif");
 	CFONT_OBJ->CreateFontObject(&font, cFont::FONT20);
 
+	font.lfHeight = -14;
+	font.lfWeight = FW_HEAVY;
+	font.lfWidth = -font.lfHeight / 2;
+	font.lfQuality = PROOF_QUALITY;
+	font.lfPitchAndFamily = FIXED_PITCH | FF_SWISS;
+	lstrcpy(font.lfFaceName, "MS Sans Serif");
+	CFONT_OBJ->CreateFontObject(&font, cFont::FONT21);
+
 	cMsgBox::InitMsgBox();
 }
-
-BOOL cWindowManager::CreateFontObjectToFile()
-{
-	char line[256] = { 0, };
-	CMHFile fp;
-	if (!fp.Init("./Image/Font.bin", "rb"))
-		return FALSE;
-	LOGFONT	font;
-	int		nIdx = 0;
-	font.lfEscapement = 0;
-	font.lfOrientation = 0;
-	//font.lfStrikeOut = 0;
-	font.lfCharSet = DEFAULT_CHARSET;
-	font.lfOutPrecision = 0;
-	font.lfClipPrecision = 0;
-	font.lfQuality = PROOF_QUALITY;
-	font.lfPitchAndFamily = 0;
-	while (fp.IsEOF() == FALSE)
-	{
-		fp.GetString(line);
-		if (line[0] == '@')
-		{
-			fp.GetLineX(line, 256);
-			continue;
-		}
-		if (strcmp(line, "#FONTCHARSET") == 0)
-			font.lfCharSet = fp.GetInt();
-		else if (strcmp(line, "#FONT") == 0)
-		{
-			if (nIdx == FONTMAX - 1)
-			{
-				MessageBox(0, "More than it should detected!...", fp.GetFileName(), MB_OK);
-				continue;
-			}
-
-			nIdx = fp.GetInt();
-			fp.GetStringInQuotation(line);
-			lstrcpy(font.lfFaceName, line);
-			int fontsize = fp.GetInt();
-			font.lfHeight = -MulDiv(fontsize, 96, 72);
-			font.lfWidth = -font.lfHeight / 2;
-			font.lfWeight = fp.GetInt();
-			font.lfUnderline = fp.GetInt();
-			font.lfItalic = fp.GetInt();
-			font.lfStrikeOut = fp.GetByte();
-			CFONT_OBJ->CreateFontObject(&font, nIdx);
-		}
-
-	}
-	if (nIdx < FONTMAX - 1)
-	{
-		MessageBox(0, "Font line tak complete \nPlease check!...", fp.GetFileName(), MB_OK);
-	}
-	fp.Release();
-	return TRUE;
-}
-
 //BOOL cWindowManager::CreateFontObjectToFile()
 //{
 //	char line[256] = { 0, };
@@ -1528,6 +1464,8 @@ void cWindowManager::CreateItemStepReinforceDialog()
 	GAMEIN->SetItemStepReinforceDlg(pDlg);
 	GAMEIN->GetItemStepReinforceDlg()->Linking();
 }
+
+
 void cWindowManager::CreateReviveDlg()
 {
 	cWindow * window = GetDlgInfoFromFile("./image/InterfaceScript/Revive.bin", "rb");
@@ -3874,19 +3812,30 @@ void cWindowManager::CreateDungeonRankingDlg()
 	GAMEIN->SetTopDungeon(pDlg);
 	GAMEIN->GetTopDungeon()->Linking();
 }
-void cWindowManager::CreateNewUpGrareAlexXDlg()
+/////////////////////////////////////////////////////////////////////////
+void cWindowManager::CreateOfficialUpGradeDlg()
 {
 	cWindow* window = NULL;
-	window = GetDlgInfoFromFile("./image/InterfaceScript/NewUpGrareAlexXDlg.bin", "rb");
-	ASSERT(window);
+	window = GetDlgInfoFromFile("./image/InterfaceScript/OfficialUpGradeDlg.bin", "rb");
 
+
+	// 设置位置
 	VECTOR2 Pos1;
 	Pos1.x = ((float)GET_MAINWIN_W / 2 - window->GetWidth() / 2);
 	Pos1.y = ((float)GET_MAINWIN_H / 2 - window->GetHeight() / 2);
 	window->SetAbsXY(Pos1.x, Pos1.y);
+
 	AddWindow(window);
-	CNewUpGrareAlexXDlg* pDlg = (CNewUpGrareAlexXDlg*)window;
-	GAMEIN->SetNewUpGrareAlexXDlg(pDlg);
-	GAMEIN->GetNewUpGrareAlexXDlg()->Linking();
+
+	// 尝试类型转换
+	COfficialUpGradeDlg* pDlg = dynamic_cast<COfficialUpGradeDlg*>(window);
+
+
+	// 注册到 GAMEIN
+	GAMEIN->SetOfficialUpGradeDlg(pDlg);
+
+	// 调用 Linking，绑定子控件
+	pDlg->Linking();
+
 
 }

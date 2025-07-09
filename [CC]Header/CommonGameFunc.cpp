@@ -882,13 +882,12 @@ void WriteDebugFile( char* pStrFileName, int Line, char* pMsg )
 		}
 	}
 }
-void _parsingKeywordString(char * inString, char ** outString)
+void _parsingKeywordString(char* inString, char** outString)
 {
-	char * sp = inString;
-	char * sp2 = *outString;
+	char* sp = inString;
+	char* sp2 = *outString;
 	while (*sp != 0)
 	{
-
 		if (IsDBCSLeadByte(*sp))
 		{
 			*sp2++ = *sp++;
@@ -900,35 +899,35 @@ void _parsingKeywordString(char * inString, char ** outString)
 			{
 			case TEXT_DELIMITER:
 			{
-								   ++sp;
-								   char tmp = *sp;
-								   switch (tmp)
-								   {
-								   case TEXT_SPACECHAR:
-								   {
-														  *sp2 = ' ';
-														  ++sp2;
-								   }
-									   break;
-								   case TEXT_EMPTYCHAR:
-								   {
-														  *outString[0] = 0;
-								   }
-									   break;
-								   case TEXT_DELIMITER:	//KES Ãß°¡
-								   {
-															*sp2 = '^';
-															++sp2;
-								   }
-									   break;
-								   }
+				++sp;
+				char tmp = *sp;
+				switch (tmp)
+				{
+				case TEXT_SPACECHAR:
+				{
+					*sp2 = ' ';
+					++sp2;
+				}
+				break;
+				case TEXT_EMPTYCHAR:
+				{
+					*outString[0] = 0;
+				}
+				break;
+				case TEXT_DELIMITER:
+				{
+					*sp2 = '^';
+					++sp2;
+				}
+				break;
+				}
 
 			}
-				break;
+			break;
 			default:
 			{
-					   *sp2 = *sp;
-					   ++sp2;
+				*sp2 = *sp;
+				++sp2;
 			}
 			}
 			++sp;

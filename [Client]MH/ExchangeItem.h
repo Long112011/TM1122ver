@@ -40,7 +40,7 @@ protected:
 
 	cImage m_ScrollImg[22];
 	int m_CurScrollImage;
-	DWORD           m_GradeAlexX;
+	WORD			m_Grade;
 public:
 
 	CExchangeItem();
@@ -85,10 +85,8 @@ public:
 	void SetItemParam(ITEMPARAM Param) { m_dwParam = Param; }
 	ITEMPARAM GetItemParam()			{ return m_dwParam; }
 
-
-	//
-	inline DWORD    GetGradeAlexX() { return  m_GradeAlexX; }
-	inline void     SetGradeAlexX(DWORD Val) { m_GradeAlexX = Val; }
+	inline DWORD    GetGrade() { return m_Grade; }
+	inline void		SetGrade(DWORD Val) { m_Grade = Val; }
 };
 
 

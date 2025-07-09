@@ -430,8 +430,6 @@ void CGoldShopDialog::SetMallMoney(long Val)
 void CGoldShopDialog::SetPageStatic(WORD count)
 {
 
-
-
 	for (int i = 0; i<10; i++)
 	{
 		cWindow*BtnBtn = GetWindowForID(TC_PAGEBTN1 + i);

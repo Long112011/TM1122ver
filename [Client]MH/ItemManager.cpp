@@ -79,6 +79,7 @@
 #include "ItemStoneDkDialog.h"   
 #include "ItemStoneXqDialog.h"   
 #include "ItemStepReinforceDialog.h"
+#include "OfficialUpGradeDlg.h"
 #include "ItemLockManager.h"         
 #include "ItemUnLockManager.h"       
 #include "ItemGambleManager.h"       
@@ -94,9 +95,6 @@
 #include "./Input/UserInput.h"
 #include "famemanager.h"
 #include "GameCheckManager.h"
-#include "NewUpGrareAlexXDlg.h"
-#include "NewUpGrareAlexXC_MGR.h"
-
 #pragma comment(lib,"shlwapi.lib") 
 #include "TitanManager.h"
 #include "ErrorMsg.h"
@@ -138,8 +136,6 @@ CItemManager::CItemManager()
 	ZeroMemory(HeroName, sizeof(HeroName));
 	ZeroMemory(ItemOpened, sizeof(ItemOpened));
 	ZeroMemory(ItemObtained, sizeof(ItemObtained));
-
-	m_UpGradeItemPercentList.Initialize(150);
 #ifdef _OLDGOLDDIALOG_
 	m_GoldShopInfoList.Initialize(896);
 #endif
@@ -253,15 +249,6 @@ CItemManager::~CItemManager()
 	}
 	m_GoldShopInfoList.RemoveAll();
 #endif
-
-	/////////////////////////30////////////////////
-	ITEM_INFO_UPGRADE_PRECENT* pUpGradeItemPercentList = NULL;
-	m_UpGradeItemPercentList.SetPositionHead();
-	while (pUpGradeItemPercentList = m_UpGradeItemPercentList.GetData())
-	{
-		delete pUpGradeItemPercentList;
-	}
-	m_UpGradeItemPercentList.RemoveAll();
 }
 #ifdef _OLDGOLDDIALOG_
 void CItemManager::LoadGoldShopItem()
@@ -626,7 +613,7 @@ void CItemManager::SetToolTipIcon(
 								  BOOL bIsQuey,
 								  BYTE bNormalTip,
 								  BYTE bGotTime,
-								  BOOL IsGoldShop, DWORD WTF_GradeAlexX)
+								  BOOL IsGoldShop, DWORD Grade30)
 {
 	WORD index = pIcon->GetData();
 	eITEM_KINDBIT bits = GetItemKind(index);
@@ -661,20 +648,21 @@ void CItemManager::SetToolTipIcon(
 		{
 			char line[256];
 			cImage imgToolLine;
-			if(pOptionInfo&&pOptionInfo->dwOptionIdx!=0)
+
+			// 设定物品名称（附带强化等级与选项星号）
+			if (Grade30 > 0)
 			{
-				if(pStoneOptionInfo && pStoneOptionInfo->dwStoneOptionIdx)
-					sprintf( line, "[QQ %s*]", pInfo->ItemName);
+				if (pOptionInfo && pOptionInfo->dwOptionIdx != 0)
+					sprintf(line, "[%s*/+%d]", pInfo->ItemName, Grade30);
 				else
-					sprintf( line, "[%s*]", pInfo->ItemName);
-			}
-			else if(pStoneOptionInfo && pStoneOptionInfo->dwStoneOptionIdx)
-			{
-				sprintf( line, "[QQ %s]", pInfo->ItemName );
+					sprintf(line, "[%s/+%d]", pInfo->ItemName, Grade30);
 			}
 			else
 			{
-				sprintf( line, "[%s]", pInfo->ItemName );
+				if (pOptionInfo && pOptionInfo->dwOptionIdx != 0)
+					sprintf(line, "[%s*]", pInfo->ItemName);
+				else
+					sprintf(line, "[%s]", pInfo->ItemName);
 			}
 			int nLen = strlen( pInfo->ItemName );
 			if(pRareOptionInfo && pRareOptionInfo->dwItemDBIdx)
@@ -694,7 +682,7 @@ void CItemManager::SetToolTipIcon(
 			else
 				pIcon->AddToolTipLine( line,TTTC_DEFAULT,NULL,6);
 			pIcon->AddToolTipLine( JACKJACK );
-			SetEquipItemToolTip(pIcon,pInfo,pOptionInfo,pRareOptionInfo,pStoneOptionInfo,bIsQuey, WTF_GradeAlexX);
+			SetEquipItemToolTip(pIcon,pInfo,pOptionInfo,pRareOptionInfo,pStoneOptionInfo,bIsQuey, Grade30);
 			pIcon->AddToolTipLine( JACKJACK );
 		}
 
@@ -702,20 +690,21 @@ void CItemManager::SetToolTipIcon(
 		{
 			char line[256];
 			cImage imgToolLine;
-			if(pOptionInfo&&pOptionInfo->dwOptionIdx!=0)
+
+			// 设定物品名称（附带强化等级与选项星号）
+			if (Grade30 > 0)
 			{
-				if(pStoneOptionInfo && pStoneOptionInfo->dwStoneOptionIdx)
-					sprintf( line, "[QQ %s*]", pInfo->ItemName);
+				if (pOptionInfo && pOptionInfo->dwOptionIdx != 0)
+					sprintf(line, "[%s*/+%d]", pInfo->ItemName, Grade30);
 				else
-					sprintf( line, "[%s*]", pInfo->ItemName);
-			}
-			else if(pStoneOptionInfo && pStoneOptionInfo->dwStoneOptionIdx)
-			{
-				sprintf( line, "[QQ %s]", pInfo->ItemName );
+					sprintf(line, "[%s/+%d]", pInfo->ItemName, Grade30);
 			}
 			else
 			{
-				sprintf( line, "[%s]", pInfo->ItemName );
+				if (pOptionInfo && pOptionInfo->dwOptionIdx != 0)
+					sprintf(line, "[%s*]", pInfo->ItemName);
+				else
+					sprintf(line, "[%s]", pInfo->ItemName);
 			}
 			int nLen = strlen( pInfo->ItemName );
 			if(pRareOptionInfo && pRareOptionInfo->dwItemDBIdx)
@@ -1687,7 +1676,7 @@ void CItemManager::AddGoldShopToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 		pIcon->AddToolTipLine(line, RGB_HALF(255, 0, 0));
 		sprintf(line, CHATMGR->GetChatMsg(2729), (int)fPVP);
 		pIcon->AddToolTipLine(line, RGB_HALF(0, 255, 0));
-	}
+}
 	fPVP = 100 * pItemInfo->PVPAttack;
 	if (fPVP != 0)
 	{
@@ -2229,8 +2218,17 @@ void CItemManager::SetMugongItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo )
 	AddItemDescriptionToolTip( pIcon, pInfo->ItemTooltipIdx );
 	//pIcon->AddToolTipLine(JACKJACK);
 }
-void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPTION_INFO * pOptionInfo, ITEM_RARE_OPTION_INFO* pRareOptionInfo,ITEM_STONE_OPTION_INFO * pStoneOptionInfo,BOOL bIsQuey, DWORD WTF_GradeAlexX)
-
+DWORD CalStatusGradeInt(DWORD Status, WORD Grade)
+{
+	float getdmgmin = Status;
+	for (int i = 0; i < Grade; i++)
+	{
+		getdmgmin = getdmgmin + (getdmgmin * 2.80 / 100);//狂人2.5 //财神3.5
+	}
+	int CalGrade = static_cast<int>(getdmgmin);
+	return CalGrade;
+}
+void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPTION_INFO * pOptionInfo, ITEM_RARE_OPTION_INFO* pRareOptionInfo,ITEM_STONE_OPTION_INFO * pStoneOptionInfo,BOOL bIsQuey, DWORD Grade30)
 {
 	CExchangeItem* pExcItem = NULL;
 	CItem * pcItem = NULL;
@@ -2238,73 +2236,23 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 		pExcItem = (CExchangeItem*)pIcon;
 	else
 		pcItem = (CItem*)pIcon;
-	//////////////////+30
-	DWORD a_grade = 0;
-	if (WTF_GradeAlexX != 0)
+	char line3[128];
+	if (Grade30 > 0)
 	{
-		a_grade = WTF_GradeAlexX;
-	}
-	else
-	{
-		a_grade = pcItem->GetGradeAlexX();
-	}
-
-	float increase_factor = 1.0;
-	char line4[128];
-	if (pOptionInfo)
-	{
-		if (pcItem->GetGradeAlexX() != 0)
-		{
-			sprintf(line4, "[%s*+%d]", pInfo->ItemName, a_grade);
-		}
+		if (pOptionInfo)
+			sprintf(line3, "[%s + %d*]", pInfo->ItemName, Grade30);
 		else
-		{
-			if (GAMEIN->GetNewUpGrareAlexXDlg()->IsActive())
-			{
-				if (GAMEIN->GetNewUpGrareAlexXDlg()->GetrealFuck_WTF_GradeAlexX() == true)
-				{
-					sprintf(line4, "[%s*+%d]", pInfo->ItemName, a_grade);
-				}
-				else
-				{
-					sprintf(line4, "[%s*]", pInfo->ItemName);
-				}
-			}
-			else
-			{
-				sprintf(line4, "[%s*]", pInfo->ItemName);
-			}
-		}
+			sprintf(line3, "[%s  + %d]", pInfo->ItemName, Grade30);
 	}
-	else
-	{
-		if (pcItem->GetGradeAlexX() != 0)
-		{
-			sprintf(line4, "[%s+%d]", pInfo->ItemName, a_grade);
-		}
+	else {
+		if (pOptionInfo)
+			sprintf(line3, "[%s*]", pInfo->ItemName);
 		else
-		{
-			if (GAMEIN->GetNewUpGrareAlexXDlg()->IsActive())
-			{
-				if (GAMEIN->GetNewUpGrareAlexXDlg()->GetrealFuck_WTF_GradeAlexX() == true)
-				{
-					sprintf(line4, "[%s+%d]", pInfo->ItemName, a_grade);
-				}
-				else
-				{
-					sprintf(line4, "[%s*]", pInfo->ItemName);
-				}
-			}
-			else
-			{
-				sprintf(line4, "[%s]", pInfo->ItemName);
-			}
-		}
+			sprintf(line3, "[%s]", pInfo->ItemName);
 	}
 
-	int nLen = strlen(pInfo->ItemName);
+	//int nLen = strlen(pInfo->ItemName);
 
-	//////////////+30
 	char line[256];
 	char line2[256];
 
@@ -2400,54 +2348,20 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 			pIcon->AddToolTipLine( line, TTTC_FREELIMIT );
 	}
 	pIcon->AddToolTipLine("");
-	DWORD RareState;
-	if( pRareOptionInfo && pRareOptionInfo->GenGol )
-		RareState = pRareOptionInfo->GenGol;
-	else
-		RareState = 0;
-	if (pInfo->GenGol != 0)
+	//=======================================================GenGol
+	DWORD RareStateGenGol = (pRareOptionInfo && pRareOptionInfo->GenGol) ? pRareOptionInfo->GenGol : 0;
+
+	DWORD baseValueGenGol = pInfo->GenGol;
+	DWORD gradeBonusGenGol = CalStatusGradeInt(baseValueGenGol, Grade30);
+	DWORD totalBaseGenGol = gradeBonusGenGol; // 加成后的基值
+
+	if (baseValueGenGol != 0)
 	{
-		increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[GENGOL_MINCHUB_CHERYUK_SIMMEK] * 1.00;
-		WORD full_a_gengol = pInfo->GenGol * pow(increase_factor, a_grade);
 		if (pOptionInfo && pOptionInfo->GenGol != 0)
-		{
-			if (a_grade > 0)
-			{
-				if (RareState > 0)
-					sprintf(line, "%s +%d [+%d](+%d)", CHATMGR->GetChatMsg(382), full_a_gengol, RareState, pOptionInfo->GenGol);
-				else
-					sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(382), (full_a_gengol + RareState), pOptionInfo->GenGol);
-			}
-			else
-			{
-				if (RareState > 0)
-					sprintf(line, "%s +%d [+%d](+%d)", CHATMGR->GetChatMsg(382), pInfo->GenGol, RareState, pOptionInfo->GenGol);
-				else
-					sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(382), (pInfo->GenGol + RareState), pOptionInfo->GenGol);
-			}
-		}
-		else if (RareState > 0)
-		{
-			if (a_grade > 0)
-			{
-				sprintf(line, "%s +%d [+%d]", CHATMGR->GetChatMsg(382), full_a_gengol, RareState);
-			}
-			else
-			{
-				sprintf(line, "%s +%d [+%d]", CHATMGR->GetChatMsg(382), pInfo->GenGol, RareState);
-			}
-		}
+			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(382), totalBaseGenGol + RareStateGenGol, pOptionInfo->GenGol);
 		else
-		{
-			if (a_grade > 0)
-			{
-				sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(382), full_a_gengol + RareState);
-			}
-			else
-			{
-				sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(382), pInfo->GenGol + RareState);
-			}
-		}
+			sprintf(line, "%s +%d", CHATMGR->GetChatMsg(382), totalBaseGenGol + RareStateGenGol);
+
 		if (pRareOptionInfo && pRareOptionInfo->GenGol)
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		else
@@ -2455,9 +2369,9 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 	}
 	else
 	{
-		if (RareState && pOptionInfo && pOptionInfo->GenGol != 0)
+		if (RareStateGenGol && pOptionInfo && pOptionInfo->GenGol != 0)
 		{
-			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(382), RareState, pOptionInfo->GenGol);
+			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(382), RareStateGenGol, pOptionInfo->GenGol);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 		else if (pOptionInfo && pOptionInfo->GenGol != 0)
@@ -2467,59 +2381,24 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 		}
 		else if (pRareOptionInfo && pRareOptionInfo->GenGol != 0)
 		{
-			sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(382), pRareOptionInfo->GenGol);
+			sprintf(line, "%s +%d", CHATMGR->GetChatMsg(382), pRareOptionInfo->GenGol);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 	}
+	//=======================================================GenGol
+//=======================================================MinChub
+	DWORD RareStateMinChub = (pRareOptionInfo && pRareOptionInfo->MinChub) ? pRareOptionInfo->MinChub : 0;
 
-	if (pRareOptionInfo && pRareOptionInfo->MinChub)
-		RareState = pRareOptionInfo->MinChub;
-	else
-		RareState = 0;
+	DWORD baseValueMinChub = pInfo->MinChub;
+	DWORD gradeBonusMinChub = CalStatusGradeInt(baseValueMinChub, Grade30);
+	DWORD totalBaseMinChub = gradeBonusMinChub; // 加成后的基值
 
-	if (pInfo->MinChub != 0)
+	if (baseValueMinChub != 0)
 	{
-		increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[GENGOL_MINCHUB_CHERYUK_SIMMEK] * 1.00;
-		WORD full_a_minchub = pInfo->MinChub * pow(increase_factor, a_grade);
 		if (pOptionInfo && pOptionInfo->MinChub != 0)
-		{
-			if (a_grade > 0)
-			{
-				if (RareState > 0)
-					sprintf(line, "%s +%d [+%d](+%d)", CHATMGR->GetChatMsg(383), full_a_minchub, RareState, pOptionInfo->MinChub);
-				else
-					sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(383), (full_a_minchub + RareState), pOptionInfo->MinChub);
-			}
-			else
-			{
-				if (RareState > 0)
-					sprintf(line, "%s +%d [+%d](+%d)", CHATMGR->GetChatMsg(383), pInfo->MinChub, RareState, pOptionInfo->MinChub);
-				else
-					sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(383), (pInfo->MinChub + RareState), pOptionInfo->MinChub);
-			}
-		}
-		else if (RareState > 0)
-		{
-			if (a_grade > 0)
-			{
-				sprintf(line, "%s +%d [+%d]", CHATMGR->GetChatMsg(383), full_a_minchub, RareState);
-			}
-			else
-			{
-				sprintf(line, "%s +%d [+%d]", CHATMGR->GetChatMsg(383), pInfo->MinChub, RareState);
-			}
-		}
+			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(383), totalBaseMinChub + RareStateMinChub ,pOptionInfo->MinChub);
 		else
-		{
-			if (a_grade > 0)
-			{
-				sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(383), full_a_minchub + RareState);
-			}
-			else
-			{
-				sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(383), pInfo->MinChub + RareState);
-			}
-		}
+			sprintf(line, "%s +%d", CHATMGR->GetChatMsg(383), totalBaseMinChub + RareStateMinChub);
 
 		if (pRareOptionInfo && pRareOptionInfo->MinChub)
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
@@ -2528,9 +2407,9 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 	}
 	else
 	{
-		if (RareState && pOptionInfo && pOptionInfo->MinChub != 0)
+		if (RareStateMinChub && pOptionInfo && pOptionInfo->MinChub != 0)
 		{
-			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(383), RareState, pOptionInfo->MinChub);
+			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(383), RareStateMinChub, pOptionInfo->MinChub);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 		else if (pOptionInfo && pOptionInfo->MinChub != 0)
@@ -2540,59 +2419,25 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 		}
 		else if (pRareOptionInfo && pRareOptionInfo->MinChub != 0)
 		{
-			sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(383), pRareOptionInfo->MinChub);
+			sprintf(line, "%s +%d", CHATMGR->GetChatMsg(383), pRareOptionInfo->MinChub);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 	}
+	//=======================================================MinChub
 
+//=======================================================CheRyuk
+	DWORD RareStateCheRyuk = (pRareOptionInfo && pRareOptionInfo->CheRyuk) ? pRareOptionInfo->CheRyuk : 0;
 
-	if (pRareOptionInfo && pRareOptionInfo->CheRyuk)
-		RareState = pRareOptionInfo->CheRyuk;
-	else
-		RareState = 0;
-	if (pInfo->CheRyuk != 0)
+	DWORD baseValueCheRyuk = pInfo->CheRyuk;
+	DWORD gradeBonusCheRyuk = CalStatusGradeInt(baseValueCheRyuk, Grade30);
+	DWORD totalBaseCheRyuk = gradeBonusCheRyuk; // 加成后的基值
+
+	if (baseValueCheRyuk != 0)
 	{
-		increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[GENGOL_MINCHUB_CHERYUK_SIMMEK] * 1.00;
-		WORD full_a_cheryuk = pInfo->CheRyuk * pow(increase_factor, a_grade);
 		if (pOptionInfo && pOptionInfo->CheRyuk != 0)
-		{
-			if (a_grade > 0)
-			{
-				if (RareState > 0)
-					sprintf(line, "%s +%d [+%d](+%d)", CHATMGR->GetChatMsg(384), full_a_cheryuk, RareState, pOptionInfo->CheRyuk);
-				else
-					sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(384), (full_a_cheryuk + RareState), pOptionInfo->CheRyuk);
-			}
-			else
-			{
-				if (RareState > 0)
-					sprintf(line, "%s +%d [+%d](+%d)", CHATMGR->GetChatMsg(384), pInfo->CheRyuk, RareState, pOptionInfo->CheRyuk);
-				else
-					sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(384), (pInfo->CheRyuk + RareState), pOptionInfo->CheRyuk);
-			}
-		}
-		else if (RareState > 0)
-		{
-			if (a_grade > 0)
-			{
-				sprintf(line, "%s +%d [+%d]", CHATMGR->GetChatMsg(384), full_a_cheryuk, RareState);
-			}
-			else
-			{
-				sprintf(line, "%s +%d [+%d]", CHATMGR->GetChatMsg(384), pInfo->CheRyuk, RareState);
-			}
-		}
+			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(384), totalBaseCheRyuk + RareStateCheRyuk, pOptionInfo->CheRyuk);
 		else
-		{
-			if (a_grade > 0)
-			{
-				sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(384), full_a_cheryuk + RareState);
-			}
-			else
-			{
-				sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(384), pInfo->CheRyuk + RareState);
-			}
-		}
+			sprintf(line, "%s +%d", CHATMGR->GetChatMsg(384), totalBaseCheRyuk + RareStateCheRyuk);
 
 		if (pRareOptionInfo && pRareOptionInfo->CheRyuk)
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
@@ -2601,9 +2446,9 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 	}
 	else
 	{
-		if (RareState && pOptionInfo && pOptionInfo->CheRyuk != 0)
+		if (RareStateCheRyuk && pOptionInfo && pOptionInfo->CheRyuk != 0)
 		{
-			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(384), RareState, pOptionInfo->CheRyuk);
+			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(384), RareStateCheRyuk, pOptionInfo->CheRyuk);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 		else if (pOptionInfo && pOptionInfo->CheRyuk != 0)
@@ -2613,59 +2458,25 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 		}
 		else if (pRareOptionInfo && pRareOptionInfo->CheRyuk != 0)
 		{
-			sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(384), pRareOptionInfo->CheRyuk);
+			sprintf(line, "%s +%d", CHATMGR->GetChatMsg(384), pRareOptionInfo->CheRyuk);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 	}
+	//=======================================================CheRyuk
 
+//=======================================================SimMek
+	DWORD RareStateSimMek = (pRareOptionInfo && pRareOptionInfo->SimMek) ? pRareOptionInfo->SimMek : 0;
 
-	if (pRareOptionInfo && pRareOptionInfo->SimMek)
-		RareState = pRareOptionInfo->SimMek;
-	else
-		RareState = 0;
-	if (pInfo->SimMek != 0)
+	DWORD baseValueSimMek = pInfo->SimMek;
+	DWORD gradeBonusSimMek = CalStatusGradeInt(baseValueSimMek, Grade30);
+	DWORD totalBaseSimMek = gradeBonusSimMek; // 强化后主值
+
+	if (baseValueSimMek != 0)
 	{
-		increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[GENGOL_MINCHUB_CHERYUK_SIMMEK] * 1.00;
-		WORD full_a_simmek = pInfo->SimMek * pow(increase_factor, a_grade);
 		if (pOptionInfo && pOptionInfo->SimMek != 0)
-		{
-			if (a_grade > 0)
-			{
-				if (RareState > 0)
-					sprintf(line, "%s +%d [+%d](+%d)", CHATMGR->GetChatMsg(385), full_a_simmek, RareState, pOptionInfo->SimMek);
-				else
-					sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(385), (full_a_simmek + RareState), pOptionInfo->SimMek);
-			}
-			else
-			{
-				if (RareState > 0)
-					sprintf(line, "%s +%d [+%d](+%d)", CHATMGR->GetChatMsg(385), pInfo->SimMek, RareState, pOptionInfo->SimMek);
-				else
-					sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(385), (pInfo->SimMek + RareState), pOptionInfo->SimMek);
-			}
-		}
-		else if (RareState > 0)
-		{
-			if (a_grade > 0)
-			{
-				sprintf(line, "%s +%d [+%d]", CHATMGR->GetChatMsg(385), full_a_simmek, RareState);
-			}
-			else
-			{
-				sprintf(line, "%s +%d [+%d]", CHATMGR->GetChatMsg(385), pInfo->SimMek, RareState);
-			}
-		}
+			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(385), totalBaseSimMek + RareStateSimMek, pOptionInfo->SimMek);
 		else
-		{
-			if (a_grade > 0)
-			{
-				sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(385), full_a_simmek + RareState);
-			}
-			else
-			{
-				sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(385), pInfo->SimMek + RareState);
-			}
-		}
+			sprintf(line, "%s +%d", CHATMGR->GetChatMsg(385), totalBaseSimMek + RareStateSimMek);
 
 		if (pRareOptionInfo && pRareOptionInfo->SimMek)
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
@@ -2674,9 +2485,9 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 	}
 	else
 	{
-		if (RareState && pOptionInfo && pOptionInfo->SimMek != 0)
+		if (RareStateSimMek && pOptionInfo && pOptionInfo->SimMek != 0)
 		{
-			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(385), RareState, pOptionInfo->SimMek);
+			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(385), RareStateSimMek, pOptionInfo->SimMek);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 		else if (pOptionInfo && pOptionInfo->SimMek != 0)
@@ -2684,62 +2495,26 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 			sprintf(line, "%s (+%d)", CHATMGR->GetChatMsg(385), pOptionInfo->SimMek);
 			pIcon->AddToolTipLine(line, TTTC_EXTRAATTR);
 		}
-
 		else if (pRareOptionInfo && pRareOptionInfo->SimMek != 0)
 		{
-			sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(385), pRareOptionInfo->SimMek);
+			sprintf(line, "%s +%d", CHATMGR->GetChatMsg(385), pRareOptionInfo->SimMek);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 	}
+	//=======================================================SimMek
+//=======================================================Life
+	DWORD RareStateLife = (pRareOptionInfo && pRareOptionInfo->Life) ? pRareOptionInfo->Life : 0;
 
+	DWORD baseValueLife = pInfo->Life;
+	DWORD gradeBonusLife = CalStatusGradeInt(baseValueLife, Grade30);
+	DWORD totalBaseLife = gradeBonusLife; // 强化后的主属性
 
-	if (pRareOptionInfo && pRareOptionInfo->Life)
-		RareState = pRareOptionInfo->Life;
-	else
-		RareState = 0;
-	if (pInfo->Life != 0)
+	if (baseValueLife != 0)
 	{
-		increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[LITE_SHIELD_NAERYUK_PHYDEF] * 1.00;
-		DWORD full_a_life = pInfo->Life * pow(increase_factor, a_grade);
 		if (pOptionInfo && pOptionInfo->Life != 0)
-		{
-			if (a_grade > 0)
-			{
-				if (RareState > 0)
-					sprintf(line, "%s +%d [+%d](+%d)", CHATMGR->GetChatMsg(386), full_a_life, RareState, pOptionInfo->Life);
-				else
-					sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(386), (full_a_life + RareState), pOptionInfo->Life);
-			}
-			else
-			{
-				if (RareState > 0)
-					sprintf(line, "%s +%d [+%d](+%d)", CHATMGR->GetChatMsg(386), pInfo->Life, RareState, pOptionInfo->Life);
-				else
-					sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(386), (pInfo->Life + RareState), pOptionInfo->Life);
-			}
-		}
-		else if (RareState > 0)
-		{
-			if (a_grade > 0)
-			{
-				sprintf(line, "%s +%d [+%d]", CHATMGR->GetChatMsg(386), full_a_life, RareState);
-			}
-			else
-			{
-				sprintf(line, "%s +%d [+%d]", CHATMGR->GetChatMsg(386), pInfo->Life, RareState);
-			}
-		}
+			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(386), totalBaseLife + RareStateLife, pOptionInfo->Life);
 		else
-		{
-			if (a_grade > 0)
-			{
-				sprintf(line, "%s +%d", CHATMGR->GetChatMsg(386), full_a_life + RareState);
-			}
-			else
-			{
-				sprintf(line, "%s +%d", CHATMGR->GetChatMsg(386), pInfo->Life + RareState);
-			}
-		}
+			sprintf(line, "%s +%d", CHATMGR->GetChatMsg(386), totalBaseLife + RareStateLife);
 
 		if (pRareOptionInfo && pRareOptionInfo->Life)
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
@@ -2748,9 +2523,9 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 	}
 	else
 	{
-		if (RareState && pOptionInfo && pOptionInfo->Life != 0)
+		if (RareStateLife && pOptionInfo && pOptionInfo->Life != 0)
 		{
-			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(386), RareState, pOptionInfo->Life);
+			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(386), RareStateLife, pOptionInfo->Life);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 		else if (pOptionInfo && pOptionInfo->Life != 0)
@@ -2760,59 +2535,24 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 		}
 		else if (pRareOptionInfo && pRareOptionInfo->Life != 0)
 		{
-			sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(386), pRareOptionInfo->Life);
+			sprintf(line, "%s +%d", CHATMGR->GetChatMsg(386), pRareOptionInfo->Life);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 	}
+	//=======================================================Life
+//=======================================================NaeRyuk
+	DWORD RareStateNaeRyuk = (pRareOptionInfo && pRareOptionInfo->NaeRyuk) ? pRareOptionInfo->NaeRyuk : 0;
 
+	DWORD baseValueNaeRyuk = pInfo->NaeRyuk;
+	DWORD gradeBonusNaeRyuk = CalStatusGradeInt(baseValueNaeRyuk, Grade30);
+	DWORD totalBaseNaeRyuk = gradeBonusNaeRyuk;
 
-	if (pRareOptionInfo && pRareOptionInfo->NaeRyuk)
-		RareState = pRareOptionInfo->NaeRyuk;
-	else
-		RareState = 0;
-	if (pInfo->NaeRyuk != 0)
+	if (baseValueNaeRyuk != 0)
 	{
-		increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[LITE_SHIELD_NAERYUK_PHYDEF] * 1.00;
-		DWORD full_a_naeryuk = pInfo->NaeRyuk * pow(increase_factor, a_grade);
 		if (pOptionInfo && pOptionInfo->NaeRyuk != 0)
-		{
-			if (a_grade > 0)
-			{
-				if (RareState > 0)
-					sprintf(line, "%s +%d [+%d](+%d)", CHATMGR->GetChatMsg(387), full_a_naeryuk, RareState, pOptionInfo->NaeRyuk);
-				else
-					sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(387), (full_a_naeryuk + RareState), pOptionInfo->NaeRyuk);
-			}
-			else
-			{
-				if (RareState > 0)
-					sprintf(line, "%s +%d [+%d](+%d)", CHATMGR->GetChatMsg(387), pInfo->NaeRyuk, RareState, pOptionInfo->NaeRyuk);
-				else
-					sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(387), (pInfo->NaeRyuk + RareState), pOptionInfo->NaeRyuk);
-			}
-		}
-		else if (RareState > 0)
-		{
-			if (a_grade > 0)
-			{
-				sprintf(line, "%s +%d [+%d]", CHATMGR->GetChatMsg(387), full_a_naeryuk, RareState);
-			}
-			else
-			{
-				sprintf(line, "%s +%d [+%d]", CHATMGR->GetChatMsg(387), pInfo->NaeRyuk, RareState);
-			}
-		}
+			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(387), totalBaseNaeRyuk + RareStateNaeRyuk, pOptionInfo->NaeRyuk);
 		else
-		{
-			if (a_grade > 0)
-			{
-				sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(387), full_a_naeryuk + RareState);
-			}
-			else
-			{
-				sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(387), pInfo->NaeRyuk + RareState);
-			}
-		}
+			sprintf(line, "%s +%d", CHATMGR->GetChatMsg(387), totalBaseNaeRyuk + RareStateNaeRyuk);
 
 		if (pRareOptionInfo && pRareOptionInfo->NaeRyuk)
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
@@ -2821,9 +2561,9 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 	}
 	else
 	{
-		if (RareState && pOptionInfo && pOptionInfo->NaeRyuk != 0)
+		if (RareStateNaeRyuk && pOptionInfo && pOptionInfo->NaeRyuk != 0)
 		{
-			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(387), RareState, pOptionInfo->NaeRyuk);
+			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(387), RareStateNaeRyuk, pOptionInfo->NaeRyuk);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 		else if (pOptionInfo && pOptionInfo->NaeRyuk != 0)
@@ -2833,59 +2573,24 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 		}
 		else if (pRareOptionInfo && pRareOptionInfo->NaeRyuk != 0)
 		{
-			sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(387), pRareOptionInfo->NaeRyuk);
+			sprintf(line, "%s +%d", CHATMGR->GetChatMsg(387), pRareOptionInfo->NaeRyuk);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 	}
+	//=======================================================NaeRyuk
+//=======================================================Shield
+	DWORD RareStateShield = (pRareOptionInfo && pRareOptionInfo->Shield) ? pRareOptionInfo->Shield : 0;
 
+	DWORD baseValueShield = pInfo->Shield;
+	DWORD gradeBonusShield = CalStatusGradeInt(baseValueShield, Grade30);
+	DWORD totalBaseShield = gradeBonusShield; // 强化后主属性
 
-	if (pRareOptionInfo && pRareOptionInfo->Shield)
-		RareState = pRareOptionInfo->Shield;
-	else
-		RareState = 0;
-	if (pInfo->Shield != 0)
+	if (baseValueShield != 0)
 	{
-		increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[LITE_SHIELD_NAERYUK_PHYDEF] * 1.00;
-		DWORD full_a_shield = pInfo->Shield * pow(increase_factor, a_grade);
 		if (pOptionInfo && pOptionInfo->Shield != 0)
-		{
-			if (a_grade > 0)
-			{
-				if (RareState > 0)
-					sprintf(line, "%s +%d [+%d](+%d)", CHATMGR->GetChatMsg(388), full_a_shield, RareState, pOptionInfo->Shield);
-				else
-					sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(388), (full_a_shield + RareState), pOptionInfo->Shield);
-			}
-			else
-			{
-				if (RareState > 0)
-					sprintf(line, "%s +%d [+%d](+%d)", CHATMGR->GetChatMsg(388), pInfo->Shield, RareState, pOptionInfo->Shield);
-				else
-					sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(388), (pInfo->Shield + RareState), pOptionInfo->Shield);
-			}
-		}
-		else if (RareState > 0)
-		{
-			if (a_grade > 0)
-			{
-				sprintf(line, "%s +%d [+%d]", CHATMGR->GetChatMsg(388), full_a_shield, RareState);
-			}
-			else
-			{
-				sprintf(line, "%s +%d [+%d]", CHATMGR->GetChatMsg(388), pInfo->Shield, RareState);
-			}
-		}
+			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(388), totalBaseShield + RareStateShield, pOptionInfo->Shield);
 		else
-		{
-			if (a_grade > 0)
-			{
-				sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(388), full_a_shield + RareState);
-			}
-			else
-			{
-				sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(388), pInfo->Shield + RareState);
-			}
-		}
+			sprintf(line, "%s +%d", CHATMGR->GetChatMsg(388), totalBaseShield + RareStateShield);
 
 		if (pRareOptionInfo && pRareOptionInfo->Shield)
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
@@ -2894,9 +2599,9 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 	}
 	else
 	{
-		if (RareState && pOptionInfo && pOptionInfo->Shield != 0)
+		if (RareStateShield && pOptionInfo && pOptionInfo->Shield != 0)
 		{
-			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(388), RareState, pOptionInfo->Shield);
+			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(388), RareStateShield, pOptionInfo->Shield);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 		else if (pOptionInfo && pOptionInfo->Shield != 0)
@@ -2906,612 +2611,245 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 		}
 		else if (pRareOptionInfo && pRareOptionInfo->Shield != 0)
 		{
-			sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(388), pRareOptionInfo->Shield);
+			sprintf(line, "%s +%d", CHATMGR->GetChatMsg(388), pRareOptionInfo->Shield);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 	}
-
-	float wtf_attrvalue = 0;
+	//=======================================================Shield
+	//=======================================================属性
 	for (int i = ATTR_FIRE; i <= ATTR_MAX; ++i)
 	{
-		increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[ELEMENT_ATTACK_REGIST] * 1.00;
-		attrvalue = 100 * pInfo->AttrRegist.GetElement_Val(i);
-		if (pOptionInfo)
-			attroptvalue = 100 * pOptionInfo->AttrRegist.GetElement_Val(i);
-		if (pRareOptionInfo)
-		{
-			attrRareOptValue = 100 * pRareOptionInfo->AttrRegist.GetElement_Val(i);
-		}
-		else attrRareOptValue = 0;
+		DWORD rawValueATTR = pInfo->AttrRegist.GetElement_Val(i);
+		DWORD rareValueATTR = (pRareOptionInfo) ? pRareOptionInfo->AttrRegist.GetElement_Val(i) : 0;
+		DWORD optValueATTR = (pOptionInfo) ? pOptionInfo->AttrRegist.GetElement_Val(i) : 0;
 
-		if (a_grade > 0)
-		{
-			ATTRIBUTEREGIST AlexX_WhatTheFuckAttrAttack;
-			AlexX_WhatTheFuckAttrAttack.SetElement_Val(i, pInfo->AttrRegist.GetElement_Val(i) * pow(increase_factor, a_grade));
+		// 强化后主值
+		DWORD baseValueATTR = CalStatusGradeInt(rawValueATTR, Grade30);
+		DWORD totalValueATTR = baseValueATTR + rareValueATTR;
 
-			wtf_attrvalue = 100 * AlexX_WhatTheFuckAttrAttack.GetElement_Val(i);
-		}
-
-		if ((int)(attrvalue) != 0)
+		if ((int)rawValueATTR != 0)
 		{
-			if ((int)(attroptvalue) != 0)
-			{
-				if (a_grade > 0)
-				{
-					if (attrRareOptValue > 0)
-						sprintf(line, "%s +%d%% [+%d%%] (+%d%%)", CHATMGR->GetChatMsg(265 + i - 1), (int)(wtf_attrvalue), (int)(attrRareOptValue), (int)(attroptvalue));
-					else
-						sprintf(line, "%s +%d%% (+%d%%)", CHATMGR->GetChatMsg(265 + i - 1), ((int)(wtf_attrvalue)+(int)(attrRareOptValue)), (int)(attroptvalue));
-				}
-				else
-				{
-					if (attrRareOptValue > 0)
-						sprintf(line, "%s +%d%% [+%d%%] (+%d%%)", CHATMGR->GetChatMsg(265 + i - 1), (int)(attrvalue), (int)(attrRareOptValue), (int)(attroptvalue));
-					else
-						sprintf(line, "%s +%d%% (+%d%%)", CHATMGR->GetChatMsg(265 + i - 1), ((int)(attrvalue)+(int)(attrRareOptValue)), (int)(attroptvalue));
-				}
-			}
-			else if (attrRareOptValue > 0)
-			{
-				if (a_grade > 0)
-				{
-					sprintf(line, "%s +%d%% [+%d%%]", CHATMGR->GetChatMsg(265 + i - 1), (int)(wtf_attrvalue), (int)(attrRareOptValue));
-				}
-				else
-				{
-					sprintf(line, "%s +%d%% [+%d%%]", CHATMGR->GetChatMsg(265 + i - 1), (int)(attrvalue), (int)(attrRareOptValue));
-				}
-			}
+			if ((int)optValueATTR != 0)
+				sprintf(line, "%s +%d%% (+%d%%)", CHATMGR->GetChatMsg(265 + i - 1), totalValueATTR * 100, optValueATTR * 100);
 			else
-			{
-				if (a_grade > 0)
-				{
-					sprintf(line, "%s +%d%% ", CHATMGR->GetChatMsg(265 + i - 1), (int)(wtf_attrvalue + attrRareOptValue));
-				}
-				else
-				{
-					sprintf(line, "%s +%d%% ", CHATMGR->GetChatMsg(265 + i - 1), (int)(attrvalue + attrRareOptValue));
-				}
-			}
+				sprintf(line, "%s +%d%%", CHATMGR->GetChatMsg(265 + i - 1), totalValueATTR * 100);
 
-			if (pRareOptionInfo && attrRareOptValue)
+			if (pRareOptionInfo && rareValueATTR)
 				pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 			else
 				pIcon->AddToolTipLine(line, TTTC_EXTRAATTR);
 		}
 		else
 		{
-			if ((int)(attroptvalue) != 0)
+			if ((int)optValueATTR != 0)
 			{
-				if (attrRareOptValue > 0)	//饭绢酒捞袍捞促.
-					sprintf(line, "%s [+%d%%] (+%d%%)", CHATMGR->GetChatMsg(265 + i - 1), (int)(attrRareOptValue), (int)(attroptvalue));
+				if (rareValueATTR)
+					sprintf(line, "%s +%d%% (+%d%%)", CHATMGR->GetChatMsg(265 + i - 1), rareValueATTR * 100, optValueATTR * 100);
 				else
-					sprintf(line, "%s (+%d%%)", CHATMGR->GetChatMsg(265 + i - 1), (int)(attroptvalue));
+					sprintf(line, "%s (+%d%%)", CHATMGR->GetChatMsg(265 + i - 1), optValueATTR * 100);
 			}
-			else
+			else if (rareValueATTR)
 			{
-				if (attrRareOptValue > 0)	//饭绢酒捞袍捞促.
-					sprintf(line, "%s +%d%%", CHATMGR->GetChatMsg(265 + i - 1), (int)(attrRareOptValue));
+				sprintf(line, "%s +%d%%", CHATMGR->GetChatMsg(265 + i - 1), rareValueATTR * 100);
 			}
-			if (attrRareOptValue)
+
+			if (rareValueATTR)
 				pIcon->AddToolTipLine(line, TTTC_RAREITEM);
-			else if (attroptvalue)
+			else if (optValueATTR)
 				pIcon->AddToolTipLine(line, TTTC_EXTRAATTR);
 		}
 	}
-
-
-	//#endif
-	WORD RareOptPhyAttack;
-	if (pRareOptionInfo && pRareOptionInfo->PhyAttack)
-		RareOptPhyAttack = pRareOptionInfo->PhyAttack;
-	else
-		RareOptPhyAttack = 0;
+	//=======================================================属性
+	//=======================================================PhyAttack
+	WORD RareOptPhyAttack = (pRareOptionInfo && pRareOptionInfo->PhyAttack) ? pRareOptionInfo->PhyAttack : 0;
 
 	if (pInfo->MeleeAttackMin || pInfo->MeleeAttackMax)
 	{
-		increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[MELEE_RANGE_ATTACK] * 1.00;
-		WORD full_a_meleemin = pInfo->MeleeAttackMin * pow(increase_factor, a_grade);
-		WORD full_a_neleemax = pInfo->MeleeAttackMax * pow(increase_factor, a_grade);
 		if (pInfo->ItemKind != eEQUIP_ITEM_ARMLET)
 		{
+			// 强化最小攻击与最大攻击
+			DWORD minAttack = CalStatusGradeInt(pInfo->MeleeAttackMin, Grade30) + RareOptPhyAttack;
+			DWORD maxAttack = CalStatusGradeInt(pInfo->MeleeAttackMax, Grade30) + RareOptPhyAttack;
+
 			if (pInfo->MeleeAttackMin == pInfo->MeleeAttackMax)
 			{
-				if (pOptionInfo && pOptionInfo->PhyAttack)	//拱府 傍拜 碍拳 酒捞袍
-				{
-					if (a_grade > 0)
-					{
-						if (RareOptPhyAttack > 0)//当祝福属性<0时强化时不显示[0]祝福空值
-							sprintf(line, "%s %d [+%d](+%d)", CHATMGR->GetChatMsg(389), full_a_meleemin, RareOptPhyAttack, pOptionInfo->PhyAttack);
-						else
-							sprintf(line, "%s %d (+%d)", CHATMGR->GetChatMsg(389), (full_a_meleemin + RareOptPhyAttack), pOptionInfo->PhyAttack);
-					}
-					else
-					{
-						if (RareOptPhyAttack > 0)//当祝福属性<0时强化时不显示[0]祝福空值
-							sprintf(line, "%s %d [+%d](+%d)", CHATMGR->GetChatMsg(389), pInfo->MeleeAttackMin, RareOptPhyAttack, pOptionInfo->PhyAttack);
-						else
-							sprintf(line, "%s %d (+%d)", CHATMGR->GetChatMsg(389), (pInfo->MeleeAttackMin + RareOptPhyAttack), pOptionInfo->PhyAttack);
-					}
-				}
-				else if (RareOptPhyAttack > 0)
-				{
-					if (a_grade > 0)
-					{
-						sprintf(line, "%s %d [+%d]", CHATMGR->GetChatMsg(389), full_a_meleemin, RareOptPhyAttack);
-					}
-					else
-					{
-						sprintf(line, "%s %d [+%d]", CHATMGR->GetChatMsg(389), pInfo->MeleeAttackMin, RareOptPhyAttack);
-					}
-				}
+				if (pOptionInfo && pOptionInfo->PhyAttack)
+					sprintf(line, "%s %d (+%d)", CHATMGR->GetChatMsg(389), minAttack, pOptionInfo->PhyAttack);
 				else
-				{
-					if (a_grade > 0)
-					{
-						sprintf(line, "%s %d", CHATMGR->GetChatMsg(389), (full_a_meleemin + RareOptPhyAttack));
-					}
-					else
-					{
-						sprintf(line, "%s %d", CHATMGR->GetChatMsg(389), (pInfo->MeleeAttackMin + RareOptPhyAttack));
-					}
-				}
+					sprintf(line, "%s %d", CHATMGR->GetChatMsg(389), minAttack);
 			}
 			else
 			{
 				if (pOptionInfo && pOptionInfo->PhyAttack)
-				{
-					if (a_grade > 0)
-					{
-						if (RareOptPhyAttack > 0)//当祝福属性<0时强化时不显示[0]祝福空值
-							sprintf(line, "%s %d ~ %d [+%d](+%d)", CHATMGR->GetChatMsg(389), full_a_meleemin, full_a_neleemax, RareOptPhyAttack, pOptionInfo->PhyAttack);
-						else
-							sprintf(line, "%s %d ~ %d (+%d)", CHATMGR->GetChatMsg(389), (full_a_meleemin + RareOptPhyAttack), (full_a_neleemax + RareOptPhyAttack), pOptionInfo->PhyAttack);
-					}
-					else
-					{
-						if (RareOptPhyAttack > 0)//当祝福属性<0时强化时不显示[0]祝福空值
-						{
-							if (a_grade > 0)
-							{
-								sprintf(line, "%s %d ~ %d [+%d](+%d)", CHATMGR->GetChatMsg(389), full_a_meleemin, full_a_neleemax, RareOptPhyAttack, pOptionInfo->PhyAttack);
-							}
-							else
-							{
-								sprintf(line, "%s %d ~ %d [+%d](+%d)", CHATMGR->GetChatMsg(389), pInfo->MeleeAttackMin, pInfo->MeleeAttackMax, RareOptPhyAttack, pOptionInfo->PhyAttack);
-							}
-						}
-						else
-						{
-							if (a_grade > 0)
-							{
-								sprintf(line, "%s %d ~ %d (+%d)", CHATMGR->GetChatMsg(389), (full_a_meleemin + RareOptPhyAttack), (full_a_neleemax + RareOptPhyAttack), pOptionInfo->PhyAttack);
-							}
-							else
-							{
-								sprintf(line, "%s %d ~ %d (+%d)", CHATMGR->GetChatMsg(389), (pInfo->MeleeAttackMin + RareOptPhyAttack), (pInfo->MeleeAttackMax + RareOptPhyAttack), pOptionInfo->PhyAttack);
-							}
-						}
-					}
-				}
-				else if (RareOptPhyAttack > 0)
-				{
-					if (a_grade > 0)
-					{
-						sprintf(line, "%s %d ~ %d [+%d]", CHATMGR->GetChatMsg(389), full_a_meleemin, full_a_neleemax, RareOptPhyAttack);
-					}
-					else
-					{
-						sprintf(line, "%s %d ~ %d [+%d]", CHATMGR->GetChatMsg(389), pInfo->MeleeAttackMin, pInfo->MeleeAttackMax, RareOptPhyAttack);
-					}
-				}
+					sprintf(line, "%s %d ~ %d (+%d)", CHATMGR->GetChatMsg(389), minAttack, maxAttack, pOptionInfo->PhyAttack);
 				else
-				{
-					if (a_grade > 0)
-					{
-						sprintf(line, "%s %d ~ %d", CHATMGR->GetChatMsg(389), (full_a_meleemin + RareOptPhyAttack), (full_a_neleemax + RareOptPhyAttack));
-					}
-					else
-					{
-						sprintf(line, "%s %d ~ %d", CHATMGR->GetChatMsg(389), (pInfo->MeleeAttackMin + RareOptPhyAttack), (pInfo->MeleeAttackMax + RareOptPhyAttack));
-					}
-				}
+					sprintf(line, "%s %d ~ %d", CHATMGR->GetChatMsg(389), minAttack, maxAttack);
 			}
 
 			if (pRareOptionInfo && pRareOptionInfo->PhyAttack)
 				pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 			else
-				pIcon->AddToolTipLine(line, TTTC_NUMBER);
+				pIcon->AddToolTipLine(line, TTTC_EXTRAATTR);
 		}
 		else
 		{
+			// Armlet 显示为百分比，不进行强化处理
 			if (pInfo->MeleeAttackMin == pInfo->MeleeAttackMax)
 			{
 				if (pOptionInfo && pOptionInfo->PhyAttack)
-				{
-					if (a_grade > 0)
-					{
-						sprintf(line, "%s %d%% (+%d)", CHATMGR->GetChatMsg(389), full_a_meleemin, pOptionInfo->PhyAttack);
-					}
-					else
-					{
-						sprintf(line, "%s %d%% (+%d)", CHATMGR->GetChatMsg(389), pInfo->MeleeAttackMin, pOptionInfo->PhyAttack);
-					}
-				}
+					sprintf(line, "%s %d%% (+%d)", CHATMGR->GetChatMsg(389), pInfo->MeleeAttackMin, pOptionInfo->PhyAttack);
 				else
-				{
-					if (a_grade > 0)
-					{
-						sprintf(line, "%s %d%%", CHATMGR->GetChatMsg(389), full_a_meleemin);
-					}
-					else
-					{
-						sprintf(line, "%s %d%%", CHATMGR->GetChatMsg(389), pInfo->MeleeAttackMin);
-					}
-				}
+					sprintf(line, "%s %d%%", CHATMGR->GetChatMsg(389), pInfo->MeleeAttackMin);
 			}
 			else
 			{
 				if (pOptionInfo && pOptionInfo->PhyAttack)
-				{
-					if (a_grade > 0)
-					{
-						sprintf(line, "%s %d%% ~ %d%% (+%d)", CHATMGR->GetChatMsg(389), full_a_meleemin, full_a_neleemax, pOptionInfo->PhyAttack);
-					}
-					else
-					{
-						sprintf(line, "%s %d%% ~ %d%% (+%d)", CHATMGR->GetChatMsg(389), pInfo->MeleeAttackMin, pInfo->MeleeAttackMax, pOptionInfo->PhyAttack);
-					}
-				}
+					sprintf(line, "%s %d%% ~ %d%% (+%d)", CHATMGR->GetChatMsg(389), pInfo->MeleeAttackMin, pInfo->MeleeAttackMax, pOptionInfo->PhyAttack);
 				else
-				{
-					if (a_grade > 0)
-					{
-						sprintf(line, "%s %d%% ~ %d%%", CHATMGR->GetChatMsg(389), full_a_meleemin, full_a_neleemax);
-					}
-					else
-					{
-						sprintf(line, "%s %d%% ~ %d%%", CHATMGR->GetChatMsg(389), pInfo->MeleeAttackMin, pInfo->MeleeAttackMax);
-					}
-				}
+					sprintf(line, "%s %d%% ~ %d%%", CHATMGR->GetChatMsg(389), pInfo->MeleeAttackMin, pInfo->MeleeAttackMax);
 			}
-			pIcon->AddToolTipLine(line, TTTC_NUMBER);
-		}
-	}
-
-
-	if (pInfo->CriticalPercent)		//CoNaN Active Crictical State Showed 2020-09-12
-	{
-		increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[CRITICAL] * 1.00;
-		if (pOptionInfo && pOptionInfo->CriticalPercent)
-		{
-			if (a_grade)
-			{
-				sprintf(line, "%s %d (+%d)", CHATMGR->GetChatMsg(390), ((WORD)(pInfo->CriticalPercent * pow(increase_factor, a_grade))), pOptionInfo->CriticalPercent);
-			}
-			else
-			{
-				sprintf(line, "%s %d (+%d)", CHATMGR->GetChatMsg(390), pInfo->CriticalPercent, pOptionInfo->CriticalPercent);
-			}
-		}
-		else
-		{
-			if (a_grade)
-			{
-				sprintf(line, "%s %d", CHATMGR->GetChatMsg(390), ((WORD)(pInfo->CriticalPercent * pow(increase_factor, a_grade))));
-			}
-			else
-			{
-				sprintf(line, "%s %d", CHATMGR->GetChatMsg(390), pInfo->CriticalPercent);
-			}
-		}
-		pIcon->AddToolTipLine(line, TTTC_EXTRAATTR);
-	}
-	else
-	{
-		if (pOptionInfo && pOptionInfo->CriticalPercent != 0)
-		{
-			sprintf(line, "%s (+%d)", CHATMGR->GetChatMsg(390), pOptionInfo->CriticalPercent);
 			pIcon->AddToolTipLine(line, TTTC_EXTRAATTR);
 		}
+	}
+	//=======================================================PhyAttack
+
+//=======================================================RangeAttack
+	if (pOptionInfo && pOptionInfo->CriticalPercent != 0)
+	{
+		sprintf(line, "%s (+%d)", CHATMGR->GetChatMsg(390), pOptionInfo->CriticalPercent);
+		pIcon->AddToolTipLine(line, TTTC_EXTRAATTR);
 	}
 
 	if (pInfo->RangeAttackMin || pInfo->RangeAttackMax)
 	{
-		increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[MELEE_RANGE_ATTACK] * 1.00;
-		DWORD full_a_ranmin = pInfo->RangeAttackMin * pow(increase_factor, a_grade);
-		DWORD full_a_ranmix = pInfo->RangeAttackMax * pow(increase_factor, a_grade);
 		if (pInfo->ItemKind != eEQUIP_ITEM_ARMLET)
 		{
+			DWORD minAttack = CalStatusGradeInt(pInfo->RangeAttackMin, Grade30) + RareOptPhyAttack;
+			DWORD maxAttack = CalStatusGradeInt(pInfo->RangeAttackMax, Grade30) + RareOptPhyAttack;
+
 			if (pInfo->RangeAttackMin == pInfo->RangeAttackMax)
 			{
 				if (pOptionInfo && pOptionInfo->PhyAttack)
-				{
-					if (a_grade > 0)
-					{
-						if (RareOptPhyAttack > 0)
-							sprintf(line, "%s %d [+%d](+%d)", CHATMGR->GetChatMsg(391), full_a_ranmin, RareOptPhyAttack, pOptionInfo->PhyAttack);
-						else
-							sprintf(line, "%s %d (+%d)", CHATMGR->GetChatMsg(391), (full_a_ranmin + RareOptPhyAttack), pOptionInfo->PhyAttack);
-					}
-					else
-					{
-						if (RareOptPhyAttack > 0)
-							sprintf(line, "%s %d [+%d](+%d)", CHATMGR->GetChatMsg(391), pInfo->RangeAttackMin, RareOptPhyAttack, pOptionInfo->PhyAttack);
-						else
-							sprintf(line, "%s %d (+%d)", CHATMGR->GetChatMsg(391), (pInfo->RangeAttackMin + RareOptPhyAttack), pOptionInfo->PhyAttack);
-					}
-				}
-				else if (RareOptPhyAttack > 0)
-				{
-					if (a_grade > 0)
-					{
-						sprintf(line, "%s %d [+%d]", CHATMGR->GetChatMsg(391), full_a_ranmin, RareOptPhyAttack);
-					}
-					else
-					{
-						sprintf(line, "%s %d [+%d]", CHATMGR->GetChatMsg(391), pInfo->RangeAttackMin, RareOptPhyAttack);
-					}
-				}
+					sprintf(line, "%s %d (+%d)", CHATMGR->GetChatMsg(391), minAttack, pOptionInfo->PhyAttack);
 				else
-				{
-					if (a_grade > 0)
-					{
-						sprintf(line, "%s %d", CHATMGR->GetChatMsg(391), (full_a_ranmin + RareOptPhyAttack));
-					}
-					else
-					{
-						sprintf(line, "%s %d", CHATMGR->GetChatMsg(391), (pInfo->RangeAttackMin + RareOptPhyAttack));
-					}
-				}
+					sprintf(line, "%s %d", CHATMGR->GetChatMsg(391), minAttack);
 			}
 			else
 			{
 				if (pOptionInfo && pOptionInfo->PhyAttack)
-				{
-					if (a_grade > 0)
-					{
-						if (RareOptPhyAttack > 0)
-							sprintf(line, "%s %d ~ %d [+%d](+%d)", CHATMGR->GetChatMsg(391), full_a_ranmin, full_a_ranmix, RareOptPhyAttack, pOptionInfo->PhyAttack);
-						else
-							sprintf(line, "%s %d ~ %d (+%d)", CHATMGR->GetChatMsg(391), (full_a_ranmin + RareOptPhyAttack), (full_a_ranmix + RareOptPhyAttack), pOptionInfo->PhyAttack);
-					}
-					else
-					{
-						if (RareOptPhyAttack > 0)
-							sprintf(line, "%s %d ~ %d [+%d](+%d)", CHATMGR->GetChatMsg(391), pInfo->RangeAttackMin, pInfo->RangeAttackMax, RareOptPhyAttack, pOptionInfo->PhyAttack);
-						else
-							sprintf(line, "%s %d ~ %d (+%d)", CHATMGR->GetChatMsg(391), (pInfo->RangeAttackMin + RareOptPhyAttack), (pInfo->RangeAttackMax + RareOptPhyAttack), pOptionInfo->PhyAttack);
-					}
-				}
-				else if (RareOptPhyAttack > 0)
-				{
-					if (a_grade > 0)
-					{
-						sprintf(line, "%s %d ~ %d [+%d]", CHATMGR->GetChatMsg(391), full_a_ranmin, full_a_ranmix, RareOptPhyAttack);
-					}
-					else
-					{
-						sprintf(line, "%s %d ~ %d [+%d]", CHATMGR->GetChatMsg(391), pInfo->RangeAttackMin, pInfo->RangeAttackMax, RareOptPhyAttack);
-					}
-				}
+					sprintf(line, "%s %d ~ %d (+%d)", CHATMGR->GetChatMsg(391), minAttack, maxAttack, pOptionInfo->PhyAttack);
 				else
-				{
-					if (a_grade > 0)
-					{
-						sprintf(line, "%s %d ~ %d ", CHATMGR->GetChatMsg(391), (full_a_ranmin + RareOptPhyAttack), (full_a_ranmix + RareOptPhyAttack));
-					}
-					else
-					{
-						sprintf(line, "%s %d ~ %d ", CHATMGR->GetChatMsg(391), (pInfo->RangeAttackMin + RareOptPhyAttack), (pInfo->RangeAttackMax + RareOptPhyAttack));
-					}
-				}
+					sprintf(line, "%s %d ~ %d", CHATMGR->GetChatMsg(391), minAttack, maxAttack);
 			}
 
 			if (pRareOptionInfo && pRareOptionInfo->PhyAttack)
 				pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 			else
-				pIcon->AddToolTipLine(line, TTTC_NUMBER);
+				pIcon->AddToolTipLine(line, TTTC_EXTRAATTR);
 		}
 		else
 		{
 			if (pInfo->RangeAttackMin == pInfo->RangeAttackMax)
 			{
-				if (a_grade > 0)
-				{
-					if (pOptionInfo && pOptionInfo->PhyAttack)
-						sprintf(line, "%s %d%% (+%d)", CHATMGR->GetChatMsg(391), full_a_ranmix, pOptionInfo->PhyAttack);
-					else
-						sprintf(line, "%s %d%%", CHATMGR->GetChatMsg(391), full_a_ranmix);
-				}
+				if (pOptionInfo && pOptionInfo->PhyAttack)
+					sprintf(line, "%s %d%% (+%d)", CHATMGR->GetChatMsg(391), pInfo->RangeAttackMax, pOptionInfo->PhyAttack);
 				else
-				{
-					if (pOptionInfo && pOptionInfo->PhyAttack)
-						sprintf(line, "%s %d%% (+%d)", CHATMGR->GetChatMsg(391), pInfo->RangeAttackMax, pOptionInfo->PhyAttack);
-					else
-						sprintf(line, "%s %d%%", CHATMGR->GetChatMsg(391), pInfo->RangeAttackMax);
-
-				}
+					sprintf(line, "%s %d%%", CHATMGR->GetChatMsg(391), pInfo->RangeAttackMax);
 			}
 			else
 			{
-				if (a_grade)
-				{
-					if (pOptionInfo && pOptionInfo->PhyAttack)
-						sprintf(line, "%s %d%% ~ %d%% (+%d)", CHATMGR->GetChatMsg(391), full_a_ranmin, full_a_ranmix, pOptionInfo->PhyAttack);
-					else
-						sprintf(line, "%s %d%% ~ %d%%", CHATMGR->GetChatMsg(391), full_a_ranmin, full_a_ranmix);
-				}
+				if (pOptionInfo && pOptionInfo->PhyAttack)
+					sprintf(line, "%s %d%% ~ %d%% (+%d)", CHATMGR->GetChatMsg(391), pInfo->RangeAttackMin, pInfo->RangeAttackMax, pOptionInfo->PhyAttack);
 				else
-				{
-					if (pOptionInfo && pOptionInfo->PhyAttack)
-						sprintf(line, "%s %d%% ~ %d%% (+%d)", CHATMGR->GetChatMsg(391), pInfo->RangeAttackMin, pInfo->RangeAttackMax, pOptionInfo->PhyAttack);
-					else
-						sprintf(line, "%s %d%% ~ %d%%", CHATMGR->GetChatMsg(391), pInfo->RangeAttackMin, pInfo->RangeAttackMax);
-				}
+					sprintf(line, "%s %d%% ~ %d%%", CHATMGR->GetChatMsg(391), pInfo->RangeAttackMin, pInfo->RangeAttackMax);
 			}
-			pIcon->AddToolTipLine(line, TTTC_NUMBER);
+			pIcon->AddToolTipLine(line, TTTC_EXTRAATTR);
 		}
 	}
+	//=======================================================RangeAttack
 
+//=======================================================PhyAttackTextOnly
 	if (pInfo->MeleeAttackMin == 0 && pInfo->MeleeAttackMax == 0 && pInfo->RangeAttackMin == 0 && pInfo->RangeAttackMax == 0)
 	{
 		if (pRareOptionInfo && pRareOptionInfo->PhyAttack && pOptionInfo && pOptionInfo->PhyAttack)
 		{
-			if (pRareOptionInfo->PhyAttack > 0)
-				sprintf(line, "%s [+%d] (+%d)", CHATMGR->GetChatMsg(681), pRareOptionInfo->PhyAttack, pOptionInfo->PhyAttack);
-			else
-				sprintf(line, "%s (+%d)", CHATMGR->GetChatMsg(681), pOptionInfo->PhyAttack);
-
+			DWORD base = CalStatusGradeInt(0, Grade30); // 如果有动态 Grade，可替换
+			DWORD opt = CalStatusGradeInt(pOptionInfo->PhyAttack, Grade30);
+			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(681), pRareOptionInfo->PhyAttack, opt);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 		else if (pOptionInfo && pOptionInfo->PhyAttack != 0)
 		{
-			sprintf(line, "%s (+%d)", CHATMGR->GetChatMsg(681), pOptionInfo->PhyAttack);
-			pIcon->AddToolTipLine(line, TTTC_NUMBER);
+			DWORD opt = CalStatusGradeInt(pOptionInfo->PhyAttack, Grade30);
+			sprintf(line, "%s (+%d)", CHATMGR->GetChatMsg(681), opt);
+			pIcon->AddToolTipLine(line, TTTC_EXTRAATTR);
 		}
 		else if (pRareOptionInfo && pRareOptionInfo->PhyAttack)
 		{
-			sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(681), pRareOptionInfo->PhyAttack);
+			sprintf(line, "%s +%d", CHATMGR->GetChatMsg(681), pRareOptionInfo->PhyAttack);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 	}
+	//=======================================================PhyAttackTextOnly
 
-	float wtf2_attrvalue = 0;
+//=======================================================AttrAttack
 	for (int j = ATTR_FIRE; j <= ATTR_MAX; ++j)
 	{
-		attrvalue = 100 * pInfo->AttrAttack.GetElement_Val(j);
-		if (pOptionInfo)
-			attroptvalue = 100 * pOptionInfo->AttrAttack.GetElement_Val(j);
-		if (pRareOptionInfo)
-		{
-			attrRareOptValue = 100 * pRareOptionInfo->AttrAttack.GetElement_Val(j);
-		}
-		else attrRareOptValue = 0;
+		DWORD rawValue = pInfo->AttrAttack.GetElement_Val(j);
+		DWORD rareValue = (pRareOptionInfo) ? pRareOptionInfo->AttrAttack.GetElement_Val(j) : 0;
+		DWORD optValue = (pOptionInfo) ? pOptionInfo->AttrAttack.GetElement_Val(j) : 0;
 
-		if (a_grade > 0)
-		{
-			ATTRIBUTEREGIST AlexX_WhatTheFuckAttrAttack;
-			AlexX_WhatTheFuckAttrAttack.SetElement_Val(j, pInfo->AttrAttack.GetElement_Val(j) * pow(increase_factor, a_grade));
+		DWORD baseValue = CalStatusGradeInt(rawValue, Grade30);
+		DWORD totalValue = baseValue + rareValue;
 
-			wtf2_attrvalue = 100 * AlexX_WhatTheFuckAttrAttack.GetElement_Val(j);
-		}
-
-		if ((int)(attrvalue) != 0)
+		if ((int)rawValue != 0)
 		{
-			if ((int)(attroptvalue) != 0)
-			{
-				if (a_grade > 0)
-				{
-					if (attrRareOptValue > 0)
-						sprintf(line, "%s +%d%% [+%d%%](+%d%%)", CHATMGR->GetChatMsg(392 + j - 1), (int)(wtf2_attrvalue), (int)(attrRareOptValue), (int)(attroptvalue));
-					else
-						sprintf(line, "%s +%d%% (+%d%%)", CHATMGR->GetChatMsg(392 + j - 1), ((int)(wtf2_attrvalue)+(int)(attrRareOptValue)), (int)(attroptvalue));
-				}
-				else
-				{
-					if (attrRareOptValue > 0)
-						sprintf(line, "%s +%d%% [+%d%%](+%d%%)", CHATMGR->GetChatMsg(392 + j - 1), (int)(attrvalue), (int)(attrRareOptValue), (int)(attroptvalue));
-					else
-						sprintf(line, "%s +%d%% (+%d%%)", CHATMGR->GetChatMsg(392 + j - 1), ((int)(attrvalue)+(int)(attrRareOptValue)), (int)(attroptvalue));
-				}
-			}
-			else if (attrRareOptValue > 0)
-			{
-				if (a_grade > 0)
-				{
-					sprintf(line, "%s +%d%% [+%d%%]", CHATMGR->GetChatMsg(392 + j - 1), (int)(wtf2_attrvalue), (int)(attrRareOptValue));
-				}
-				else
-				{
-					sprintf(line, "%s +%d%% [+%d%%]", CHATMGR->GetChatMsg(392 + j - 1), (int)(attrvalue), (int)(attrRareOptValue));
-				}
-			}
+			if ((int)optValue != 0)
+				sprintf(line, "%s +%d%% (+%d%%)", CHATMGR->GetChatMsg(392 + j - 1), totalValue * 100, optValue * 100);
 			else
-			{
-				if (a_grade > 0)
-				{
-					sprintf(line, "%s +%d%% ", CHATMGR->GetChatMsg(392 + j - 1), (int)(wtf2_attrvalue + attrRareOptValue));
-				}
-				else
-				{
-					sprintf(line, "%s +%d%% ", CHATMGR->GetChatMsg(392 + j - 1), (int)(attrvalue + attrRareOptValue));
-				}
-			}
+				sprintf(line, "%s +%d%%", CHATMGR->GetChatMsg(392 + j - 1), totalValue * 100);
 
-			if (pRareOptionInfo && attrRareOptValue)
+			if (pRareOptionInfo && rareValue)
 				pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 			else
 				pIcon->AddToolTipLine(line, TTTC_EXTRAATTR);
 		}
 		else
 		{
-			if ((int)(attroptvalue) != 0)
+			if ((int)optValue != 0)
 			{
-				if (attrRareOptValue > 0)
-					sprintf(line, "%s +%d%% (+%d%%)", CHATMGR->GetChatMsg(392 + j - 1), (int)(attrRareOptValue), (int)(attroptvalue));
+				if (rareValue)
+					sprintf(line, "%s +%d%% (+%d%%)", CHATMGR->GetChatMsg(392 + j - 1), rareValue * 100, optValue * 100);
 				else
-					sprintf(line, "%s (+%d%%)", CHATMGR->GetChatMsg(392 + j - 1), (int)(attroptvalue));
+					sprintf(line, "%s (+%d%%)", CHATMGR->GetChatMsg(392 + j - 1), optValue * 100);
 			}
-			else
+			else if (rareValue)
 			{
-				if (attrRareOptValue)
-					sprintf(line, "%s +%d%%", CHATMGR->GetChatMsg(392 + j - 1), (int)(attrRareOptValue));
+				sprintf(line, "%s +%d%%", CHATMGR->GetChatMsg(392 + j - 1), rareValue * 100);
 			}
-			if (attrRareOptValue)
+
+			if (rareValue)
 				pIcon->AddToolTipLine(line, TTTC_RAREITEM);
-			else if (attroptvalue)
+			else if (optValue)
 				pIcon->AddToolTipLine(line, TTTC_EXTRAATTR);
 		}
 	}
-	WORD RareOptPhyDef;
-	if (pRareOptionInfo && pRareOptionInfo->PhyDefense)
-		RareOptPhyDef = pRareOptionInfo->PhyDefense;
-	else
-		RareOptPhyDef = 0;
-	if (pInfo->PhyDef != 0)
+	//=======================================================AttrAttack
+
+//=======================================================PhyDefense
+	WORD RareOptPhyDef = (pRareOptionInfo && pRareOptionInfo->PhyDefense) ? pRareOptionInfo->PhyDefense : 0;
+
+	DWORD baseValue = pInfo->PhyDef;
+	DWORD gradeBonus = CalStatusGradeInt(baseValue, Grade30);
+	DWORD totalBase = gradeBonus + RareOptPhyDef;
+
+	if (baseValue != 0)
 	{
-		increase_factor = NEWUPGRAREALEXX_CMGR->AlexXUpGradeConfig.SetupGrade_AlexX[LITE_SHIELD_NAERYUK_PHYDEF] * 1.00;
-		WORD full_a_phydef = pInfo->PhyDef * pow(increase_factor, a_grade);
 		if (pOptionInfo && pOptionInfo->PhyDefense != 0)
-		{
-			if (a_grade > 0)
-			{
-				if (RareOptPhyDef > 0)
-					sprintf(line, "%s +%d [+%d](+%d)", CHATMGR->GetChatMsg(397), full_a_phydef, RareOptPhyDef, pOptionInfo->PhyDefense);
-				else
-					sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(397), (full_a_phydef + RareOptPhyDef), pOptionInfo->PhyDefense);
-			}
-			else
-			{
-				if (RareOptPhyDef > 0)
-					sprintf(line, "%s +%d [+%d](+%d)", CHATMGR->GetChatMsg(397), pInfo->PhyDef, RareOptPhyDef, pOptionInfo->PhyDefense);
-				else
-					sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(397), (pInfo->PhyDef + RareOptPhyDef), pOptionInfo->PhyDefense);
-			}
-		}
-		else if (RareOptPhyDef > 0)
-		{
-			if (a_grade > 0)
-			{
-				sprintf(line, "%s +%d [+%d]", CHATMGR->GetChatMsg(397), full_a_phydef, RareOptPhyDef);
-			}
-			else
-			{
-				sprintf(line, "%s +%d [+%d]", CHATMGR->GetChatMsg(397), pInfo->PhyDef, RareOptPhyDef);
-			}
-		}
+			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(397), totalBase, pOptionInfo->PhyDefense);
 		else
-		{
-			if (a_grade > 0)
-			{
-				sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(397), full_a_phydef + RareOptPhyDef);
-			}
-			else
-			{
-				sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(397), pInfo->PhyDef + RareOptPhyDef);
-			}
-		}
+			sprintf(line, "%s +%d", CHATMGR->GetChatMsg(397), totalBase);
+
 		if (pRareOptionInfo && RareOptPhyDef)
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		else
@@ -3521,29 +2859,27 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 	{
 		if (RareOptPhyDef && pOptionInfo && pOptionInfo->PhyDefense)
 		{
-			if (RareOptPhyDef > 0)
-				sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(397), RareOptPhyDef, pOptionInfo->PhyDefense);
-			else
-				sprintf(line, "%s (+%d)", CHATMGR->GetChatMsg(397), pOptionInfo->PhyDefense);
-
+			sprintf(line, "%s +%d (+%d)", CHATMGR->GetChatMsg(397), RareOptPhyDef, pOptionInfo->PhyDefense);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 		else if (pOptionInfo && pOptionInfo->PhyDefense != 0)
-
 		{
 			sprintf(line, "%s (+%d)", CHATMGR->GetChatMsg(397), pOptionInfo->PhyDefense);
 			pIcon->AddToolTipLine(line, TTTC_EXTRAATTR);
 		}
 		else if (RareOptPhyDef)
 		{
-			sprintf(line, "%s +%d ", CHATMGR->GetChatMsg(397), RareOptPhyDef);
+			sprintf(line, "%s +%d", CHATMGR->GetChatMsg(397), RareOptPhyDef);
 			pIcon->AddToolTipLine(line, TTTC_RAREITEM);
 		}
 	}
-	if( pInfo->Plus_Value != 0 )
+	//=======================================================PhyDefense
+
+
+	if (pInfo->Plus_Value != 0)
 	{
-		sprintf(line, CHATMGR->GetChatMsg(398), pInfo->ItemName, pInfo->Plus_Value);
-		pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
+		sprintf(line, CHATMGR->GetChatMsg(398), pInfo->ItemName, CalStatusGradeInt(pInfo->Plus_Value, Grade30));
+		pIcon->AddToolTipLine(line, TTTC_EXTRAATTR);
 	}
 	if( pInfo->AllPlus_Value != 0 && pInfo->AllPlus_Kind != 0 )
 	{
@@ -5705,7 +5041,7 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 				if( pTItem )
 				{
 					pTItem->SetDurability(pmsg->OptionInfo.dwOptionIdx);
-					SetToolTipIcon(pTItem, &pmsg->OptionInfo, ITEMMGR->GetItemRareOption(pTItem->GetRareness()),0,ITEMMGR->GetItemStoneOption(pTItem->GetStoneIdx())); 
+					SetToolTipIcon(pTItem, &pmsg->OptionInfo, ITEMMGR->GetItemRareOption(pTItem->GetRareness()),0,ITEMMGR->GetItemStoneOption(pTItem->GetStoneIdx()),0,0,0,0, pTItem->GetGrade());
 					GAMEIN->GetReinforceDialog()->AddVirtualItemWrap(0, pTItem);
 					pTItem->SetLock(TRUE);
 				}
@@ -8558,19 +7894,19 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 			MSG_DWORD * pmsg=(MSG_DWORD*)pMsg;
 			if( pmsg->dwData == 1 )
 			{
-				CHATMGR->AddMsg(CTC_SYSMSG, "ingot error");
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2755));
 			}
 			else if( pmsg->dwData == 2 )
 			{
-				CHATMGR->AddMsg(CTC_SYSMSG, "bubble error");
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2754));
 			}
 			else if( pmsg->dwData == 3 )
 			{
-				CHATMGR->AddMsg(CTC_SYSMSG, "money/gold error");
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2756));
 			}
 			else if (pmsg->dwData == 4)
 			{
-				CHATMGR->AddMsg(CTC_SYSMSG, "please try again");
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2757));
 			}
 			CLuckerDialog* pHandler = (CLuckerDialog*)GAMEIN->GetLuckerDialog();
 			cDialog * pDlg= WINDOWMGR->GetWindowForID(LUCKERDIALOG);
@@ -8599,7 +7935,7 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 
 				ITEMMGR->AddItemRareOption(&pmsg->WearedItemRateInfo[i]);
 				ITEMMGR->AddItemOption(&pmsg->WearedItemOptionInfo[i]);
-				ITEMMGR->SetToolTipIcon(pItem,GetItemOption(pItem->GetDurability()), GetItemRareOption(pItem->GetRareness()),pItem->GetItemBaseInfo()->dwDBIdx,GetItemStoneOption(pItem->GetStoneIdx()), TRUE);
+				ITEMMGR->SetToolTipIcon(pItem,GetItemOption(pItem->GetDurability()), GetItemRareOption(pItem->GetRareness()),pItem->GetItemBaseInfo()->dwDBIdx,GetItemStoneOption(pItem->GetStoneIdx()), TRUE,0,0,0, pItem->GetGrade());
 				HERO->m_OtherPlayerEquip[i] = pItem;
 			}
 
@@ -9409,20 +8745,6 @@ void CItemManager::NetworkMsgParseExt(BYTE Protocol,void* pMsg)
 			}
 		}
 		break;
-	case MP_ITEM_GRADEALEXX_ACK:
-	{
-		MSG_DWORD4* pmsg = (MSG_DWORD4*)pMsg;
-		CItem* pTargetItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->dwData2);
-
-		if (pTargetItem)
-		{
-			pTargetItem->SetGradeAlexX(pmsg->dwData3);
-			ITEMMGR->RefreshItem(pTargetItem);
-			APPEARANCEMGR->InitAppearance(HERO);
-			//CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1239), pmsg->dwData3);
-		}
-	}
-	break;
 	case MP_ITEMEXT_FLASHNAME2_ACK:
 		{
 			MSG_FLASH_SET * pmsg = (MSG_FLASH_SET *)pMsg;
@@ -9449,6 +8771,160 @@ void CItemManager::NetworkMsgParseExt(BYTE Protocol,void* pMsg)
 			}
 		}
 		break;
+	case MP_OFFICIAL_UPGRADE_ACK:
+	{
+		MSG_OFFICIAL_ITEM_SYN* pmsg = (MSG_OFFICIAL_ITEM_SYN*)pMsg;
+		CItem* pMatItemOut;
+		for (int i = 0; i < pmsg->wMaterialNum; ++i)
+		{
+			if (IsDupItem(pmsg->Material[i].wItemIdx))
+			{
+				CItem* pItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->Material[i].ItemPos);
+
+				if (pItem)
+					if (pItem->GetDurability() - pmsg->Material[i].Dur > 0)
+					{
+						pItem->SetDurability(pItem->GetDurability() - pmsg->Material[i].Dur);
+						continue;
+					}
+			}
+
+			DeleteItem(pmsg->Material[i].ItemPos, &pMatItemOut);
+		}
+		CItem* Pr_Item = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->pr_Pos);
+		if (Pr_Item)
+		{
+			if (Pr_Item->GetDurability() - 1 > 0)
+			{
+				Pr_Item->SetDurability(Pr_Item->GetDurability() - 1);
+			}
+			else
+			{
+				DeleteItem(pmsg->pr_Pos, &pMatItemOut);
+				// 调用 clear_VirtualItemStone 清除虚拟物品状态
+				COfficialUpGradeDlg* pUpgradeDlg = GAMEIN->GetOfficialUpGradeDlg();
+				if (pUpgradeDlg)
+				{
+					pUpgradeDlg->clear_VirtualItemStone();
+				}
+			}
+
+		}
+		// 根据状态处理不同情况
+
+		if (pmsg->Status == 222)
+		{
+			CItem* MainItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->MainItem_Pos);
+			if (MainItem)
+			{
+				MainItem->SetGrade(MainItem->GetGrade() + 1);
+				ITEMMGR->RefreshItem(MainItem);
+
+				if (MainItem->GetGrade() >= 30)
+				{
+					GAMEIN->GetOfficialUpGradeDlg()->SetActive(false);
+				}
+				else
+				{
+					GAMEIN->GetOfficialUpGradeDlg()->RefreshAlldata(MainItem);
+					GAMEIN->GetOfficialUpGradeDlg()->SetStateBg(1);
+				}
+				AUDIOMGR->Play(1677, HERO);
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2739));//【升阶】成功升阶装备。"
+			}
+		}
+
+		else if (pmsg->Status == 999) // 降级
+		{
+			CItem* MainItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->MainItem_Pos);
+			if (MainItem)
+			{
+				MainItem->SetGrade(MainItem->GetGrade() - 1);
+				ITEMMGR->RefreshItem(MainItem);
+				GAMEIN->GetOfficialUpGradeDlg()->RefreshAlldata(MainItem);
+				GAMEIN->GetOfficialUpGradeDlg()->SetStateBg(3);
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2740));//【升阶】我的妈呀~升阶失败还要降级了~嘤嘤嘤"
+				AUDIOMGR->Play(1676, HERO);
+			}
+		}
+		else if (pmsg->Status == 888) // 升级失败
+		{
+			CItem* MainItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->MainItem_Pos);
+			if (MainItem)
+			{
+				ITEMMGR->RefreshItem(MainItem);
+				GAMEIN->GetOfficialUpGradeDlg()->RefreshAlldata(MainItem);
+				GAMEIN->GetOfficialUpGradeDlg()->SetStateBg(2);
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2741));//【升阶】糟糕~升阶装备失败，还请你再次尝试"
+				AUDIOMGR->Play(1676, HERO);
+			}
+		}
+		else if (pmsg->Status == 777) // 有保护石
+		{
+			CItem* MainItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->MainItem_Pos);
+			if (MainItem)
+			{
+				ITEMMGR->RefreshItem(MainItem);
+				GAMEIN->GetOfficialUpGradeDlg()->RefreshAlldata(MainItem);
+				GAMEIN->GetOfficialUpGradeDlg()->SetStateBg(2);
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2742));// "【升阶】升阶失败，庆幸你有保护石保护了降级"
+				AUDIOMGR->Play(1676, HERO);
+			}
+		}
+		else if (pmsg->Status == 666) // 使用红色材料成功升级
+		{
+
+			CItem* MainItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->MainItem_Pos);
+
+			if (MainItem)
+			{
+				//MainItem->GetItemBaseInfo()->ItemStatic == ITEM_STATIC_PD;
+				// 使用 ChatMsg 输出更新后的 ItemStatic 值
+				 // 更新物品的 ItemStatic 值
+
+				MainItem->SetGrade(MainItem->GetGrade() + 1); // 增加等级
+				MainItem->SetStatic(ITEM_STATIC_PD);  // 例如更新为 ITEM_STATIC_PD
+				ITEMMGR->RefreshItem(MainItem);
+				GAMEIN->GetOfficialUpGradeDlg()->RefreshAlldata(MainItem);
+
+				GAMEIN->GetOfficialUpGradeDlg()->SetStateBg(1); // 状态更新
+				//char line[128];
+				//sprintf(line, "Updated ItemStatic: %d", MainItem->GetItemBaseInfo()->ItemStatic);
+				//CHATMGR->AddMsg(CTC_SYSMSG, line);  // 输出到聊天框或系统消息
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2744)); // 2744【升阶】使用赤红材料成功组合成功升阶装备【装备不可交易】。"
+				AUDIOMGR->Play(1677, HERO);
+			}
+		}
+
+	}
+	break;
+	case MP_OFFICIAL_UPGRADE_NACK:
+	{
+		MSG_OFFICIAL_ITEM_SYN* pmsg = (MSG_OFFICIAL_ITEM_SYN*)pMsg;
+		int rt = pmsg->Status;
+		if (rt == 1)
+		{
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2748));
+		}
+		if (rt == 2)
+		{
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2749));
+		}
+		if (rt == 3)
+		{
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2750));
+		}
+		if (rt == 4)
+		{
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2751));
+		}
+		if (rt == 5)
+		{
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2753));
+		}
+
+	}
+	break;
 	default:
 		break;
 	}
@@ -9585,10 +9061,10 @@ void CItemManager::RefreshAllItem()
 		}
 		if( pItem->GetDurability() != 0 && !IsDupItem(pItem->GetItemIdx()) )
 		{
-			SetToolTipIcon( pItem, GetItemOption(pItem->GetDurability()), GetItemRareOption(pItem->GetRareness()),0,GetItemStoneOption(pItem->GetStoneIdx()) ); 
+			SetToolTipIcon( pItem, GetItemOption(pItem->GetDurability()), GetItemRareOption(pItem->GetRareness()),0,GetItemStoneOption(pItem->GetStoneIdx()) ,0,0,0,0, pItem->GetGrade());
 		}
 		else
-			SetToolTipIcon( pItem, NULL, GetItemRareOption(pItem->GetRareness()),0,GetItemStoneOption(pItem->GetStoneIdx()) ); 
+			SetToolTipIcon( pItem, NULL, GetItemRareOption(pItem->GetRareness()),0,GetItemStoneOption(pItem->GetStoneIdx()) ,0,0,0,0, pItem->GetGrade());
 		if( m_bAddPrice )
 		{
 			char buf[128];
@@ -9641,10 +9117,10 @@ void CItemManager::RefreshItem( CItem* pItem )
 	}
 	if( pItem->GetDurability() != 0 && !IsDupItem(pItem->GetItemIdx()) )
 	{
-		SetToolTipIcon( pItem, GetItemOption(pItem->GetDurability()), GetItemRareOption(pItem->GetRareness()),0,GetItemStoneOption(pItem->GetStoneIdx()),TRUE ); 
+		SetToolTipIcon( pItem, GetItemOption(pItem->GetDurability()), GetItemRareOption(pItem->GetRareness()),0,GetItemStoneOption(pItem->GetStoneIdx()),TRUE ,0,0,0, pItem->GetGrade());
 	}
 	else
-		SetToolTipIcon( pItem, NULL, GetItemRareOption(pItem->GetRareness()),0,GetItemStoneOption(pItem->GetStoneIdx()),TRUE); 
+		SetToolTipIcon( pItem, NULL, GetItemRareOption(pItem->GetRareness()),0,GetItemStoneOption(pItem->GetStoneIdx()),TRUE,0,0,0, pItem->GetGrade());
 	if( m_bAddPrice )
 	{
 		char buf[128];
@@ -9661,10 +9137,10 @@ void CItemManager::RefreshItemToolTip( DWORD ItemDBIdx )
 	ASSERT(pItem);
 	if( pItem->GetDurability() != 0 && !IsDupItem((pItem->GetItemIdx())) )
 	{
-		SetToolTipIcon(pItem, GetItemOption(pItem->GetDurability()), GetItemRareOption(pItem->GetRareness()),0,GetItemStoneOption(pItem->GetStoneIdx()),0); 
+		SetToolTipIcon(pItem, GetItemOption(pItem->GetDurability()), GetItemRareOption(pItem->GetRareness()),0,GetItemStoneOption(pItem->GetStoneIdx()),0,0,0,0, pItem->GetGrade());
 	}
 	else
-		SetToolTipIcon( pItem, NULL, GetItemRareOption(pItem->GetRareness()),0,GetItemStoneOption(pItem->GetStoneIdx()),0); 
+		SetToolTipIcon( pItem, NULL, GetItemRareOption(pItem->GetRareness()),0,GetItemStoneOption(pItem->GetStoneIdx()),0,0,0,0, pItem->GetGrade());
 }
 void CItemManager::SetPriceToItem( BOOL bAddPrice )
 {
@@ -9688,10 +9164,10 @@ void CItemManager::SetPriceToItem( BOOL bAddPrice )
 		{
 			if(pItem->GetDurability() != 0 && !IsDupItem(pItem->GetItemIdx()))
 			{
-				SetToolTipIcon( pItem, GetItemOption(pItem->GetDurability()), GetItemRareOption(pItem->GetRareness()),0,GetItemStoneOption(pItem->GetStoneIdx())); 
+				SetToolTipIcon( pItem, GetItemOption(pItem->GetDurability()), GetItemRareOption(pItem->GetRareness()),0,GetItemStoneOption(pItem->GetStoneIdx()),0,0,0,0, pItem->GetGrade());
 			}
 			else
-				SetToolTipIcon( pItem, NULL, GetItemRareOption(pItem->GetRareness()),0,GetItemStoneOption(pItem->GetStoneIdx())); 
+				SetToolTipIcon( pItem, NULL, GetItemRareOption(pItem->GetRareness()),0,GetItemStoneOption(pItem->GetStoneIdx()),0,0,0,0, pItem->GetGrade());
 		}
 	}
 	m_bAddPrice = bAddPrice;
@@ -9840,10 +9316,6 @@ BOOL CItemManager::CanEquip(WORD wItemIdx)
 ITEM_INFO * CItemManager::GetItemInfo(WORD wItemIdx)
 {
 	return m_ItemInfoList.GetData(wItemIdx);
-}
-ITEM_INFO_UPGRADE_PRECENT* CItemManager::GetUpGradeItemPercentList(DWORD lv)
-{
-	return m_UpGradeItemPercentList.GetData(lv);
 }
 #define TOOLTIPINFO_LEN		46   
 #ifdef _TL_LOCAL_
@@ -10046,28 +9518,6 @@ void CItemManager::LoadItemList()
 		pInfo = m_ItemInfoList.GetData(Index);
 		if(pInfo)
 			m_UnfitItemInfoListForHide.Add(pInfo, pInfo->ItemIdx);
-	}
-	file.Release();
-	if (!file.Init("Resource/AlexX_UpGradeItemPercent.bin", "rb"))
-		return;
-
-	ITEM_INFO_UPGRADE_PRECENT* pInfo_up_per = NULL;
-	while (1)
-	{
-		if (file.IsEOF())
-			break;
-
-		ASSERT(!pInfo_up_per);
-		pInfo_up_per = new ITEM_INFO_UPGRADE_PRECENT;
-
-		pInfo_up_per->ItemLv = file.GetDword();
-		pInfo_up_per->MaxPercent = file.GetDword();
-		pInfo_up_per->Money = file.GetDword();
-
-		ASSERT(m_UpGradeItemPercentList.GetData(pInfo_up_per->ItemLv) == FALSE);
-
-		m_UpGradeItemPercentList.Add(pInfo_up_per, pInfo_up_per->ItemLv);
-		pInfo_up_per = NULL;
 	}
 	file.Release();
 }
@@ -11905,6 +11355,7 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 		pIcon->AddToolTipLine(line, RGB_HALF(0, 255, 0));
 	}
 	//[分割线][2017/11/28]
+
 	
 }
 void CItemManager::AddAvatarItemOptionTooltip( cIcon* pIcon, ITEM_INFO* pItemInfo )

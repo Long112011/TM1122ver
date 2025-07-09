@@ -102,7 +102,7 @@ struct player_calc_stats
 	DWORD Decisive;
 	WORD PhysicalDefense;
 	ATTRIBUTEATTACK AttributeAttack;			
-	ATTRIBUTEREGIST AttributeResist;	
+	ATTRIBUTEREGIST AttributeResist;			
 
 
 	//天墨技术团 pvp itemlist 加入

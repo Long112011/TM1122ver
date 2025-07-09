@@ -40,13 +40,13 @@ CVirtualItem::CVirtualItem()
 	{
 		SCRIPTMGR->GetImage(108+i, &m_ScrollImg[i], PFT_JACKPATH);
 	}
-	IsWTF = 0;
+	//IsWTF = 0;
 }
 
 CVirtualItem::~CVirtualItem()
 
 {
-	IsWTF = 0;
+	//IsWTF = 0;
 	m_pItemLink = NULL;
 }
 void CVirtualItem::SetLinkItem(CBaseItem * pItem)
@@ -84,6 +84,24 @@ void CVirtualItem::Render()
 //UTK MIX DIALOG JGK.. TAPI YG SINGLE GRID PUNYA //utk yg lain adjust dlm itemshow.cpp //BY JACK
 #ifndef _CLASSICONE
 	ITEM_INFO * pInfo = ITEMMGR->GetItemInfo(m_pItemLink->GetItemIdx());
+	if (m_pItemLink && m_pItemLink->GetGrade() > 0)
+	{
+		const int FONT_WIDTH = 40;    // 估算字体最大宽度
+		const int FONT_HEIGHT = 16;   // 估算字体高度
+		const int OFFSET_Y = 14;      // 向下偏移量
+
+		char temp[128];
+		sprintf(temp, "+%d", m_pItemLink->GetGrade());
+
+		RECT rectTmp;
+		rectTmp.left = (LONG)(m_absPos.x + 1);
+		rectTmp.top = (LONG)(m_absPos.y + 1 + OFFSET_Y);  // 比 ItemGrade 多移 OFFSET_Y 像素
+		rectTmp.right = rectTmp.left + FONT_WIDTH;
+		rectTmp.bottom = rectTmp.top + FONT_HEIGHT;
+
+		CFONT_OBJ->RenderFont(21, temp, strlen(temp), &rectTmp, RGBA_MERGE(RGB_HALF(124, 252, 0), 255));
+	}
+
 	if( m_pItemLink && ITEMMGR->IsDupItem(m_pItemLink->GetItemIdx()) )//m_pItemLink->GetDurability() >= 1 )
 	{
 		char Temp[128]={0,};
@@ -96,6 +114,7 @@ void CVirtualItem::Render()
 		//RECT rect={(LONG)m_absPos.x+27, (LONG)m_absPos.y+29, 1,1};
 		//CFONT_OBJ->RenderFont(0,nums,strlen(nums),&rect,RGBA_MERGE(m_dwImageRGB, m_alpha * m_dwOptionAlpha / 100 ));		// color hard coding : taiyo 
 	}
+
 	if(pInfo)
 	{
 		VECTOR2 vScale = { 1.0f, 1.0f };
@@ -106,7 +125,7 @@ void CVirtualItem::Render()
 			sprintf(Temp,"+%d",pInfo->ItemGrade);
 			RECT rect={(LONG)m_absPos.x+1, (LONG)m_absPos.y+1, 1,1};
 
-			CFONT_OBJ->RenderNoticeMsg(14,Temp,strlen(Temp),&rect,RGBA_MERGE(RGB_HALF(248 ,248, 255),255),RGBA_MAKE(100,100,100,100));
+			CFONT_OBJ->RenderNoticeMsg(21,Temp,strlen(Temp),&rect,RGBA_MERGE(RGB_HALF(248 ,248, 255),255),RGBA_MAKE(100,100,100,100));
 		}
 		if(pInfo->ItemGrade>=11&&pInfo->ItemGrade<=19)//ICON LEVEL GRADE
 		{
@@ -114,7 +133,7 @@ void CVirtualItem::Render()
 			sprintf(Temp,"+%d",pInfo->ItemGrade-10);
 			RECT rect={(LONG)m_absPos.x+1, (LONG)m_absPos.y+1, 1,1};
 
-			CFONT_OBJ->RenderNoticeMsg(14,Temp,strlen(Temp),&rect,RGBA_MERGE(RGB_HALF(248 ,248, 255),255),RGBA_MAKE(100,100,100,100));//TTTC_ITEM_PINK
+			CFONT_OBJ->RenderNoticeMsg(21,Temp,strlen(Temp),&rect,RGBA_MERGE(RGB_HALF(248 ,248, 255),255),RGBA_MAKE(100,100,100,100));//TTTC_ITEM_PINK
 		}
 		if(pInfo->ItemGrade>=10&&pInfo->ItemGrade<=19)//ICON LEVEL GRADE
 		{
@@ -135,6 +154,26 @@ void CVirtualItem::Render()
 			SCRIPTMGR->GetImage( 19, &m_JackIcon, PFT_JACKPATH );
 			VECTOR2 pos = { m_absPos.x+27, m_absPos.y+1};
 			m_JackIcon.RenderSprite( &vScale, NULL, 0.0f, &pos,0xffffffff);
+		}
+	}
+	if (pInfo->ItemKind >= eTITAN_ITEM && pInfo->ItemKind <= eCHANGE_ITEM_LOCK)
+	{
+		if (m_pItemLink && m_pItemLink->GetGrade() > 0)
+		{
+			const int FONT_WIDTH = 40;    // 估算字体最大宽度
+			const int FONT_HEIGHT = 16;   // 估算字体高度
+			const int OFFSET_Y = 14;      // 向下偏移量
+
+			char temp[128];
+			sprintf(temp, "+%d", m_pItemLink->GetGrade());
+
+			RECT rectTmp;
+			rectTmp.left = (LONG)(m_absPos.x + 1);
+			rectTmp.top = (LONG)(m_absPos.y + 1 + OFFSET_Y);  // 比 ItemGrade 多移 OFFSET_Y 像素
+			rectTmp.right = rectTmp.left + FONT_WIDTH;
+			rectTmp.bottom = rectTmp.top + FONT_HEIGHT;
+			//CFONT_OBJ->RenderFont(m_wFontIdx, "x", 128, &rectTmp, RGBA_MERGE(curLineNode->color, m_alpha * m_dwOptionAlpha / 100));
+			CFONT_OBJ->RenderFont(21, temp, strlen(temp), &rectTmp, RGBA_MERGE(RGB_HALF(124, 252, 0), 255));
 		}
 	}
 	if(GetSrcItemKind() & eEQUIP_ITEM)
@@ -172,41 +211,6 @@ void CVirtualItem::Render()
 		CFONT_OBJ->RenderFont(0,nums,strlen(nums),&rect,RGBA_MERGE(m_dwImageRGB, m_alpha * m_dwOptionAlpha / 100 ));		// color hard coding : taiyo 
 	}
 #endif
-	if (GetGradeAlexX() != 0)
-	{
-		if (pInfo->ItemKind >= eYOUNGYAK_ITEM && pInfo->ItemKind <= eCHANGE_ITEM_LOCK)
-		{
-			char text[64];
-			//std::string plusNum = match.str();
-			if (IsWTF)
-			{
-				sprintf(text, "+%d", GetGradeAlexX() + 1);
-			}
-			else
-			{
-				sprintf(text, "+%d", GetGradeAlexX());
-			}
-			RECT rectShadow = { (LONG)m_absPos.x - 0, (LONG)m_absPos.y - 1, 1, 1 };
-			CFONT_OBJ->RenderFont(13, text, strlen(text), &rectShadow, RGB_HALF(10, 10, 10));
-			RECT rect = { (LONG)m_absPos.x - 1, (LONG)m_absPos.y - 2, 1, 1 };
-			CFONT_OBJ->RenderFont(13, text, strlen(text), &rect, RGBA_MERGE(RGB_HALF(255, 255, 0), 255));
-		}
-	}
-	else if (GetGradeAlexX() == 0)
-	{
-		char text[64];
-		if (IsWTF)
-		{
-			if (pInfo->ItemKind >= eYOUNGYAK_ITEM && pInfo->ItemKind <= eCHANGE_ITEM_LOCK)
-			{
-				sprintf(text, "+%d", GetGradeAlexX() + 1);
-				RECT rectShadow = { (LONG)m_absPos.x - 0, (LONG)m_absPos.y - 1, 1, 1 };
-				CFONT_OBJ->RenderFont(13, text, strlen(text), &rectShadow, RGB_HALF(10, 10, 10));
-				RECT rect = { (LONG)m_absPos.x - 1, (LONG)m_absPos.y - 2, 1, 1 };
-				CFONT_OBJ->RenderFont(13, text, strlen(text), &rect, RGBA_MERGE(RGB_HALF(255, 255, 0), 255));
-			}
-		}
-	}
 }
 
 

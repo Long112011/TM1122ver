@@ -61,7 +61,7 @@ class CItemManager
 	CYHHashTable<ITEM_INFO> m_ItemInfoList;
 
 	ClearInfoMap m_ClearPacketInfoList;
-	CYHHashTable<ITEM_INFO_UPGRADE_PRECENT> m_UpGradeItemPercentList;
+
 	// 2014-08-16 GoldShop Define !
 #ifdef _OLDGOLDDIALOG_
 	CYHHashTable<ITEM_GOLD_SHOP> m_GoldShopInfoList;
@@ -123,7 +123,7 @@ class CItemManager
 	char  ItemOpened[MAX_NAME_LENGTH + 1];
 	char  ItemObtained[MAX_NAME_LENGTH + 1];
 
-	BOOL Fuck_WTF_GradeAlexX;
+	
 
 public:
 //	//MAKESINGLETON(CItemManager)
@@ -194,7 +194,7 @@ public:
 
 	// 2015-03-08 илЁг
 
-
+	
 
 	// 2016-01-29 
 	void SetGameCheckList(MSG_GAMECHECK_LIST * pmsg);
@@ -236,7 +236,8 @@ public:
 							BYTE bNormalTip=0								/*6*/,
 							BYTE bGotTime=0,
 							BOOL IsGoldShop=FALSE
-		, DWORD WTF_GradeAlexX = 0);
+		, DWORD Grade30 = 0);
+
 	//void SetMallAndGoldShopToolTipIcon(cIcon* pIcon,DWORD BuyKind=0,DWORD BuyLimit=0);
 	//void SetToolTipIconMix(cIcon * pIcon, ITEM_OPTION_INFO * pOptionInfo=NULL, ITEM_RARE_OPTION_INFO* pRareOptionInfo = NULL, DWORD dwItemDBIdx = 0,ITEM_STONE_OPTION_INFO * pStoneOptionInfo=NULL);
 
@@ -276,7 +277,7 @@ public:
 
 	void SetYoungyakItemToolTip( cIcon * pIcon, ITEM_INFO * pInfo);
 	void SetMugongItemToolTip( cIcon * pIcon, ITEM_INFO * pInfo);
-	void SetEquipItemToolTip( cIcon * pIcon, ITEM_INFO * pInfo, ITEM_OPTION_INFO * pOptionInfo=NULL, ITEM_RARE_OPTION_INFO* pRareOptionInfo=NULL,ITEM_STONE_OPTION_INFO * pShoneOptionInfo=NULL,BOOL bIsQuey=FALSE, DWORD WTF_GradeAlexX = 0);
+	void SetEquipItemToolTip( cIcon * pIcon, ITEM_INFO * pInfo, ITEM_OPTION_INFO * pOptionInfo=NULL, ITEM_RARE_OPTION_INFO* pRareOptionInfo=NULL,ITEM_STONE_OPTION_INFO * pShoneOptionInfo=NULL,BOOL bIsQuey=FALSE, DWORD Grade30 = 0);
 	void SetExtraItemToolTip( cIcon * pIcon, ITEM_INFO * pInfo);
 	void SetItemToolTipForStage( cIcon * pIcon, ITEM_INFO * pInfo ); 
 	void SetPetSummonItemToolTip(cIcon * pIcon, ITEM_INFO * pInfo, DWORD dwItemDBIdx = 0, BOOL IsGoldShop = FALSE);
@@ -312,7 +313,6 @@ public:
 	void LoadAutoUseBuffItem();
 	void LoadCustomeHeadPair();
 	ITEM_INFO * GetItemInfo(WORD wItemIdx);
-	ITEM_INFO_UPGRADE_PRECENT* GetUpGradeItemPercentList(DWORD lv);//+30
 	void SetPreItemData(sPRELOAD_INFO* pPreLoadInfo, int* Level, int Count);
 	DWORD m_dwStateParam;
 
@@ -383,9 +383,6 @@ public:
 #ifdef _GMTOOL_
 	void SetItemIfoPositionHead()	{ m_ItemInfoList.SetPositionHead(); }
 	ITEM_INFO* GetItemInfoData()	{ return m_ItemInfoList.GetData(); }
-
-	void SetUpGradeItemPercentListPositionHead() { m_UpGradeItemPercentList.SetPositionHead(); }
-	ITEM_INFO_UPGRADE_PRECENT* GetUpGradeItemPercentListData() { return m_UpGradeItemPercentList.GetData(); }
 #endif
 
 	// For Japan

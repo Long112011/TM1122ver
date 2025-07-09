@@ -32,6 +32,7 @@
 #include "StreetBuyStall.h"
 #include "AutoNoteDlg.h"
 #include "PartyMatchingDlg.h"
+#include "OfficialUpGradeDlg.h"
 #endif
 
 
@@ -240,6 +241,17 @@ void CAbilityUse_Job::Use(BYTE Level,CAbilityInfo* pAbilityInfo)
 		yCASE(eAUKJOB_AutoNote)	// AutoNote
 			GAMEIN->GetAutoNoteDlg()->SetActive(TRUE);
 
+		yCASE(eAUKJOB_NewReinForce)	//Daily 30°æ±¾
+			COfficialUpGradeDlg* pDlg = (COfficialUpGradeDlg*)GAMEIN->GetOfficialUpGradeDlg();
+		if (pDlg->IsActive())
+		{
+			pDlg->SetActive(FALSE);
+		}
+		else
+		{
+			pDlg->CheckStatusItem();
+			pDlg->SetActive(TRUE);
+		}
 		yENDSWITCH
 #endif
 }

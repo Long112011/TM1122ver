@@ -480,9 +480,7 @@ extern void ItemStepReinforce_DlgFunc(LONG lId, void * p, DWORD we);
 extern void LoginIDDialog_hide(LONG lId, void * p, DWORD we);
 
 extern void		CS_BtnChangePass(LONG lId, void* p, DWORD we);
-
-extern void ALEXX_NewUpGrareAlexX_DlgFunc(LONG lId, void* p, DWORD we);
-
+extern void OfficialUpGradeDlg_Func(LONG lId, void* p, DWORD we);
 #endif //_GLOBALEVENTFUNC_H_
 
 

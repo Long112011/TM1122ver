@@ -342,7 +342,7 @@ public:
 	void RefreshLevelupPoint();
 	void SetHeroLevelupPoint( LEVELTYPE dwPoint )	{	m_HeroTotalInfo.LevelUpPoint = dwPoint;	}
 	DWORD GetHeroLevelUpPoint()					{	return m_HeroTotalInfo.LevelUpPoint;	}
-
+	
 	//ÊôÐÔ¹¥»÷Á¦
 	DWORD DoGetAttAttackPowerMax(WORD Attrib);
 	DWORD DoGetAttAttackPowerMin(WORD Attrib);

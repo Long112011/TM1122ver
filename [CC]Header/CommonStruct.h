@@ -537,7 +537,7 @@ struct ITEMBASE : public ICONBASE
 		memset(PowerUp,0,MAX_NAME_LENGTH);
 		memset(Green,0,MAX_NAME_LENGTH);
 	}
-	DWORD ItemGradeAlexX;
+	DWORD	Grade30;
 };
 struct SLOTINFO
 {
@@ -1115,42 +1115,7 @@ struct IMAGENAMEINFO
 	int  Height;
 	int  Speed;
 };
-//////////////////////////////////////////+30
-struct MSG_NEWYPGRARE_ALEXX : public MSGBASE
-{
-	DWORD ItemDBIdx;
-	int ItemPosition;
-	DWORD Material_count_1;
-	DWORD Material_count_1_DB;
-	int Material_count_1_POS;
-	DWORD Material_count_2;
-	DWORD Material_count_2_DB;
-	int Material_count_2_POS;
-	DWORD Material_count_3;
-	DWORD Material_count_3_DB;
-	int Material_count_3_POS;
-	DWORD Material_count_4;
-	DWORD Material_count_4_DB;
-	int Material_count_4_POS;
-	DWORD Stone_count;
-	DWORD Stone_DB;
-	int Stone_POS;
-	DWORD money;
-};
 
-struct MSG_NEWYPGRARE_ALEXX_BACKGAME : public MSGBASE
-{
-	WORD	wTargetItemIdx;
-	DWORD	WhatError;
-	DWORD	result;
-};
-struct MSG_NEWYPGRARE_ALEXX_DELITEM : public MSGBASE
-{
-	POSTYPE Pos;
-	WORD	ItemIdx;
-	DWORD count;
-};
-////////////////////////////////////////////////////////
 struct CHARACTER_TOTALINFO
 {
 	DWORD	Life;						
@@ -1309,7 +1274,7 @@ struct AVATARITEMOPTION
 	WORD		MussangCharge;		
 	BYTE		NaeruykspendbyKG;	
     WORD		ShieldRecoverRate;	
-	BYTE		MussangDamage;	
+	BYTE		MussangDamage;		
 
 	// 天墨技术团 PVP 相关属性
 	float PVPCri;      // PVP 暴击
@@ -1601,7 +1566,7 @@ struct ITEMOBTAINARRAY : public MSGBASE
 		dwObjectID	= dwID;
 		BuyType = buytype;
 	}
-	void AddItem( DWORD DBIdx, WORD ItemIdx, DURTYPE Durability, POSTYPE bPosition, POSTYPE QuickPosition, ITEMPARAM Param, DWORD RareIdx = 0,WORD ItemStatic=0,DWORD ItemGrow=0, DWORD ItemGradeAlexX = 0)
+	void AddItem( DWORD DBIdx, WORD ItemIdx, DURTYPE Durability, POSTYPE bPosition, POSTYPE QuickPosition, ITEMPARAM Param, DWORD RareIdx = 0,WORD ItemStatic=0,DWORD ItemGrow=0, DWORD Grade30 = 0) //
 	{
 		ItemInfo[ItemNum].dwDBIdx		= DBIdx;
 		ItemInfo[ItemNum].wIconIdx		= ItemIdx;
@@ -1612,7 +1577,7 @@ struct ITEMOBTAINARRAY : public MSGBASE
 		ItemInfo[ItemNum].RareIdx		= RareIdx;
 		ItemInfo[ItemNum].ItemStatic	=ItemStatic; 
 		ItemInfo[ItemNum].ItemGrow		=ItemGrow;
-		ItemInfo[ItemNum].ItemGradeAlexX = ItemGradeAlexX;
+		ItemInfo[ItemNum].Grade30 = Grade30;
 		ItemNum++;
 	}
 	void AddItem(const ITEMBASE *pInfo)//kiv
@@ -2166,8 +2131,7 @@ struct STREETSTALLITEM
 	char		Locked;
 	char		Fill;
 	ITEMPARAM ItemParam;
-
-	DWORD       dwGradeAlexX;
+	DWORD       dwGrade30;
 };
 struct STREETSTALL_INFO : public MSGBASE
 {
@@ -5375,14 +5339,13 @@ struct STREETSTALL_ITEM_INFO
 {
 	DWORD	dwItemIdx;
 	DWORD	dwPrice;
-	DWORD   dwGold;
+	DWORD   dwGold; 
 	DWORD	dwDur;		
 	DWORD	dwDBIdx;
 	DWORD	dwRareIdx;
 	DWORD	dwStoneIdx;   
-	DWORD   dwGrow;       
-
-	DWORD	dwGradeAlexX;
+	DWORD   dwGrow;    
+	DWORD   dwGrade30;
 };
 struct MSG_STREETSTALL_ITEMVIEW : public MSGBASE
 {
@@ -6217,6 +6180,70 @@ struct MSG_INSDG_KIND_INFO : public MSGBASE
 	{
 		return sizeof(MSG_INSDG_KIND_INFO)-(sizeof(DWORD)* (INSTANCE_DUNGEON_MAXNUM - nCount));
 	}
+};
+
+struct UpGradeDataList_Sub
+{
+	WORD	Grade;
+	DWORD	Percent;
+};
+
+struct UpGradeDataList
+{
+	WORD	ItemIdx;
+	WORD	MaxGrade;
+	UpGradeDataList_Sub* Data_Sub;
+};
+
+
+struct MATERIAL_ARRAY_FFT
+{
+	WORD	wItemIdx;
+	POSTYPE ItemPos;
+	DURTYPE Dur;
+	DWORD	dwItemDBIdx;
+};
+
+struct MSG_OFFICIAL_ITEM_SYN : public MSGBASE
+{
+	WORD	MainItem_Idx;
+	WORD	MainItem_Pos;
+	WORD	wMaterialNum;
+	WORD	CountCollect;
+
+	WORD	Pr_ItemIdx;
+	WORD	pr_Pos;
+	WORD	Pr_Dur;
+	WORD	Status;
+	MATERIAL_ARRAY_FFT Material[MAX_MIX_MATERIAL];
+	void init()
+	{
+		wMaterialNum = 0;
+		CountCollect = 0;
+		Pr_ItemIdx = 0;
+		pr_Pos = 0;
+		Pr_Dur = 0;
+	}
+	void AddMaterial(WORD wItemIdx, POSTYPE ItemPos, DURTYPE Dur)
+	{
+		Material[wMaterialNum].wItemIdx = wItemIdx;
+		Material[wMaterialNum].ItemPos = ItemPos;
+		Material[wMaterialNum++].Dur = Dur;
+	}
+	int GetSize()
+	{
+		return sizeof(MSG_OFFICIAL_ITEM_SYN) - (MAX_MIX_MATERIAL - wMaterialNum) * sizeof(MATERIAL_ARRAY_FFT);
+	}
+};
+struct MSG_OFFICIAL_ITEM_ACK : public MSG_OFFICIAL_ITEM_SYN
+{
+
+};
+struct MSG_UPDATE_GRADE : public MSGBASE
+{
+	DWORD ItemIdx;
+	DWORD Pos;
+	DWORD Grade;
 };
 #pragma pack(pop)
 #endif 

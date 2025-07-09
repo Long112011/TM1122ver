@@ -449,18 +449,18 @@ void CDissloveDlg::DissolveCancelBtn(CDissloveDlg * pThis)
 	CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(223) );
 }	
 
-BOOL CDissloveDlg::AddVirtualItemWrap(POSTYPE relPos, CItem * pItem)
+BOOL CDissloveDlg::AddVirtualItemWrap(POSTYPE relPos, CItem * pItem)//+30 ×¢Òâ
 {
 	m_VirtualItem[relPos].SetData(pItem->GetItemIdx());
 	m_VirtualItem[relPos].SetLinkItem(pItem);
 	//!!!±âº» NULL ÀÎÁö È®ÀÎ SW050920 Rare
 	if( ITEMMGR->IsOptionItem(pItem->GetItemIdx(), pItem->GetDurability()) )
 	{
-		ITEMMGR->SetToolTipIcon((cIcon*)&m_VirtualItem[relPos], ITEMMGR->GetItemOption(pItem->GetDurability()),ITEMMGR->GetItemRareOption(pItem->GetRareness()),0,ITEMMGR->GetItemStoneOption( pItem->GetStoneIdx())); // ¸½ 2014-11-15
+		ITEMMGR->SetToolTipIcon((cIcon*)&m_VirtualItem[relPos], ITEMMGR->GetItemOption(pItem->GetDurability()),ITEMMGR->GetItemRareOption(pItem->GetRareness()),0,ITEMMGR->GetItemStoneOption( pItem->GetStoneIdx()),0,0,0,0, pItem->GetGrade()); // ¸½ 2014-11-15
 	}
 
 	else
-		ITEMMGR->SetToolTipIcon( (cIcon*)&m_VirtualItem[relPos], NULL, ITEMMGR->GetItemRareOption(pItem->GetRareness()),0,ITEMMGR->GetItemStoneOption( pItem->GetStoneIdx())); // 2014-11-15 ¸½
+		ITEMMGR->SetToolTipIcon( (cIcon*)&m_VirtualItem[relPos], NULL, ITEMMGR->GetItemRareOption(pItem->GetRareness()),0,ITEMMGR->GetItemStoneOption( pItem->GetStoneIdx()), 0, 0, 0, 0, pItem->GetGrade()); // 2014-11-15 ¸½
 	return AddVirtualItem(relPos, &m_VirtualItem[relPos]);
 }
 

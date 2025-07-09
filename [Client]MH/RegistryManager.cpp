@@ -6,7 +6,7 @@
 #include "../[CC]JACK/JackJack.h"
 #include "ChatManager.h"
 #include "WindowIDEnum.h"
-#include "cWindowManager.h" 
+#include "cWindowManager.h"
 #include "OptionDialog.h"
 extern HWND _g_hWnd;
 extern char g_CLIENTVERSION[];

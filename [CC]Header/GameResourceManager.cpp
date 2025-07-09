@@ -50,6 +50,7 @@ CGameResourceManager::CGameResourceManager()
 	m_MaxNpcRegenCount = 0;
 	m_SMonsterListTable.Initialize(100);
 	m_PetListTable.Initialize(50);
+	DataListUpGrade.Initialize(1000);
 	m_pBuffList = NULL;
 #ifdef _CLIENT_RESOURCE_FIELD_
 	bResolutionIndex = 0;   
@@ -2241,6 +2242,43 @@ CYHHashTable<SKIN_SELECT_ITEM_INFO>* CGameResourceManager::GetCostumeSkinTable()
 {
 	return &m_CotumeSkinTable;
 }
+BOOL CGameResourceManager::LoadDataUpGrade()
+{
+	CMHFile file;
+	if (!file.Init("./Resource/UpGradeList.bin", "rb"))
+	{
+		return FALSE;
+	}
+
+	// 读取最大等级（例如 30 级）
+	WORD MaxGrade = file.GetWord(); // 第一行是最大等级
+	if (MaxGrade == 0)
+		return FALSE;
+
+	// 创建一个通用的升级数据结构
+	UpGradeDataList* pData = new UpGradeDataList;
+	pData->MaxGrade = MaxGrade;
+	pData->Data_Sub = new UpGradeDataList_Sub[MaxGrade];
+
+	// 逐行读取每个等级的数据
+	for (size_t i = 0; i < MaxGrade; ++i)
+	{
+		pData->Data_Sub[i].Grade = file.GetWord();    // 等级
+		pData->Data_Sub[i].Percent = file.GetDword(); // 升级百分比
+	}
+
+	// 存储数据到资源管理器中
+	DataListUpGrade.Add(pData, 0); // 你不再需要根据 ItemIdx 存储，可以使用 0 作为通用索引
+
+	file.Release();
+	return TRUE;
+}
+
+UpGradeDataList* CGameResourceManager::GetDataUpGrade(WORD ItemIdx)
+{
+	return DataListUpGrade.GetData(ItemIdx);
+}
+
 #ifdef _CLIENT_RESOURCE_FIELD_
 #ifdef _LUNAAUTOPATCH_//jika ada luna autopatch
 #define RESOLUTION "./Data/ScreenResolution.opt"

@@ -216,20 +216,38 @@ void CItem::Render()
 			VECTOR2 pos = { m_absPos.x+27, m_absPos.y+1};
 			m_JackIcon.RenderSprite( &vScale, NULL, 0.0f, &pos,0xffffffff);
 		}
+		if (m_ItemBaseInfo.Grade30 != 0)
+		{
+			const int OFFSET_Y = 14;      // 往下移一点，避开 ItemGrade
+			const int FONT_WIDTH = 40;    // 宽度估计
+			const int FONT_HEIGHT = 16;   // 高度估计
+
+			char temp[128];
+			sprintf(temp, "+%d", m_ItemBaseInfo.Grade30);
+
+			RECT rectTmp;
+			rectTmp.left = (LONG)(m_absPos.x + 1);
+			rectTmp.top = (LONG)(m_absPos.y + 1 + OFFSET_Y);
+			rectTmp.right = rectTmp.left + FONT_WIDTH;
+			rectTmp.bottom = rectTmp.top + FONT_HEIGHT;
+
+			CFONT_OBJ->RenderFont(21, temp, strlen(temp), &rectTmp, RGBA_MERGE(RGB_HALF(124, 252, 0), 255));
+		}
+
 #ifdef _LIKEPLAYPARK
 		if(pInfo->ItemGrade>=1&&pInfo->ItemGrade<=9)
 		{
 			static char mData[MAX_ITEMNAME_LENGTH+1];
 			wsprintf(mData,"+%d",pInfo->ItemGrade);
 			RECT rect={(LONG)m_absPos.x+1, (LONG)m_absPos.y+1, 1,1};
-			CFONT_OBJ->RenderNoticeMsg(14,mData,strlen(mData),&rect,RGBA_MERGE(RGB_HALF(248 ,248, 255),255),RGBA_MAKE(100,100,100,100));
+			CFONT_OBJ->RenderNoticeMsg(21,mData,strlen(mData),&rect,RGBA_MERGE(RGB_HALF(248 ,248, 255),255),RGBA_MAKE(100,100,100,100));
 		}
 		if(pInfo->ItemGrade>=11&&pInfo->ItemGrade<=19)
 		{
 			static char mData[MAX_ITEMNAME_LENGTH+1];
 			wsprintf(mData,"+%d",pInfo->ItemGrade-10);
 			RECT rect={(LONG)m_absPos.x+1, (LONG)m_absPos.y+1, 1,1};
-			CFONT_OBJ->RenderNoticeMsg(14,mData,strlen(mData),&rect,RGBA_MERGE(TTTC_ITEM_PINK,255),RGBA_MAKE(100,100,100,100));
+			CFONT_OBJ->RenderNoticeMsg(21,mData,strlen(mData),&rect,RGBA_MERGE(TTTC_ITEM_PINK,255),RGBA_MAKE(100,100,100,100));
 		}
 		if(pInfo->ItemGrade>=10&&pInfo->ItemGrade<=19)
 		{
@@ -259,19 +277,6 @@ void CItem::Render()
 			CFONT_OBJ->RenderNoticeMsg(14,mData,strlen(mData),&rect,RGBA_MERGE(RGB_HALF(248 ,248, 255),255),RGBA_MAKE(100,100,100,100));
 		}
 #endif
-	}
-	if (GetGradeAlexX())
-	{
-		if (pInfo->ItemKind >= eYOUNGYAK_ITEM && pInfo->ItemKind <= eCHANGE_ITEM_LOCK)
-		{
-			char text[64];
-			//std::string plusNum = match.str();
-			sprintf(text, "+%d", GetGradeAlexX());
-			RECT rectShadow = { (LONG)m_absPos.x - 0, (LONG)m_absPos.y - 1, 1, 1 };
-			CFONT_OBJ->RenderFont(13, text, strlen(text), &rectShadow, RGB_HALF(10, 10, 10));
-			RECT rect = { (LONG)m_absPos.x - 1, (LONG)m_absPos.y - 2, 1, 1 };
-			CFONT_OBJ->RenderFont(13, text, strlen(text), &rect, RGBA_MERGE(RGB_HALF(255, 255, 0), 255));
-		}
 	}
 	if (GetItemKind() == eYOUNGYAK_ITEM)  //[吃藥回氣渲染][2017/11/27]
 	{
@@ -308,7 +313,6 @@ void CItem::Render()
 			}*/
 		}
 	}
-
 	if(m_ItemBaseInfo.ItemStatic == ITEM_STATIC_LUCK)
 	{
 		SCRIPTMGR->GetImage( 18, &m_JackIcon, PFT_JACKPATH );
@@ -364,14 +368,14 @@ void CItem::Render()
 			static char mData[MAX_ITEMNAME_LENGTH+1];
 			wsprintf(mData,"+%d",pInfo->ItemGrade);
 			RECT rect={(LONG)m_absPos.x+1, (LONG)m_absPos.y+1, 1,1};
-			CFONT_OBJ->RenderNoticeMsg(14,mData,strlen(mData),&rect,RGBA_MERGE(TTTC_BRIGHT_YELLOW,255),RGBA_MAKE(100,100,100,100));
+			CFONT_OBJ->RenderNoticeMsg(21,mData,strlen(mData),&rect,RGBA_MERGE(TTTC_BRIGHT_YELLOW,255),RGBA_MAKE(100,100,100,100));
 		}
 		if(pInfo->ItemGrade>=11&&pInfo->ItemGrade<=19)
 		{
 			static char mData[MAX_ITEMNAME_LENGTH+1];
 			wsprintf(mData,"+%d",pInfo->ItemGrade-10);
 			RECT rect={(LONG)m_absPos.x+1, (LONG)m_absPos.y+1, 1,1};
-			CFONT_OBJ->RenderNoticeMsg(14,mData,strlen(mData),&rect,RGBA_MERGE(TTTC_ITEM_PINK,255),RGBA_MAKE(100,100,100,100));
+			CFONT_OBJ->RenderNoticeMsg(21,mData,strlen(mData),&rect,RGBA_MERGE(TTTC_ITEM_PINK,255),RGBA_MAKE(100,100,100,100));
 		}
 		if(pInfo->ItemGrade>=10&&pInfo->ItemGrade<=19)
 		{
@@ -384,6 +388,22 @@ void CItem::Render()
 		wsprintf(mData,"%4d", m_ItemBaseInfo.Durability);
 		RECT rect={(LONG)m_absPos.x+15, (LONG)m_absPos.y+29, 1,1};
 		CFONT_OBJ->RenderFont(0,mData,strlen(mData),&rect,RGBA_MERGE(m_dwImageRGB, m_alpha * m_dwOptionAlpha / 100 ));
+
+		if (m_ItemBaseInfo.Grade30 != 0)
+		{
+			VECTOR2 vScale = { 1.0f, 1.0f };
+			VECTOR2 pos = { m_absPos.x + 13, m_absPos.y + 25 };
+			//m_OptionFlgImage.RenderSprite( &vScale, NULL, 0.0f, &pos,0xffffffff);
+			RECT rectTmp;
+			rectTmp.bottom = 1;
+			rectTmp.right = 1;
+			rectTmp.left = m_absPos.x;
+			rectTmp.top = m_absPos.y;
+			char temp[128];
+			sprintf(temp, "+%d", m_ItemBaseInfo.Grade30);
+			//CFONT_OBJ->RenderFont(m_wFontIdx, "x", 128, &rectTmp, RGBA_MERGE(curLineNode->color, m_alpha * m_dwOptionAlpha / 100));
+			CFONT_OBJ->RenderFont(21, temp, strlen(temp), &rectTmp, RGBA_MERGE(RGB_HALF(124, 252, 0), 255));
+		}
 	}
 #endif
 }

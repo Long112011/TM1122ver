@@ -70,7 +70,6 @@ CItemManager::CItemManager()
 	m_SetItemOptionList.Initialize(MAX_SETITEM_KIND_NUM);
 
 	m_TipItemList.Initialize(200);
-	m_UpGradeItemPercentList.Initialize(100);//+30
 	LoadTipItem();
 }
 CItemManager::~CItemManager()
@@ -138,14 +137,6 @@ CItemManager::~CItemManager()
 		pSetItemOption = NULL;
 	}
 	m_SetItemOptionList.RemoveAll();
-
-	ITEM_INFO_UPGRADE_PRECENT* pUpGradeItemPercentList = NULL;
-	m_UpGradeItemPercentList.SetPositionHead();
-	while (pUpGradeItemPercentList = m_UpGradeItemPercentList.GetData())
-	{
-		delete pUpGradeItemPercentList;
-	}
-	m_UpGradeItemPercentList.RemoveAll();
 }
 ITEMOBTAINARRAYINFO * CItemManager::Alloc(CPlayer * pPlayer, WORD c, WORD p, DWORD dwObjectID, DWORD dwFurnisherIdx, WORD wType, WORD ObtainNum, DBResult CallBackFunc, DBResultEx CallBackFuncEx, int BuyType)
 {
@@ -3376,25 +3367,6 @@ void CItemManager::LoadItemList()
 	file.Release();
 	LoadTipItem();
 }
-void CItemManager::LoadAlexXUpGradeItemPercent()
-{
-	CMHFile file;
-	if (!file.Init("Resource/AlexX_UpGradeItemPercent.bin", "rb"))
-		return;
-
-	ITEM_INFO_UPGRADE_PRECENT* TempInfo = NULL;
-	while (1)
-	{
-		if (file.IsEOF())
-			break;
-		TempInfo = new ITEM_INFO_UPGRADE_PRECENT;
-		TempInfo->ItemLv = file.GetDword();
-		TempInfo->MaxPercent = file.GetWord();
-		TempInfo->Money = file.GetWord();
-		m_UpGradeItemPercentList.Add(TempInfo, TempInfo->ItemLv);
-	}
-	file.Release();
-}
 void CItemManager::ReloadItemList()
 {
 	ITEM_INFO * pInfo = NULL;
@@ -6516,6 +6488,31 @@ void CItemManager::NetworkMsgParseExt(DWORD dwConnectionIndex, BYTE Protocol, vo
 									  ItemFlashNameSet2(pPlayer->GetID(), pmsg->ItemPos, pmsg->pName);
 	}
 		break;
+	case MP_OFFICIAL_UPGRADE_SYN:
+	{
+		MSG_OFFICIAL_ITEM_SYN* pmsg = (MSG_OFFICIAL_ITEM_SYN*)pMsg;
+		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pmsg->dwObjectID);
+		if (!pPlayer) return;
+		int rt = UpGradeOfficial_Func(pPlayer, pmsg);
+		//g_Console.LOG(4, "Rt Grade %d", rt);
+		if (rt == 222 || rt == 888 || rt == 999 || rt == 777 || rt == 666)
+		{
+			MSG_OFFICIAL_ITEM_ACK msg;
+			memcpy(&msg, pmsg, sizeof(MSG_OFFICIAL_ITEM_SYN));
+			msg.Protocol = MP_OFFICIAL_UPGRADE_ACK;
+			msg.Status = rt;
+			SendAckMsg(pPlayer, &msg, msg.GetSize());
+		}
+		else {
+			MSG_OFFICIAL_ITEM_ACK msg;
+			memcpy(&msg, pmsg, sizeof(MSG_OFFICIAL_ITEM_SYN));
+			msg.Protocol = MP_OFFICIAL_UPGRADE_NACK;
+			msg.Status = rt;
+			SendAckMsg(pPlayer, &msg, msg.GetSize());
+		}
+
+	}
+	break;
 	default:
 		break;
 	}
@@ -7852,22 +7849,6 @@ void CItemManager::StoneItemDBResultEx(CPlayer * pPlayer, DWORD wItemDBIdx, POST
 	msg.StoneInfo = *pStoneInfo;
 	pPlayer->SendMsg(&msg, sizeof(msg));
 }
-int CItemManager::NewUpGrareItem(CPlayer* pPlayer, MSG_NEWYPGRARE_ALEXX* pMsg)
-{
-	MSG_NEWYPGRARE_ALEXX* pmsg = (MSG_NEWYPGRARE_ALEXX*)pMsg;
-
-	//const ITEMBASE * pStoneBase = GetItemInfoAbsIn(pPlayer, pmsg->);
-
-	const ITEMBASE* pTargetBase = GetItemInfoAbsIn(pPlayer, pmsg->ItemPosition);
-
-	ItemGradeAlexXUpdate(pPlayer->GetID(), pTargetBase->dwDBIdx, pTargetBase->ItemGradeAlexX + 1);
-	return 1;
-}
-
-ITEM_INFO_UPGRADE_PRECENT* CItemManager::GetUpGradeItemPercentList(DWORD lv)
-{
-	return m_UpGradeItemPercentList.GetData(lv);
-}
 int CItemManager::SetItemLock(CPlayer * pPlayer, DWORD ItemIdx, WORD ItemPos, DWORD StoneIdx, WORD StonePos)
 {
 	const ITEMBASE * pTargetItemBase = GetItemInfoAbsIn(pPlayer, ItemPos);
@@ -8023,17 +8004,6 @@ void CItemManager::GrowItemDBResult(CPlayer* pPlayer, DWORD wTargetItemDBIdx, PO
 	msg.dwData3 = dwItemGrow;
 	pPlayer->SendMsg(&msg, sizeof(msg));
 }
-void CItemManager::GradeAlexXItemDBResult(CPlayer* pPlayer, DWORD wTargetItemDBIdx, POSTYPE wTargetItemPos, WORD wItemGradeAlexX)
-{
-	MSG_DWORD4 msg;
-	msg.Category = MP_ITEMEXT;
-	msg.Protocol = MP_ITEM_GRADEALEXX_ACK;
-	msg.dwObjectID = pPlayer->GetID();
-	msg.dwData1 = wTargetItemDBIdx;
-	msg.dwData2 = wTargetItemPos;
-	msg.dwData3 = wItemGradeAlexX;
-	pPlayer->SendMsg(&msg, sizeof(msg));
-}
 /*BOOL CItemManager::CanMixItem(WORD wItemIndex)
 {
 	const ITEM_MIX_INFO * pMixItemInfo = ITEMMGR->GetMixItemInfo(wItemIndex);
@@ -8085,4 +8055,236 @@ sTIPITEMINFO * CItemManager::GetTipItem(WORD ItemIdx)
 		return GetItem;
 	else
 		return NULL;
+}
+
+//+30//////////////////////////////////////////////////////////////////////////////////////
+
+BOOL CItemManager::EnoughMixMaterial_FFT(WORD needItemIdx, WORD needItemNum, MATERIAL_ARRAY_FFT* pMaterialArray, WORD wMaterialNum)
+{
+	DURTYPE deNeedItemNum = needItemNum;
+	for (int i = 0; i < wMaterialNum; ++i)
+	{
+		if (deNeedItemNum == 0) break;
+
+		if (pMaterialArray[i].wItemIdx == needItemIdx)
+		{
+			if (pMaterialArray[i].Dur < deNeedItemNum)
+			{
+				if (!IsDupItem(pMaterialArray[i].wItemIdx))
+				{
+					deNeedItemNum = deNeedItemNum - 1;
+				}
+				else
+				{
+					deNeedItemNum -= pMaterialArray[i].Dur;
+				}
+			}
+			else
+			{
+				deNeedItemNum = 0;
+			}
+		}
+	}
+
+	if (deNeedItemNum == 0)
+		return TRUE;
+	return FALSE;
+}
+int CItemManager::UpGradeOfficial_Func(CPlayer* pPlayer, MSG_OFFICIAL_ITEM_SYN* pmsg)
+{
+	const ITEMBASE* pItem = GetItemInfoAbsIn(pPlayer, pmsg->MainItem_Pos);
+	if (pItem->wIconIdx != pmsg->MainItem_Idx)
+	{
+		return 1;
+	}
+
+	if (pPlayer->GetState() == eObjectState_Die)
+		return 2;
+	if (!CHKRT->ItemOf(pPlayer, pmsg->MainItem_Pos, pmsg->MainItem_Idx, 0, 0, CB_EXIST | CB_ICONIDX))
+		return 3;
+
+
+
+	// 获取通用的升级数据，不再根据 ItemIdx 判断
+	UpGradeDataList* GetSetting = GAMERESRCMNGR->GetDataUpGrade(0);
+	if (!GetSetting)
+	{
+		return 4;  // 如果没有找到数据，返回错误码
+	}
+
+	MATERIAL_ARRAY_FFT* pMaterialArray = pmsg->Material;
+	WORD needItemIdx = 0;
+	WORD needItemNum = 0;
+
+	for (int i = 0; i < pmsg->CountCollect; ++i)
+	{
+		if (!EnoughMixMaterial_FFT(pmsg->Material[i].wItemIdx, pmsg->Material[i].Dur, pMaterialArray, pmsg->CountCollect))
+			return 3;
+	}
+	DWORD CountPercent = 0;
+	DWORD MoneyUse = 0;
+	//	for (size_t i = 0; i < pmsg->CountCollect; i++)
+//	{
+	//	g_Console.LOG(4, "ItemIdx %d Dur %d", pmsg->Material[i].wItemIdx, pmsg->Material[i].Dur);// 调试
+//	}
+
+	for (size_t i = 0; i < pmsg->CountCollect; i++)
+	{
+		if (pmsg->Material[i].wItemIdx == ITEM_STONE_1 || pmsg->Material[i].wItemIdx == ITEM_STONE_1_RED)
+		{
+			CountPercent += pmsg->Material[i].Dur * 1000;
+			MoneyUse += pmsg->Material[i].Dur * 3000000;
+		}
+		if (pmsg->Material[i].wItemIdx == ITEM_STONE_2 || pmsg->Material[i].wItemIdx == ITEM_STONE_2_RED)
+		{
+			CountPercent += pmsg->Material[i].Dur * 100;
+			MoneyUse += pmsg->Material[i].Dur * 300000;
+		}
+		if (pmsg->Material[i].wItemIdx == ITEM_STONE_3 || pmsg->Material[i].wItemIdx == ITEM_STONE_3_RED)
+		{
+			CountPercent += pmsg->Material[i].Dur * 10;
+			MoneyUse += pmsg->Material[i].Dur * 30000;
+		}
+		if (pmsg->Material[i].wItemIdx == ITEM_STONE_4 || pmsg->Material[i].wItemIdx == ITEM_STONE_4_RED)
+		{
+			CountPercent += pmsg->Material[i].Dur * 1;
+			MoneyUse += pmsg->Material[i].Dur * 3000;
+		}
+	}
+	if (MoneyUse > pPlayer->GetMoney())
+	{
+		return 5;
+	}
+	//	g_Console.LOG(4, "CountPercent %d", CountPercent);
+	ITEMBASE Item;
+	memset(&Item, 0, sizeof(ITEMBASE));
+	CItemSlot* pSlot = pPlayer->GetSlot(eItemTable_Inventory);
+	WORD Protect = 0;
+	//	g_Console.LOG(4, "Received Protect Item Index: %d, Position: %d", pmsg->Pr_ItemIdx, pmsg->pr_Pos);// 调试
+	if (pmsg->Pr_ItemIdx != 0)
+	{
+		Protect = 1;  // 设置保护标志
+		Item = *pSlot->GetItemInfoAbs(pmsg->pr_Pos);
+		const ITEMBASE* MatItem = GetItemInfoAbsIn(pPlayer, pmsg->pr_Pos);
+		if (Item.dwDBIdx == MatItem->dwDBIdx)
+		{
+			if (EI_TRUE == ITEMMGR->DiscardItem(pPlayer, pmsg->pr_Pos, pmsg->Pr_ItemIdx, 1))
+			{
+				LogItemMoney(pmsg->dwObjectID, pPlayer->GetObjectName(), 0, "",
+					eLog_ItemDiscard, pPlayer->GetMoney(eItemTable_Inventory), 0, 0,
+					Item.wIconIdx, Item.dwDBIdx, Item.Position, 0,
+					Item.Durability, pPlayer->GetPlayerExpPoint());
+			}
+		}
+
+
+	}
+
+	//	g_Console.LOG(4,"Percent %d",CountPercent);
+	float Percent = ((float)CountPercent / (float)GetSetting->Data_Sub[pItem->Grade30].Percent) * 100.0;
+	//	g_Console.LOG(4,"Now Percent %.4f",Percent);
+
+	pSlot = pPlayer->GetSlot(eItemTable_Inventory);
+	for (int i = 0; i < pmsg->wMaterialNum; i++)
+	{
+		Item = *pSlot->GetItemInfoAbs(pmsg->Material[i].ItemPos);
+		const ITEMBASE* MatItem = GetItemInfoAbsIn(pPlayer, pmsg->Material[i].ItemPos);
+		if (Item.dwDBIdx == MatItem->dwDBIdx)
+		{
+			if (EI_TRUE == ITEMMGR->DiscardItem(pPlayer, pmsg->Material[i].ItemPos, pmsg->Material[i].wItemIdx, pmsg->Material[i].Dur))
+			{
+				LogItemMoney(pmsg->dwObjectID, pPlayer->GetObjectName(), 0, "",
+					eLog_ItemDiscard, pPlayer->GetMoney(eItemTable_Inventory), 0, 0,
+					Item.wIconIdx, Item.dwDBIdx, Item.Position, 0,
+					Item.Durability, pPlayer->GetPlayerExpPoint());
+			}
+			//			g_Console.LOG(4,"Match i : %d Db item. = %d Dbx = %d",i,Item.dwDBIdx,MatItem->dwDBIdx);
+	//	}
+	//	else {
+		//	g_Console.LOG(4,"Not Match i : %d Db item. = %d Dbx = %d",i,Item.dwDBIdx,MatItem->dwDBIdx);
+		}
+	}
+
+
+
+
+
+
+	int rate = random(0, 10000);
+	int RealRate = Percent * 10000.00;
+
+
+
+	float MinRate, MaxRate;
+	MinRate = (float)rate / 10.0;
+	MaxRate = (float)RealRate / 1000.0;
+
+	pPlayer->SetMoney(MoneyUse, MONEY_SUBTRACTION);
+	if (MinRate >= MaxRate)
+	{	// 升级失败逻辑
+		if (pItem->Grade30 > 10)
+		{
+			int breakornot = random(0, 100);
+			if (breakornot >= 50)
+			{
+				int breakornot = random(0, 100);
+				if (breakornot >= 50)
+				{
+					// 使用保护石
+					if (Protect == 1)
+					{
+						UpdateGradeItem(pPlayer->GetID(), pItem->dwDBIdx, pItem->Grade30, pItem->ItemStatic);
+						return 777; // 返回 777，不降级
+					}
+					else
+					{
+						UpdateGradeItem(pPlayer->GetID(), pItem->dwDBIdx, (pItem->Grade30 - 1), pItem->ItemStatic);
+
+
+						return 999; // 返回 999，降级
+					}
+				}
+			}
+			else {
+				return 888;
+			}
+		}
+		else {
+			return 888;
+		}
+	}
+	else
+	{
+		// 检查是否使用红色材料
+		bool usedRedStone = false;
+		for (size_t i = 0; i < pmsg->CountCollect; ++i)
+		{
+			if (pmsg->Material[i].wItemIdx == ITEM_STONE_1_RED ||
+				pmsg->Material[i].wItemIdx == ITEM_STONE_2_RED ||
+				pmsg->Material[i].wItemIdx == ITEM_STONE_3_RED ||
+				pmsg->Material[i].wItemIdx == ITEM_STONE_4_RED)
+			{
+				// 红色的石头材料处理逻辑
+				usedRedStone = true;
+				break;
+			}
+		}
+
+		// 升级成功逻辑
+		if (usedRedStone)
+		{
+			// 使用红色材料成功升级，增加 ItemStatic
+			UpdateGradeItem(pPlayer->GetID(), pItem->dwDBIdx, (pItem->Grade30 + 1), 1);
+			return 666; // 表示使用红色材料的成功升级
+		}
+		else
+		{
+			// 未使用红色材料的成功升级，不增加 ItemStatic
+			UpdateGradeItem(pPlayer->GetID(), pItem->dwDBIdx, (pItem->Grade30 + 1), pItem->ItemStatic);
+			return 222; // 表示普通成功升级
+
+		}
+	}
+
+	return 0;
 }

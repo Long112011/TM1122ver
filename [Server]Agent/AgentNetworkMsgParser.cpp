@@ -6706,7 +6706,3 @@ void MP_INSDUNGEONServerMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwL
 	TransToClientMsgParser(dwConnectionIndex, pMsg, dwLength);
 	}
 }
-void MP_NEWUPGRARE_ALEXXMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
-{
-	TransToMapServerMsgParser(dwConnectionIndex, pMsg, dwLength);
-}

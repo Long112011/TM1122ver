@@ -300,7 +300,7 @@ void CServerSystem::Start(WORD ServerNum)
 	g_pUserMsgParser[MP_DUNGEON] = MP_DUNGEON_UserMsgParser;
 
 	g_pUserMsgParser[MP_INSDUNGEON] = MP_INSDUNGEONUserMsgParser;
-	g_pUserMsgParser[MP_NEWUPGRARE_ALEXX] = MP_NEWUPGRARE_ALEXXMsgParser;
+
 	// servertable usertable √ ±‚»≠ ---------------------
 
 	

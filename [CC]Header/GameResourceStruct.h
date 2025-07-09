@@ -425,7 +425,6 @@ struct ITEM_INFO_UPGRADE_PRECENT
 	DWORD MaxPercent;
 	DWORD Money;
 };
-
 struct SET_ITEM_OPTION
 {
 	WORD wIndex;									

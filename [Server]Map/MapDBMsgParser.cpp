@@ -465,7 +465,7 @@ DBMsgFunc g_DBMsgFunc[MaxQuery] =
 
 	NULL,						//eInstanceDungeonRankUpdate,
 	RLoadInstanceDungeonRank,	//eInstanceDungeonRankLoad,
-	RItemGradeAlexXUpdate,
+    RUpdateGradeItem
 };
 
 
@@ -1688,7 +1688,7 @@ void RGuildItemLoadInNeed( LPQUERY pData, LPDBMESSAGE pMessage )
 		guilditem.StoneIdx=atoi((char*)pData[i].Data[eMu_IStoneIdx]); //weiye 门派仓库，，成长数据附加! 2015-10-25
 		guilditem.ItemStatic=atoi((char*)pData[i].Data[eMu_IStatic]);
 		guilditem.ItemGrow=atoi((char*)pData[i].Data[eMu_IGrow]);
-		guilditem.ItemGradeAlexX = atoi((char*)pData[i].Data[eMu_GradeAlexX]);
+		guilditem.Grade30 = atoi((char*)pData[i].Data[eMu_Grade30]);
 		GUILDMGR->RegistGuildItem(GuildIdx, &guilditem);
 	}
 	if(pMessage->dwResult < MAX_QUERY_RESULT)
@@ -3559,7 +3559,8 @@ void RCharacterItemInfo(LPQUERY pData, LPDBMESSAGE pMessage)
 
 			SafeStrCpy(pItemBase->PowerUp,(char*)pData[i].Data[eCI_PowerUp], MAX_NAME_LENGTH+1);
 			SafeStrCpy(pItemBase->Green,(char*)pData[i].Data[eCI_Green], MAX_NAME_LENGTH+1);
-			pItemBase->ItemGradeAlexX = atoi((char*)pData[i].Data[eCI_GradeAlexX]);
+			pItemBase->Grade30 = atoi((char*)pData[i].Data[eCI_Grade30]);
+
 			ITEM_INFO* pInfo = ITEMMGR->GetItemInfo(pItemBase->wIconIdx);
 			if( pInfo && pInfo->ItemKind & eTITAN_EQUIPITEM )
 			{
@@ -4204,7 +4205,7 @@ void RPetInvenItemInfo( LPQUERY pData, LPDBMESSAGE pMessage )
 
 				SafeStrCpy(PetInvenItem.PetInven[ItemPos].PowerUp,(char*)pData[i].Data[ePIII_PowerUp], MAX_NAME_LENGTH+1);
 				SafeStrCpy(PetInvenItem.PetInven[ItemPos].Green,(char*)pData[i].Data[ePIII_Green], MAX_NAME_LENGTH+1);
-				PetInvenItem.PetInven[ItemPos].ItemGradeAlexX = atoi((char*)pData[i].Data[ePII_GradeAlexX]);
+				PetInvenItem.PetInven[ItemPos].Grade30 = atoi((char*)pData[i].Data[ePII_Grade30]);
 			}
 			else
 			{
@@ -4812,7 +4813,7 @@ void RItemInsert(LPQUERY pData, LPDBMESSAGE pMessage)
 		DWORD dwParam = atoi((char*)pData->Data[eCI_Param]);
 		DWORD dwStatic= atoi((char*)pData->Data[eCI_Static]);   // 2014-12-01  默认0 此处写了后面没使用！
 		DWORD dwGrow  = atoi((char*)pData->Data[eCI_Grow]);   // 2015-01-14 成长 默认0 此处写了后面没使用！
-		DWORD dweGradeAlexX = atoi((char*)pData->Data[eCI_GradeAlexX]);
+		DWORD dweGrade30 = atoi((char*)pData->Data[eCI_Grade30]);
 		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(atoi((char*)pData->Data[eCI_ObjectID]));
 		if(pPlayer == NULL)
 			return;
@@ -4832,7 +4833,10 @@ void RItemInsert(LPQUERY pData, LPDBMESSAGE pMessage)
 							0,
 							atoi((char*)pData->Data[eCI_Static]),
 							atoi((char*)pData->Data[eCI_Grow]),
-			atoi((char*)pData->Data[eCI_GradeAlexX])
+
+			                atoi((char*)pData->Data[eCI_Grade30])
+
+
 							);
 
 		if( lastNo == pItemArrayInfo->ItemArray.ItemNum )
@@ -5147,7 +5151,7 @@ void RCharacterPyogukItemInfo(LPQUERY pData, LPDBMESSAGE pMessage)
 
 				SafeStrCpy(PyogukItem.Pyoguk[ItemPos].PowerUp,(char*)pData[i].Data[ePI_PowerUp], MAX_NAME_LENGTH+1);
 				SafeStrCpy(PyogukItem.Pyoguk[ItemPos].Green,(char*)pData[i].Data[ePI_Green], MAX_NAME_LENGTH+1);
-				PyogukItem.Pyoguk[ItemPos].ItemGradeAlexX = atoi((char*)pData[i].Data[ePI_GradeAlexX]);
+				PyogukItem.Pyoguk[ItemPos].Grade30 = atoi((char*)pData[i].Data[ePI_Grade30]);
 				// magi82(33)
 				ITEM_INFO* pInfo = ITEMMGR->GetItemInfo(PyogukItem.Pyoguk[ItemPos].wIconIdx);
 				if( pInfo && pInfo->ItemKind & eTITAN_EQUIPITEM )
@@ -5735,7 +5739,7 @@ void RCharacterShopItemInfo(LPQUERY pData, LPDBMESSAGE pMessage)
 
 			SafeStrCpy(ShopItem.Item[itempos].PowerUp,(char*)pData[i].Data[eMI_PowerUp], MAX_NAME_LENGTH+1);
 			SafeStrCpy(ShopItem.Item[itempos].Green,(char*)pData[i].Data[eMI_Green], MAX_NAME_LENGTH+1);
-			NewShopItem.Item[nitemcnt].ItemGradeAlexX = (DWORD)atoi((char*)pData[i].Data[eMItm_GradeAlexX]);
+			NewShopItem.Item[nitemcnt].Grade30 = (DWORD)atoi((char*)pData[i].Data[eMItm_Grade30]);
 			++nitemcnt;
 		}
 		else
@@ -5754,7 +5758,7 @@ void RCharacterShopItemInfo(LPQUERY pData, LPDBMESSAGE pMessage)
 
 				SafeStrCpy(ShopItem.Item[itempos].PowerUp,(char*)pData[i].Data[eMI_PowerUp], MAX_NAME_LENGTH+1);
 				SafeStrCpy(ShopItem.Item[itempos].Green,(char*)pData[i].Data[eMI_Green], MAX_NAME_LENGTH+1);
-				NewShopItem.Item[nitemcnt].ItemGradeAlexX = (DWORD)atoi((char*)pData[i].Data[eMItm_GradeAlexX]);
+				NewShopItem.Item[nitemcnt].Grade30 = (DWORD)atoi((char*)pData[i].Data[eMItm_Grade30]);
 				++nitemcnt;
 
 				continue;
@@ -5770,7 +5774,7 @@ void RCharacterShopItemInfo(LPQUERY pData, LPDBMESSAGE pMessage)
 
 			SafeStrCpy(ShopItem.Item[itempos].PowerUp,(char*)pData[i].Data[eMI_PowerUp], MAX_NAME_LENGTH+1);
 			SafeStrCpy(ShopItem.Item[itempos].Green,(char*)pData[i].Data[eMI_Green], MAX_NAME_LENGTH+1);
-			ShopItem.Item[nitemcnt].ItemGradeAlexX = (DWORD)atoi((char*)pData[i].Data[eMItm_GradeAlexX]);
+			ShopItem.Item[nitemcnt].Grade30 = (DWORD)atoi((char*)pData[i].Data[eMItm_Grade30]);
 		}
 
 
@@ -5837,7 +5841,7 @@ void RShopItemInvenInfo( LPQUERY pData, LPDBMESSAGE pMessage )
 				ItemOverlap[OverlapCount].ItemParam = (ITEMPARAM)atoi((char*)pData[i].Data[eCI_Param]);
 				ItemOverlap[OverlapCount].ItemStatic = (WORD)atoi((char*)pData[i].Data[eCI_Static]);
 				ItemOverlap[OverlapCount].ItemGrow = (DWORD)atoi((char*)pData[i].Data[eCI_Grow]);
-				ItemOverlap[OverlapCount].ItemGradeAlexX = (DWORD)atoi((char*)pData[i].Data[eCI_GradeAlexX]);
+				ItemOverlap[OverlapCount].Grade30 = (DWORD)atoi((char*)pData[i].Data[eCI_Grade30]);
 				++OverlapCount;
 			}
 			else
@@ -5850,7 +5854,7 @@ void RShopItemInvenInfo( LPQUERY pData, LPDBMESSAGE pMessage )
 				ItemBase[ItemPos].ItemParam = (ITEMPARAM)atoi((char*)pData[i].Data[eCI_Param]);
 				ItemBase[ItemPos].ItemStatic = (WORD)atoi((char*)pData[i].Data[eCI_Static]);
 				ItemBase[ItemPos].ItemGrow = (DWORD)atoi((char*)pData[i].Data[eCI_Grow]);
-				ItemBase[ItemPos].ItemGradeAlexX = (DWORD)atoi((char*)pData[i].Data[eCI_GradeAlexX]);
+				ItemBase[ItemPos].Grade30 = (DWORD)atoi((char*)pData[i].Data[eCI_Grade30]);
 			}
 		}
 	}
@@ -8436,7 +8440,7 @@ void RItemLockUpdate(LPQUERY pData, LPDBMESSAGE pMessage)
 		DWORD dwStoneIdx=atoi((char*)pData->Data[eCI_StoneIdx]);
 		DWORD dwStatic= atoi((char*)pData->Data[eCI_Static]);   // 2014-12-06  
 		DWORD dwGrow=   atoi((char*)pData->Data[eCI_Grow]);     // 2015-01-14  成长
-		DWORD dwGradeAlexX = atoi((char*)pData->Data[eCI_GradeAlexX]);
+		DWORD dwGrade30 = atoi((char*)pData->Data[eCI_Grade30]);
 		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(atoi((char*)pData->Data[eCI_ObjectID]));
 		if(pPlayer == NULL)
 			return;
@@ -8479,7 +8483,7 @@ void RItemUnLockUpdate(LPQUERY pData, LPDBMESSAGE pMessage)
 		DWORD dwStone = atoi((char*)pData->Data[eCI_StoneIdx]);
 		DWORD dwStatic= atoi((char*)pData->Data[eCI_Static]);   // 2014-12-06  解锁
 		DWORD dwGrow=   atoi((char*)pData->Data[eCI_Grow]);     // 2015-01-14  成长
-		DWORD dwGradeAlexX = atoi((char*)pData->Data[eCI_GradeAlexX]);
+		DWORD dwGrade30 = atoi((char*)pData->Data[eCI_Grade30]);
 		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(atoi((char*)pData->Data[eCI_ObjectID]));
 		if(pPlayer == NULL)
 			return;
@@ -8521,7 +8525,7 @@ void RItemGrowUpdate(LPQUERY pData, LPDBMESSAGE pMessage)
 		DWORD dwStoneIdx=atoi((char*)pData->Data[eCI_StoneIdx]);
 		DWORD dwStatic= atoi((char*)pData->Data[eCI_Static]);   // 2014-12-06  
 		DWORD dwGrow=   atoi((char*)pData->Data[eCI_Grow]);     // 2015-01-14  成长
-		DWORD dwGradeAlexX = atoi((char*)pData->Data[eCI_GradeAlexX]);
+		DWORD dwGrade30 = atoi((char*)pData->Data[eCI_Grade30]);
 		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(atoi((char*)pData->Data[eCI_ObjectID]));
 		if(pPlayer == NULL)
 			return;
@@ -10091,58 +10095,85 @@ void RLoadInstanceDungeonRank(LPQUERY pData, LPDBMESSAGE pMessage)
 
 	pPlayer->SendMsg(&msg, msg.GetMsgLength());
 }
-void ItemGradeAlexXUpdate(DWORD dwCharacterIdx, DWORD dwItemDBIdx, DWORD dwGradeAlexX)
+
+void UpdateGradeItem(DWORD dwPlayerID, DWORD ItemDbIdx, DWORD Grade, DWORD ItemStatic)
 {
-	sprintf(txt, "EXEC %s %d, %d, %d", STORED_ITEM_UPDATE_GradeAlexX, dwCharacterIdx, dwItemDBIdx, dwGradeAlexX);
-	g_DB.Query(eQueryType_FreeQuery, eItemUpdateGradeAlexX, 0, txt);
+	//	g_Console.LOG(4, "Query %d %d %d %d ", dwPlayerID, ItemDbIdx, Grade, ItemStatic);
+	sprintf(txt, "EXEC dbo.MP_UpDateGradeItem %d,%d,%d,%d", dwPlayerID, ItemDbIdx, Grade, ItemStatic);
+	g_DB.Query(eQueryType_FreeQuery, eUpDateGradeItem, dwPlayerID, txt);
 }
-void RItemGradeAlexXUpdate(LPQUERY pData, LPDBMESSAGE pMessage)
+void RUpdateGradeItem(LPQUERY pData, LPDBMESSAGE pMessage)
 {
-	WORD lastNo = LOWORD(pMessage->dwID);
-	WORD ArrayID = HIWORD(pMessage->dwID);
-
-	if (pMessage->dwResult)
-	{
-		DWORD dwObjectID = atoi((char*)pData->Data[eCI_ObjectID]);
-		DWORD dwItemIdx = atoi((char*)pData->Data[eCI_IDX]);
-		DWORD dwDura = atoi((char*)pData->Data[eCI_Durability]);
-		DWORD dwPos = atoi((char*)pData->Data[eCI_Position]);
-		DWORD dwQPos = atoi((char*)pData->Data[eCI_QPosition]);
-		DWORD dwDBIdx = atoi((char*)pData->Data[eCI_DBIDX]);
-		DWORD dwParam = atoi((char*)pData->Data[eCI_Param]);
-		//DWORD dwStoneIdx = atoi((char*)pData->Data[eCI_StoneIdx]);
-		DWORD dwStatic = atoi((char*)pData->Data[eCI_Static]);
-		DWORD dwGrow = atoi((char*)pData->Data[eCI_Grow]);
-		//[耐久，制造者附加][2018/1/2]
-		//DWORD dwAbrasion = atoi((char*)pData->Data[eCI_Abrasion]);
-		//DWORD dwMaxAbrasion = atoi((char*)pData->Data[eCI_MaxAbrasion]);
-		//char Maker[MAX_NAME_LENGTH + 1];
-		//strcpy(Maker, (char*)pData->Data[eCI_Maker]);
-		//char Maker1[MAX_NAME_LENGTH + 1];
-		//strcpy(Maker1, (char*)pData->Data[eCI_Maker1]);
-		DWORD dwGradeAlexX = atoi((char*)pData->Data[eCI_GradeAlexX]);
-		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(atoi((char*)pData->Data[eCI_ObjectID]));
-		if (pPlayer == NULL)
-			return;
-		if (pPlayer->GetInited() == FALSE)
-			return;
-		CItemSlot* pTargetSlot = pPlayer->GetSlot(dwPos);
-
-		/*if (pTargetSlot->UpdateItemAbs(pPlayer, dwPos, 0, 0, 0, 0, 0, 0, UB_GRADEALEXX, SS_NONE, 0, 0, 0, 0, 0, 0, 0, dwGradeAlexX) != EI_TRUE)
-		{
-			ASSERTMSG(0, "The ItemGradeAlexX UpdateItemAbs is Error!");
-			return;
-		}*/
-		if (pTargetSlot->UpdateItemAbs(pPlayer, dwPos, 0, 0, 0, 0, 0, 0, UB_GRADEALEXX, SS_NONE, 0, 0, 0,0, dwGradeAlexX) != EI_TRUE)
-		{
-			ASSERTMSG(0, "The ItemGradeAlexX UpdateItemAbs is Error!");
-			return;
-		}
-		STATSMGR->CalcItemStats(pPlayer);  // 刷新附加
-		ITEMMGR->GradeAlexXItemDBResult(pPlayer, dwDBIdx, dwPos, dwGradeAlexX);   // 完发送成长消息到客户端 2014-12-06
+	CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pMessage->dwID);
+	if (!pPlayer) {
+		//	g_Console.LOG(4, "Player not found: dwID = %d", pMessage->dwID);
+		return;
 	}
-	else
-	{
-		ASSERT(0);
+
+	if (!pPlayer->GetInited()) {
+		//		g_Console.LOG(4, "Player not initialized: dwID = %d", pMessage->dwID);
+		return;
 	}
+
+	if (!pMessage->dwResult) {
+		//	g_Console.LOG(4, "Database query failed: dwResult = %d", pMessage->dwResult);
+		return;
+	}
+
+	// Log database data for debugging
+	//g_Console.LOG(4, "Database data received: DBIdx = %s, ItemIdx = %s, Position = %s",
+	//	(char*)pData->Data[1], (char*)pData->Data[2], (char*)pData->Data[3]);
+
+	DWORD dwObjectID = atoi((char*)pData->Data[eCI_ObjectID]);
+	DWORD dwItemIdx = atoi((char*)pData->Data[eCI_IDX]);
+	DWORD dwDura = atoi((char*)pData->Data[eCI_Durability]);
+	DWORD dwPos = atoi((char*)pData->Data[eCI_Position]);
+	DWORD dwQPos = atoi((char*)pData->Data[eCI_QPosition]);
+	DWORD dwDBIdx = atoi((char*)pData->Data[eCI_DBIDX]);
+	DWORD dwParam = atoi((char*)pData->Data[eCI_Param]);
+	//DWORD dwStoneIdx = atoi((char*)pData->Data[eCI_StoneIdx]);
+	DWORD dwStatic = atoi((char*)pData->Data[eCI_Static]);
+	DWORD dwGrow = atoi((char*)pData->Data[eCI_Grow]);
+	//[耐久，制造者附加][2018/1/2]
+
+	DWORD dwGrade30 = atoi((char*)pData->Data[eCI_Grade30]);
+
+	CItemSlot* pTargetSlot = pPlayer->GetSlot(dwPos);
+	if (!pTargetSlot) {
+		//	g_Console.LOG(4, "Slot not found: Position = %d", Position);
+		return;
+	}
+
+	ITEMBASE* pTargetItem = (ITEMBASE*)pTargetSlot->GetItemInfoAbs(dwPos);
+	if (!pTargetItem) {
+		//	g_Console.LOG(4, "Item not found in slot: Position = %d", Position);
+		return;
+	}
+	//CItemSlot* pTargetSlot = pPlayer->GetSlot(dwPos);
+	//Log the current state of the item
+   //g_Console.LOG(4, "Item before update: DBIdx = %d, Grade = %d ,static = %d", pTargetItem->dwDBIdx, pTargetItem->Grade, pTargetItem->ItemStatic);
+
+	if (pTargetSlot->UpdateItemAbs(pPlayer, dwPos, 0, 0, 0, 0, 0, UB_GRADE30, SS_NONE, 0, 0, 0,0, 0, dwGrade30) != EI_TRUE)
+	{
+
+		ASSERTMSG(0, "The ItemGradeAlexX UpdateItemAbs is Error!");
+		return;
+	}
+
+	STATSMGR->CalcItemStats(pPlayer);  // 刷新附加
+	// Log success of item update
+//	g_Console.LOG(4, "Item successfully updated: DBIdx = %d, New Grade = %d ,static = %d", pTargetItem->dwDBIdx, pTargetItem->Grade, pTargetItem->ItemStatic);
+
+	MSG_UPDATE_GRADE msg;
+	msg.Category = MP_ITEMEXT;
+	msg.Protocol = MP_UPDATE_GRADE;
+	msg.ItemIdx = pTargetItem->wIconIdx;
+	msg.Pos = pTargetItem->Position;
+	msg.Grade = pTargetItem->Grade30;
+	pPlayer->SendMsg(&msg, sizeof(msg));
+
+	// Log message sent to client
+	//g_Console.LOG(4, "MSG_UPDATE_GRADE sent: ItemIdx = %d, Pos = %d, Grade = %d",
+	//	msg.ItemIdx, msg.Pos, msg.Grade);
+
 }

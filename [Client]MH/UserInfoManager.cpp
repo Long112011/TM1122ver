@@ -314,14 +314,14 @@ void CUserInfoManager::LoadInterfaceInfo(char* strFilePath)
 		else if (UII.DIALOG_INFO[eSD_Inventory].dwFlag & eUIF_TABNUM4)
 			((CInventoryExDialog*)pDlg)->SelectTab(3);
 	}
-	pDlg = WINDOWMGR->GetWindowForID(CI_CHARDLG);
-	if (m_bMapChange)
-	{
-		if ((DWORD)pDlg->IsActive() != UII.DIALOG_INFO[eSD_Character].dwFlag & eUIF_ACTIVE)
-			pDlg->SetActive(UII.DIALOG_INFO[eSD_Character].dwFlag & eUIF_ACTIVE);
-	}
-	if (IsValidInterfacePos(pDlg->GetCaptionRect(), UII.DIALOG_INFO[eSD_Character].lPosX, UII.DIALOG_INFO[eSD_Character].lPosY))
-		pDlg->SetAbsXY(UII.DIALOG_INFO[eSD_Character].lPosX, UII.DIALOG_INFO[eSD_Character].lPosY);
+	//pDlg = WINDOWMGR->GetWindowForID(CI_CHARDLG);//½ÇÉ«ÊôÐÔÃæ°å
+	//if (m_bMapChange)
+	//{
+	//	if ((DWORD)pDlg->IsActive() != UII.DIALOG_INFO[eSD_Character].dwFlag & eUIF_ACTIVE)
+	//		pDlg->SetActive(UII.DIALOG_INFO[eSD_Character].dwFlag & eUIF_ACTIVE);
+	//}
+	//if (IsValidInterfacePos(pDlg->GetCaptionRect(), UII.DIALOG_INFO[eSD_Character].lPosX, UII.DIALOG_INFO[eSD_Character].lPosY))
+	//	pDlg->SetAbsXY(UII.DIALOG_INFO[eSD_Character].lPosX, UII.DIALOG_INFO[eSD_Character].lPosY);
 	pDlg = WINDOWMGR->GetWindowForID(MGI_MUGONGSURYUNDLG);
 	if (IsValidInterfacePos(pDlg->GetCaptionRect(), UII.DIALOG_INFO[eSD_Skill].lPosX, UII.DIALOG_INFO[eSD_Skill].lPosY))
 		pDlg->SetAbsXY(UII.DIALOG_INFO[eSD_Skill].lPosX, UII.DIALOG_INFO[eSD_Skill].lPosY);

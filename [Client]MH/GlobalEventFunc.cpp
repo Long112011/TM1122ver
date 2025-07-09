@@ -259,8 +259,8 @@
 #include "InstancesDungeon/InsDGPartyMakeDialog.h"
 #include "InstancesDungeon/InsDGRankDialog.h"
 #include "CharacterPVPDialog.h"
-#include "NewUpGrareAlexXDlg.h"
 
+#include "OfficialUpGradeDlg.h"
 extern HWND _g_hWnd;
 extern BOOL jTweak;
 //extern BOOL   g_IsExit;
@@ -499,9 +499,7 @@ FUNC g_mt_func[] =
 	{ LoginIDDialog_hide, "LoginIDDialog_hide" },
 
 	{CS_BtnChangePass,"CS_BtnChangePass"},
-
-	{ ALEXX_NewUpGrareAlexX_DlgFunc,"ALEXX_NewUpGrareAlexX_DlgFunc" },
-	
+	{ OfficialUpGradeDlg_Func, "OfficialUpGradeDlg_Func" },
 	{NULL, ""},	
 };
 int FUNCSEARCH(char * funcName)
@@ -957,7 +955,6 @@ void IN_DlgFunc(LONG lId, void * p, DWORD we)
 	{
 		GAMEIN->GetInventoryDialog()->OnActionEvnet(lId, p, we);
 	}
-
 	if(lId == IN_SHOPITEMBTN1)
 	{
 		GAMEIN->GetInventoryDialog()->OnShopItemBtn();
@@ -1078,25 +1075,21 @@ void CI_DlgFunc(LONG lId, void * p, DWORD we)
 			GAMEIN->GetCharacterDialog()->SetPvpDialogActive(FALSE);
 		}
 		else if (lId == MY_INFO_PVP_BTN_CLOSE)
-		{
+	{
 			GAMEIN->GetCharacterPvPDialog()->SetActive(FALSE);
 			GAMEIN->GetCharacterDialog()->SetPvpDialogActive(TRUE);
 		}
 		else if (lId == CI_BESTTIP)
 		{
-			FAMETYPE val = HERO->GetFame();
+		FAMETYPE val = HERO->GetFame();
 
-	
-			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2670));
+		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2670));
 
-	
-			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2669),
-		
-				FAMEMGR->GetSTR(val),
-		
-				FAMEMGR->GetAGI(val),
-		FAMEMGR->GetCON(val),
-		FAMEMGR->GetINT(val)); 
+		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2669),
+						FAMEMGR->GetSTR(val),
+						FAMEMGR->GetAGI(val),
+						FAMEMGR->GetCON(val),
+						FAMEMGR->GetINT(val));
 		}
 	
 
@@ -5760,7 +5753,8 @@ void CS_BtnChangePass(LONG lId, void* p, DWORD we)
 	if(we & WE_BTNCLICK && lId == MT_RESTPWD)
 		GAMEIN->GetRestPwdDlg()->Show();
 }
-void ALEXX_NewUpGrareAlexX_DlgFunc(LONG lId, void* p, DWORD we)
+void OfficialUpGradeDlg_Func(LONG lId, void* p, DWORD we)
 {
-	GAMEIN->GetNewUpGrareAlexXDlg()->OnActionEvent(lId, p, we);
+	GAMEIN->GetOfficialUpGradeDlg()->CheckStatusItem();
+	GAMEIN->GetOfficialUpGradeDlg()->OnActionEvent(lId, p, we);
 }

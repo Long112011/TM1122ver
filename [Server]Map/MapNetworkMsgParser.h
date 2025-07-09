@@ -109,6 +109,4 @@ void Move_PetMove(char* pMsg, DWORD dwLength);
 
 
 void MP_INSDUNGEONMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength);
-
-void MP_NEWUPGRARE_ALEXXMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength);
 #endif //__MAPNETWORKMSGPARSER_H__

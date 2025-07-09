@@ -19,7 +19,7 @@
 
 //SW050920 Rare
 
-enum UPDATE_BIT{ UB_DBIDX = 1, UB_ICONIDX=2, UB_ABSPOS=4, UB_QABSPOS=8, UB_DURA=16, UB_RARE=32,UB_STONE=64,UB_LOCK=128,UB_UNLOCK=256,UB_GROW=512,UB_POWERUP=1024,UB_GREEN=2048, UB_GRADEALEXX =4096, UB_ALL = 8192};
+enum UPDATE_BIT{ UB_DBIDX = 1, UB_ICONIDX=2, UB_ABSPOS=4, UB_QABSPOS=8, UB_DURA=16, UB_RARE=32,UB_STONE=64,UB_LOCK=128,UB_UNLOCK=256,UB_GROW=512,UB_POWERUP=1024,UB_GREEN=2048, UB_GRADE30=4096, UB_ALL= 8192, };  // 2014-11-14 
 enum ERROR_ITEM { EI_TRUE = 0, EI_OUTOFPOS = 1, EI_NOTEQUALDATA, EI_EXISTED, EI_NOTEXIST, EI_LOCKED, EI_PASSWD, EI_NOTENOUGHMONEY, EI_NOSPACE, EI_MAXMONEY };
 // SS_LOCKOMIT 을 수행한 함수 후에 락이 풀린다. 
 // 주의 : Updateitemabs도 락이 풀린다!
@@ -46,7 +46,7 @@ public:
 
 
     // 2014-11-14 UpdateItemAbs  냥낀鑒앴
-	virtual ERROR_ITEM UpdateItemAbs(CPlayer * pPlayer, POSTYPE whatAbsPos, DWORD dwDBIdx, WORD wItemIdx, POSTYPE position, POSTYPE quickPosition, DURTYPE Dur, WORD flag=UB_ALL, WORD state=SS_NONE, DWORD RareDBIdx = 0, DWORD StoneIdx=0,DWORD Grow=0,char * PowerUp="NULL",char * Green = "NULL", DWORD GradeAlexX = 0);
+	virtual ERROR_ITEM UpdateItemAbs(CPlayer * pPlayer, POSTYPE whatAbsPos, DWORD dwDBIdx, WORD wItemIdx, POSTYPE position, POSTYPE quickPosition, DURTYPE Dur, WORD flag=UB_ALL, WORD state=SS_NONE, DWORD RareDBIdx = 0, DWORD StoneIdx=0,DWORD Grow=0,char * PowerUp="NULL",char * Green = "NULL", DWORD Grade30 = 0);
 	virtual ERROR_ITEM InsertItemAbs(CPlayer * pPlayer, POSTYPE absPos, ITEMBASE * pItem, WORD state=SS_NONE);
 	virtual ERROR_ITEM DeleteItemAbs(CPlayer * pPlayer, POSTYPE absPos, ITEMBASE * pItemOut, WORD state=SS_NONE);
 		

@@ -39,7 +39,7 @@ public:
 
 	CItemShow();
 	virtual ~CItemShow();
-	void Init(WORD wItemIdx, DURTYPE dur);
+	void Init(WORD wItemIdx, DURTYPE dur, WORD Grade30 = 0, WORD Option = 0, WORD Rare = 0, WORD Grow = 0);
 	virtual inline WORD		GetItemIdx(){ return m_wItemIdx; }
 	virtual void Render();
 

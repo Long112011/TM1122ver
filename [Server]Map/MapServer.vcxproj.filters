@@ -328,9 +328,6 @@
     <Filter Include="Dungeon\InstanceDungeon">
       <UniqueIdentifier>{1025948f-2f1c-4ea6-ac8a-2b92217bd820}</UniqueIdentifier>
     </Filter>
-    <Filter Include="新功能">
-      <UniqueIdentifier>{05067c3f-a7a8-4d3f-a8ef-8e00c70e010c}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CommonNetworkMsgParser.cpp">
@@ -1361,9 +1358,6 @@
     </ClCompile>
     <ClCompile Include="..\[CC]JACK\HantarManager.cpp">
       <Filter>JACK</Filter>
-    </ClCompile>
-    <ClCompile Include="NewUpGrareAlexXMGR.cpp">
-      <Filter>新功能</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2542,9 +2536,6 @@
     </ClInclude>
     <ClInclude Include="..\[CC]JACK\HantarManager.h">
       <Filter>JACK</Filter>
-    </ClInclude>
-    <ClInclude Include="NewUpGrareAlexXMGR.h">
-      <Filter>新功能</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

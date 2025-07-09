@@ -42,7 +42,7 @@ protected:
 	DWORD			m_fgColor;
 
 	DWORD			m_fgColor2;
-
+	ITEM_INFO m_ItemGrade;
 	cImage m_ScrollImg[22];
 	int m_CurScrollImage;
 
@@ -111,10 +111,9 @@ public:
 	virtual inline char* GetPowerUp(  ) {return   m_ItemBaseInfo.PowerUp;}
 	virtual inline char* GetGreen(  ) {return   m_ItemBaseInfo.Green;}
 
-	virtual inline DWORD GetGradeAlexX() { return m_ItemBaseInfo.ItemGradeAlexX; }
-	virtual inline void SetGradeAlexX(DWORD Val) { m_ItemBaseInfo.ItemGradeAlexX = Val; }
-	virtual inline DWORD GetGradeAlexXWTF() { return m_ItemBaseInfo.ItemGradeAlexX + 1; }
-
+	virtual inline DWORD    GetGrade() { return   m_ItemBaseInfo.Grade30; }
+	virtual inline void     SetGrade(DWORD Val) { m_ItemBaseInfo.Grade30 = Val; }
+	virtual inline WORD		GetGradeIdx() { return m_ItemGrade.ItemGrade; }
 };
 
 #endif // !defined(AFX_ITEM_H__68113CBB_0A76_42D7_90B6_C64FBAF3E85C__INCLUDED_)

@@ -61,7 +61,8 @@ public:
 	void CalcUniqueItemStats();
 	
 
-
+	DWORD CalStatusGradeInt(DWORD Status, WORD Grade);
+	float CalStatusGradefloat(float Status, WORD Grade);
 	void CalcTitanStats(DWORD dwDBIdx);	// magi82 - Titan(070809)
 };
 

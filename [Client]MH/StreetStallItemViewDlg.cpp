@@ -57,7 +57,7 @@ void CStreetStallItemViewDlg::SetActive( BOOL val )
 {
 	if( !val )
 	{
-		// �?닫힐�?ItemShow�?내용 삭제
+		// 창 닫힐때 ItemShow의 내용 삭제
 		DeleteItemInfo();
 	}
 
@@ -69,7 +69,7 @@ void CStreetStallItemViewDlg::SetItemInfo( STREETSTALL_ITEM_INFO* pInfo, WORD wM
 {
 	char buf[64] = { 0, };
 	char buf2[64] = { 0, };
-	int nItemIdx = 0, nPrice = 0, nDur = 0, nDBIdx = 0, nRare = 0,nStone=0,nGrow=0, nGradeAlexX = 0;  //  2014-11-15
+	int nItemIdx = 0, nPrice = 0, nDur = 0, nDBIdx = 0, nRare = 0,nStone=0,nGrow=0 ,nGrade30 = 0;   //  2014-11-15
 
 	memset( m_sItemInfo, 0, sizeof(m_sItemInfo) );
 	memcpy( m_sItemInfo, pInfo, wMaxCount*sizeof(STREETSTALL_ITEM_INFO) );
@@ -84,13 +84,14 @@ void CStreetStallItemViewDlg::SetItemInfo( STREETSTALL_ITEM_INFO* pInfo, WORD wM
 		nRare = m_sItemInfo[i].dwRareIdx;
 		nStone= m_sItemInfo[i].dwStoneIdx;   // 2014-12-15 
 		nGrow = m_sItemInfo[i].dwGrow;       // 2015-01-17 
-		nGradeAlexX = m_sItemInfo[i].dwGradeAlexX;
+		nGrade30 = m_sItemInfo[i].dwGrade30;
+
 
 		if( 0 == nItemIdx )
 
 			continue;
 
-		// ItemShow �?�?세팅
+		// ItemShow 에 값 세팅
 		m_ViewItem[i].SetData( nItemIdx );
 		m_ViewItem[i].Init( nItemIdx, nDur );
 
@@ -111,10 +112,10 @@ void CStreetStallItemViewDlg::SetItemInfo( STREETSTALL_ITEM_INFO* pInfo, WORD wM
 		else if( !ITEMMGR->IsDupItem(nItemIdx) && nDur !=0 )
 		{
 			ITEMMGR->SetToolTipIcon( (cIcon*)&m_ViewItem[i], ITEMMGR->GetItemOption(nDur),
-				ITEMMGR->GetItemRareOption(nRare),0,ITEMMGR->GetItemStoneOption(nStone));   // 2014-11-15 �?
+				ITEMMGR->GetItemRareOption(nRare),0,ITEMMGR->GetItemStoneOption(nStone));   // 2014-11-15 맒
 		}
 		else
-			ITEMMGR->SetToolTipIcon( (cIcon*)&m_ViewItem[i], NULL, ITEMMGR->GetItemRareOption(nRare),0,ITEMMGR->GetItemStoneOption(nStone)); // 2014-11-15 �?
+			ITEMMGR->SetToolTipIcon( (cIcon*)&m_ViewItem[i], NULL, ITEMMGR->GetItemRareOption(nRare),0,ITEMMGR->GetItemStoneOption(nStone)); // 2014-11-15 맒
 
 
 		if( ITEMMGR->IsDupItem( (WORD)nItemIdx ) )
@@ -134,7 +135,7 @@ void CStreetStallItemViewDlg::SetItemInfo( STREETSTALL_ITEM_INFO* pInfo, WORD wM
 
 		m_ViewItem[i].AddToolTipLine( "" );
 
-		// Grid Dialog�?추가
+		// Grid Dialog에 추가
 		m_pStallGrid->AddIcon( i, (cIcon*)&m_ViewItem[i] );
 
 	}
@@ -169,7 +170,7 @@ void CStreetStallItemViewDlg::LinkItem( MSG_STREETSTALL_ITEMVIEW* pStallInfo )
 				ITEMMGR->InitItemRareOption(RareOptionInfo, pStallInfo->wRareCount);
 			}
 			break;
-		case(CAddableInfoList::ItemStoneOption):   // 2014-12-15 �?
+		case(CAddableInfoList::ItemStoneOption):   // 2014-12-15 맒
 			{
 				ITEM_STONE_OPTION_INFO StoneOptionInfo[SLOT_STREETSTALL_NUM];
 				iter.GetInfoData(&StoneOptionInfo);
@@ -217,7 +218,7 @@ void CStreetStallItemViewDlg::DeleteItemInfo()
 		pSItemOut = NULL;
 		m_pStallGrid->DeleteIcon(i, (cIcon**)&pSItemOut);
 
-		// 삭제�?아이�?없다�?말은 아이템이 없었다는 말이므�?넘겨준�?
+		// 삭제된 아이이 없다는 말은 아이템이 없었다는 말이므로 넘겨준다.
 		if( NULL == pSItemOut )
 			continue;
 
@@ -225,13 +226,13 @@ void CStreetStallItemViewDlg::DeleteItemInfo()
 		if( !pInfo )
 			ASSERT(0);
 
-		// 샵아이템�?아닐때만 삭제
+		// 샵아이템이 아닐때만 삭제
 		if( !( pInfo->ItemKind & eSHOP_ITEM ) )
 		{
-			// 강화 아이�?정보 삭제
+			// 강화 아이템 정보 삭제
 			if( !ITEMMGR->IsDupItem( m_sItemInfo[i].dwItemIdx ) && m_sItemInfo[i].dwDur != 0 )
 				ITEMMGR->RemoveItemOption( m_sItemInfo[i].dwDur );			
-			// 레어 아이�?정보 삭제
+			// 레어 아이템 정보 삭제
 			else if( ITEMMGR->IsRareOptionItem(m_sItemInfo[i].dwItemIdx, m_sItemInfo[i].dwRareIdx ) )
 				ITEMMGR->RemoveItemRareOption(m_sItemInfo[i].dwRareIdx);
 			// 2014-12-15 盧뇜
@@ -240,11 +241,11 @@ void CStreetStallItemViewDlg::DeleteItemInfo()
                 ITEMMGR->RemoveItemStoneOption(m_sItemInfo[i].dwStoneIdx);
 			}
 
-			// �?아이�?정보 삭제
+			// 펫 아이템 정보 삭제
 			if( ITEMMGR->IsPetSummonItem(m_sItemInfo[i].dwItemIdx) )
 				PETMGR->RemovePetInfo(m_sItemInfo[i].dwDBIdx);
 
-			// 타이탄 장착 아이�?정보 삭제
+			// 타이탄 장착 아이템 정보 삭제
 			if( TITANMGR->GetTitanEnduranceInfo(m_sItemInfo[i].dwDBIdx) )
 				TITANMGR->RemoveTitanEquipInfo(m_sItemInfo[i].dwDBIdx);
 

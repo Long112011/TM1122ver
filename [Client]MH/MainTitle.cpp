@@ -54,7 +54,7 @@
 #include "DungeonMgr.h"
 #include "ReconnectDialog.h"
 #include "FameManager.h"
-#include "NewUpGrareAlexXC_MGR.h"
+
 #include "RegistryManager.h"
 #define _LOGOWINDOW_
 extern char g_DistributeAddr[16];
@@ -231,7 +231,7 @@ BOOL CMainTitle::Init(void* pInitParam)
 		GAMERESRCMNGR->LoadRebornSetting();
 		DungeonMGR->LoadFBEntranceCondition();
 		DungeonMGR->LoadToolTipList();
-		NEWUPGRAREALEXX_CMGR->LoadUpGradeItem_info();
+		GAMERESRCMNGR->LoadDataUpGrade();
 		g_bResourceLoaded = TRUE;
 	}
 

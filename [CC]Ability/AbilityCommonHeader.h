@@ -169,6 +169,7 @@ enum eABILITY_USE_JOB
 	eAUKJOB_Mix = 202,			//조합
 	eAUKJOB_Reinforce = 203,	//강화
 	eAUKJOB_Dissolve = 204,		//분해
+	eAUKJOB_NewReinForce = 209,
 };
 
 enum eABILITY_USE_PET

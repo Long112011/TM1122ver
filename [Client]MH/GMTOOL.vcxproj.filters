@@ -665,8 +665,17 @@
     <Filter Include="LONG">
       <UniqueIdentifier>{9ca9f8d2-0575-425c-aac6-72f2609a4845}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameManager\天墨功能">
+      <UniqueIdentifier>{457a9df0-43f1-4473-bc04-6a9a34128adb}</UniqueIdentifier>
+    </Filter>
     <Filter Include="新功能">
-      <UniqueIdentifier>{d6ded7c5-4563-4dae-a830-8c3078ec95dd}</UniqueIdentifier>
+      <UniqueIdentifier>{90b530de-eb33-47ee-a916-d70d10aa2119}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="新功能\30版本">
+      <UniqueIdentifier>{b0615804-2f1c-4236-bc65-5898ff8f732e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="新功能\pvp">
+      <UniqueIdentifier>{65345002-62d7-4aa7-8505-4242a834b33b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -2679,14 +2688,11 @@
       <Filter>LONG</Filter>
     </ClCompile>
     <ClCompile Include="TopDungeon.cpp" />
+    <ClCompile Include="OfficialUpGradeDlg.cpp">
+      <Filter>新功能\30版本</Filter>
+    </ClCompile>
     <ClCompile Include="CharacterPVPDialog.cpp">
-      <Filter>Interface\DIALOG</Filter>
-    </ClCompile>
-    <ClCompile Include="NewUpGrareAlexXC_MGR.cpp">
-      <Filter>新功能</Filter>
-    </ClCompile>
-    <ClCompile Include="NewUpGrareAlexXDlg.cpp">
-      <Filter>新功能</Filter>
+      <Filter>新功能\pvp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -4836,14 +4842,11 @@
       <Filter>LONG</Filter>
     </ClInclude>
     <ClInclude Include="TopDungeon.h" />
+    <ClInclude Include="OfficialUpGradeDlg.h">
+      <Filter>新功能\30版本</Filter>
+    </ClInclude>
     <ClInclude Include="CharacterPVPDialog.h">
-      <Filter>Interface\DIALOG</Filter>
-    </ClInclude>
-    <ClInclude Include="NewUpGrareAlexXC_MGR.h">
-      <Filter>新功能</Filter>
-    </ClInclude>
-    <ClInclude Include="NewUpGrareAlexXDlg.h">
-      <Filter>新功能</Filter>
+      <Filter>新功能\pvp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

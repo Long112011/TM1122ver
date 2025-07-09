@@ -623,9 +623,6 @@ enum MUGONG_TYPE{MUGONGTYPE_NORMAL, MUGONGTYPE_JINBUB, MUGONGTYPE_SIMBUB, MUGONG
 #define	TARGETTYPE_TARGET	0
 #define TARGETTYPE_ATTACKER 1
 #define TARGETTYPE_GROUND	2
-
-#define MAX_UPGRADE_LEVEL_NUM 30   ///+30
-
 enum eMUGONG_KIND
 { 
 	eATTACK_MUGONG, 
@@ -1909,14 +1906,7 @@ enum
 	eSpecialBlessingStoneAGI = 55662,        // 祝福石（敏捷） - 約 60YB
 	eSpecialBlessingStoneCON = 55663,        // 祝福石（体力） - 約 60YB
 	eSpecialBlessingStoneINT = 55664,        // 祝福石（智力） - 約 60YB
-	///+30功能
-	eAlexXItem_ItemUpGradeMaterial_lv1 = 40800,
-	eAlexXItem_ItemUpGradeMaterial_lv2 = 40801,
-	eAlexXItem_ItemUpGradeMaterial_lv3 = 40802,
-	eAlexXItem_ItemUpGradeMaterial_lv4 = 40803,
-	eAlexXItem_ItemProtectUpGrade30 = 40804,
-	eAlexXItem_ItemProtectUpGrade50 = 40805,
-	eAlexXItem_ItemProtectUpGrade100 = 40806,
+
 };
 enum
 {

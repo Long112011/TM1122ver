@@ -322,8 +322,7 @@
 #include "TopDungeon.h"
 #include "CharacterPVPDialog.h"
 
-#include "NewUpGrareAlexXDlg.h"
-
+#include "OfficialUpGradeDlg.h"//+30 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -2762,18 +2761,18 @@ cWindow * cScriptManager::GetDlgInfoFromFile(char * filePath, char* mode)
 						__asm int 3;
 					break;
 				}
-			case eALEXX_NEWUPGRARDALEXX_DLG:
-			{
-				if ((fp.GetString())[0] == '{')
-					dlg = (cDialog*)GetInfoFromFile((cWindow*)(new CNewUpGrareAlexXDlg), &fp);
-				else
-					__asm int 3;
-				break;
-			}
 			case eFADEDLG:
 			{
 				if ((fp.GetString())[0] == '{')
 					dlg = GetInfoFromFile(new CFadeDlg, &fp);
+				else
+					__asm int 3;
+				break;
+				}
+			case eOfficialUpGradeDlg:	//Daily ?????????????
+			{
+				if ((fp.GetString())[0] == '{')
+					dlg = (cDialog*)GetInfoFromFile((cWindow*)(new COfficialUpGradeDlg), &fp);
 				else
 					__asm int 3;
 				break;

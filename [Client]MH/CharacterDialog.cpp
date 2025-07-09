@@ -106,7 +106,7 @@ void CCharacterDialog::Linking()
 	m_pPointMinusBtn[SIMMEK_POINT] = (cButton *)GetWindowForID(CI_SIMMEK_POINT2);
 	m_pPointMinusBtn[MINCHUB_POINT] = (cButton *)GetWindowForID(CI_MINCHUB_POINT2);
 	m_pPointMinusBtn[CHERYUK_POINT] = (cButton *)GetWindowForID(CI_CHERYUK_POINT2);
-	
+
 	m_pPvpDialog = (cButton*)GetWindowForID(MY_INFO_BTN_OPEN_PVP_DIALOG);
 
 	for(int n=0;n<ATTR_MAX;++n)

@@ -12,7 +12,7 @@
 #include "SkillManager_Client.h"
 #include "CheatMsgParser.h"
 #include "StatsCalcManager.h"
-
+#include "OfficialUpGradeDlg.h"
 #include "GameIn.h"
 #include "MainBarDialog.h"
 #include "ChatManager.h"

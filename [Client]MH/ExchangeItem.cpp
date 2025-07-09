@@ -18,7 +18,7 @@ CExchangeItem::CExchangeItem()
 	{
 		SCRIPTMGR->GetImage(108+i, &m_ScrollImg[i], PFT_JACKPATH);
 	}
-	m_GradeAlexX = 0;
+	m_Grade = 0;
 }
 CExchangeItem::~CExchangeItem()
 {
@@ -40,10 +40,10 @@ void CExchangeItem::InitItem( CItem* pItem, POSTYPE Pos, LONG id )
 	else if( ITEMMGR->IsOptionItem( pItem->GetItemIdx(), pItem->GetDurability() ) )
 	{
 		ITEMMGR->SetToolTipIcon( this, ITEMMGR->GetItemOption( pItem->GetDurability() ),
-			ITEMMGR->GetItemRareOption( pItem->GetRareness() ),0,ITEMMGR->GetItemStoneOption(pItem->GetStoneIdx()));
+			ITEMMGR->GetItemRareOption( pItem->GetRareness() ),0,ITEMMGR->GetItemStoneOption(pItem->GetStoneIdx()),0,0,0,0, pItem->GetGrade());//+30 зЂвт
 	}
 	else
-		ITEMMGR->SetToolTipIcon( this, NULL, ITEMMGR->GetItemRareOption( pItem->GetRareness() ),0,ITEMMGR->GetItemStoneOption(pItem->GetStoneIdx()));
+		ITEMMGR->SetToolTipIcon( this, NULL, ITEMMGR->GetItemRareOption( pItem->GetRareness() ),0,ITEMMGR->GetItemStoneOption(pItem->GetStoneIdx()),0,0,0,0, pItem->GetGrade());
 }
 void CExchangeItem::SetLock( BOOL bLock )
 {
@@ -116,14 +116,14 @@ void CExchangeItem::Render()
 			char Temp[128]={0,};
 			sprintf(Temp,"+%d",pInfo->ItemGrade);
 			RECT rect={(LONG)m_absPos.x+1, (LONG)m_absPos.y+1, 1,1};
-			CFONT_OBJ->RenderNoticeMsg(14,Temp,strlen(Temp),&rect,RGBA_MERGE(RGB_HALF(248 ,248, 255),255),RGBA_MAKE(100,100,100,100));
+			CFONT_OBJ->RenderNoticeMsg(21,Temp,strlen(Temp),&rect,RGBA_MERGE(RGB_HALF(248 ,248, 255),255),RGBA_MAKE(100,100,100,100));
 		}
 		if(pInfo->ItemGrade>=11&&pInfo->ItemGrade<=19)//ICON LEVEL GRADE
 		{
 			char Temp[128]={0,};
 			sprintf(Temp,"+%d",pInfo->ItemGrade-10);
 			RECT rect={(LONG)m_absPos.x+1, (LONG)m_absPos.y+1, 1,1};
-			CFONT_OBJ->RenderNoticeMsg(14,Temp,strlen(Temp),&rect,RGBA_MERGE(RGB_HALF(248 ,248, 255),255),RGBA_MAKE(100,100,100,100));
+			CFONT_OBJ->RenderNoticeMsg(21,Temp,strlen(Temp),&rect,RGBA_MERGE(RGB_HALF(248 ,248, 255),255),RGBA_MAKE(100,100,100,100));
 		}
 		if(pInfo->ItemGrade>=10&&pInfo->ItemGrade<=19)//ICON LEVEL GRADE
 		{
@@ -152,6 +152,27 @@ void CExchangeItem::Render()
 			CFONT_OBJ->RenderFont(7,buf1,strlen(buf1),&rect,RGBA_MERGE(m_fgColor,255));*/
 		}
 #endif
+		if (pInfo->ItemKind >= eEQUIP_ITEM && pInfo->ItemKind <= eEQUIP_ITEM_UNIQUE)
+		{
+			if (m_Grade > 0)
+			{
+				const int FONT_WIDTH = 40;
+				const int FONT_HEIGHT = 16;
+
+				char temp[128];
+				sprintf(temp, "+%d", m_Grade);
+
+				RECT rectTmp;
+				rectTmp.left = (LONG)(m_absPos.x + 13);
+				rectTmp.top = (LONG)(m_absPos.y + 25);
+				rectTmp.right = rectTmp.left + FONT_WIDTH;
+				rectTmp.bottom = rectTmp.top + FONT_HEIGHT;
+
+				CFONT_OBJ->RenderFont(21, temp, strlen(temp), &rectTmp, RGBA_MERGE(RGB_HALF(124, 252, 0), 255));
+			}
+		}
+
+
 	}
 }
 char* CExchangeItem::GetItemName()

@@ -323,11 +323,37 @@ void CPartyManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 		break;
 	case MP_PARTY_MONSTER_OBTAIN_NOTIFY:
 		{
-			MSG_DWORD_WORD* pmsg = (MSG_DWORD_WORD*)pMsg;
-			ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(pmsg->wData);
+		MSG_DWORD_WORD2* pmsg = (MSG_DWORD_WORD2*)pMsg;
+		ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(pmsg->wData1);
 			if(pItemInfo == 0)
 				return;
-			CHATMGR->AddMsg( CTC_GETITEM, CHATMGR->GetChatMsg( 150 ), GetPartyMemberName(pmsg->dwData), pItemInfo->ItemName );
+
+			if (pItemInfo->ItemKind & eEQUIP_ITEM || pItemInfo->ItemKind == eEQUIP_ITEM_UNIQUE)
+			{
+				if (pmsg->wData2 == 4)
+				{
+					CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2770), GetPartyMemberName(pmsg->dwData), pItemInfo->ItemName);
+				}
+				else if (pmsg->wData2 == 3)
+				{
+					CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2769), GetPartyMemberName(pmsg->dwData), pItemInfo->ItemName);
+				}
+				else if (pmsg->wData2 == 2)
+				{
+					CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2768), GetPartyMemberName(pmsg->dwData), pItemInfo->ItemName);
+				}
+				else if (pmsg->wData2 == 1)
+				{
+					CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2767), GetPartyMemberName(pmsg->dwData), pItemInfo->ItemName);
+				}
+				else if (pmsg->wData2 == 0)
+				{
+					CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2766), GetPartyMemberName(pmsg->dwData), pItemInfo->ItemName);
+				}
+			}
+			else
+				CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(150), GetPartyMemberName(pmsg->dwData), pItemInfo->ItemName);
+
 		}
 		break;
 		//2008. 5. 23. CBH - 파티 신청 성공

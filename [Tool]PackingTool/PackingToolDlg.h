@@ -16,11 +16,18 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CPackingToolDlg dialog
+/**
+ *  控件随窗口变化的控制单元
+**/
 
 class CPackingToolDlg : public CDialog
 {
+	BOOL IsSimple;	//语言判断
+
 	void OpenFile(char* pFileName);
 	void UpdateList();
+	void InitSystemLang();	//增加系统语言判断
+	BOOL GetIsSimple(){ return IsSimple; }	//系统语言判断返回
 	char* BIG5ToGB2312(const char* szBIG5String);
 	char* UnicodeToGB2312(const wchar_t* szUnicodeString);
 	wchar_t* BIG5ToUnicode(const char* szBIG5String);
@@ -30,6 +37,7 @@ class CPackingToolDlg : public CDialog
 // Construction
 public:
 	RECT m_Gap;
+	POINT Old;
 	WINDOWPLACEMENT m_EditPl;
 	int m_nOldIndex;
 	void SaveData( int index );
@@ -108,8 +116,7 @@ public:
 	CButton IsCRCOpenMode;
 public:
 	afx_msg void OnBnClickedCheckOpencrc();
-public:
-	afx_msg void OnEnChangeEditVernumber();
+
 };
 
 //{{AFX_INSERT_LOCATION}}

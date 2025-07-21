@@ -165,6 +165,7 @@ int CMixManager::MixItem(CPlayer* pPlayer, WORD wBasicItemIdx, POSTYPE BasicItem
 	if (!CHKRT->ItemOf(pPlayer, BasicItemPos, wBasicItemIdx, 0, 0, CB_EXIST | CB_ICONIDX))
 		return 2;
 	eITEM_KINDBIT eBit = GetItemKind(wBasicItemIdx);
+
 	if (eBit == eEQUIP_ITEM_UNIQUE && GAMERESRCMNGR->GetUniqueItemOptionList(wBasicItemIdx)->MixFlag == 0)
 	{
 		return 2;
@@ -222,6 +223,7 @@ int CMixManager::MixItem(CPlayer* pPlayer, WORD wBasicItemIdx, POSTYPE BasicItem
 		if (!EnoughMixMaterial(needItemIdx, needItemNum, pMaterialArray, wMaterialNum))
 			return 5;
 	}
+	WORD ItemStatic = pBasicItemBase->ItemStatic;//泡点组合加锁
 	ITEM_INFO* pNewItemInfo = ITEMMGR->GetItemInfo(pMixInfo->psResultItemInfo[ResultIdx].wResItemIdx);
 	if (ShopItemIdx)
 	{
@@ -311,11 +313,18 @@ int CMixManager::MixItem(CPlayer* pPlayer, WORD wBasicItemIdx, POSTYPE BasicItem
 		if (!pinfo)
 			return 2;
 		CItemSlot * pSlot = pPlayer->GetSlot(BasicItemPos);
+		//  在这里加入 pMixItem 的定义
+		ITEM_INFO* pMixItem = ITEMMGR->GetItemInfo(pBasicItemBase->wIconIdx);
+		if (!pMixItem) return 2;
+
 		if (pinfo->ItemKind & eSHOP_ITEM)
 		{
 			if (EI_TRUE != ITEMMGR->DiscardItem(pPlayer, BasicItemPos, wBasicItemIdx, 1))
 				return 2;
-			ITEMMGR->ObtainItemFromChangeItem(pPlayer, pMixInfo->psResultItemInfo[ResultIdx].wResItemIdx, 1);
+			if (ItemStatic == 1)
+			ITEMMGR->ObtainItemFromChangeItem(pPlayer, pMixInfo->psResultItemInfo[ResultIdx].wResItemIdx, 1,ItemStatic, 0, 0, 0, 0);
+			else
+				ITEMMGR->ObtainItemFromChangeItem(pPlayer, pMixInfo->psResultItemInfo[ResultIdx].wResItemIdx, 1, 2, 0, 0, 0, 0);
 			LogItemMoney(pPlayer->GetID(), NameKey, pPlayer->GetID(), pPlayer->GetObjectName(), eLog_ItemMixSuccess,
 				pPlayer->GetMoney(), ResultIdx, money, pinfo->ItemIdx, 0, 0, 0, 1,
 				pPlayer->GetPlayerExpPoint());
@@ -325,25 +334,70 @@ int CMixManager::MixItem(CPlayer* pPlayer, WORD wBasicItemIdx, POSTYPE BasicItem
 			WORD flag = UB_ICONIDX;
 			if (!ITEMMGR->IsDupItem(pMixInfo->psResultItemInfo[ResultIdx].wResItemIdx))
 				flag |= UB_DURA;
-			if (EI_TRUE != pSlot->UpdateItemAbs(pPlayer, BasicItemPos, 0, pMixInfo->psResultItemInfo[ResultIdx].wResItemIdx, 0, 0, 0, flag, SS_LOCKOMIT))
+			if (EI_TRUE != pSlot->UpdateItemAbs(pPlayer, BasicItemPos, 0, pMixInfo->psResultItemInfo[ResultIdx].wResItemIdx, 0, 0, 0, ItemStatic, 0, 0, 0, 0, flag, SS_LOCKOMIT))
 				return 6;
 			const ITEMBASE * pItemBase = pSlot->GetItemInfoAbs(BasicItemPos);
+
+			if (ItemStatic == 1)//组合加锁
+				ItemLockUpdate(pPlayer->GetID(), pItemBase->dwDBIdx, 1);
+
 			if (pItemBase->RareIdx < 0)
 			{
+				char temp[128];
+				sprintf(temp, "RareIdxError!(<0) ItemDBIdx : %d, PlayerID : %d", pItemBase->dwDBIdx, pPlayer->GetID());
+				ASSERTMSG(0, temp);
+			}
+			DWORD RarIdx = 0;
+			if (pItemBase->RareIdx < 0)
+				RarIdx = 0;
+			else
+				RarIdx = pItemBase->RareIdx;
+			int ItemQuality = 0;
+			int ItemEntry1 = 0;
+			int ItemEntry2 = 0;
+			int ItemEntry3 = 0;
+
+			if (pinfo->ItemKind & eEQUIP_ITEM)
+			{
+				if (pMixItem->ItemKind & eEQUIP_ITEM)
+				{//装备组合不更新品质属性信息
+					ItemQuality = pItemBase->ItemQuality;
+					ItemEntry1 = pItemBase->ItemEntry1;
+					ItemEntry2 = pItemBase->ItemEntry2;
+					ItemEntry3 = pItemBase->ItemEntry3;
+				}
+				else
+				{//重新刷新属性
+					ItemQuality = ITEMMGR->GetItemQuality();
+
+					if (ItemQuality == 4)
+					{
+						ItemEntry1 = ITEMMGR->GetItemEntry1();
+						ItemEntry2 = 0;
+					}
+					else if (ItemQuality == 3)
+					{
+						ItemEntry1 = ITEMMGR->GetItemEntry1();
+						ItemEntry2 = 0;
+					}
+					else
+					{
+						ItemEntry1 = 0;
+						ItemEntry2 = 0;
+					}
+				}
+
 				ItemUpdateToDB(pPlayer->GetID(), pItemBase->dwDBIdx, pItemBase->wIconIdx,
-					pItemBase->Durability, pItemBase->Position, pItemBase->QuickPosition, 0);
-				LogItemMoney(pPlayer->GetID(), NameKey, pPlayer->GetID(), pPlayer->GetObjectName(), eLog_ItemMixSuccess,
-					pPlayer->GetMoney(), ResultIdx, money, pItemBase->wIconIdx, pItemBase->dwDBIdx, pItemBase->Position, pItemBase->Position, pItemBase->Durability,
-					pPlayer->GetPlayerExpPoint());
+					pItemBase->Durability, pItemBase->Position, pItemBase->QuickPosition, RarIdx, ItemStatic, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
 			}
 			else
 			{
 				ItemUpdateToDB(pPlayer->GetID(), pItemBase->dwDBIdx, pItemBase->wIconIdx,
-					pItemBase->Durability, pItemBase->Position, pItemBase->QuickPosition, pItemBase->RareIdx);
-				LogItemMoney(pPlayer->GetID(), NameKey, pPlayer->GetID(), pPlayer->GetObjectName(), eLog_ItemMixSuccess,
-					pPlayer->GetMoney(), ResultIdx, money, pItemBase->wIconIdx, pItemBase->dwDBIdx, pItemBase->Position, pItemBase->Position, pItemBase->Durability,
-					pPlayer->GetPlayerExpPoint());
+					pItemBase->Durability, pItemBase->Position, pItemBase->QuickPosition, RarIdx, ItemStatic, 0, 0, 0, 0);
 			}
+			LogItemMoney(pPlayer->GetID(), NameKey, pPlayer->GetID(), pPlayer->GetObjectName(), eLog_ItemMixSuccess,
+				pPlayer->GetMoney(), ResultIdx, money, pItemBase->wIconIdx, pItemBase->dwDBIdx, pItemBase->Position, pItemBase->Position, pItemBase->Durability,
+				pPlayer->GetPlayerExpPoint());
 		}
 		return 0;
 	}

@@ -271,9 +271,6 @@
     <Filter Include="GameManager\MUGONG\MugongInfo and Object">
       <UniqueIdentifier>{85a22eca-dead-4a44-919c-d7468c157b10}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameManager\OBJECT">
-      <UniqueIdentifier>{c663be2c-6ed8-4f67-8343-0dd59a7db942}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GameManager\ITEM">
       <UniqueIdentifier>{f36c14d8-b4e8-4b43-8422-c7e3d7136106}</UniqueIdentifier>
     </Filter>
@@ -676,6 +673,18 @@
     </Filter>
     <Filter Include="新功能\pvp">
       <UniqueIdentifier>{65345002-62d7-4aa7-8505-4242a834b33b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="新功能\觉醒品质">
+      <UniqueIdentifier>{a16c4de2-eb76-423c-96ab-f6f5fdda46e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="新功能\品质转换">
+      <UniqueIdentifier>{67aa4d74-748c-4db7-8f43-0161b5637b40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameManager\NpcScript\OBJECT">
+      <UniqueIdentifier>{c663be2c-6ed8-4f67-8343-0dd59a7db942}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="新功能\升阶继承">
+      <UniqueIdentifier>{048acede-f111-43e6-abdd-f8b514cd0a8b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1373,43 +1382,43 @@
       <Filter>GameManager\MUGONG\MugongInfo and Object</Filter>
     </ClCompile>
     <ClCompile Include="BossMonster.cpp">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClCompile>
     <ClCompile Include="CharacterCalcManager.cpp">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClCompile>
     <ClCompile Include="Hero.cpp">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClCompile>
     <ClCompile Include="HeroPet.cpp">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClCompile>
     <ClCompile Include="MapObject.cpp">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClCompile>
     <ClCompile Include="Monster.cpp">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClCompile>
     <ClCompile Include="Npc.cpp">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClCompile>
     <ClCompile Include="Object.cpp">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClCompile>
     <ClCompile Include="ObjectActionManager.cpp">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClCompile>
     <ClCompile Include="ObjectManager.cpp">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClCompile>
     <ClCompile Include="Pet.cpp">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClCompile>
     <ClCompile Include="PetBase.cpp">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClCompile>
     <ClCompile Include="BaseItem.cpp">
       <Filter>GameManager\ITEM</Filter>
@@ -1877,9 +1886,6 @@
       <Filter>ETC_CLASS</Filter>
     </ClCompile>
     <ClCompile Include="FilteringTable.cpp">
-      <Filter>ETC_CLASS</Filter>
-    </ClCompile>
-    <ClCompile Include="MHFile.cpp">
       <Filter>ETC_CLASS</Filter>
     </ClCompile>
     <ClCompile Include="StringLoader.cpp">
@@ -2694,6 +2700,18 @@
     <ClCompile Include="CharacterPVPDialog.cpp">
       <Filter>新功能\pvp</Filter>
     </ClCompile>
+    <ClCompile Include="ItemQualityDlg.cpp">
+      <Filter>新功能\觉醒品质</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemQualityChangeDlg.cpp">
+      <Filter>新功能\品质转换</Filter>
+    </ClCompile>
+    <ClCompile Include="GradeChangeDlg.cpp">
+      <Filter>新功能\升阶继承</Filter>
+    </ClCompile>
+    <ClCompile Include="MHFile.cpp">
+      <Filter>LONG</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MiniDumper.h">
@@ -3402,46 +3420,46 @@
       <Filter>GameManager\MUGONG\MugongInfo and Object</Filter>
     </ClInclude>
     <ClInclude Include="BossMonster.h">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClInclude>
     <ClInclude Include="CharacterCalcManager.h">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClInclude>
     <ClInclude Include="Hero.h">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClInclude>
     <ClInclude Include="HeroPet.h">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClInclude>
     <ClInclude Include="JinBub.h">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClInclude>
     <ClInclude Include="MapObject.h">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClInclude>
     <ClInclude Include="Monster.h">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClInclude>
     <ClInclude Include="Npc.h">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClInclude>
     <ClInclude Include="Object.h">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClInclude>
     <ClInclude Include="ObjectActionManager.h">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClInclude>
     <ClInclude Include="ObjectManager.h">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClInclude>
     <ClInclude Include="Pet.h">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClInclude>
     <ClInclude Include="PetBase.h">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
-      <Filter>GameManager\OBJECT</Filter>
+      <Filter>GameManager\NpcScript\OBJECT</Filter>
     </ClInclude>
     <ClInclude Include="BaseItem.h">
       <Filter>GameManager\ITEM</Filter>
@@ -3921,9 +3939,6 @@
       <Filter>ETC_CLASS</Filter>
     </ClInclude>
     <ClInclude Include="FilteringTable.h">
-      <Filter>ETC_CLASS</Filter>
-    </ClInclude>
-    <ClInclude Include="MHFile.h">
       <Filter>ETC_CLASS</Filter>
     </ClInclude>
     <ClInclude Include="StringLoader.h">
@@ -4847,6 +4862,18 @@
     </ClInclude>
     <ClInclude Include="CharacterPVPDialog.h">
       <Filter>新功能\pvp</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemQualityDlg.h">
+      <Filter>新功能\觉醒品质</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemQualityChangeDlg.h">
+      <Filter>新功能\品质转换</Filter>
+    </ClInclude>
+    <ClInclude Include="GradeChangeDlg.h">
+      <Filter>新功能\升阶继承</Filter>
+    </ClInclude>
+    <ClInclude Include="MHFile.h">
+      <Filter>LONG</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

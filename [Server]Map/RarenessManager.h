@@ -1,64 +1,66 @@
+// RarenessManager.h: interface for the RarenessManager class.
+//
+//////////////////////////////////////////////////////////////////////
+
+#if !defined(AFX_RARENESSMANAGER_H__98F09FB6_6D0C_45D2_A95A_192AA6ECDEDE__INCLUDED_)
+#define AFX_RARENESSMANAGER_H__98F09FB6_6D0C_45D2_A95A_192AA6ECDEDE__INCLUDED_
+
+#if _MSC_VER > 1000
 #pragma once
+#endif // _MSC_VER > 1000
+
 #include "Player.h"
 
 #define RAREITEMMGR	USINGTON(RarenessManager)
-#define BOUNDARY_INDEX_FOR_SHOPITEM	55101	//"itemlist.bin" 기획상 변경 없다는 경계 인덱스.
+//普通物品和百宝物品的分界线  55101
+#define BOUNDARY_INDEX_FOR_SHOPITEM	65535	//"itemlist.bin" 55101//changed by rooke
 #define RARE_VALUE_PROB_LIST_MAX	100
 
 //enum WeaponKind{ GUM, DO, CHANG, AMGI, GOONG, WeaponKindMAX = 5 };
-
 //enum ProtectorKind{ DRESS, HAT, SHOES, ProtectorkindMAX = 3 };
 //enum AccessaryKind{ RING, CAPE, NECKLACE, ARMLET, BELT, AccessaryKindMAX = 5 };
 
-
-
-
 //struct 
-
-class RarenessManager  
+class RarenessManager
 {
 	CYHHashTable<sRareItemInfo>	m_RareItemInfoTable;
 
 	sRareOptionInfo m_RereItemInfo[RareItemKindMAX];
-	DWORD   m_MaxRareRndRatio;
+
 	DWORD	m_dwRareValueProb[RARE_VALUE_PROB_LIST_MAX];
 	//RereItem's Additional Opt Info
 //	sRareOptionWeaponInfo		m_Weapon[WeaponKindMAX];
 //	sRareOptionProtectorInfo	m_Protector[ProtectorkindMAX];
 //	sRareOptionBase				m_Accessary[AccessaryKindMAX];
-		
+
 public:
 	RarenessManager();
 	virtual ~RarenessManager();
 
-	DWORD m_Count;
 	void Init();
 	void Release();
-	bool LoadRareItemOptionInfo();	//세부 옵션 값 설정//함수명은 이름으로 기능을 할 수 있을 정도로!
 
-	bool LoadRareItemInfo();	//아이템 인덱스(종류) 별 드롭확률
+	bool LoadRareItemOptionInfo();	//技何 可记 蔼 汲沥//窃荐疙篮 捞抚栏肺 扁瓷阑 且 荐 乐阑 沥档肺!
+	bool LoadRareItemInfo();	//酒捞袍 牢郸胶(辆幅) 喊 靛酚犬伏
 	bool LoadRareValueProbList();
-	void ReleaseRareItemInfo();	//레어인포 테이블 해제
-	void LoadMaxRareRatio();
-	//레어아이템 확률 판별(레어가 되느냐 마느냐)
-	//bool GetRareSpecialStone(DWORD ObtainItemIdx, ITEM_RARE_OPTION_INFO* pRareOptionInfo, CPlayer* pPlayer, BOOL bRare = FALSE, DWORD StoneIdx=0);
-	bool GetRare(DWORD ObtainItemIdx, ITEM_RARE_OPTION_INFO* pRareOptionInfo, CPlayer* pPlayer, BOOL bRare = FALSE, DWORD StoneIdx=0);
-	//(레어이면)해당 아이템 종류에 맞는 레어 값 세팅
+	void ReleaseRareItemInfo();	//饭绢牢器 抛捞喉 秦力
+	//饭绢酒捞袍 犬伏 魄喊(饭绢啊 登蠢衬 付蠢衬)
+	bool GetRare(WORD ObtainItemIdx, ITEM_RARE_OPTION_INFO* pRareOptionInfo, CPlayer* pPlayer, BOOL bRare = FALSE);
+	//(饭绢捞搁)秦寸 酒捞袍 辆幅俊 嘎绰 饭绢 蔼 技泼
 //	void MakeRareWeapon(ITEM_RARE_OPTION_INFO* pRareInfo);
 //	void MakeRareProtector(ITEM_RARE_OPTION_INFO* pRareInfo);
 //	void MakeRareAccessary(ITEM_RARE_OPTION_INFO* pRareInfo);
-	DWORD GetRareItemValue(DWORD RndMin, DWORD RndMax);
-	//DB에 레어 정보 등록
+	DWORD GetRareItemValue(DWORD RndMin, DWORD RndMax, WORD wRareRate);
 
-
-	//
-	BOOL IsRareItemAble( DWORD ItemIdx )
+	//DB俊 饭绢 沥焊 殿废
+	BOOL IsRareItemAble(DWORD ItemIdx)
 	{
-		if( m_RareItemInfoTable.GetData(ItemIdx) )			return TRUE;
+		if (m_RareItemInfoTable.GetData(ItemIdx))			return TRUE;
 		return FALSE;
 	}
-
-	//asist
+	bool GetRareExt(WORD ObtainItemIdx, ITEM_RARE_OPTION_INFO* pRareOptionInfo, CPlayer* pPlayer, ITEMBASE* pBaseItem, BOOL bRare);
 };
 
 EXTERNGLOBALTON(RarenessManager)
+
+#endif // !defined(AFX_RARENESSMANAGER_H__98F09FB6_6D0C_45D2_A95A_192AA6ECDEDE__INCLUDED_)

@@ -475,6 +475,9 @@ enum PARSE_TYPE
 	eTopDungeon,
 	eCHARINFOPVPDLG,//pvp
 	eOfficialUpGradeDlg,
+	eItemQualityDlg,   //装备觉醒
+	eItemQualityChangeDlg,   //装备转换
+	eGradeChangeDLG,	//武器升阶值转移卷
 	eMAX_PARSETYPE_NUM,
 };
 #endif 

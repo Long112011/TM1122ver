@@ -381,7 +381,7 @@ void CCharSelect::NetworkMsgParse(BYTE Category,BYTE Protocol,void* pMsg)
 
 						pPlayer->SetOverInfoOption(0);
 						if (1 == pPlayer->GetGender())
-						{//[角色站立位置调整][By:十里坡剑神][QQ:112582793][2018/10/2]
+						{//[角色站立位置调整][By:十里坡剑传奇][QQ:112582793][2018/10/2]
 							pos = sCharSelect.vWomanStandPos[standpoint];
 						}
 						else
@@ -406,7 +406,7 @@ void CCharSelect::NetworkMsgParse(BYTE Category,BYTE Protocol,void* pMsg)
 						if(sCharSelect.wMontion==0)
 						{
 							if( standpoint == 4 )	
-							{//[角色场景位置调整][By:十里坡剑神][QQ:112582793][2018/10/2]
+							{//[角色场景位置调整][By:十里坡剑传奇][QQ:112582793][2018/10/2]
 								pos.x -= ( pmsg->ChrTotalInfo[standpoint].Height - sCharSelect.vHeightPos1.x ) * sCharSelect.vHeightPos1.y;
 								pos.z += ( pmsg->ChrTotalInfo[standpoint].Height - sCharSelect.vHeightPos2.x ) * sCharSelect.vHeightPos2.y;
 							}

@@ -465,7 +465,9 @@ DBMsgFunc g_DBMsgFunc[MaxQuery] =
 
 	NULL,						//eInstanceDungeonRankUpdate,
 	RLoadInstanceDungeonRank,	//eInstanceDungeonRankLoad,
-    RUpdateGradeItem
+    RUpdateGradeItem,
+	/*252*/	RItemQualityUpdate,
+		/*253*/	RItemQualityChangeUpdate,
 };
 
 
@@ -1027,14 +1029,18 @@ pPlayer->GetID(), AbilityIdx, AbilityLevel, FromExp, ToExp);
 	g_DB.LogQuery(eQueryType_FreeQuery, 0, 0, txt);
 }
 
-void SSItemInsert(DWORD CharacterIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, DWORD FromChrIdx, WORD bSeal,WORD bStatic,DWORD bGrow) // 和成长 2015-01-14
+void SSItemInsert(DWORD CharacterIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, DWORD FromChrIdx, WORD bSeal,WORD bStatic,DWORD bGrow, WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2, WORD ItemEntry3)
 {
-	sprintf(txt, "EXEC %s %d, %d, %d, %d, %d, %d, %d", STORED_ITEM_INSERT_INVEN, CharacterIdx, wItemIdx, Durability, bPosition, bSeal,bStatic,bGrow);
+	if ((ITEMMGR->GetItemInfo(wItemIdx))->ItemGrade == 999 && ItemEntry3 == 0)
+	{
+		ItemEntry3 = 1;
+	}
+	sprintf(txt, "EXEC %s %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d", STORED_ITEM_INSERT_INVEN, CharacterIdx, wItemIdx, Durability, bPosition, bSeal,bStatic,bGrow, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
 
 	g_DB.Query(eQueryType_FreeQuery, eSSItemInsert, FromChrIdx, txt);
 }
 
-void ItemUpdateToDB(DWORD CharacterIdx, DWORD dwDBIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, WORD qPosition, DWORD RareIdx)
+void ItemUpdateToDB(DWORD CharacterIdx, DWORD dwDBIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, WORD qPosition, DWORD RareIdx, WORD bStatic, WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2, WORD ItemEntry3)
 {
 	if( RareIdx < 0 )
 	{
@@ -1044,9 +1050,12 @@ void ItemUpdateToDB(DWORD CharacterIdx, DWORD dwDBIdx, WORD wItemIdx, DURTYPE Du
 
 		RareIdx = 0;
 	}
-
-	sprintf(txt, "EXEC %s %d, %d, %d, %d, %d, %d, %d", STORED_ITEM_UPDATE, 
-					CharacterIdx, dwDBIdx, wItemIdx, Durability, bPosition, qPosition, RareIdx );
+	if ((ITEMMGR->GetItemInfo(wItemIdx))->ItemGrade == 999 && ItemEntry3 == 0)
+	{
+		ItemEntry3 = 1;
+	}
+	sprintf(txt, "EXEC %s %d, %d, %d, %d, %d, %d, %d ,%d, %d, %d, %d ,%d", STORED_ITEM_UPDATE,
+		CharacterIdx, dwDBIdx, wItemIdx, Durability, bPosition, qPosition, RareIdx, bStatic, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
 	g_DB.Query(eQueryType_FreeQuery, eItemUpdate, 0, txt);
 }
 
@@ -1089,11 +1098,15 @@ void ItemMovePetInvenUpdateToDB( DWORD CharacterIDX, DWORD dwfromDBIdx, POSTYPE 
    0AI∷〓e ~⒋a ㄏ┆¨√∷〓OAo∷⊥A āe¨uO AㄏǎCa (āㄏo¨uo∷〓| CI¨oACIa⊥i⊥i CN∷⊥U.)
    LOWORD():EndValue, HIWORD(): ArrayIdx
 */
-void ItemInsertToDB(DWORD CharacterIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, DWORD dwKey, WORD bSeal,WORD bStatic,DWORD dwGrow) // 2014-12-01  默认为0普通购买 成长
+void ItemInsertToDB(DWORD CharacterIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, DWORD dwKey, WORD bSeal,WORD bStatic,DWORD dwGrow, WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2, WORD ItemEntry3) // 2014-12-01  默认为0普通购买 成长
 {
+	if ((ITEMMGR->GetItemInfo(wItemIdx))->ItemGrade == 999 && ItemEntry3 == 0)
+	{
+		ItemEntry3 = 1;
+	}
 	// 2014-12-01 插入时
-    //	char txt[128];
-	sprintf(txt, "EXEC %s %d, %d, %d, %d, %d,%d,%d", STORED_ITEM_INSERT_INVEN, CharacterIdx, wItemIdx, Durability, bPosition, bSeal,bStatic,dwGrow);
+	//	char txt[128];//加了四个参数 ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3
+	sprintf(txt, "EXEC %s %d, %d, %d, %d, %d,%d,%d,%d,%d,%d,%d", STORED_ITEM_INSERT_INVEN, CharacterIdx, wItemIdx, Durability, bPosition, bSeal,bStatic,dwGrow, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
 	g_DB.Query(eQueryType_FreeQuery, eItemInsert, dwKey, txt);
 }
 
@@ -1184,11 +1197,11 @@ void ItemOptionInsertToDB(DWORD CharacterIdx, WORD wItemIdx, POSTYPE Pos, ITEM_O
 		pOptionInfo->PhyDefense);
 		*/
 }
-void ItemRareInsertToDB(DWORD CharacterIdx, WORD wItemIdx, POSTYPE bPosition, DWORD dwKey, ITEM_RARE_OPTION_INFO* pRareOptionInfo )
-{
+void ItemRareInsertToDB(DWORD CharacterIdx, WORD wItemIdx, POSTYPE bPosition, DWORD dwKey, ITEM_RARE_OPTION_INFO* pRareOptionInfo, WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2, WORD ItemEntry3)
+{//怪物掉落等装备信息写入数据库
 	char txt[1024];
 
-	sprintf(txt, "EXEC %s %d, %d, %d,  %d, %d, %d, %d, %d, %d, %d,  %d, %d, %d, %d, %d,  %d,  %d, %d, %d, %d, %d,  %d", 
+	sprintf(txt, "EXEC %s %d, %d, %d,  %d, %d, %d, %d, %d, %d, %d,  %d, %d, %d, %d, %d,  %d,  %d, %d, %d, %d, %d,  %d,  %d,  %d,  %d,  %d", 
 		"dbo.MP_ITEM_RARE_OPTION_Insert",//STORED_ITEM_RARE_OPTION_INSERT,
 		CharacterIdx, 
 		wItemIdx,
@@ -1216,13 +1229,14 @@ void ItemRareInsertToDB(DWORD CharacterIdx, WORD wItemIdx, POSTYPE bPosition, DW
 		(int)(pRareOptionInfo->AttrAttack.GetElement_Val(ATTR_TREE)*100+0.00001),
 		(int)(pRareOptionInfo->AttrAttack.GetElement_Val(ATTR_IRON)*100+0.00001),
 		(int)(pRareOptionInfo->AttrAttack.GetElement_Val(ATTR_EARTH)*100+0.00001),
-		pRareOptionInfo->PhyDefense);
+		pRareOptionInfo->PhyDefense,
+		ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
 
 	g_DB.Query(eQueryType_FreeQuery, eItemRareInsert, dwKey, txt);
 }
 
 void ShopItemRareInsertToDB(DWORD CharacterIdx, DWORD ItemIdx, DWORD ItemPos, DWORD ItemDBIdx, ITEM_RARE_OPTION_INFO* pRareOptionInfo )
-{
+{//绿装备信息写入数据库
 	char txt[1024];
 
 	sprintf(txt, "EXEC %s %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d,  %d, %d, %d, %d, %d,  %d,  %d, %d, %d, %d, %d,  %d", 
@@ -1689,6 +1703,10 @@ void RGuildItemLoadInNeed( LPQUERY pData, LPDBMESSAGE pMessage )
 		guilditem.ItemStatic=atoi((char*)pData[i].Data[eMu_IStatic]);
 		guilditem.ItemGrow=atoi((char*)pData[i].Data[eMu_IGrow]);
 		guilditem.Grade30 = atoi((char*)pData[i].Data[eMu_Grade30]);
+		guilditem.ItemQuality = atoi((char*)pData[i].Data[eMu_Quality]);
+		guilditem.ItemEntry1 = atoi((char*)pData[i].Data[eMu_Entry1]);
+		guilditem.ItemEntry2 = atoi((char*)pData[i].Data[eMu_Entry2]);
+		guilditem.ItemEntry3 = atoi((char*)pData[i].Data[eMu_Entry3]);
 		GUILDMGR->RegistGuildItem(GuildIdx, &guilditem);
 	}
 	if(pMessage->dwResult < MAX_QUERY_RESULT)
@@ -3560,7 +3578,10 @@ void RCharacterItemInfo(LPQUERY pData, LPDBMESSAGE pMessage)
 			SafeStrCpy(pItemBase->PowerUp,(char*)pData[i].Data[eCI_PowerUp], MAX_NAME_LENGTH+1);
 			SafeStrCpy(pItemBase->Green,(char*)pData[i].Data[eCI_Green], MAX_NAME_LENGTH+1);
 			pItemBase->Grade30 = atoi((char*)pData[i].Data[eCI_Grade30]);
-
+			pItemBase->ItemQuality = atoi((char*)pData[i].Data[eCI_Quality]);//附加装备品质
+			pItemBase->ItemEntry1 = atoi((char*)pData[i].Data[eCI_Entry1]);
+			pItemBase->ItemEntry2 = atoi((char*)pData[i].Data[eCI_Entry2]);
+			pItemBase->ItemEntry3 = atoi((char*)pData[i].Data[eCI_Entry3]);
 			ITEM_INFO* pInfo = ITEMMGR->GetItemInfo(pItemBase->wIconIdx);
 			if( pInfo && pInfo->ItemKind & eTITAN_EQUIPITEM )
 			{
@@ -4206,6 +4227,10 @@ void RPetInvenItemInfo( LPQUERY pData, LPDBMESSAGE pMessage )
 				SafeStrCpy(PetInvenItem.PetInven[ItemPos].PowerUp,(char*)pData[i].Data[ePIII_PowerUp], MAX_NAME_LENGTH+1);
 				SafeStrCpy(PetInvenItem.PetInven[ItemPos].Green,(char*)pData[i].Data[ePIII_Green], MAX_NAME_LENGTH+1);
 				PetInvenItem.PetInven[ItemPos].Grade30 = atoi((char*)pData[i].Data[ePII_Grade30]);
+				PetInvenItem.PetInven[ItemPos].ItemQuality = atoi((char*)pData[i].Data[ePIII_Quality]);
+				PetInvenItem.PetInven[ItemPos].ItemEntry1 = atoi((char*)pData[i].Data[ePIII_Entry1]);
+				PetInvenItem.PetInven[ItemPos].ItemEntry2 = atoi((char*)pData[i].Data[ePIII_Entry2]);
+				PetInvenItem.PetInven[ItemPos].ItemEntry3 = atoi((char*)pData[i].Data[ePIII_Entry3]);
 			}
 			else
 			{
@@ -4626,8 +4651,12 @@ void RSSItemInsert(LPQUERY pData, LPDBMESSAGE pMessage)
 		info.ItemStatic=0;  //  2015-01-14
 		info.ItemGrow =0;   // 成长 2015-01-14 
 
-		SafeStrCpy(info.PowerUp,(char*)pData[0].Data[eCI_PowerUp], MAX_NAME_LENGTH+1);
-		SafeStrCpy(info.Green,(char*)pData[0].Data[eCI_Green], MAX_NAME_LENGTH+1);
+		//SafeStrCpy(info.PowerUp,(char*)pData[0].Data[eCI_PowerUp], MAX_NAME_LENGTH+1);
+		//SafeStrCpy(info.Green,(char*)pData[0].Data[eCI_Green], MAX_NAME_LENGTH+1);
+		info.ItemQuality = atoi((char*)pData->Data[eCI_Quality]);			// Item_Quality
+		info.ItemEntry1 = atoi((char*)pData->Data[eCI_Entry1]);			// Item_Entry1
+		info.ItemEntry2 = atoi((char*)pData->Data[eCI_Entry2]);			// Item_Entry2
+		info.ItemEntry3 = atoi((char*)pData->Data[eCI_Entry3]);			// Item_Entry3
 
 		STREETSTALLMGR->CreateDupItem( dwPlayerID, &info, pMessage->dwID);
 	}	
@@ -4814,6 +4843,10 @@ void RItemInsert(LPQUERY pData, LPDBMESSAGE pMessage)
 		DWORD dwStatic= atoi((char*)pData->Data[eCI_Static]);   // 2014-12-01  默认0 此处写了后面没使用！
 		DWORD dwGrow  = atoi((char*)pData->Data[eCI_Grow]);   // 2015-01-14 成长 默认0 此处写了后面没使用！
 		DWORD dweGrade30 = atoi((char*)pData->Data[eCI_Grade30]);
+		int   dwQuality = atoi((char*)pData->Data[eCI_Quality]);
+		int   dwEntry1 = atoi((char*)pData->Data[eCI_Entry1]);
+		int   dwEntry2 = atoi((char*)pData->Data[eCI_Entry2]);
+		int   dwEntry3 = atoi((char*)pData->Data[eCI_Entry3]);
 		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(atoi((char*)pData->Data[eCI_ObjectID]));
 		if(pPlayer == NULL)
 			return;
@@ -4834,7 +4867,11 @@ void RItemInsert(LPQUERY pData, LPDBMESSAGE pMessage)
 							atoi((char*)pData->Data[eCI_Static]),
 							atoi((char*)pData->Data[eCI_Grow]),
 
-			                atoi((char*)pData->Data[eCI_Grade30])
+			                atoi((char*)pData->Data[eCI_Grade30]),
+			atoi((char*)pData->Data[eCI_Quality]),
+			atoi((char*)pData->Data[eCI_Entry1]),
+			atoi((char*)pData->Data[eCI_Entry2]),
+			atoi((char*)pData->Data[eCI_Entry3])
 
 
 							);
@@ -5151,7 +5188,11 @@ void RCharacterPyogukItemInfo(LPQUERY pData, LPDBMESSAGE pMessage)
 
 				SafeStrCpy(PyogukItem.Pyoguk[ItemPos].PowerUp,(char*)pData[i].Data[ePI_PowerUp], MAX_NAME_LENGTH+1);
 				SafeStrCpy(PyogukItem.Pyoguk[ItemPos].Green,(char*)pData[i].Data[ePI_Green], MAX_NAME_LENGTH+1);
-				PyogukItem.Pyoguk[ItemPos].Grade30 = atoi((char*)pData[i].Data[ePI_Grade30]);
+				PyogukItem.Pyoguk[ItemPos].Grade30 = atoi((char*)pData[i].Data[ePI_Grade30]); //物品状态附加
+				PyogukItem.Pyoguk[ItemPos].ItemQuality = atoi((char*)pData[i].Data[ePI_Quality]);
+				PyogukItem.Pyoguk[ItemPos].ItemEntry1 = atoi((char*)pData[i].Data[ePI_Entry1]);
+				PyogukItem.Pyoguk[ItemPos].ItemEntry2 = atoi((char*)pData[i].Data[ePI_Entry2]);
+				PyogukItem.Pyoguk[ItemPos].ItemEntry3 = atoi((char*)pData[i].Data[ePI_Entry3]);
 				// magi82(33)
 				ITEM_INFO* pInfo = ITEMMGR->GetItemInfo(PyogukItem.Pyoguk[ItemPos].wIconIdx);
 				if( pInfo && pInfo->ItemKind & eTITAN_EQUIPITEM )
@@ -5740,6 +5781,10 @@ void RCharacterShopItemInfo(LPQUERY pData, LPDBMESSAGE pMessage)
 			SafeStrCpy(ShopItem.Item[itempos].PowerUp,(char*)pData[i].Data[eMI_PowerUp], MAX_NAME_LENGTH+1);
 			SafeStrCpy(ShopItem.Item[itempos].Green,(char*)pData[i].Data[eMI_Green], MAX_NAME_LENGTH+1);
 			NewShopItem.Item[nitemcnt].Grade30 = (DWORD)atoi((char*)pData[i].Data[eMItm_Grade30]);
+			NewShopItem.Item[nitemcnt].ItemQuality = (WORD)atoi((char*)pData[i].Data[eMItm_Quality]);
+			NewShopItem.Item[nitemcnt].ItemEntry1 = (WORD)atoi((char*)pData[i].Data[eMItm_Entry1]);
+			NewShopItem.Item[nitemcnt].ItemEntry2 = (WORD)atoi((char*)pData[i].Data[eMItm_Entry2]);
+			NewShopItem.Item[nitemcnt].ItemEntry3 = (WORD)atoi((char*)pData[i].Data[eMItm_Entry3]);
 			++nitemcnt;
 		}
 		else
@@ -5759,6 +5804,10 @@ void RCharacterShopItemInfo(LPQUERY pData, LPDBMESSAGE pMessage)
 				SafeStrCpy(ShopItem.Item[itempos].PowerUp,(char*)pData[i].Data[eMI_PowerUp], MAX_NAME_LENGTH+1);
 				SafeStrCpy(ShopItem.Item[itempos].Green,(char*)pData[i].Data[eMI_Green], MAX_NAME_LENGTH+1);
 				NewShopItem.Item[nitemcnt].Grade30 = (DWORD)atoi((char*)pData[i].Data[eMItm_Grade30]);
+				NewShopItem.Item[nitemcnt].ItemQuality = (WORD)atoi((char*)pData[i].Data[eMItm_Quality]);
+				NewShopItem.Item[nitemcnt].ItemEntry1 = (WORD)atoi((char*)pData[i].Data[eMItm_Entry1]);
+				NewShopItem.Item[nitemcnt].ItemEntry2 = (WORD)atoi((char*)pData[i].Data[eMItm_Entry2]);
+				NewShopItem.Item[nitemcnt].ItemEntry3 = (WORD)atoi((char*)pData[i].Data[eMItm_Entry3]);
 				++nitemcnt;
 
 				continue;
@@ -5775,6 +5824,10 @@ void RCharacterShopItemInfo(LPQUERY pData, LPDBMESSAGE pMessage)
 			SafeStrCpy(ShopItem.Item[itempos].PowerUp,(char*)pData[i].Data[eMI_PowerUp], MAX_NAME_LENGTH+1);
 			SafeStrCpy(ShopItem.Item[itempos].Green,(char*)pData[i].Data[eMI_Green], MAX_NAME_LENGTH+1);
 			ShopItem.Item[nitemcnt].Grade30 = (DWORD)atoi((char*)pData[i].Data[eMItm_Grade30]);
+			ShopItem.Item[nitemcnt].ItemQuality = (WORD)atoi((char*)pData[i].Data[eMItm_Quality]);
+			ShopItem.Item[nitemcnt].ItemEntry1 = (WORD)atoi((char*)pData[i].Data[eMItm_Entry1]);
+			ShopItem.Item[nitemcnt].ItemEntry2 = (WORD)atoi((char*)pData[i].Data[eMItm_Entry2]);
+			ShopItem.Item[nitemcnt].ItemEntry3 = (WORD)atoi((char*)pData[i].Data[eMItm_Entry3]);
 		}
 
 
@@ -5842,6 +5895,10 @@ void RShopItemInvenInfo( LPQUERY pData, LPDBMESSAGE pMessage )
 				ItemOverlap[OverlapCount].ItemStatic = (WORD)atoi((char*)pData[i].Data[eCI_Static]);
 				ItemOverlap[OverlapCount].ItemGrow = (DWORD)atoi((char*)pData[i].Data[eCI_Grow]);
 				ItemOverlap[OverlapCount].Grade30 = (DWORD)atoi((char*)pData[i].Data[eCI_Grade30]);
+				ItemOverlap[OverlapCount].ItemQuality = (WORD)atoi((char*)pData[i].Data[eCI_Quality]);
+				ItemOverlap[OverlapCount].ItemEntry1 = (WORD)atoi((char*)pData[i].Data[eCI_Entry1]);
+				ItemOverlap[OverlapCount].ItemEntry2 = (WORD)atoi((char*)pData[i].Data[eCI_Entry2]);
+				ItemOverlap[OverlapCount].ItemEntry3 = (WORD)atoi((char*)pData[i].Data[eCI_Entry3]);
 				++OverlapCount;
 			}
 			else
@@ -5855,6 +5912,10 @@ void RShopItemInvenInfo( LPQUERY pData, LPDBMESSAGE pMessage )
 				ItemBase[ItemPos].ItemStatic = (WORD)atoi((char*)pData[i].Data[eCI_Static]);
 				ItemBase[ItemPos].ItemGrow = (DWORD)atoi((char*)pData[i].Data[eCI_Grow]);
 				ItemBase[ItemPos].Grade30 = (DWORD)atoi((char*)pData[i].Data[eCI_Grade30]);
+				ItemBase[ItemPos].ItemQuality = (WORD)atoi((char*)pData[i].Data[eCI_Quality]);
+				ItemBase[ItemPos].ItemEntry1 = (WORD)atoi((char*)pData[i].Data[eCI_Entry1]);
+				ItemBase[ItemPos].ItemEntry2 = (WORD)atoi((char*)pData[i].Data[eCI_Entry2]);
+				ItemBase[ItemPos].ItemEntry3 = (WORD)atoi((char*)pData[i].Data[eCI_Entry3]);
 			}
 		}
 	}
@@ -6407,6 +6468,11 @@ void RGuildItemLoad( LPQUERY pData, LPDBMESSAGE pMessage )
 	    guilditem.StoneIdx=atoi((char*)pData[i].Data[eMu_IStoneIdx]); //weiye 门派仓库，，成长数据附加! 2015-10-25
 		guilditem.ItemStatic=atoi((char*)pData[i].Data[eMu_IStatic]);
 		guilditem.ItemGrow=atoi((char*)pData[i].Data[eMu_IGrow]);
+		guilditem.Grade30 = atoi((char*)pData[i].Data[eMu_Grade30]);//刚刚加入
+		guilditem.ItemQuality = atoi((char*)pData[i].Data[eMu_Quality]);
+		guilditem.ItemEntry1 = atoi((char*)pData[i].Data[eMu_Entry1]);
+		guilditem.ItemEntry2 = atoi((char*)pData[i].Data[eMu_Entry2]);
+		guilditem.ItemEntry3 = atoi((char*)pData[i].Data[eMu_Entry3]);
 		GUILDMGR->RegistGuildItem(GuildIdx, &guilditem);
 	}
 	if(pMessage->dwResult < MAX_QUERY_RESULT)
@@ -8448,7 +8514,7 @@ void RItemLockUpdate(LPQUERY pData, LPDBMESSAGE pMessage)
 			return;
 		CItemSlot * pTargetSlot = pPlayer->GetSlot(dwPos);
 
-		if( pTargetSlot->UpdateItemAbs(pPlayer, dwPos, 0, 0, 0, 0, 0 , UB_LOCK ,SS_NONE,0) != EI_TRUE )
+		if( pTargetSlot->UpdateItemAbs(pPlayer, dwPos, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, UB_LOCK ,SS_NONE,0) != EI_TRUE )
 		{
 		//	ASSERTMSG(0, "The ItemUpdateLock UpdateItemAbs is Error!");
 			return ;
@@ -8488,10 +8554,10 @@ void RItemUnLockUpdate(LPQUERY pData, LPDBMESSAGE pMessage)
 		if(pPlayer == NULL)
 			return;
 		if(pPlayer->GetInited() == FALSE)
-			return;
+			return; 
 		CItemSlot * pTargetSlot = pPlayer->GetSlot(dwPos);
 
-		if( pTargetSlot->UpdateItemAbs(pPlayer, dwPos, 0, 0, 0, 0, 0 , UB_UNLOCK ,SS_NONE,0) != EI_TRUE )
+		if( pTargetSlot->UpdateItemAbs(pPlayer, dwPos, 0, 0, 0, 0, 0 ,0,0,0,0,0, UB_UNLOCK ,SS_NONE,0) != EI_TRUE )
 		{
 		//	ASSERTMSG(0, "The ItemUpdateUnLock UpdateItemAbs is Error!");
 			return ;
@@ -8533,7 +8599,7 @@ void RItemGrowUpdate(LPQUERY pData, LPDBMESSAGE pMessage)
 			return;
 		CItemSlot * pTargetSlot = pPlayer->GetSlot(dwPos);
 
-		if( pTargetSlot->UpdateItemAbs(pPlayer, dwPos, 0, 0, 0, 0, 0 , UB_GROW ,SS_NONE,0,0,dwGrow) != EI_TRUE )
+		if( pTargetSlot->UpdateItemAbs(pPlayer, dwPos, 0, 0, 0, 0, 0 , UB_GROW ,SS_NONE,0,0,0,0,0,0,0,dwGrow) != EI_TRUE )
 		{
 		//	ASSERTMSG(0, "The ItemUpdateGrow UpdateItemAbs is Error!");
 			return ;
@@ -9093,6 +9159,10 @@ void RLoadTidyItemInfo(LPQUERY pData, LPDBMESSAGE pMessage)
 			pItemBase->ItemGrow  = atoi((char*)pData[i].Data[eCI_Grow]);
 			strcpy(pItemBase->PowerUp,(char*)pData[i].Data[eCI_PowerUp]);
 			strcpy(pItemBase->Green,(char*)pData[i].Data[eCI_Green]);
+			pItemBase->ItemQuality = atoi((char*)pData[i].Data[eCI_Quality]); //附加物品品质
+			pItemBase->ItemEntry1 = atoi((char*)pData[i].Data[eCI_Entry1]);
+			pItemBase->ItemEntry2 = atoi((char*)pData[i].Data[eCI_Entry2]);
+			pItemBase->ItemEntry3 = atoi((char*)pData[i].Data[eCI_Entry3]);
 
 			//strcpy
 			ITEM_INFO* pInfo = ITEMMGR->GetItemInfo(pItemBase->wIconIdx);
@@ -10098,10 +10168,11 @@ void RLoadInstanceDungeonRank(LPQUERY pData, LPDBMESSAGE pMessage)
 
 void UpdateGradeItem(DWORD dwPlayerID, DWORD ItemDbIdx, DWORD Grade, DWORD ItemStatic)
 {
-	//	g_Console.LOG(4, "Query %d %d %d %d ", dwPlayerID, ItemDbIdx, Grade, ItemStatic);
+		//g_Console.LOG(4, "Query %d %d %d %d ", dwPlayerID, ItemDbIdx, Grade, ItemStatic);
 	sprintf(txt, "EXEC dbo.MP_UpDateGradeItem %d,%d,%d,%d", dwPlayerID, ItemDbIdx, Grade, ItemStatic);
 	g_DB.Query(eQueryType_FreeQuery, eUpDateGradeItem, dwPlayerID, txt);
 }
+
 void RUpdateGradeItem(LPQUERY pData, LPDBMESSAGE pMessage)
 {
 	CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pMessage->dwID);
@@ -10124,56 +10195,243 @@ void RUpdateGradeItem(LPQUERY pData, LPDBMESSAGE pMessage)
 	//g_Console.LOG(4, "Database data received: DBIdx = %s, ItemIdx = %s, Position = %s",
 	//	(char*)pData->Data[1], (char*)pData->Data[2], (char*)pData->Data[3]);
 
-	DWORD dwObjectID = atoi((char*)pData->Data[eCI_ObjectID]);
-	DWORD dwItemIdx = atoi((char*)pData->Data[eCI_IDX]);
-	DWORD dwDura = atoi((char*)pData->Data[eCI_Durability]);
-	DWORD dwPos = atoi((char*)pData->Data[eCI_Position]);
-	DWORD dwQPos = atoi((char*)pData->Data[eCI_QPosition]);
-	DWORD dwDBIdx = atoi((char*)pData->Data[eCI_DBIDX]);
-	DWORD dwParam = atoi((char*)pData->Data[eCI_Param]);
-	//DWORD dwStoneIdx = atoi((char*)pData->Data[eCI_StoneIdx]);
-	DWORD dwStatic = atoi((char*)pData->Data[eCI_Static]);
-	DWORD dwGrow = atoi((char*)pData->Data[eCI_Grow]);
-	//[耐久，制造者附加][2018/1/2]
+	DWORD DBIdx = atoi((char*)pData->Data[1]);
+	DWORD ItemIDX = atoi((char*)pData->Data[2]);
+	DWORD Position = atoi((char*)pData->Data[3]);
+	DWORD QPosition = atoi((char*)pData->Data[4]);
+	DWORD Duration = atoi((char*)pData->Data[5]);
+	DWORD Param = atoi((char*)pData->Data[6]);
+	DWORD RareIdx = atoi((char*)pData->Data[7]);
+	DWORD StoneIdx = atoi((char*)pData->Data[8]);
+	DWORD Static = atoi((char*)pData->Data[9]);
+	DWORD Grow = atoi((char*)pData->Data[10]);
+	DWORD ITEM_Quality = atoi((char*)pData->Data[11]);
+	DWORD ITEM_Entry1 = atoi((char*)pData->Data[12]);
 
-	DWORD dwGrade30 = atoi((char*)pData->Data[eCI_Grade30]);
+	DWORD ITEM_Entry2 = atoi((char*)pData->Data[13]);
+	DWORD ITEM_Entry3 = atoi((char*)pData->Data[14]);
+	DWORD Grade = atoi((char*)pData->Data[15]);
 
-	CItemSlot* pTargetSlot = pPlayer->GetSlot(dwPos);
+	CItemSlot* pTargetSlot = pPlayer->GetSlot(Position);
 	if (!pTargetSlot) {
 		//	g_Console.LOG(4, "Slot not found: Position = %d", Position);
 		return;
 	}
 
-	ITEMBASE* pTargetItem = (ITEMBASE*)pTargetSlot->GetItemInfoAbs(dwPos);
+	ITEMBASE* pTargetItem = (ITEMBASE*)pTargetSlot->GetItemInfoAbs(Position);
 	if (!pTargetItem) {
 		//	g_Console.LOG(4, "Item not found in slot: Position = %d", Position);
 		return;
 	}
-	//CItemSlot* pTargetSlot = pPlayer->GetSlot(dwPos);
+
 	//Log the current state of the item
-   //g_Console.LOG(4, "Item before update: DBIdx = %d, Grade = %d ,static = %d", pTargetItem->dwDBIdx, pTargetItem->Grade, pTargetItem->ItemStatic);
+  // g_Console.LOG(4, "Item before update: DBIdx = %d, Grade = %d ,static = %d", pTargetItem->dwDBIdx, pTargetItem->Grade30, pTargetItem->ItemStatic);
 
-	if (pTargetSlot->UpdateItemAbs(pPlayer, dwPos, 0, 0, 0, 0, 0, UB_GRADE30, SS_NONE, 0, 0, 0,0, 0, dwGrade30) != EI_TRUE)
-	{
-
-		ASSERTMSG(0, "The ItemGradeAlexX UpdateItemAbs is Error!");
+	if (pTargetSlot->UpdateItemAbs(pPlayer, Position,
+		DBIdx,
+		ItemIDX,
+		Position,
+		0,
+		0,
+		Static,
+		ITEM_Quality,
+		ITEM_Entry1,
+		ITEM_Entry2,
+		ITEM_Entry3,
+		UB_GRADE30,
+		SS_NONE,
+		RareIdx,
+		StoneIdx,
+		Grow,
+		0,           // PowerUp（如无必要可以为0）
+		0,           // Green（如无必要可以为0）
+		Grade) != EI_TRUE) {
+		//	g_Console.LOG(4, "UpdateItemAbs failed for item: DBIdx = %d, Position = %d ,static = %d", pTargetItem->dwDBIdx, pTargetItem->Grade, pTargetItem->ItemStatic);
+		ASSERTMSG(0, "Err");
 		return;
 	}
-
-	STATSMGR->CalcItemStats(pPlayer);  // 刷新附加
+	//  必须同步结构体内存，否则下一次读取仍是旧值
+	pTargetItem->Grade30 = Grade;
+	pTargetItem->ItemStatic = Static;
+	pTargetItem->ItemQuality = ITEM_Quality;
+	pTargetItem->ItemEntry1 = ITEM_Entry1;
+	pTargetItem->ItemEntry2 = ITEM_Entry2;
+	pTargetItem->ItemEntry3 = ITEM_Entry3;
+	pTargetItem->RareIdx = RareIdx;
+	pTargetItem->StoneIdx = StoneIdx;
+	pTargetItem->ItemGrow = Grow;
 	// Log success of item update
-//	g_Console.LOG(4, "Item successfully updated: DBIdx = %d, New Grade = %d ,static = %d", pTargetItem->dwDBIdx, pTargetItem->Grade, pTargetItem->ItemStatic);
+	//g_Console.LOG(4, "Item successfully updated: DBIdx = %d, New Grade = %d ,static = %d", pTargetItem->dwDBIdx, pTargetItem->Grade30, pTargetItem->ItemStatic);
 
-	MSG_UPDATE_GRADE msg;
-	msg.Category = MP_ITEMEXT;
-	msg.Protocol = MP_UPDATE_GRADE;
-	msg.ItemIdx = pTargetItem->wIconIdx;
-	msg.Pos = pTargetItem->Position;
-	msg.Grade = pTargetItem->Grade30;
-	pPlayer->SendMsg(&msg, sizeof(msg));
+	//MSG_UPDATE_GRADE msg;
+	//msg.Category = MP_ITEMEXT;
+	//msg.Protocol = MP_UPDATE_GRADE;
+	//msg.ItemIdx = pTargetItem->wIconIdx;
+	//msg.Pos = pTargetItem->Position;
+	//msg.Grade = pTargetItem->Grade30;
+	//pPlayer->SendMsg(&msg, sizeof(msg));
 
 	// Log message sent to client
 	//g_Console.LOG(4, "MSG_UPDATE_GRADE sent: ItemIdx = %d, Pos = %d, Grade = %d",
 	//	msg.ItemIdx, msg.Pos, msg.Grade);
 
+}
+void ItemQualityUpdateToDB(DWORD CharacterIdx, DWORD dwDBIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, WORD qPosition, DWORD RareIdx/*=0*/, WORD bStatic /*= 0*/,WORD Grade, WORD ItemQuality/*=0*/, WORD ItemEntry1/*=0*/, WORD ItemEntry2/*=0*/, WORD ItemEntry3/*=0*/)
+{
+	sprintf(txt, "EXEC %s %d, %d, %d, %d, %d, %d, %d ,%d, %d, %d, %d,%d  ,%d", "MP_ITEM_QUALITY_Update",
+		CharacterIdx, dwDBIdx, wItemIdx, Durability, bPosition, qPosition, RareIdx, bStatic, Grade,ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
+	g_DB.Query(eQueryType_FreeQuery, eItemQualityUpdate, CharacterIdx, txt);
+
+}
+void RItemQualityUpdate(LPQUERY pData, LPDBMESSAGE pMessage)
+{
+	if (pMessage->dwResult)
+	{
+		DWORD dwPlayerID = atoi((char*)pData->Data[eCI_ObjectID]);
+		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(dwPlayerID);
+		if (pPlayer == NULL)
+		{
+			return;
+		}
+
+		ITEMBASE info;
+		info.Position = atoi((char*)pData->Data[eCI_Position]);		// Item_Position
+		info.QuickPosition = atoi((char*)pData->Data[eCI_QPosition]);
+		info.dwDBIdx = atoi((char*)pData->Data[eCI_DBIDX]);		// Item_DBIDX
+		info.Durability = atoi((char*)pData->Data[eCI_Durability]);	// Item_Durability
+		info.wIconIdx = atoi((char*)pData->Data[eCI_IDX]);			// Item_IDX
+		// magi82(28)
+		info.ItemParam = atoi((char*)pData->Data[eCI_Param]);			// ItemParam
+		info.RareIdx = atoi((char*)pData->Data[eCI_RareIdx]);			// RareIdx
+		info.ItemStatic = atoi((char*)pData->Data[eCI_Static]);			// ItemStatic
+		info.Grade30 = atoi((char*)pData->Data[eCI_Grade30]);			// Grade30
+		info.ItemQuality = atoi((char*)pData->Data[eCI_Quality]);		// Item_Quality
+		info.ItemEntry1 = atoi((char*)pData->Data[eCI_Entry1]);			// Item_Entry1
+		info.ItemEntry2 = atoi((char*)pData->Data[eCI_Entry2]);			// Item_Entry2
+		info.ItemEntry3 = atoi((char*)pData->Data[eCI_Entry3]);			// Item_Entry3
+
+		CItemSlot* pSlot = pPlayer->GetSlot(atoi((char*)pData->Data[eCI_Position]));
+		pSlot->SetItemInfoAbs(&info, atoi((char*)pData->Data[eCI_Position]));//更新当前位置物品信息
+		////打造出稀有物品提示
+		//sTIPITEMINFO* GetItem = NULL;
+		//GetItem = ITEMMGR->GetTipItem(info.wIconIdx);
+		//if (GetItem)
+		//{
+		//	MSG_TIP msg;
+		//	msg.Category = MP_CLIENT;
+		//	msg.Protocol = MP_CLIENT_MSG_AGENT;
+		//	msg.Flag = eQualityTip;
+		//	msg.pBaseItem = info;
+		//	SafeStrCpy(msg.Name1, pPlayer->GetObjectName(), MAX_NAME_LENGTH + 1);
+		//	SafeStrCpy(msg.ItemName, GetItem->ItemName, MAX_ITEMNAME_LENGTH + 1);
+		//	pPlayer->SendMsgToAllAgent(&msg, sizeof(msg));
+		//}
+		MSG_ITEM_QUALITY_MSG msg;
+		msg.Category = MP_ITEMEXT;
+		msg.Protocol = MP_ITEMEXT_QUALITY_SUCCESS_ACK;
+		msg.ItemTargetPos = atoi((char*)pData->Data[eCI_Position]);//装备pos
+		msg.QualityItemBase = info;//将装备品质信息发送到客户端
+	//	g_Console.LOG(4, "[RItemQualityUpdate] CharacterID=%d, DBIdx=%d, Position=%d, IconIdx=%d, Quality=%d, Entry1=%d, Entry2=%d",
+		//	dwPlayerID,
+		//	info.dwDBIdx,
+		//	info.Position,
+		//	info.wIconIdx,
+		//	info.ItemQuality,
+		//	info.ItemEntry1,
+		//	info.ItemEntry2
+		//);
+		pPlayer->SendMsg(&msg, sizeof(msg));
+	}
+}
+
+void ItemQualityChangeUpdateToDB(DWORD CharacterIdx, DWORD dwDBIdx, WORD wItemIdx, DURTYPE Durability,
+	POSTYPE bPosition, WORD qPosition, DWORD RareIdx/*=0*/, WORD bStatic /*= 0*/, WORD Grade,
+	WORD ItemQuality/*=0*/, WORD ItemEntry1/*=0*/, WORD ItemEntry2/*=0*/, WORD ItemEntry3/*=0*/)
+{
+	// 构造 SQL 指令
+	sprintf(txt, "EXEC %s %d, %d, %d, %d, %d, %d, %d ,%d, %d, %d, %d , %d,%d", "MP_ITEM_QUALITY_Update",
+		CharacterIdx, dwDBIdx, wItemIdx, Durability, bPosition, qPosition, RareIdx, bStatic, Grade,
+		ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
+
+	//  加入调试输出
+	g_Console.LOG(4, "[ItemQualityChangeUpdateToDB] CharacterID=%d, DBIdx=%d, ItemIdx=%d, Durability=%d, Pos=%d, QPos=%d, RareIdx=%d, Static=%d, Grade=%d, Quality=%d, Entry1=%d, Entry2=%d, Entry3=%d",
+		CharacterIdx, dwDBIdx, wItemIdx, Durability, bPosition, qPosition,
+		RareIdx, bStatic, Grade, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
+
+	// 发出数据库执行请求
+	g_DB.Query(eQueryType_FreeQuery, eItemQualityChangeUpdate, CharacterIdx, txt);
+}
+
+void RItemQualityChangeUpdate(LPQUERY pData, LPDBMESSAGE pMessage)
+{
+	if (pMessage->dwResult)
+	{
+		DWORD dwPlayerID = atoi((char*)pData->Data[eCI_ObjectID]);
+		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(dwPlayerID);
+		if (pPlayer == NULL)
+		{
+			g_Console.LOG(1, "[RItemQualityChangeUpdate] Player not found: ID = %d", dwPlayerID);
+			return;
+		}
+
+		ITEMBASE info;
+		info.Position = atoi((char*)pData->Data[eCI_Position]);
+		info.QuickPosition = atoi((char*)pData->Data[eCI_QPosition]);
+		info.dwDBIdx = atoi((char*)pData->Data[eCI_DBIDX]);
+		info.Durability = atoi((char*)pData->Data[eCI_Durability]);
+		info.wIconIdx = atoi((char*)pData->Data[eCI_IDX]);
+		info.ItemParam = atoi((char*)pData->Data[eCI_Param]);
+		info.RareIdx = atoi((char*)pData->Data[eCI_RareIdx]);
+		info.ItemStatic = atoi((char*)pData->Data[eCI_Static]);
+		info.Grade30 = atoi((char*)pData->Data[eCI_Grade30]);
+		info.ItemQuality = atoi((char*)pData->Data[eCI_Quality]);
+		info.ItemEntry1 = atoi((char*)pData->Data[eCI_Entry1]);
+		info.ItemEntry2 = atoi((char*)pData->Data[eCI_Entry2]);
+		info.ItemEntry3 = atoi((char*)pData->Data[eCI_Entry3]);
+
+		// 输出完整装备信息
+		g_Console.LOG(4,
+			"[RItemQualityChangeUpdate] PlayerID=%d, DBIdx=%d, Pos=%d, QPos=%d, IconIdx=%d, Grade=%d, Quality=%d, Entry1=%d, Entry2=%d, Entry3=%d",
+			dwPlayerID,
+			info.dwDBIdx,
+			info.Position,
+			info.QuickPosition,
+			info.wIconIdx,
+			info.Grade30,
+			info.ItemQuality,
+			info.ItemEntry1,
+			info.ItemEntry2,
+			info.ItemEntry3
+		);
+
+		CItemSlot* pSlot = pPlayer->GetSlot(info.Position);
+		if (pSlot)
+		{
+			pSlot->SetItemInfoAbs(&info, info.Position);
+		}
+		else
+		{
+			g_Console.LOG(1, "[RItemQualityChangeUpdate] Failed to get item slot at Pos=%d", info.Position);
+		}
+
+		// 发送到客户端
+		MSG_ITEM_QUALITY_MSG msg;
+		msg.Category = MP_ITEMEXT;
+		msg.Protocol = MP_ITEMEXT_QUALITYCHANGE_ACK;
+		msg.ItemTargetPos = info.Position;
+		msg.QualityItemBase = info;
+		pPlayer->SendMsg(&msg, sizeof(msg));
+	}
+	else
+	{
+		g_Console.LOG(1, "[RItemQualityChangeUpdate] Database query failed. dwResult = %d", pMessage->dwResult);
+	}
+}
+
+void ItemShopUseLog(WORD Type, DWORD dwChrID, char* CharName, WORD wItemIdx, char* ItemName, WORD wItemNum, DWORD TotalMall, DWORD UseMall, DWORD LastMall, DWORD TotalGold, DWORD UseGold, DWORD LastGold, DWORD TotalMoney, DWORD UseMoney, DWORD LastMoney)
+{//商城使用日志
+
+	sprintf(txt, "EXEC  %s %d,%d,\'%s\',%d,\'%s\',%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", "dbo.up_ItemShopUseLog", Type, dwChrID, CharName, wItemIdx, ItemName, wItemNum, TotalMall, UseMall, LastMall, TotalGold, UseGold, LastGold, TotalMoney, UseMoney, LastMoney);
+
+	g_DB.LogQuery(eQueryType_FreeQuery, eLogItemMoney, 0, txt);
 }

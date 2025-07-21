@@ -384,6 +384,8 @@ enum   DBMESSAGEIDFUNC
 	eInstanceDungeonRankUpdate,
 	eInstanceDungeonRankLoad,
     eUpDateGradeItem,
+	eItemQualityUpdate,
+	eItemQualityChangeUpdate,
 	MaxQuery
 };
 #define STORED_TEST_QUERY	"UP_GAME_TEST_QUERY"
@@ -689,7 +691,7 @@ enum CHMugong
 enum CHItem	
 {
 	eCI_ObjectID = 0, eCI_DBIDX, eCI_IDX, eCI_Position, eCI_QPosition, eCI_Durability, eCI_Param, eCI_RareIdx,eCI_StoneIdx, eCI_Static,eCI_Grow,
-	eCI_PowerUp,eCI_Green, eCI_Grade30,//1
+	eCI_PowerUp,eCI_Green, eCI_Grade30,  eCI_Quality, eCI_Entry1, eCI_Entry2, eCI_Entry3//1
 };
 
 enum CHItemRare
@@ -982,7 +984,7 @@ enum Munpaboardinfo
 
 enum Munpaitem
 {
-	eMu_IMunpaID, eMu_IDBIDX, eMu_IIDX, eMu_IPosition, eMu_IDurability, eMu_IRareIdx,eMu_IStoneIdx,eMu_IStatic,eMu_IGrow, eMu_Grade30, //weiye 2015-10-25 仓库和成长数据
+	eMu_IMunpaID, eMu_IDBIDX, eMu_IIDX, eMu_IPosition, eMu_IDurability, eMu_IRareIdx,eMu_IStoneIdx,eMu_IStatic,eMu_IGrow, eMu_Grade30,  eMu_Quality, eMu_Entry1, eMu_Entry2, eMu_Entry3 //weiye 2015-10-25 仓库和成长数据
 };
 
 enum Munpacreateboardinfo
@@ -1016,7 +1018,7 @@ enum PyogukItemInfo
 {
 	ePI_DBIdx, ePI_IconIdx, ePI_Positon, ePI_QPosition, ePI_Durability, ePI_RareIdx,ePI_StoneIdx,ePI_Static,ePI_Grow,  // 2014-11-15 数据附加 , 数据, 成长数据
 
-	ePI_PowerUp,ePI_Green, ePI_Grade30,
+	ePI_PowerUp,ePI_Green, ePI_Grade30, ePI_Quality, ePI_Entry1, ePI_Entry2, ePI_Entry3
 };
 
 enum Pyogukitem
@@ -1028,7 +1030,7 @@ enum ePetInvenItemInfo
 {
 	//ePIII_DBIdx, ePIII_IconIdx, ePIII_Position, ePIII_Durability, ePIII_RareIdx,
 	ePIII_ObjectID = 0, ePIII_DBIDX, ePIII_IDX, ePIII_Position, ePIII_QPosition, ePIII_Durability, ePIII_MunpaIdx, ePIII_PyogukIdx, ePIII_ShopIdx, ePIII_Param, ePIII_RareIdx,ePIII_StoneIdx,ePIII_STATIC,ePIII_Grow, // 数据附加到宠物包袱! 数据，成长数据附加 2014-11-19
-	ePIII_PowerUp,ePIII_Green, ePII_Grade30,
+	ePIII_PowerUp,ePIII_Green, ePII_Grade30, ePIII_Quality, ePIII_Entry1, ePIII_Entry2, ePIII_Entry3
 };
 
 enum Friendlogout
@@ -1100,7 +1102,7 @@ enum ShopItem
 {
 	eMItm_ItemDBIdx, eMItm_ItemIdx, eMItm_Position, eMItm_Durability, eMItm_Param,eMItm_Static,eMItm_Grow,  // 和成长附加 2015-01-14
 
-	eMI_PowerUp,eMI_Green, eMItm_Grade30,
+	eMI_PowerUp,eMI_Green, eMItm_Grade30, eMItm_Quality, eMItm_Entry1, eMItm_Entry2, eMItm_Entry3
 };
 enum ShopItemUseInfo
 {
@@ -1205,11 +1207,11 @@ void MapBaseEconomy(BYTE MapNum);
 void AuctionRegist(BYTE ItemIdx, DWORD SellerID, DWORD EndDate, DWORD EndTime, DWORD StartPrice, DWORD ImmediatePrice, char Memo[256]);
 void AuctionPageQuery(DWORD CharacterIDX, BYTE PageNum);
 
-void SSItemInsert(DWORD CharacterIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, DWORD FromChrIdx, WORD bSeal=0,WORD bStatic=0,DWORD bGrow=0);  // 数据和成长数据附加 2015-01-15
+void SSItemInsert(DWORD CharacterIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, DWORD FromChrIdx, WORD bSeal=0,WORD bStatic=0,DWORD bGrow=0, WORD ItemQuality = 0, WORD ItemEntry1 = 0, WORD ItemEntry2 = 0, WORD ItemEntry3 = 0);  // 数据和成长数据附加 2015-01-15
 
 
 /* New Item Qurey Func */
-void ItemUpdateToDB(DWORD CharacterIdx, DWORD dwDBIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, WORD qPosition, DWORD RareIdx=0);
+void ItemUpdateToDB(DWORD CharacterIdx, DWORD dwDBIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, WORD qPosition, DWORD RareIdx=0, WORD bStatic = 0, WORD ItemQuality = 0, WORD ItemEntry1 = 0, WORD ItemEntry2 = 0, WORD ItemEntry3 = 0);
 //void ItemPyogukMunpaUpdateToDB(DWORD UserIDX, DWORD MunpaIDX, DWORD dwDBIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, WORD qPosition);
 void ItemCombineUpdateToDB(DWORD dwfromDBIdx, DURTYPE fromDur, DWORD dwToDBIdx, DURTYPE toDur);
 void ItemMoveUpdateToDB(DWORD CharacterIDX, DWORD dwfromDBIdx, POSTYPE frompos, DWORD dwtoDBIdx, POSTYPE topos);
@@ -1217,11 +1219,11 @@ void ItemMovePyogukUpdateToDB(DWORD CharacterIDX, DWORD UserIDX, DWORD dwfromDBI
 void ItemMoveGuildUpdateToDB(DWORD CharacterIDX, DWORD MunpaIDX, DWORD dwfromDBIdx, POSTYPE frompos, DWORD dwtoDBIdx, POSTYPE topos);
 void ItemMovePetInvenUpdateToDB(DWORD CharacterIDX, DWORD dwfromDBIdx, POSTYPE frompos, DWORD dwtoDBIdx, POSTYPE topos);
 //SW050920 RareIdx 眠啊
-void ItemInsertToDB(DWORD CharacterIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, DWORD dwKey, WORD bSeal=0,WORD bStatic=0,DWORD dwGrow=0);
+void ItemInsertToDB(DWORD CharacterIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, DWORD dwKey, WORD bSeal=0,WORD bStatic=0,DWORD dwGrow=0, WORD ItemQuality = 0, WORD ItemEntry1 = 0, WORD ItemEntry2 = 0, WORD ItemEntry3 = 0);
 void ItemDeleteToDB(DWORD dwDBIdx);
 void ItemOptionInsertToDB(DWORD CharacterIdx, WORD wItemIdx, POSTYPE Pos, ITEM_OPTION_INFO * pOptionInfo);
 //SW050920
-void ItemRareInsertToDB(DWORD CharacterIdx, WORD wItemIdx, /*DURTYPE Durability,*/ POSTYPE bPosition, DWORD dwKey, ITEM_RARE_OPTION_INFO* pRareOptionInfo );
+void ItemRareInsertToDB(DWORD CharacterIdx, WORD wItemIdx, /*DURTYPE Durability,*/ POSTYPE bPosition, DWORD dwKey, ITEM_RARE_OPTION_INFO* pRareOptionInfo, WORD ItemQuality = 0, WORD ItemEntry1 = 0, WORD ItemEntry2 = 0, WORD ItemEntry3 = 0);
 
 void ItemStoneInsertToDB(DWORD CharacterIdx,DWORD wItemIdx, DWORD wItemDBIdx,DWORD wStoneValue); // 系统数据 2014-11-14
 
@@ -2022,6 +2024,15 @@ void LoadInstanceDungeonRank(DWORD dwPlayerID);
 void RLoadInstanceDungeonRank(LPQUERY pData, LPDBMESSAGE pMessage);
 void UpdateGradeItem(DWORD dwPlayerID, DWORD ItemDbIdx, DWORD Grade, DWORD ItemStatic);
 void RUpdateGradeItem(LPQUERY pData, LPDBMESSAGE pMessage);
+
+void ItemQualityUpdateToDB(DWORD CharacterIdx, DWORD dwDBIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, WORD qPosition, DWORD RareIdx = 0, WORD bStatic = 0, WORD Grade = 0 ,WORD ItemQuality = 0, WORD ItemEntry1 = 0, WORD ItemEntry2 = 0, WORD ItemEntry3 = 0);
+void RItemQualityUpdate(LPQUERY pData, LPDBMESSAGE pMessage);
+void ItemQualityChangeUpdateToDB(DWORD CharacterIdx, DWORD dwDBIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, WORD qPosition, DWORD RareIdx/*=0*/, WORD bStatic /*= 0*/, WORD Grade, WORD ItemQuality/*=0*/, WORD ItemEntry1/*=0*/, WORD ItemEntry2/*=0*/, WORD ItemEntry3/*=0*/);
+void RItemQualityChangeUpdate(LPQUERY pData, LPDBMESSAGE pMessage);
+//商城使用日志
+void ItemShopUseLog(WORD Type, DWORD dwChrID, char* CharName, WORD wItemIdx, char* ItemName, WORD wItemNum, DWORD TotalMall, DWORD UseMall, DWORD LastMall, DWORD TotalGold, DWORD UseGold, DWORD LastGold, DWORD TotalMoney, DWORD UseMoney, DWORD LastMoney);
+
+
 #endif //__MAPBMSGPARSER_H__
 
 

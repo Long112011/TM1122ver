@@ -1011,7 +1011,7 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">
-    <OutDir>.\..\Obj\Mapserver\Release\</OutDir>
+    <OutDir>..\..\TMMSO\Mx_Client</OutDir>
     <IntDir>.\..\Obj\Mapserver\Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
@@ -2679,7 +2679,7 @@ copy ..\Obj\Mapserver\MapServer___Win32_Debug_CHINA\MapServer.pdb ..\ServerRelea
       <Optimization>Full</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>.\;..\[Lib]YHLibrary;..\[CC]ServerModule;..\[CC]Ability;..\[CC]BattleSystem;..\[CC]Skill;..\[CC]JACK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_MAPSERVER_;__MAPSERVER__;_FILE_BIN_;_KOR_LOCAL_;_DISTJ_;_TMMSO_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_MAPSERVER_;__MAPSERVER__;_FILE_BIN_;_KOR_LOCAL_;_DISTJ_;_TMMSO_;_JUEXING_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -2705,7 +2705,7 @@ copy ..\Obj\Mapserver\MapServer___Win32_Debug_CHINA\MapServer.pdb ..\ServerRelea
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;..\[Lib]YHLibrary\YHLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\Server\MapServer.exe</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>msvcrtd.lib;libc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ProgramDatabaseFile>.\..\Obj\Mapserver\Release/MapServer.pdb</ProgramDatabaseFile>

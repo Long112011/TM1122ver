@@ -30,6 +30,7 @@ enum GuildPointAddKind
 	eGuildTournamentMarks,
 	eGuildPlusTimeUse,
 	eGuildSkillUse,
+
 };
 
 

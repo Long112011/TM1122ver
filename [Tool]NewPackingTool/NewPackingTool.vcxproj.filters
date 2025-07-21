@@ -5,26 +5,23 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
     </Filter>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{2048cbff-9cb5-4fe0-9329-99fa949eaaba}</UniqueIdentifier>
+    <Filter Include="Dialog">
+      <UniqueIdentifier>{1371758f-c80e-4737-ab41-ca495502c53b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\NewPackingTool">
-      <UniqueIdentifier>{6daf9daa-8b5b-4427-8053-50d42a7ca9b3}</UniqueIdentifier>
+    <Filter Include="Tool">
+      <UniqueIdentifier>{6502e3c9-7cd4-4ddc-988a-127e0248d736}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Dialog">
-      <UniqueIdentifier>{1e7be8cb-a46e-4af8-813f-46c1de9c7f0e}</UniqueIdentifier>
+    <Filter Include="Lib">
+      <UniqueIdentifier>{1f2b332a-58c1-4bc4-8c90-0162ff2c6215}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Lib">
-      <UniqueIdentifier>{03010be9-f936-4c1f-8d23-a03fce9d44fb}</UniqueIdentifier>
+    <Filter Include="Lib\AES">
+      <UniqueIdentifier>{f4f46511-7c6b-4e8a-ab91-3d0c248d688f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Lib\AES">
-      <UniqueIdentifier>{a4b71b62-d12a-4f6c-bf94-d0837654eea8}</UniqueIdentifier>
+    <Filter Include="Lib\TinyXml">
+      <UniqueIdentifier>{1e005d22-a222-4db5-b359-4c38af88dfdb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Lib\TinyXml">
-      <UniqueIdentifier>{411ba516-d7db-4c6b-b3d8-efbf09fd920c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Lib\ScriptTest">
-      <UniqueIdentifier>{391dcab6-dabf-4031-9d30-b207445db8d8}</UniqueIdentifier>
+    <Filter Include="Lib\ScriptTest">
+      <UniqueIdentifier>{53be0554-68b0-4ad7-b80c-f5305aabec8c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -33,146 +30,134 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\NewPackingToolDoc.ico">
+    <None Include="res\NewPackingToolDoc.ico">
       <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="res\newpacktool.ico">
+    </None>
+    <None Include="res\newpacktool.ico">
       <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="res\Toolbar.bmp">
+    </None>
+    <None Include="res\Toolbar.bmp">
       <Filter>리소스 파일</Filter>
-    </Image>
+    </None>
+    <None Include="FileLIstDlg.htm" />
+    <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoolDialogBar.cpp">
-      <Filter>Source Files\Dialog</Filter>
+      <Filter>Dialog</Filter>
     </ClCompile>
     <ClCompile Include="FileListDlg.cpp">
-      <Filter>Source Files\Dialog</Filter>
+      <Filter>Dialog</Filter>
     </ClCompile>
     <ClCompile Include="OutPutDlg.cpp">
-      <Filter>Source Files\Dialog</Filter>
+      <Filter>Dialog</Filter>
     </ClCompile>
     <ClCompile Include="MainFrm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MHFileEx.cpp">
-      <Filter>Source Files\Lib</Filter>
-    </ClCompile>
-    <ClCompile Include="MHFileMng.cpp">
-      <Filter>Source Files\Lib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\[CC]Header\Aes\aes.cpp">
-      <Filter>Source Files\Lib\AES</Filter>
-    </ClCompile>
-    <ClCompile Include="..\[CC]Header\AESFile.cpp">
-      <Filter>Source Files\Lib\AES</Filter>
-    </ClCompile>
-    <ClCompile Include="tinyxml\tinystr.cpp">
-      <Filter>Source Files\Lib\TinyXml</Filter>
-    </ClCompile>
-    <ClCompile Include="tinyxml\tinyxml.cpp">
-      <Filter>Source Files\Lib\TinyXml</Filter>
-    </ClCompile>
-    <ClCompile Include="tinyxml\tinyxmlerror.cpp">
-      <Filter>Source Files\Lib\TinyXml</Filter>
-    </ClCompile>
-    <ClCompile Include="tinyxml\tinyxmlparser.cpp">
-      <Filter>Source Files\Lib\TinyXml</Filter>
-    </ClCompile>
-    <ClCompile Include="ScriptTest.cpp">
-      <Filter>Source Files\Lib\ScriptTest</Filter>
-    </ClCompile>
-    <ClCompile Include="ScriptTestMode.cpp">
-      <Filter>Source Files\Lib\ScriptTest</Filter>
-    </ClCompile>
-    <ClCompile Include="ScriptTestStr.cpp">
-      <Filter>Source Files\Lib\ScriptTest</Filter>
+      <Filter>Tool</Filter>
     </ClCompile>
     <ClCompile Include="NewPackingTool.cpp">
-      <Filter>Source Files\NewPackingTool</Filter>
+      <Filter>Tool</Filter>
     </ClCompile>
     <ClCompile Include="NewPackingToolDoc.cpp">
-      <Filter>Source Files\NewPackingTool</Filter>
+      <Filter>Tool</Filter>
     </ClCompile>
     <ClCompile Include="NewPackingToolView.cpp">
-      <Filter>Source Files\NewPackingTool</Filter>
+      <Filter>Tool</Filter>
     </ClCompile>
-    <ClCompile Include="MDITabs.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="MHFileEx.cpp">
+      <Filter>Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="MHFileMng.cpp">
+      <Filter>Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]Header\Aes\aes.cpp">
+      <Filter>Lib\AES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]Header\AESFile.cpp">
+      <Filter>Lib\AES</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyxml\tinystr.cpp">
+      <Filter>Lib\TinyXml</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyxml\tinyxml.cpp">
+      <Filter>Lib\TinyXml</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyxml\tinyxmlerror.cpp">
+      <Filter>Lib\TinyXml</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyxml\tinyxmlparser.cpp">
+      <Filter>Lib\TinyXml</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptTest.cpp">
+      <Filter>Lib\ScriptTest</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptTestMode.cpp">
+      <Filter>Lib\ScriptTest</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptTestStr.cpp">
+      <Filter>Lib\ScriptTest</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoolDialogBar.h">
-      <Filter>Source Files\Dialog</Filter>
+      <Filter>Dialog</Filter>
     </ClInclude>
     <ClInclude Include="FileListDlg.h">
-      <Filter>Source Files\Dialog</Filter>
+      <Filter>Dialog</Filter>
     </ClInclude>
     <ClInclude Include="OutPutDlg.h">
-      <Filter>Source Files\Dialog</Filter>
+      <Filter>Dialog</Filter>
     </ClInclude>
     <ClInclude Include="MainFrm.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MHFileEx.h">
-      <Filter>Source Files\Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="MHFileMng.h">
-      <Filter>Source Files\Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\[CC]Header\Aes\aes.h">
-      <Filter>Source Files\Lib\AES</Filter>
-    </ClInclude>
-    <ClInclude Include="..\[CC]Header\AESFile.h">
-      <Filter>Source Files\Lib\AES</Filter>
-    </ClInclude>
-    <ClInclude Include="tinyxml\tinystr.h">
-      <Filter>Source Files\Lib\TinyXml</Filter>
-    </ClInclude>
-    <ClInclude Include="tinyxml\tinyxml.h">
-      <Filter>Source Files\Lib\TinyXml</Filter>
-    </ClInclude>
-    <ClInclude Include="ScriptTest.h">
-      <Filter>Source Files\Lib\ScriptTest</Filter>
-    </ClInclude>
-    <ClInclude Include="ScriptTestMode.h">
-      <Filter>Source Files\Lib\ScriptTest</Filter>
-    </ClInclude>
-    <ClInclude Include="ScriptTestStr.h">
-      <Filter>Source Files\Lib\ScriptTest</Filter>
+      <Filter>Tool</Filter>
     </ClInclude>
     <ClInclude Include="NewPackingTool.h">
-      <Filter>Source Files\NewPackingTool</Filter>
+      <Filter>Tool</Filter>
     </ClInclude>
     <ClInclude Include="NewPackingToolDoc.h">
-      <Filter>Source Files\NewPackingTool</Filter>
+      <Filter>Tool</Filter>
     </ClInclude>
     <ClInclude Include="NewPackingToolView.h">
-      <Filter>Source Files\NewPackingTool</Filter>
+      <Filter>Tool</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>리소스 파일</Filter>
+      <Filter>Tool</Filter>
     </ClInclude>
-    <ClInclude Include="MDITabs.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="stdafx.h">
+      <Filter>Tool</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="FileLIstDlg.htm" />
+    <ClInclude Include="MHFileEx.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="MHFileMng.h">
+      <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\Aes\aes.h">
+      <Filter>Lib\AES</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\AESFile.h">
+      <Filter>Lib\AES</Filter>
+    </ClInclude>
+    <ClInclude Include="tinyxml\tinystr.h">
+      <Filter>Lib\TinyXml</Filter>
+    </ClInclude>
+    <ClInclude Include="tinyxml\tinyxml.h">
+      <Filter>Lib\TinyXml</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptTest.h">
+      <Filter>Lib\ScriptTest</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptTestMode.h">
+      <Filter>Lib\ScriptTest</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptTestStr.h">
+      <Filter>Lib\ScriptTest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="res\NewPackingTool.manifest" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="ReadMe.txt">
-      <Filter>리소스 파일</Filter>
-    </Text>
   </ItemGroup>
 </Project>

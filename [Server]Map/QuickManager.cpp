@@ -295,12 +295,12 @@ BOOL ChangeV(CPlayer * pPlayer, POSTYPE WhatSrcPos, WORD WhatSrcItemIdx, POSTYPE
 			return FALSE;
 
 
-		if(EI_TRUE != pSrcSlot->UpdateItemAbs(pPlayer, WhatSrcPos, 0,0,0,QuickPos,0,UB_QABSPOS))
+		if(EI_TRUE != pSrcSlot->UpdateItemAbs(pPlayer, WhatSrcPos, 0,0,0,QuickPos,0,0,0,0,0,0,UB_QABSPOS))
 			return FALSE;
 
 		// db update
 		ItemUpdateToDB(pPlayer->GetID(), pItemBase->dwDBIdx, pItemBase->wIconIdx, pItemBase->Durability, 
-						pItemBase->Position, pItemBase->QuickPosition, pItemBase->RareIdx );
+						pItemBase->Position, pItemBase->QuickPosition, pItemBase->RareIdx, pItemBase->ItemStatic, pItemBase->ItemQuality, pItemBase->ItemEntry1, pItemBase->ItemEntry2, pItemBase->ItemEntry3);
 	}
 
 	else if( quickGroup == eMUGONG_ICON )

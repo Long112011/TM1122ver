@@ -1,7 +1,3 @@
-
-
-
-
 // ChangeItemMgr.h: interface for the CChangeItemMgr class.
 //
 //////////////////////////////////////////////////////////////////////
@@ -10,24 +6,19 @@
 #define AFX_CHANGEITEMMGR_H__94A4A82B_1B66_44EE_9965_C0BAFC2B306C__INCLUDED_
 
 #if _MSC_VER > 1000
-
 #pragma once
 #endif // _MSC_VER > 1000
 
 #define CHANGEITEMMGR CChangeItemMgr::GetInstance()
 
 
-
 #define MAX_CHANGE_RATE	30001
-
+/*
 struct sCHANGEITEMUNIT
 {
 	WORD	wToItemIdx;
 	DWORD	dwToItemDur;
 	DWORD	dwPercent;
-
-
-
 };
 
 struct sCHANGEITEM
@@ -47,29 +38,25 @@ struct sMULTICHANGEITEM
 	WORD	wMaxSet;
 	unsigned int    nMaxItemSpace;
 	sCHANGEITEM*	pChangeItem;
-};
-
-/*
-struct sMULTICHANGEITEM
+};*/
+class CChangeItemMgr
 {
-	WORD	wLimitLevel;
-	WORD	wItemIdx;
-	WORD	wMaxSingle;
+	//enum ChangeType
+	//{
+	//	ChangeToMonster	= 7995,
+	//	ChangeToEvent2	= 7996,
+	//	ChangeToSuryun	= 7997,
+	//	ChangeToEvent1	= 7998,
+	//	ChangeToMoney	= 7999,
 
-	WORD	wMaxMulti;
-	sCHANGEITEMUNIT*	pSingleItemUnit;	
-	sCHANGEITEMUNIT*	pMultiItemUnit;
-};
-*/
+	//	MaxChangeType	= 8000,
+	//};
 
-
-class CChangeItemMgr  
-{
 	CYHHashTable<sCHANGEITEM>		m_ChangeItemList;
-	CYHHashTable<sMULTICHANGEITEM>	m_MultiChangeItemList;	
-	
+	CYHHashTable<sMULTICHANGEITEM>	m_MultiChangeItemList;
+
 public:
-	MAKESINGLETON( CChangeItemMgr );
+	MAKESINGLETON(CChangeItemMgr);
 	CChangeItemMgr();
 	virtual ~CChangeItemMgr();
 
@@ -77,26 +64,28 @@ public:
 	void	Release();
 	BOOL	LoadItemChange();
 
-	void		SetShoutBoxItem(CPlayer* pPlayer, DWORD wItemid);
-	int			 UseChangeItem( CPlayer* pPlayer, WORD TargetPos, WORD wItemIdx );	
-	int			 UseNormalChangeItem( CPlayer* pPlayer, WORD TargetPos, WORD wItemIdx, ITEMBASE* pItem );
-	int			 UseMultiChangeItem( CPlayer* pPlayer, WORD TargetPos, WORD wItemIdx, ITEMBASE* pItem );
-
-	unsigned int ChangedTotalItemNum(sMULTICHANGEITEM* pMultiChangeItem,WORD wMaxSet);//060613 Add by wonju
+	int			 UseChangeItem(CPlayer* pPlayer, WORD TargetPos, WORD wItemIdx);
+	int			 UseNormalChangeItem(CPlayer* pPlayer, WORD TargetPos, WORD wItemIdx, ITEMBASE* pItem);
+	int			 UseMultiChangeItem(CPlayer* pPlayer, WORD TargetPos, WORD wItemIdx, ITEMBASE* pItem);
+	unsigned int ChangedTotalItemNum(sMULTICHANGEITEM* pMultiChangeItem, WORD wMaxSet);//060613 Add by wonju
 
 	// ShopItem
-	int		UseChangeItemFromShopItem( CPlayer* pPlayer, WORD wItemIdx );
-
-	int		UseNormalChangeItemFromShopItem( CPlayer* pPlayer, WORD wItemIdx );
-	int		UseMultiChangeItemFromShopItem( CPlayer* pPlayer, WORD wItemIdx );
+	int		UseChangeItemFromShopItem(CPlayer* pPlayer, WORD wItemIdx);
+	int		UseNormalChangeItemFromShopItem(CPlayer* pPlayer, WORD wItemIdx);
+	int		UseMultiChangeItemFromShopItem(CPlayer* pPlayer, WORD wItemIdx);
 	//
 
-	sCHANGEITEMUNIT*	GetItemUnitFromCalPercent( WORD wItemIdx );
-	sCHANGEITEMUNIT*	GetMultiItemUnitFromCalPercent( sCHANGEITEM* pSet );
-	sCHANGEITEMUNIT*    GetMaxSpaceItemRef(sCHANGEITEM* pSet , DWORD& nMin );
+	sCHANGEITEMUNIT* GetItemUnitFromCalPercent(WORD wItemIdx);
+	sCHANGEITEMUNIT* GetMultiItemUnitFromCalPercent(sCHANGEITEM* pSet);
+	sCHANGEITEMUNIT* GetMaxSpaceItemRef(sCHANGEITEM* pSet, DWORD& nMin);
 
+	//2009. 1. 14. CBH - 牢亥 浇吩 八荤
+	BOOL IsMultiChangeItemSlot(CPlayer* pPlayer, sMULTICHANGEITEM* pMultiChangeItem);
+	BOOL IsNormalChangeItemSlot(CPlayer* pPlayer, sCHANGEITEMUNIT* pNormalChangeItem);
+	//箱子物品是否加锁
+	WORD GetToItemTypeForNormal(WORD wItemIdx);
+	//开箱要是类型检查
+	BOOL CheckBoxKey(WORD wCurNeedBoxKey, CPlayer* pPlayer, WORD& wKeyItemPos, DWORD& dwKeyItemIdx);
 };
 
 #endif // !defined(AFX_CHANGEITEMMGR_H__94A4A82B_1B66_44EE_9965_C0BAFC2B306C__INCLUDED_)
-
-

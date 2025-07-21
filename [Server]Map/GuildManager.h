@@ -38,6 +38,7 @@ enum GuildPointAddKind
 	eGuildSkillUse,
 	eGuildFortWar,
 	eGuildWar,
+	eGuildUseChangeItem,
 };
 
 enum eSectionForGuildHuntedMonsterCount

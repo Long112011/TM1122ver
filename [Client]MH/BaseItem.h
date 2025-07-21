@@ -57,6 +57,12 @@ public:
 
 	virtual inline void	SetGrade(DWORD Val) {}
 	virtual inline DWORD	GetGrade() { return 0; }
+
+	virtual inline WORD     GetQuality() { return 0; }
+	virtual inline WORD     GetEntry1() { return 0; }
+	virtual inline WORD     GetEntry2() { return 0; }
+	virtual inline WORD     GetEntry3() { return 0; }
+
 };
 
 #endif // !defined(AFX_BASEITEM_H__DBA8F3D4_D724_47CC_AB85_FB6382D443FD__INCLUDED_)

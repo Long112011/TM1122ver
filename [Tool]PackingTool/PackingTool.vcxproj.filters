@@ -2,16 +2,19 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{db2c446c-4544-4ed1-9abf-93ef0001066e}</UniqueIdentifier>
+      <UniqueIdentifier>{90c78347-d390-4eba-96e2-c541e026fa3b}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{d1db39d3-390a-4b3e-826a-14900f99e9b3}</UniqueIdentifier>
+      <UniqueIdentifier>{31956357-7b04-497e-af43-30ab9aedbd95}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{e6e80eeb-dc78-4ed7-a593-e8b08fbccda4}</UniqueIdentifier>
+      <UniqueIdentifier>{de44d53b-29f1-4af0-9574-51636c3668fe}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="AES">
+      <UniqueIdentifier>{fe742b34-f129-46a1-bee9-c37005900cdc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -41,6 +44,12 @@
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]Header\Aes\aes.cpp">
+      <Filter>AES</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]Header\AESFile.cpp">
+      <Filter>AES</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -79,14 +88,24 @@
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\[CC]Header\Aes\aes.h">
+      <Filter>AES</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]Header\AESFile.h">
+      <Filter>AES</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\PackingTool.ico">
+    <Image Include="res\PackingTool.ico">
       <Filter>Resource Files</Filter>
-    </None>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="res\PackingTool.rc2">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
   </ItemGroup>
 </Project>

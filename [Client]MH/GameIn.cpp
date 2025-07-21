@@ -231,7 +231,7 @@
 #include "RegistryManager.h"
 
 #include "FPSDialog.h"
-
+#include "GradeChangeDlg.h"		//ÎäÆ÷Éý½×Öµ×ªÒÆ¾í
 #include "TopDungeon.h"
 #ifdef _TESTCLIENT_
 #include "AppearanceManager.h"
@@ -370,7 +370,10 @@ CGameIn::CGameIn()
 
 	// magi82(47)
 	m_pStreetStallItemViewDlg = NULL;
-
+	///////////////////////////////////
+	m_QualityDlg = NULL;//¾õÐÑ
+	m_QualityChangeDlg = NULL;
+	m_GGDDlg = NULL;				//ÎäÆ÷Éý½×Öµ×ªÒÆ¾í
 	/////////////////////////////////////////////////////////////
 	// 06. 06. 2Â÷ ÀüÁ÷ - ÀÌ¿µÁØ
 	// ¹«°ø º¯È¯
@@ -987,6 +990,10 @@ void CGameIn::ReleaseForGame()
 	m_FPSDialog = NULL;
 
 	m_JackRebornInfo = NULL;
+
+	m_QualityDlg = NULL;
+	m_QualityChangeDlg = NULL;//¾õÐÑ
+	m_GGDDlg = NULL;				//ÎäÆ÷Éý½×Öµ×ªÒÆ¾í
 }
 
 void CGameIn::Release(CGameState* pNextGameState)

@@ -64,6 +64,9 @@ public:
 	DWORD CalStatusGradeInt(DWORD Status, WORD Grade);
 	float CalStatusGradefloat(float Status, WORD Grade);
 	void CalcTitanStats(DWORD dwDBIdx);	// magi82 - Titan(070809)
+
+	void CalcSetItemQualityStats();
+
 };
 
 #endif // !defined(AFX_STATSCALCMANAGER_H__1BA578DC_5092_4667_8FFC_6E3B15BF7B2E__INCLUDED_)

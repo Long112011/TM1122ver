@@ -82,6 +82,9 @@
 #include "MainGame.h"
 #include "MoneyPacketDialog.h"
 #include "ChangeLookDialog.h"
+#include "ItemQualityDlg.h"
+#include "ItemQualityChangeDlg.h"
+#include "GradeChangeDlg.h"//武器升阶值转移卷
 extern  int  m_PetPos;
 extern BOOL IsMultiPet;
 CInventoryExDialog::CInventoryExDialog()
@@ -1217,12 +1220,14 @@ void CInventoryExDialog::UseItem(CItem* pItem, BYTE ActionType)
 		else if (pInfo->ItemIdx == eSundries_RareItemCreate50 ||
 			pInfo->ItemIdx == eSundries_RareItemCreate70 ||
 			pInfo->ItemIdx == eSundries_RareItemCreate90 ||
-			pInfo->ItemIdx == eSundries_RareItemCreate99 || 
-			
-			pInfo->ItemIdx == eSpecialBlessingStoneSTR ||
-			pInfo->ItemIdx == eSpecialBlessingStoneAGI ||
-			pInfo->ItemIdx == eSpecialBlessingStoneCON ||
-			pInfo->ItemIdx == eSpecialBlessingStoneINT)
+			pInfo->ItemIdx == eSundries_RareItemCreate99
+			//|| 
+			//
+			//pInfo->ItemIdx == eSpecialBlessingStoneSTR ||
+			//pInfo->ItemIdx == eSpecialBlessingStoneAGI ||
+			//pInfo->ItemIdx == eSpecialBlessingStoneCON ||
+			//pInfo->ItemIdx == eSpecialBlessingStoneINT
+			)
 
 
 
@@ -1232,9 +1237,83 @@ void CInventoryExDialog::UseItem(CItem* pItem, BYTE ActionType)
 				return;
 			OBJECTSTATEMGR->StartObjectState(HERO, eObjectState_Deal);
 			GAMEIN->GetRareCreateDlg()->SetShopItemInfo(pItem->GetItemIdx(), pItem->GetPosition());
-			GAMEIN->GetRareCreateDlg()->Clear_RARE_INFO();
+			GAMEIN->GetRareCreateDlg()->Clear();
 			GAMEIN->GetRareCreateDlg()->SetActive(TRUE);
 		}
+#ifdef _JUEXING_
+
+
+
+		else if (pInfo->ItemIdx == eItemStone_Quality1_50 ||
+			pInfo->ItemIdx == eItemStone_Quality51_70 ||
+			pInfo->ItemIdx == eItemStone_Quality71_999)
+			{
+				if (HERO->GetState() != eObjectState_None && HERO->GetState() != eObjectState_Immortal)
+					return;
+
+				OBJECTSTATEMGR->StartObjectState(HERO, eObjectState_Deal);
+
+				CItemQualityDlg* pDlg = (CItemQualityDlg*)GAMEIN->GetItemQualityDlg();
+
+				ITEM_INFO* pInfo = ITEMMGR->GetItemInfo(pItem->GetItemIdx());
+
+				if (!pInfo)
+				{
+					return;
+				}
+				pItem->SetLock(TRUE);
+				pDlg->SetShopItemInfo(pItem->GetItemIdx(), pItem->GetPosition());
+				if (pDlg->IsActive())
+				{
+					pDlg->SetActive(FALSE);
+					pItem->SetLock(FALSE);
+				}
+				else
+				{
+					pDlg->SetActive(TRUE);
+				}
+		}
+
+
+		else if (pInfo->ItemIdx >= 51513 && pInfo->ItemIdx <= 51539)
+		{
+			if (HERO->GetState() != eObjectState_None && HERO->GetState() != eObjectState_Immortal)
+				return;
+
+			OBJECTSTATEMGR->StartObjectState(HERO, eObjectState_Deal);
+
+			CItemQualityChangeDlg* pDlg = (CItemQualityChangeDlg*)GAMEIN->GetItemQualityChangeDlg();
+
+			ITEM_INFO* pInfo = ITEMMGR->GetItemInfo(pItem->GetItemIdx());
+
+			if (!pInfo)
+			{
+				return;
+			}
+			pItem->SetLock(TRUE);
+			pDlg->SetShopItemInfo(pItem->GetItemIdx(), pItem->GetPosition());
+			if (pDlg->IsActive())
+			{
+				pDlg->SetActive(FALSE);
+				pItem->SetLock(FALSE);
+			}
+			else
+			{
+				pDlg->SetActive(TRUE);
+			}
+			}
+
+#endif // _JUEXING_
+		else if (pInfo->ItemIdx == eSundries_GradeChange)	//武器升阶值转移卷
+		{
+			if (HERO->GetState() != eObjectState_None && HERO->GetState() != eObjectState_Immortal)
+				return;
+
+			OBJECTSTATEMGR->StartObjectState(HERO, eObjectState_Deal);
+			GAMEIN->GetGradeChangeDlg()->SetShopItemInfo(pItem->GetItemIdx(), pItem->GetPosition());
+			GAMEIN->GetGradeChangeDlg()->SetActive(TRUE);
+			}
+
 		else if (pInfo->ItemIdx == eIncantation_PetRevival)
 		{
 			if (HERO->GetState() != eObjectState_None && HERO->GetState() != eObjectState_Immortal)
@@ -2415,6 +2494,419 @@ void CInventoryExDialog::Linking()
 		p_Money = (cStatic*)GetWindowForID(IN_BACKMONEY);	//返回金钱/泡点/元宝
 		p_PaoDian = (cStatic*)GetWindowForID(IN_BACKPODIAN);
 		p_Gold = (cStatic*)GetWindowForID(IN_BACKGOLD);
+
+		pBuffBtn = (cButton*)GetWindowForID(IN_GETBUFFLIST);
+	}
+}
+void CInventoryExDialog::GetBuff()
+{
+	char line[512];
+
+	sprintf(line,  CHATMGR->GetChatMsg(2763));
+	pBuffBtn->AddToolTipLine(line, TTTC_ITEMGROW5);
+	pBuffBtn->AddToolTipLine("");
+
+	DWORD color = TTTC_ITEMGROW;
+	if (HERO->GetSetItemQualityStats()->wGenGol != 0)
+	{
+		sprintf(line, "%s +%d  Max:%d", CHATMGR->GetChatMsg(382), HERO->GetSetItemQualityStats()->wGenGol, 40);
+		if (HERO->GetSetItemQualityStats()->wGenGol == 40)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->wMinChub != 0)
+	{
+		sprintf(line, "%s +%d  Max:%d", CHATMGR->GetChatMsg(383), HERO->GetSetItemQualityStats()->wMinChub, 40);
+		if (HERO->GetSetItemQualityStats()->wMinChub == 40)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->wCheRyuk != 0)
+	{
+		sprintf(line, "%s +%d  Max:%d", CHATMGR->GetChatMsg(384), HERO->GetSetItemQualityStats()->wCheRyuk, 60);
+		if (HERO->GetSetItemQualityStats()->wCheRyuk == 60)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->wSimMek != 0)
+	{
+		sprintf(line, "%s +%d  Max:%d", CHATMGR->GetChatMsg(385), HERO->GetSetItemQualityStats()->wSimMek, 40);
+		if (HERO->GetSetItemQualityStats()->wSimMek == 40)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->dwLife != 0)
+	{
+		sprintf(line, "%s  +%d%%  Max:%d%%", CHATMGR->GetChatMsg(2764), HERO->GetSetItemQualityStats()->dwLife, 60);
+		if (HERO->GetSetItemQualityStats()->dwLife == 60)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->dwShield != 0)
+	{
+		sprintf(line, "%s  +%d%%  Max:%d%%", CHATMGR->GetChatMsg(2765),HERO->GetSetItemQualityStats()->dwShield, 60);
+		if (HERO->GetSetItemQualityStats()->dwShield == 60)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->dwNaeRyuk != 0)
+	{
+		sprintf(line, "内力+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->dwNaeRyuk, 60);
+		if (HERO->GetSetItemQualityStats()->dwNaeRyuk == 60)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->AttrRegistDef != 0)
+	{
+		sprintf(line, "属性防御+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->AttrRegistDef, 30);
+		if (HERO->GetSetItemQualityStats()->AttrRegistDef == 30)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->wPhyDef != 0)
+	{
+		sprintf(line, "物理防御+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->wPhyDef, 30);
+		if (HERO->GetSetItemQualityStats()->wPhyDef == 30)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->NaegongDamage != 0)
+	{
+		sprintf(line, "内功伤害+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->NaegongDamage, 20);
+		if (HERO->GetSetItemQualityStats()->NaegongDamage == 20)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->WoigongDamage != 0)
+	{
+		sprintf(line, "外功伤害+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->WoigongDamage, 20);
+		if (HERO->GetSetItemQualityStats()->WoigongDamage == 20)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->wDodgeRate != 0)
+	{
+		sprintf(line, "闪避+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->wDodgeRate, 20);
+		if (HERO->GetSetItemQualityStats()->wDodgeRate == 20)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->PlayerPhyDefDown != 0)
+	{
+		sprintf(line, "PVP破甲+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->PlayerPhyDefDown, 20);
+		if (HERO->GetSetItemQualityStats()->PlayerPhyDefDown == 20)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->PlayerAttrDefDown != 0)
+	{
+		sprintf(line, "PVP破魔+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->PlayerAttrDefDown, 20);
+		if (HERO->GetSetItemQualityStats()->PlayerAttrDefDown == 20)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->TargetPhyDefDown != 0)
+	{
+		sprintf(line, "PVE破甲+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->TargetPhyDefDown, 30);
+		if (HERO->GetSetItemQualityStats()->TargetPhyDefDown == 30)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->TargetAttrDefDown != 0)
+	{
+		sprintf(line, "PVE破魔+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->TargetAttrDefDown, 30);
+		if (HERO->GetSetItemQualityStats()->TargetAttrDefDown == 30)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->fDodgeRate != 0)
+	{
+		sprintf(line, "命中+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->fDodgeRate, 20);
+		if (HERO->GetSetItemQualityStats()->fDodgeRate == 20)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->MallMoneyPuls != 0)
+	{
+		sprintf(line, "泡点加成+%d  Max:%d", HERO->GetSetItemQualityStats()->MallMoneyPuls, 20);
+		if (HERO->GetSetItemQualityStats()->MallMoneyPuls == 20)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->KyunggongSpeed != 0)
+	{
+		sprintf(line, "轻功速度+%d  Max:%d", HERO->GetSetItemQualityStats()->KyunggongSpeed, 200);
+		if (HERO->GetSetItemQualityStats()->KyunggongSpeed == 200)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->AttMonsterDamage != 0)
+	{
+		sprintf(line, "PVE最终伤害+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->AttMonsterDamage, 20);
+		if (HERO->GetSetItemQualityStats()->AttMonsterDamage == 20)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->AttPlayerDamage != 0)
+	{
+		sprintf(line, "PVP最终伤害+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->AttPlayerDamage, 10);
+		if (HERO->GetSetItemQualityStats()->AttPlayerDamage == 10)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->RealDamageDown != 0)
+	{
+		sprintf(line, "受到伤害减少%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->RealDamageDown, 20);
+		if (HERO->GetSetItemQualityStats()->RealDamageDown == 20)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->PVPLifePlus != 0)
+	{
+		sprintf(line, "PVP吸血几率+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->PVPLifePlus, 20);
+		if (HERO->GetSetItemQualityStats()->PVPLifePlus == 20)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->Resurrected != 0)
+	{
+		sprintf(line, "%d%%几率满血复活  Max:%d%%", HERO->GetSetItemQualityStats()->Resurrected, 20);
+		if (HERO->GetSetItemQualityStats()->Resurrected == 20)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->Critical != 0)
+	{
+		sprintf(line, "外功暴击率+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->Critical, 30);
+		if (HERO->GetSetItemQualityStats()->Critical == 30)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->Decisive != 0)
+	{
+		sprintf(line, "内功暴击率+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->Decisive, 30);
+		if (HERO->GetSetItemQualityStats()->Decisive == 30)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->CriticalDamage != 0)
+	{
+		sprintf(line, "外功暴击伤害+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->CriticalDamage, 20);
+		if (HERO->GetSetItemQualityStats()->CriticalDamage == 20)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->DecisiveDamage != 0)
+	{
+		sprintf(line, "内功暴击伤害+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->DecisiveDamage, 20);
+		if (HERO->GetSetItemQualityStats()->DecisiveDamage == 20)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
+	}
+	if (HERO->GetSetItemQualityStats()->ContinueAttAttack != 0)
+	{
+		sprintf(line, "持续伤害+%d%%  Max:%d%%", HERO->GetSetItemQualityStats()->ContinueAttAttack, 20);
+		if (HERO->GetSetItemQualityStats()->ContinueAttAttack == 20)
+		{
+			color = TTTC_ITEMGROW5;
+		}
+		else
+		{
+			color = TTTC_ITEMGROW0;
+		}
+
+		pBuffBtn->AddToolTipLine(line, color);
 	}
 }
 CItem * CInventoryExDialog::GetItemLike(WORD wItemIdx)

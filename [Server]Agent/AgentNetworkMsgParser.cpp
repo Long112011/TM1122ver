@@ -4289,7 +4289,7 @@ void MP_HACKCHECKMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 		}
 		break;	
 	case MP_CLIENT_HACKUSER_MSG_SYN:
-		{//[客户端检测到骇客软件消息][BY:十里坡剑神][QQ:112582793][2019-6-25][14:20:01]
+		{//[客户端检测到骇客软件消息][BY:十里坡剑传奇][QQ:112582793][2019-6-25][14:20:01]
 
 			
 			//g_Console.LOG(4, "Rank Manager INIT : [%04d-%02d-%02d %02d:%02d:%02d]",
@@ -4814,6 +4814,23 @@ void MP_ITEMUserMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 			ChaseFindUser( pmsg->dwObjectID, Name, pmsg->dwItemIdx );
 		}
 		break;
+	case MP_ITEM_SHOPITEM_GRADECHANGE_SYN:	//武器升阶值转移卷
+	{
+		USERINFO* pUserInfo = g_pUserTable->FindUser(dwConnectionIndex);
+		MSG_DWORD6* pmsg = (MSG_DWORD6*)pMsg;
+		if (!pUserInfo) return;
+
+		if (!(pUserInfo->UserLevel == eUSERLEVEL_GM ||
+			pUserInfo->UserLevel == eUSERLEVEL_PROGRAMMER ||
+			pUserInfo->UserLevel == eUSERLEVEL_DEVELOPER))	//若发送封包者帐号不是GM则需要进行验证
+		{
+			if (pmsg->dwObjectID != pUserInfo->dwCharacterID)	//检测若连接者的ID与要求的ID不同则返回不执行
+				return;
+		}
+
+		TransToMapServerMsgParser(dwConnectionIndex, pMsg, dwLength);
+	}
+	break;
 	case MP_ITEM_NPCCODE_SYN:
 		{
 			SEND_CHANGENAMEBASE* pmsg = (SEND_CHANGENAMEBASE*)pMsg;

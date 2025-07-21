@@ -69,7 +69,7 @@ void CStreetStallItemViewDlg::SetItemInfo( STREETSTALL_ITEM_INFO* pInfo, WORD wM
 {
 	char buf[64] = { 0, };
 	char buf2[64] = { 0, };
-	int nItemIdx = 0, nPrice = 0, nDur = 0, nDBIdx = 0, nRare = 0,nStone=0,nGrow=0 ,nGrade30 = 0;   //  2014-11-15
+	int nItemIdx = 0, nPrice = 0, nDur = 0, nDBIdx = 0, nRare = 0,nStone=0,nGrow=0 ,nGrade30 = 0, nQuality = 0, nEntry1 = 0, nEntry2 = 0, nEntry3 = 0;   //  2014-11-15
 
 	memset( m_sItemInfo, 0, sizeof(m_sItemInfo) );
 	memcpy( m_sItemInfo, pInfo, wMaxCount*sizeof(STREETSTALL_ITEM_INFO) );
@@ -85,6 +85,10 @@ void CStreetStallItemViewDlg::SetItemInfo( STREETSTALL_ITEM_INFO* pInfo, WORD wM
 		nStone= m_sItemInfo[i].dwStoneIdx;   // 2014-12-15 
 		nGrow = m_sItemInfo[i].dwGrow;       // 2015-01-17 
 		nGrade30 = m_sItemInfo[i].dwGrade30;
+		nQuality = m_sItemInfo[i].dwQuality;
+		nEntry1 = m_sItemInfo[i].dwEntry1;
+		nEntry2 = m_sItemInfo[i].dwEntry2;
+		nEntry3 = m_sItemInfo[i].dwEntry3;
 
 
 		if( 0 == nItemIdx )

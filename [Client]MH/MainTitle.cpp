@@ -232,6 +232,7 @@ BOOL CMainTitle::Init(void* pInitParam)
 		DungeonMGR->LoadFBEntranceCondition();
 		DungeonMGR->LoadToolTipList();
 		GAMERESRCMNGR->LoadDataUpGrade();
+		ITEMMGR->LoadSetItemQualityOption();
 		g_bResourceLoaded = TRUE;
 	}
 

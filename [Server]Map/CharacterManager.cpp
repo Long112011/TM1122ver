@@ -103,7 +103,7 @@ BOOL CCharacterManager::ArrangeCharMinusPoint(CPlayer * pPlayer, WORD type)
 			point = pPlayer->GetGenGol() - pPlayer->GetAbilityStats()->StatGen - pPlayer->GetItemStats()->GenGol - 
 				pPlayer->GetShopItemStats()->Gengol - pPlayer->GetAvatarOption()->Gengol - pPlayer->GetSetItemStats()->wGenGol - 
 
-				pPlayer->GetUniqueItemStats()->nGengol;
+				pPlayer->GetUniqueItemStats()->nGengol - pPlayer->GetSetItemQualityStats()->wGenGol;
 
 
 			if( point <= 12 )
@@ -117,7 +117,7 @@ BOOL CCharacterManager::ArrangeCharMinusPoint(CPlayer * pPlayer, WORD type)
 
 			point = pPlayer->GetSimMek() - pPlayer->GetAbilityStats()->StatSim - pPlayer->GetItemStats()->SimMaek - 
 				pPlayer->GetShopItemStats()->Simmek - pPlayer->GetAvatarOption()->Simmek - pPlayer->GetSetItemStats()->wSimMek - 
-				pPlayer->GetUniqueItemStats()->nSimMek;
+				pPlayer->GetUniqueItemStats()->nSimMek - pPlayer->GetSetItemQualityStats()->wSimMek;
 
 			if( point <= 12 )
 				return FALSE;
@@ -129,7 +129,7 @@ BOOL CCharacterManager::ArrangeCharMinusPoint(CPlayer * pPlayer, WORD type)
 		{
 			point = pPlayer->GetMinChub() - pPlayer->GetAbilityStats()->StatMin - pPlayer->GetItemStats()->MinChub - 
 				pPlayer->GetShopItemStats()->Minchub - pPlayer->GetAvatarOption()->Minchub - pPlayer->GetSetItemStats()->wMinChub - 
-				pPlayer->GetUniqueItemStats()->nMinChub;
+				pPlayer->GetUniqueItemStats()->nMinChub - pPlayer->GetSetItemQualityStats()->wMinChub;
 
 			if( point <= 12 )
 				return FALSE;
@@ -141,7 +141,7 @@ BOOL CCharacterManager::ArrangeCharMinusPoint(CPlayer * pPlayer, WORD type)
 		{
 			point = pPlayer->GetCheRyuk() - pPlayer->GetAbilityStats()->StatChe - pPlayer->GetItemStats()->CheRyuk - 
 				pPlayer->GetShopItemStats()->Cheryuk - pPlayer->GetAvatarOption()->Cheryuk - pPlayer->GetSetItemStats()->wCheRyuk - 
-				pPlayer->GetUniqueItemStats()->nCheRyuk;
+				pPlayer->GetUniqueItemStats()->nCheRyuk - pPlayer->GetSetItemQualityStats()->wCheRyuk;
 
 			if( point <= 12 )
 				return FALSE;

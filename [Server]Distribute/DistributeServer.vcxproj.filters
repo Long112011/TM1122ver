@@ -28,7 +28,7 @@
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
     <Filter Include="JACK">
-      <UniqueIdentifier>{6825f16f-f571-4132-8e8f-bc2300ab6f47}</UniqueIdentifier>
+      <UniqueIdentifier>{d07e1c73-884a-49c7-8e35-f53646401c4d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -110,22 +110,22 @@
     <ClCompile Include="..\[CC]Header\TargetList\TargetListIterator.cpp">
       <Filter>Common\TargetList</Filter>
     </ClCompile>
-    <ClCompile Include="..\[CC]JACK\JackJack.cpp">
-      <Filter>JACK</Filter>
+    <ClCompile Include="..\[CC]Header\Server_CMD.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\[CC]JACK\Crc32Static.cpp">
       <Filter>JACK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\[CC]JACK\MHFile.cpp">
-      <Filter>JACK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\[CC]Header\Server_CMD.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\[CC]JACK\DateMngr.cpp">
       <Filter>JACK</Filter>
     </ClCompile>
     <ClCompile Include="..\[CC]JACK\HantarManager.cpp">
+      <Filter>JACK</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]JACK\JackJack.cpp">
+      <Filter>JACK</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]JACK\MHFile.cpp">
       <Filter>JACK</Filter>
     </ClCompile>
   </ItemGroup>
@@ -334,26 +334,26 @@
     <ClInclude Include="..\4DyuchiGXGFunc\type.h">
       <Filter>EngineLib\4DyuchiGXGFunc</Filter>
     </ClInclude>
-    <ClInclude Include="..\[CC]JACK\JackHeaderStruct.h">
-      <Filter>JACK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\[CC]JACK\JackJack.h">
-      <Filter>JACK</Filter>
-    </ClInclude>
+    <ClInclude Include="..\[CC]Header\Server_CMD.h" />
     <ClInclude Include="..\[CC]JACK\Common.h">
       <Filter>JACK</Filter>
     </ClInclude>
     <ClInclude Include="..\[CC]JACK\Crc32Static.h">
       <Filter>JACK</Filter>
     </ClInclude>
-    <ClInclude Include="..\[CC]JACK\MHFile.h">
-      <Filter>JACK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\[CC]Header\Server_CMD.h" />
     <ClInclude Include="..\[CC]JACK\DateMngr.h">
       <Filter>JACK</Filter>
     </ClInclude>
     <ClInclude Include="..\[CC]JACK\HantarManager.h">
+      <Filter>JACK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]JACK\JackHeaderStruct.h">
+      <Filter>JACK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]JACK\JackJack.h">
+      <Filter>JACK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]JACK\MHFile.h">
       <Filter>JACK</Filter>
     </ClInclude>
   </ItemGroup>

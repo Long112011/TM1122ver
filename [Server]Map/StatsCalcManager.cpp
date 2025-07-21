@@ -56,7 +56,7 @@ DWORD CalStatusGradeInt(DWORD Status, WORD Grade)
 	float getdmgmin = Status;
 	for (int i = 0; i < Grade; i++)
 	{
-		getdmgmin = getdmgmin + (getdmgmin * 2.80 / 100);//狂人2.5 //财神3.5
+		getdmgmin = getdmgmin + (getdmgmin * 2.80 / 100);//狂人2.5 //财传奇3.5
 	}
 	int CalGrade = static_cast<int>(getdmgmin);
 	return CalGrade;
@@ -67,7 +67,7 @@ float CalStatusGradefloat(float Status, WORD Grade)
 	float getdmgmin = Status;
 	for (int i = 0; i < Grade; i++)
 	{
-		getdmgmin = getdmgmin + (getdmgmin * 2.80 / 100);//狂人2.5 //财神3.5
+		getdmgmin = getdmgmin + (getdmgmin * 2.80 / 100);//狂人2.5 //财传奇3.5
 	}
 	int CalGrade = static_cast<int>(getdmgmin);
 	return (float)getdmgmin;
@@ -173,7 +173,14 @@ void CStatsCalcManager::CalcItemStats(PLAYERTYPE* pPlayer)
 			item_stats->RangeAttackPowerMin += (WORD)(CalStatusGradeInt(pItemInfo->RangeAttackMin, pTargetItemBase->Grade30) * ApplyRate);
 			item_stats->RangeAttackPowerMax += (WORD)(CalStatusGradeInt(pItemInfo->RangeAttackMax, pTargetItemBase->Grade30) * ApplyRate);
 		}
-		
+		//特殊属性
+		if (pItemInfo->WeaponType == 2)
+		{//佩戴武器为拳时/每5点体质加一点攻击
+			item_stats->MeleeAttackPowerMin += pPlayer->GetCheRyuk() / 10;
+			item_stats->MeleeAttackPowerMax += pPlayer->GetCheRyuk() / 10;
+			item_stats->RangeAttackPowerMin += pPlayer->GetCheRyuk() / 10;
+			item_stats->RangeAttackPowerMax += pPlayer->GetCheRyuk() / 10;
+		}
 		item_stats->PhysicalDefense += (WORD)(CalStatusGradeInt(pItemInfo->PhyDef, pTargetItemBase->Grade30) * ApplyRate);//天墨技术修改 2023 - 12 - 29 修复65535 极限
 		item_stats->GenGol += (WORD)(CalStatusGradeInt(pItemInfo->GenGol, pTargetItemBase->Grade30) * ApplyRate);
 		item_stats->MinChub += (WORD)(CalStatusGradeInt(pItemInfo->MinChub, pTargetItemBase->Grade30) * ApplyRate);
@@ -458,7 +465,7 @@ void CStatsCalcManager::CalcItemStats(PLAYERTYPE* pPlayer)
 
 	// magi82 - UniqueItem(070626)
 	CalcUniqueItemStats(pPlayer);
-	
+	CalcSetItemQualityStats(pPlayer); //品质
 	// 酒捞袍 荐摹啊 函版登搁 某腐磐 荐摹档 函版
 	CalcCharStats(pPlayer);
 }
@@ -685,5 +692,33 @@ void CStatsCalcManager::CalcUniqueItemStats(PLAYERTYPE* pPlayer)
 	}
 }
 //////////////////////////////////////////////////////////////////////////
+void CStatsCalcManager::CalcSetItemQualityStats(CPlayer* pPlayer)
+{
+	pPlayer->ClearSetitemQualityOption();
 
+	//厘馒等 技飘酒捞牌狼 辆幅客 肮荐甫 八祸茄促.
+	for (POSTYPE pos = TP_WEAR_START; pos < TP_WEAR_END; ++pos)
+	{
+		const ITEMBASE* pTargetItemBase = ITEMMGR->GetItemInfoAbsIn(pPlayer, pos);
+
+		if (pTargetItemBase == NULL)
+		{
+			continue;
+		}
+
+		if (pTargetItemBase->dwDBIdx == 0)
+		{
+			continue;
+		}
+
+		ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(pTargetItemBase->wIconIdx);
+
+		if (pItemInfo == NULL)
+			continue;
+		SET_ITEMQUALITY_OPTION* pSetItemOption = NULL;
+		pSetItemOption = ITEMMGR->GetSetItemQualityOption(pTargetItemBase->ItemQuality, pTargetItemBase->ItemEntry1, pTargetItemBase->ItemEntry2);
+
+		pPlayer->AddSetitemQualityOption(pSetItemOption);
+	}
+}
 

@@ -69,6 +69,7 @@ class CHero : public CPlayer
 	bool	bAllowedMoveToPos;
 
 	BOOL	bDebugInfo;
+	SET_ITEMQUALITY_OPTION m_setItemQualityStats;//¾õÐÑ
 	//
 	
 public:
@@ -89,6 +90,7 @@ public:
 	player_calc_stats* GetItemStats()			{	return &m_itemStats;		}
 	// 2007. 6. 18. CBH - ¼¼Æ®¾ÆÀÌÅÆ ´É·ÂÄ¡ ±¸Á¶Ã¼ ¹ÝÈ¯ ÇÔ¼ö Ãß°¡
 	SET_ITEM_OPTION* GetSetItemStats()		{	return &m_setItemStats;		}	
+	SET_ITEMQUALITY_OPTION* GetSetItemQualityStats() { return &m_setItemQualityStats; }//¾õÐÑ
 	UNIQUE_ITEM_OPTION_INFO* GetUniqueItemStats(){	return &m_UniqueItemStats;	}	// magi82 - UniqueItem(070626)
 	
 	// InitXXX°è¿­ÀÇ ÇÔ¼ö È£Ãâ ÈÄ  ÀÎÅÍÆäÀÌ½º¿¡ Ç¥½ÃÇÒ ÇÊ¿ä°¡ÀÖ´Â °Íµé À§ÇØ
@@ -103,14 +105,11 @@ public:
 	virtual DWORD DoGetMaxNaeRyuk();
 	virtual void SetMaxNaeRyuk(DWORD val);
 	virtual void SetNaeRyuk(DWORD val, BYTE type = 1);
-	virtual DWORD DoGetPhyDefense()
-	{ return (int)(GetCharStats()->PhysicalDefense+GetItemStats()->PhysicalDefense+GetAbilityStats()->DefenceUp+GetSetItemStats()->wPhyDef
-	+GetUniqueItemStats()->nDefen) >= 0 ? GetCharStats()->PhysicalDefense+GetItemStats()->PhysicalDefense+GetAbilityStats()->DefenceUp+
-	GetSetItemStats()->wPhyDef+GetUniqueItemStats()->nDefen : 0; }
-	virtual float DoGetAttDefense(WORD Attrib)
-	{ return GetItemStats()->AttributeResist.GetElement_Val(Attrib) + GetAbilityStats()->AttRegistUp.GetElement_Val(Attrib) + GetSetItemStats()->AttrRegist.GetElement_Val(Attrib); }	
-	virtual DWORD DoGetPhyAttackPowerMin();
-	virtual DWORD DoGetPhyAttackPowerMax();
+	virtual DWORD DoGetPhyDefense();
+
+	virtual float DoGetAttDefense(WORD Attrib);
+	virtual DWORD DoGetPhyAttackPowerMin();//¼ÆËãÎäÆ÷¹¥»÷½ü¾àÀë»òÔ¶¾àÀë
+	virtual DWORD DoGetPhyAttackPowerMax();//¼ÆËãÎäÆ÷¹¥»÷½ü¾àÀë»òÔ¶¾àÀë
 #ifdef _JAPAN_LOCAL_
 	virtual float DoGetAddAttackRange(){	return (float)GetMinChub() / 2.f;	}
 #else
@@ -118,8 +117,8 @@ public:
 #endif
 
 
-	virtual DWORD DoGetCritical(){	return GetCharStats()->Critical + GetItemStats()->Critical + GetSetItemStats()->wCriticalPercent;	}
-	virtual DWORD DoGetDecisive(){	return GetCharStats()->Decisive + GetItemStats()->Critical + GetSetItemStats()->wCriticalPercent;	}
+	virtual DWORD DoGetCritical() { return GetCharStats()->Critical + GetItemStats()->Critical + GetSetItemStats()->wCriticalPercent + GetSetItemQualityStats()->Critical; }
+	virtual DWORD DoGetDecisive() { return GetCharStats()->Decisive + GetItemStats()->Critical + GetSetItemStats()->wCriticalPercent + GetSetItemQualityStats()->Decisive; }
 
 	LEVELTYPE GetMaxLevel()		{	return m_HeroTotalInfo.MaxLevel;	}
 	void SetMaxLevel( LEVELTYPE Level )			{	m_HeroTotalInfo.MaxLevel = Level;	}
@@ -156,9 +155,9 @@ public:
 
 	// magi82 - UniqueItem(070629) - ½ºÅÝÀÌ ¸¶ÀÌ³Ê½º°¡ µÉ °æ¿ì ¿¹¿ÜÃ³¸® Ãß°¡
 	WORD GetGenGol(){ return (int)(m_HeroTotalInfo.wGenGol + GetAbilityStats()->StatGen + GetItemStats()->GenGol + GetShopItemStats()->Gengol
-		+ GetAvatarOption()->Gengol + GetSetItemStats()->wGenGol + GetUniqueItemStats()->nGengol) >= 0 ? (WORD)(m_HeroTotalInfo.wGenGol
+		+ GetAvatarOption()->Gengol + GetSetItemStats()->wGenGol + GetUniqueItemStats()->nGengol + GetSetItemQualityStats()->wGenGol) >= 0 ? (WORD)(m_HeroTotalInfo.wGenGol
 		+ GetAbilityStats()->StatGen + GetItemStats()->GenGol + GetShopItemStats()->Gengol + GetAvatarOption()->Gengol + GetSetItemStats()->wGenGol
-		+ GetUniqueItemStats()->nGengol) : 0; }
+		+ GetUniqueItemStats()->nGengol + GetSetItemQualityStats()->wGenGol) : 0; }
 
 	WORD GetMinChub(){ return 
 		(int)		
@@ -170,6 +169,7 @@ public:
 		GetAvatarOption()->Minchub + 
 		GetSetItemStats()->wMinChub + 
 		GetUniqueItemStats()->nMinChub
+			+ GetSetItemQualityStats()->wMinChub
 		)
 		
 		>= 0 ? 
@@ -183,6 +183,7 @@ public:
 		GetAvatarOption()->Minchub + 
 		GetSetItemStats()->wMinChub +
 		GetUniqueItemStats()->nMinChub
+			+ GetSetItemQualityStats()->wMinChub
 		) 
 		
 		: 0
@@ -192,14 +193,14 @@ public:
 	}
 
 	WORD GetCheRyuk(){ return (int)(m_HeroTotalInfo.wCheRyuk + GetAbilityStats()->StatChe + GetItemStats()->CheRyuk + GetShopItemStats()->Cheryuk
-		+ GetAvatarOption()->Cheryuk + GetSetItemStats()->wCheRyuk + GetUniqueItemStats()->nCheRyuk) >= 0 ? (WORD)(m_HeroTotalInfo.wCheRyuk
+		+ GetAvatarOption()->Cheryuk + GetSetItemStats()->wCheRyuk + GetUniqueItemStats()->nCheRyuk + GetSetItemQualityStats()->wCheRyuk) >= 0 ? (WORD)(m_HeroTotalInfo.wCheRyuk
 		+ GetAbilityStats()->StatChe + GetItemStats()->CheRyuk + GetShopItemStats()->Cheryuk + GetAvatarOption()->Cheryuk + GetSetItemStats()->wCheRyuk
-		+ GetUniqueItemStats()->nCheRyuk) : 0; }
+		+ GetUniqueItemStats()->nCheRyuk + GetSetItemQualityStats()->wCheRyuk) : 0; }
 
 	WORD GetSimMek(){ return (int)(m_HeroTotalInfo.wSimMek + GetAbilityStats()->StatSim + GetItemStats()->SimMaek + GetShopItemStats()->Simmek
-		+ GetAvatarOption()->Simmek + GetSetItemStats()->wSimMek + GetUniqueItemStats()->nSimMek) >= 0 ? (WORD)(m_HeroTotalInfo.wSimMek
+		+ GetAvatarOption()->Simmek + GetSetItemStats()->wSimMek + GetUniqueItemStats()->nSimMek + GetSetItemQualityStats()->wSimMek) >= 0 ? (WORD)(m_HeroTotalInfo.wSimMek
 		+ GetAbilityStats()->StatSim + GetItemStats()->SimMaek + GetShopItemStats()->Simmek + GetAvatarOption()->Simmek + GetSetItemStats()->wSimMek
-		+ GetUniqueItemStats()->nSimMek) : 0; }
+		+ GetUniqueItemStats()->nSimMek + GetSetItemQualityStats()->wSimMek) : 0; }
 	
 	void SetAbilityExp(DWORD val)	{	m_AbilityGroup.SetAbilityExp(val);	}
 	DWORD GetAbilityExp()			{ return m_AbilityGroup.GetAbilityExp(); 	}
@@ -492,6 +493,8 @@ public:
 	BOOL GetMoveDebugInfo(){ return bDebugInfo ; }
 	void MoveCheckingProcess();
 	void TargetUpdate(CObject* pObject, MOVE_INFO * pMoveInfo, VECTOR3 * TargetPos);
+	void AddSetitemQualityOption(SET_ITEMQUALITY_OPTION* pSetItemQualityOption);
+	void ClearSetitemQualityOption();
 
 
 };

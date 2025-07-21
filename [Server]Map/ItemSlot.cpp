@@ -99,6 +99,10 @@ ITEMBASE /*const*/ * CItemSlot::GetItemInfoAbs(POSTYPE absPos)//kiv const
 
 	return  &m_ItemBaseArray[absPos];	
 }
+void CItemSlot::SetItemInfoAbs(ITEMBASE* pItemBase, POSTYPE absPos)
+{
+	memcpy(&m_ItemBaseArray[absPos], pItemBase, sizeof(ITEMBASE));
+}
 void CItemSlot::GetItemInfoAll(ITEMBASE * pItemBaseAll)
 {
 	memcpy(pItemBaseAll, &m_ItemBaseArray[m_StartAbsPos], sizeof(ITEMBASE)*m_SlotNum);
@@ -139,7 +143,7 @@ ERROR_ITEM CItemSlot::InsertItemAbs(CPlayer * pPlayer, POSTYPE absPos, ITEMBASE 
 
 // 2014-11-14 UpdateItemAbs 
 
-ERROR_ITEM CItemSlot::UpdateItemAbs(CPlayer * pPlayer, POSTYPE whatAbsPos, DWORD dwDBIdx, WORD wItemIdx, POSTYPE position, POSTYPE quickPosition, DURTYPE Dur, WORD flag, WORD state, DWORD RareDBIdx,DWORD StoneIdx,DWORD Grow,char * PowerUp,char * Green, DWORD Grade30)
+ERROR_ITEM CItemSlot::UpdateItemAbs(CPlayer * pPlayer, POSTYPE whatAbsPos, DWORD dwDBIdx, WORD wItemIdx, POSTYPE position, POSTYPE quickPosition, DURTYPE Dur, WORD itemstatic, WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2, WORD ItemEntry3, WORD flag, WORD state, DWORD RareDBIdx,DWORD StoneIdx,DWORD Grow,char * PowerUp,char * Green, DWORD Grade30)
 {
 	bIsMovePack = false;//kiv
 	if( !IsPosIn(whatAbsPos) )	return EI_OUTOFPOS;
@@ -198,6 +202,16 @@ ERROR_ITEM CItemSlot::UpdateItemAbs(CPlayer * pPlayer, POSTYPE whatAbsPos, DWORD
 		strcpy(m_ItemBaseArray[whatAbsPos].Green,Green);
 	if (flag & UB_GRADE30)
 		m_ItemBaseArray[whatAbsPos].Grade30 = Grade30;
+	if (flag & UB_QUALITY)
+		m_ItemBaseArray[whatAbsPos].ItemQuality = ItemQuality;
+	if (flag & UB_ENTRY1)
+		m_ItemBaseArray[whatAbsPos].ItemEntry1 = ItemEntry1;
+
+	if (flag & UB_ENTRY2)
+		m_ItemBaseArray[whatAbsPos].ItemEntry2 = ItemEntry2;
+
+	if (flag & UB_ENTRY3)
+		m_ItemBaseArray[whatAbsPos].ItemEntry3 = ItemEntry3;
 	// magi82 - 노점상 한번이라도 낱개로 팔면 그다음부터 통째로 팔아지지않는 버그 수정
 	m_SlotInfoArray[whatAbsPos].wState = ( state & ~(SS_LOCKOMIT|SS_CHKDBIDX) );
 	m_SlotInfoArray[whatAbsPos].bLock = FALSE;

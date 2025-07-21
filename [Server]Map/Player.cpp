@@ -143,12 +143,14 @@ void CPlayer::InitClearData()
 	memset(&m_HeroInfo,0,sizeof(HERO_TOTALINFO));
 	memset(&m_HeroMugongInfo, 0, sizeof(MUGONG_TOTALINFO));
 	memset(&m_itemStats,0,sizeof(m_itemStats));
+	memset(&m_setItemQualityStats, 0, sizeof(m_setItemQualityStats));
 	memset(&m_setItemStats,0,sizeof(m_setItemStats));		// 2007. 6. 12. CBH - 技飘酒捞牌 瓷仿摹 备炼眉 檬扁拳 眠啊.
 	// RaMa - 04.11.08 ( ShopItem栏肺 眠啊登绰 可记 )
 	memset(&m_ShopItemOption,0,sizeof(SHOPITEMOPTION));
 	for(int i=eAvatar_Weared_Hair; i<eAvatar_Max; i++)
 		m_ShopItemOption.Avatar[i]=1;
 	memset(&m_AvatarOption, 0 , sizeof(AVATARITEMOPTION));
+
 	
 	//////////////////////////////////////////////////////////////////////////
 	// 06. 06. 2瞒 傈流 - 捞康霖
@@ -2642,12 +2644,23 @@ ProtectAll_UseFail:
 
 	OBJECTSTATEMGR_OBJ->EndObjectState(this,eObjectState_Die);
 	
-	DWORD MaxLife = GetMaxLife();
-	DWORD MaxNaeryuk = GetMaxNaeRyuk();
-	DWORD MaxShield = GetMaxShield();
-	SetLife((DWORD)(MaxLife*0.3));
-	SetNaeRyuk(0);
-	SetShield((DWORD)(MaxShield*0.3));
+	DWORD MaxLife = DoGetMaxLife();
+	DWORD MaxNaeryuk = DoGetMaxNaeRyuk();
+	DWORD MaxShield = DoGetMaxShield();
+	//几率满血复活
+	WORD value = rand() % 100 + 1;
+	if (value < GetSetItemQualityStats()->Resurrected)
+	{
+		SetLife((DWORD)(MaxLife));
+		SetNaeRyuk((DWORD)(MaxNaeryuk));
+		SetShield((DWORD)(MaxShield));
+	}
+	else
+	{
+		SetLife((DWORD)(MaxLife * 0.3));
+		SetNaeRyuk((DWORD)(MaxNaeryuk * 0.3));
+		SetShield((DWORD)(MaxShield * 0.3));
+	}
 	
 	m_YYLifeRecoverTime.bStart = FALSE;
 	m_YYNaeRyukRecoverTime.bStart = FALSE;
@@ -2773,7 +2786,24 @@ void CPlayer::ReviveLogIn()
 		pParty->SendMsgToAll(&msg, sizeof(msg));
 	}
 	ClearMurderIdx();
-
+	//added by rookie
+	DWORD MaxLife = DoGetMaxLife();
+	DWORD MaxNaeryuk = DoGetMaxNaeRyuk();
+	DWORD MaxShield = DoGetMaxShield();
+	//几率满血复活
+	WORD value = rand() % 100 + 1;
+	if (value < GetSetItemQualityStats()->Resurrected)
+	{
+		SetLife((DWORD)(MaxLife));
+		SetNaeRyuk((DWORD)(MaxNaeryuk));
+		SetShield((DWORD)(MaxShield));
+	}
+	else
+	{
+		SetLife((DWORD)(MaxLife * 0.3));
+		SetNaeRyuk((DWORD)(MaxNaeryuk * 0.3));
+		SetShield((DWORD)(MaxShield * 0.3));
+	}
 	m_bDieInSpecialMap = FALSE;
 }
 
@@ -3359,11 +3389,12 @@ float CPlayer::DoGetMoveSpeed()
 				klev = 2;		// 
 			speed = pGradeInfo->KyungGongSpeed[klev];
 
-			// 酒官鸥 酒捞袍 版傍 胶乔靛 
+			// 百宝装扮加成
 			speed += GetAvatarOption()->KyunggongSpeed;
-			// 何利 版傍 加档 惑铰
+			// 符咒加成
 			speed += GetShopItemStats()->KyungGongSpeed;
-
+			//装备词条加成
+			speed += GetSetItemQualityStats()->KyunggongSpeed;
 			return speed;
 		}
 		else
@@ -3512,7 +3543,7 @@ DWORD CPlayer::DoGetCritical()
 	}
 	else
 	{
-		cri = GetCharStats()->Critical + GetItemStats()->Critical + GetShopItemStats()->Critical + GetAvatarOption()->Critical;
+		cri = GetCharStats()->Critical + GetItemStats()->Critical + GetShopItemStats()->Critical + GetAvatarOption()->Critical + GetSetItemQualityStats()->Critical;
 	}
 
 	if( GetPartyIdx() )
@@ -3533,7 +3564,9 @@ DWORD CPlayer::DoGetCritical()
 // 06. 07 郴傍 利吝(老拜) - 捞康霖
 DWORD CPlayer::DoGetDecisive()
 {	
-	DWORD cri = GetCharStats()->Decisive + GetItemStats()->Critical + GetShopItemStats()->Decisive + GetAvatarOption()->Decisive;
+	//内功奋力一击
+	DWORD cri = 0;
+	cri = GetCharStats()->Decisive + GetItemStats()->Critical + GetShopItemStats()->Decisive + GetAvatarOption()->Decisive + GetSetItemQualityStats()->Decisive;
 
 	if( GetPartyIdx() )
 	{
@@ -3568,7 +3601,7 @@ DWORD CPlayer::DoGetPhyAttackPowerMin()
 	// RaMa - 04.11.10    -> ShopItemOption 眠啊		AvatarOption眠啊(05.02.16)
 	if(WeaponKind == WP_GUNG || WeaponKind == WP_AMGI)
 	{
-		WORD MinChub = (WORD)(pChar_stats->MinChub + GetAbilityStats()->StatMin + pItem_stats->MinChub + GetShopItemStats()->Minchub + pAvatarOption->Minchub + pSetItem_Stats->wMinChub);
+		WORD MinChub = (WORD)(pChar_stats->MinChub + GetAbilityStats()->StatMin + pItem_stats->MinChub + GetShopItemStats()->Minchub + pAvatarOption->Minchub + pSetItem_Stats->wMinChub + GetSetItemQualityStats()->wMinChub );
 
 #ifdef _JAPAN_LOCAL_
 
@@ -3594,7 +3627,7 @@ DWORD CPlayer::DoGetPhyAttackPowerMin()
 	}
 	else
 	{
-		WORD GenGol = (WORD)(pChar_stats->GenGol + GetAbilityStats()->StatGen + pItem_stats->GenGol + GetShopItemStats()->Gengol + pAvatarOption->Gengol + pSetItem_Stats->wGenGol);
+		WORD GenGol = (WORD)(pChar_stats->GenGol + GetAbilityStats()->StatGen + pItem_stats->GenGol + GetShopItemStats()->Gengol + pAvatarOption->Gengol + pSetItem_Stats->wGenGol + GetSetItemQualityStats()->wGenGol );
 
 		WORD WeaponItemIdx = GetWearedItemIdx(eWearedItem_Weapon);
 		WORD DefaultPower = 0;
@@ -3644,7 +3677,7 @@ DWORD CPlayer::DoGetPhyAttackPowerMax()
 
 	if(WeaponKind == WP_GUNG || WeaponKind == WP_AMGI)
 	{
-		WORD MinChub = (WORD)(pChar_stats->MinChub + GetAbilityStats()->StatMin + pItem_stats->MinChub + GetShopItemStats()->Minchub + GetAvatarOption()->Minchub + pSetItem_Stats->wMinChub);
+		WORD MinChub = (WORD)(pChar_stats->MinChub + GetAbilityStats()->StatMin + pItem_stats->MinChub + GetShopItemStats()->Minchub + GetAvatarOption()->Minchub + pSetItem_Stats->wMinChub + GetSetItemQualityStats()->wMinChub );
 
 #ifdef _JAPAN_LOCAL_
 		
@@ -3672,7 +3705,7 @@ DWORD CPlayer::DoGetPhyAttackPowerMax()
 	}
 	else
 	{
-		WORD GenGol = (WORD)(pChar_stats->GenGol + GetAbilityStats()->StatGen + pItem_stats->GenGol + GetShopItemStats()->Gengol + GetAvatarOption()->Gengol + pSetItem_Stats->wGenGol);
+		WORD GenGol = (WORD)(pChar_stats->GenGol + GetAbilityStats()->StatGen + pItem_stats->GenGol + GetShopItemStats()->Gengol + GetAvatarOption()->Gengol + pSetItem_Stats->wGenGol + GetSetItemQualityStats()->wGenGol );
 
 		WORD WeaponItemIdx = GetWearedItemIdx(eWearedItem_Weapon);
 		WORD DefaultPower = 0;
@@ -5048,14 +5081,14 @@ DWORD CPlayer::DoGetMaxNaeRyuk()
 	return m_HeroInfo.wMaxNaeRyuk; 
 }
 
-DWORD CPlayer::DoGetPhyDefense()
+DWORD CPlayer::DoGetPhyDefense()//物理防御
 { 
 	/*// 规绢 傍侥 蝶肺 贸府.
 	//SW070127 鸥捞藕
 	if(InTitan())
 		return GetCurTitan()->DoGetPhyDefense();
 	else*/
-	int nPhyDefen = (int)(GetCharStats()->PhysicalDefense+GetItemStats()->PhysicalDefense+GetAbilityStats()->DefenceUp+GetSetItemStats()->wPhyDef+GetUniqueItemStats()->nDefen);
+	int nPhyDefen = (int)(GetCharStats()->PhysicalDefense+GetItemStats()->PhysicalDefense+GetAbilityStats()->DefenceUp+GetSetItemStats()->wPhyDef+GetUniqueItemStats()->nDefen) + ((GetItemStats()->PhysicalDefense) * (GetSetItemQualityStats()->wPhyDef * 0.01f));
 	if(nPhyDefen >= 0)
 	{
 		return (DWORD)nPhyDefen;
@@ -5067,16 +5100,16 @@ DWORD CPlayer::DoGetPhyDefense()
 }
 
 float CPlayer::DoGetAttDefense(WORD Attrib)
-{
+{//属性防御
 	//SW070127 鸥捞藕
 	if(InTitan())
 		return GetCurTitan()->DoGetAttDefense(Attrib);
 	else
-		return GetItemStats()->AttributeResist.GetElement_Val(Attrib)+GetAbilityStats()->AttRegistUp.GetElement_Val(Attrib)+GetSetItemStats()->AttrRegist.GetElement_Val(Attrib); 
+		return GetItemStats()->AttributeResist.GetElement_Val(Attrib)+GetAbilityStats()->AttRegistUp.GetElement_Val(Attrib)+GetSetItemStats()->AttrRegist.GetElement_Val(Attrib) + ((GetItemStats()->AttributeResist.GetElement_Val(Attrib)) * (GetSetItemQualityStats()->AttrRegistDef * 0.01f));
 }	
 
 float CPlayer::GetAttribPlusPercent(WORD Attrib)
-{ 
+{ //属性攻击
 	return GetItemStats()->AttributeAttack.GetElement_Val(Attrib)+GetAbilityStats()->AttAttackUp.GetElement_Val(Attrib)+GetSetItemStats()->AttrAttack.GetElement_Val(Attrib);	
 }
 
@@ -5952,7 +5985,189 @@ void CPlayer::ClearSetitemOption()
 {
 	memset(&m_setItemStats, 0, sizeof(SET_ITEM_OPTION));
 }
-
+void CPlayer::AddSetitemQualityOption(SET_ITEMQUALITY_OPTION* pSetItemQualityOption)
+{
+	//最大祝福倍率
+	m_setItemQualityStats.RareVal += pSetItemQualityOption->RareVal;
+	//力量
+	m_setItemQualityStats.wGenGol += pSetItemQualityOption->wGenGol;
+	if (m_setItemQualityStats.wGenGol > 40)
+	{
+		m_setItemQualityStats.wGenGol = 40;
+	}
+	//敏捷
+	m_setItemQualityStats.wMinChub += pSetItemQualityOption->wMinChub;
+	if (m_setItemQualityStats.wMinChub > 40)
+	{
+		m_setItemQualityStats.wMinChub = 40;
+	}
+	//体质
+	m_setItemQualityStats.wCheRyuk += pSetItemQualityOption->wCheRyuk;
+	if (m_setItemQualityStats.wCheRyuk > 60)
+	{
+		m_setItemQualityStats.wCheRyuk = 60;
+	}
+	//心脉
+	m_setItemQualityStats.wSimMek += pSetItemQualityOption->wSimMek;
+	if (m_setItemQualityStats.wSimMek > 40)
+	{
+		m_setItemQualityStats.wSimMek = 40;
+	}
+	//生命
+	m_setItemQualityStats.dwLife += pSetItemQualityOption->dwLife;
+	if (m_setItemQualityStats.dwLife > 60)
+	{
+		m_setItemQualityStats.dwLife = 60;
+	}
+	//护体
+	m_setItemQualityStats.dwShield += pSetItemQualityOption->dwShield;
+	if (m_setItemQualityStats.dwShield > 60)
+	{
+		m_setItemQualityStats.dwShield = 60;
+	}
+	//内力
+	m_setItemQualityStats.dwNaeRyuk += pSetItemQualityOption->dwNaeRyuk;
+	if (m_setItemQualityStats.dwNaeRyuk > 60)
+	{
+		m_setItemQualityStats.dwNaeRyuk = 60;
+	}
+	//属性防御
+	m_setItemQualityStats.AttrRegistDef += pSetItemQualityOption->AttrRegistDef;
+	if (m_setItemQualityStats.AttrRegistDef > 30)
+	{
+		m_setItemQualityStats.AttrRegistDef = 30;
+	}
+	//物理防御
+	m_setItemQualityStats.wPhyDef += pSetItemQualityOption->wPhyDef;
+	if (m_setItemQualityStats.wPhyDef > 30)
+	{
+		m_setItemQualityStats.wPhyDef = 30;
+	}
+	//内功伤害
+	m_setItemQualityStats.NaegongDamage += pSetItemQualityOption->NaegongDamage;
+	if (m_setItemQualityStats.NaegongDamage > 20)
+	{
+		m_setItemQualityStats.NaegongDamage = 20;
+	}
+	//外功伤害
+	m_setItemQualityStats.WoigongDamage += pSetItemQualityOption->WoigongDamage;
+	if (m_setItemQualityStats.WoigongDamage > 20)
+	{
+		m_setItemQualityStats.WoigongDamage = 20;
+	}
+	//闪避
+	m_setItemQualityStats.wDodgeRate += pSetItemQualityOption->wDodgeRate;
+	if (m_setItemQualityStats.wDodgeRate > 20)
+	{
+		m_setItemQualityStats.wDodgeRate = 20;
+	}
+	//PVP破甲%
+	m_setItemQualityStats.PlayerPhyDefDown += pSetItemQualityOption->PlayerPhyDefDown;
+	if (m_setItemQualityStats.PlayerPhyDefDown > 20)
+	{
+		m_setItemQualityStats.PlayerPhyDefDown = 20;
+	}
+	// PVP破魔%
+	m_setItemQualityStats.PlayerAttrDefDown += pSetItemQualityOption->PlayerAttrDefDown;
+	if (m_setItemQualityStats.PlayerAttrDefDown > 20)
+	{
+		m_setItemQualityStats.PlayerAttrDefDown = 20;
+	}
+	// PVE破甲%
+	m_setItemQualityStats.TargetPhyDefDown += pSetItemQualityOption->TargetPhyDefDown;
+	if (m_setItemQualityStats.TargetPhyDefDown > 30)
+	{
+		m_setItemQualityStats.TargetPhyDefDown = 30;
+	}
+	// PVE破魔%
+	m_setItemQualityStats.TargetAttrDefDown += pSetItemQualityOption->TargetAttrDefDown;
+	if (m_setItemQualityStats.TargetAttrDefDown > 30)
+	{
+		m_setItemQualityStats.TargetAttrDefDown = 30;
+	}
+	// 命中
+	m_setItemQualityStats.fDodgeRate += pSetItemQualityOption->fDodgeRate;
+	if (m_setItemQualityStats.fDodgeRate > 20)
+	{
+		m_setItemQualityStats.fDodgeRate = 20;
+	}
+	// 泡点加成
+	m_setItemQualityStats.MallMoneyPuls += pSetItemQualityOption->MallMoneyPuls;
+	if (m_setItemQualityStats.MallMoneyPuls > 20)
+	{
+		m_setItemQualityStats.MallMoneyPuls = 20;
+	}
+	// 轻功速度
+	m_setItemQualityStats.KyunggongSpeed += pSetItemQualityOption->KyunggongSpeed;
+	if (m_setItemQualityStats.KyunggongSpeed > 200)
+	{
+		m_setItemQualityStats.KyunggongSpeed = 200;
+	}
+	// PVE的伤害增加
+	m_setItemQualityStats.AttMonsterDamage += pSetItemQualityOption->AttMonsterDamage;
+	if (m_setItemQualityStats.AttMonsterDamage > 20)
+	{
+		m_setItemQualityStats.AttMonsterDamage = 20;
+	}
+	// PVP的伤害增加
+	m_setItemQualityStats.AttPlayerDamage += pSetItemQualityOption->AttPlayerDamage;
+	if (m_setItemQualityStats.AttPlayerDamage > 10)
+	{
+		m_setItemQualityStats.AttPlayerDamage = 10;
+	}
+	// 受到伤害减少
+	m_setItemQualityStats.RealDamageDown += pSetItemQualityOption->RealDamageDown;
+	if (m_setItemQualityStats.RealDamageDown > 20)
+	{
+		m_setItemQualityStats.RealDamageDown = 20;
+	}
+	// PVP几率吸血
+	m_setItemQualityStats.PVPLifePlus += pSetItemQualityOption->PVPLifePlus;
+	if (m_setItemQualityStats.PVPLifePlus > 20)
+	{
+		m_setItemQualityStats.PVPLifePlus = 20;
+	}
+	//几率满血复活
+	m_setItemQualityStats.Resurrected += pSetItemQualityOption->Resurrected;
+	if (m_setItemQualityStats.Resurrected > 30)
+	{
+		m_setItemQualityStats.Resurrected = 30;
+	}
+	//外功暴击增加
+	m_setItemQualityStats.Critical += pSetItemQualityOption->Critical;
+	if (m_setItemQualityStats.Critical > 30)
+	{
+		m_setItemQualityStats.Critical = 30;
+	}
+	//内功暴击增加
+	m_setItemQualityStats.Decisive += pSetItemQualityOption->Decisive;
+	if (m_setItemQualityStats.Decisive > 30)
+	{
+		m_setItemQualityStats.Decisive = 30;
+	}
+	//外功技能暴击伤害增加
+	m_setItemQualityStats.CriticalDamage += pSetItemQualityOption->CriticalDamage;
+	if (m_setItemQualityStats.CriticalDamage > 20)
+	{
+		m_setItemQualityStats.CriticalDamage = 20;
+	}
+	//内功技能暴击伤害增加
+	m_setItemQualityStats.DecisiveDamage += pSetItemQualityOption->DecisiveDamage;
+	if (m_setItemQualityStats.DecisiveDamage > 20)
+	{
+		m_setItemQualityStats.DecisiveDamage = 20;
+	}
+	//持续伤害增加
+	m_setItemQualityStats.ContinueAttAttack += pSetItemQualityOption->ContinueAttAttack;
+	if (m_setItemQualityStats.ContinueAttAttack > 20)
+	{
+		m_setItemQualityStats.ContinueAttAttack = 20;
+	}
+}
+void CPlayer::ClearSetitemQualityOption()
+{
+	memset(&m_setItemQualityStats, 0, sizeof(SET_ITEMQUALITY_OPTION));
+}
 void CPlayer::SendNoActionPaneltyMsg()
 {
 	MSGBASE msg;
@@ -6215,17 +6430,19 @@ void CPlayer::ClearShiFu(DWORD ShiFuId)
 }
 
 // 2014-05-30 the mallmoney process 
-
+//泡点系统
 void CPlayer::MallMoneyProcess()
 {
 	if (GetLevel() >= CServerSystem::PaoDianLevel && GetReSet() >=CServerSystem::PaoDianReSet)
 	{
 		if( GetState() != eObjectState_Die )
 		{
+			DWORD MallMoney = 0;
 			m_LastPaoDianTime -= g_pServerSystem->GetMainProcessTime();
 
 			if (m_LastPaoDianTime <= 0)
-			{
+			{//觉醒泡点加成
+				MallMoney += GetSetItemQualityStats()->MallMoneyPuls;
 				SetMallMoney(CServerSystem::PaoDianMap,2, 0);
 
 				m_LastPaoDianTime = 60 * CServerSystem::PaoDianTime * 1000;

@@ -413,6 +413,9 @@ public:
 	void CreateCharPvPDlg();
 
 	void CreateOfficialUpGradeDlg();
+	void CreateItemQualityDlg();           //装备觉醒窗口
+	void CreateItemQualityChangeDlg();      //装备品质转换窗口
+	void CreateGradeChangeDlg();			//武器升阶值转移卷
 
 	//++++ Common dialog +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	// dynamic create and auto release

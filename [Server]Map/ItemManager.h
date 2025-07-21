@@ -43,6 +43,10 @@ class ITEM_REINFORCE_INFO;
 #define ITEM_STONE_3_RED 52040
 #define ITEM_STONE_4 52041
 #define ITEM_STONE_4_RED 52042
+#define STONEJUEXING     52043  // æı–— Ø
+#define STONECHANGE100   52044 // œ¥¡∑ Entry1 + Entry2
+#define STONEENTRY1      52045 // œ¥ Entry1
+#define STONEENTRY2      52046  // œ¥ Entry2
 
 class CItemSlot;
 
@@ -103,7 +107,8 @@ class CItemManager
 	CYHHashTable<DealerData>	m_DealerTable;
 	DWORD m_Key;
 
-	
+	WORD  m_ItemVal;
+	char m_ItemName[MAX_NAME_LENGTH + 1];
 
 	
 
@@ -127,8 +132,8 @@ public:
 	void SendAckMsg( CPlayer * pPlayer, MSGBASE * msg, int msgSize);
 	void SendGuildErrorMsg( CPlayer * pPlayer, BYTE Protocol, int ECode );
 
-	int ObtainItemEx(CPlayer * pPlayer, ITEMOBTAINARRAYINFO * pArrayInfo, WORD whatItemIdx, WORD whatItemNum, WORD * EmptyCellPos, WORD EmptyCellNum, WORD ArrayInfoUnitNum, WORD bSeal=0,WORD BuyType=0);  // 2014-12-02  ?áÔ?0Ê°∂Â∞®?•Á±µNPC?ÉÈ?! 1Ê°∂Â∞®?êËê∏?ÉÈ? 2Ê°∂Â∞®?ÉÈ?
-	int ObtainRareItem(CPlayer* pPlayer, ITEMOBTAINARRAYINFO* pArrayInfo, WORD whatItemIdx, WORD whatItemNum, WORD * EmptyCellPos, WORD ArrayInfoUnitNum, ITEM_RARE_OPTION_INFO* pRareOptionInfo );
+	int ObtainItemEx(CPlayer * pPlayer, ITEMOBTAINARRAYINFO * pArrayInfo, WORD whatItemIdx, WORD whatItemNum, WORD * EmptyCellPos, WORD EmptyCellNum, WORD ArrayInfoUnitNum, WORD bSeal=0,WORD BuyType=0, WORD ItemQuality = 0, WORD ItemEntry1 = 0, WORD ItemEntry2 = 0, WORD ItemEntry3 = 0);  // 2014-12-02  ?áÔ?0Ê°∂Â∞®?•Á±µNPC?ÉÈ?! 1Ê°∂Â∞®?êËê∏?ÉÈ? 2Ê°∂Â∞®?ÉÈ?
+	int ObtainRareItem(CPlayer* pPlayer, ITEMOBTAINARRAYINFO* pArrayInfo, WORD whatItemIdx, WORD whatItemNum, WORD * EmptyCellPos, WORD ArrayInfoUnitNum, ITEM_RARE_OPTION_INFO* pRareOptionInfo, WORD ItemQuality = 0, WORD ItemEntry1 = 0, WORD ItemEntry2 = 0, WORD ItemEntry3 = 0);
 
 	int SellItem( CPlayer* pPlayer, POSTYPE whatPos, WORD wSellItemIdx, DURTYPE sellItemDur, DWORD DealerIdx );
 	//int BuyItem( CPlayer* pPlayer, WORD buyItemIdx, WORD buyItemNum, WORD DealerIdx,DWORD ItemPos=0,WORD buyType=0); // 2014-12-02 ?áÔ?0Ê°∂Â∞®?•Á±µNPC?ÉÈ?!
@@ -247,7 +252,7 @@ public:
 	BOOL IsTitanEquipItem( WORD wItemIdx );
 	
 	BOOL ItemMoveUpdateToDBbyTable(CPlayer* pPlayer, DWORD dwfromDBIdx, WORD dwfromIconIdx,  POSTYPE frompos, DWORD dwtoDBIdx, POSTYPE topos);
-	void ItemUpdatebyTable(CPlayer* pPlayer, DWORD dwDBIdx, WORD wIconIdx, DURTYPE FromDur, POSTYPE Position, POSTYPE QuickPosition);
+	void ItemUpdatebyTable(CPlayer* pPlayer, DWORD dwDBIdx, WORD wIconIdx, DURTYPE FromDur, POSTYPE Position, POSTYPE QuickPosition, DWORD iRareIdx, WORD ItemStatic, WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2, WORD ItemEntry3);
 	const ITEMBASE * GetItemInfoAbsIn(CPlayer* pPlayer, POSTYPE Pos);
 
 	void ItemMoveLog(POSTYPE FromPos, POSTYPE ToPos, CPlayer* pPlayer, ITEMBASE* pItem);
@@ -277,6 +282,7 @@ private:
 	ITEM_GROW_SET * m_ItemGrowInfo;
 
 	CYHHashTable<GAMECHECK_LIST> m_GameCheckList;
+	CYHHashTable<SET_ITEMQUALITY_OPTION>	m_SetItemQualityOptionList; ///// 2007. 6. 8. CBH - ºº∆Ææ∆¿Ã≈∆ ∞¸∑√ ∏ÆΩ∫∆Æ √ﬂ∞°
 	//---------------------------------------------------------------------------
 	//std::map<WORD,std::string> m_MixItemInfo;//kiv by jack 1644 06042022
 	//CYHHashTable<ITEM_MIX_INFO> m_MixItemInfoList;
@@ -304,11 +310,11 @@ private:
 
 
 public:
-	int		ObtainItemFromQuest( CPlayer* pPlayer, WORD wItemKind, DWORD dwItemNum );
+	int		ObtainItemFromQuest( CPlayer* pPlayer, WORD wItemIdx, DWORD dwItemNum );
 	WORD	GetWeaponKind( WORD wWeapon );
 	void	GetItemKindType( WORD wItemIdx, WORD* wKind, WORD* wType );
 
-	int		ObtainItemFromChangeItem( CPlayer* pPlayer, WORD wItemKind, WORD wItemNum );
+	int		ObtainItemFromChangeItem( CPlayer* pPlayer, WORD wItemIdx, WORD wItemNum, WORD ItemStatic, WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2, WORD ItemEntry3);
 	BOOL	CheckHackNpc( CPlayer* pPlayer, WORD wNpcIdx, WORD wParam=0 );	
 	int UseShopItem(CPlayer* pPlayer, SHOPITEMUSEBASE pInfo, SHOPITEMBASE* pShopItem);
 	BOOL IsUseAbleShopItem( CPlayer* pPlayer, WORD ItemIdx, POSTYPE ItemPos );
@@ -356,6 +362,22 @@ public:
 
 	int UpGradeOfficial_Func(CPlayer* pPlayer, MSG_OFFICIAL_ITEM_SYN* pmsg);
 	BOOL EnoughMixMaterial_FFT(WORD needItemIdx, WORD needItemNum, MATERIAL_ARRAY_FFT* pMaterialArray, WORD wMaterialNum);
+
+	DWORD GetItemQuality();
+	BOOL LoadSetItemQualityOption();
+	SET_ITEMQUALITY_OPTION* GetSetItemQualityOption(WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2);
+	void  RemoveSetItemQualityOption(WORD wIndex, SET_ITEMQUALITY_OPTION* pSetItemQualityOptionOut);
+	CYHHashTable<SET_ITEMQUALITY_OPTION>* GetSetItemQualityOptionList();
+	DWORD GetItemEntry1();
+	DWORD GetItemEntry2();
+	WORD  QualityItem(CPlayer* pPlayer, MSG_ITEM_QUALITY_MSG* pMsg);
+	WORD  QualityChangeItem(CPlayer* pPlayer, MSG_ITEM_QUALITY_MSG* pMsg);
+	//void  SetItemValue(WORD val);
+	WORD  GetItemValue() { return m_ItemVal; }
+	void  SetChangeItemName(char* ItemName);
+	char* GetChangeItemName() { return m_ItemName; }
+	DWORD GetItemRand();
+
 };
 
 

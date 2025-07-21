@@ -538,6 +538,10 @@ struct ITEMBASE : public ICONBASE
 		memset(Green,0,MAX_NAME_LENGTH);
 	}
 	DWORD	Grade30;
+	int     ItemQuality;  //装备品质
+	int     ItemEntry1;   //品质属性1
+	int     ItemEntry2;   //品质属性2
+	int     ItemEntry3;   //品质属性3
 };
 struct SLOTINFO
 {
@@ -1566,7 +1570,7 @@ struct ITEMOBTAINARRAY : public MSGBASE
 		dwObjectID	= dwID;
 		BuyType = buytype;
 	}
-	void AddItem( DWORD DBIdx, WORD ItemIdx, DURTYPE Durability, POSTYPE bPosition, POSTYPE QuickPosition, ITEMPARAM Param, DWORD RareIdx = 0,WORD ItemStatic=0,DWORD ItemGrow=0, DWORD Grade30 = 0) //
+	void AddItem( DWORD DBIdx, WORD ItemIdx, DURTYPE Durability, POSTYPE bPosition, POSTYPE QuickPosition, ITEMPARAM Param, DWORD RareIdx = 0,WORD ItemStatic=0,DWORD ItemGrow=0, DWORD Grade30 = 0, WORD ItemQuality = 0, WORD ItemEntry1 = 0, WORD ItemEntry2 = 0, WORD ItemEntry3 = 0)//默认0为普通购买
 	{
 		ItemInfo[ItemNum].dwDBIdx		= DBIdx;
 		ItemInfo[ItemNum].wIconIdx		= ItemIdx;
@@ -1578,6 +1582,11 @@ struct ITEMOBTAINARRAY : public MSGBASE
 		ItemInfo[ItemNum].ItemStatic	=ItemStatic; 
 		ItemInfo[ItemNum].ItemGrow		=ItemGrow;
 		ItemInfo[ItemNum].Grade30 = Grade30;
+		//装备品质
+		ItemInfo[ItemNum].ItemQuality = ItemQuality;
+		ItemInfo[ItemNum].ItemEntry1 = ItemEntry1;
+		ItemInfo[ItemNum].ItemEntry2 = ItemEntry2;
+		ItemInfo[ItemNum].ItemEntry3 = ItemEntry3;
 		ItemNum++;
 	}
 	void AddItem(const ITEMBASE *pInfo)//kiv
@@ -2132,6 +2141,10 @@ struct STREETSTALLITEM
 	char		Fill;
 	ITEMPARAM ItemParam;
 	DWORD       dwGrade30;
+	WORD       ItemQuality;
+	WORD       ItemEntry1;
+	WORD       ItemEntry2;
+	WORD       ItemEntry3;
 };
 struct STREETSTALL_INFO : public MSGBASE
 {
@@ -4990,6 +5003,7 @@ struct sRareItemInfo
 struct sRareOptionInfo : public ITEM_RARE_OPTION_INFO
 {
 	sRareOptionInfo() { memset(this, 0, sizeof(sRareOptionInfo)); }
+	WORD	wRareRate;
 	WORD	GenGol_Min;
 	WORD	MinChub_Min;
 	WORD	CheRyuk_Min;
@@ -5346,6 +5360,10 @@ struct STREETSTALL_ITEM_INFO
 	DWORD	dwStoneIdx;   
 	DWORD   dwGrow;    
 	DWORD   dwGrade30;
+	WORD	dwQuality;
+	WORD	dwEntry1;
+	WORD	dwEntry2;
+	WORD	dwEntry3;
 };
 struct MSG_STREETSTALL_ITEMVIEW : public MSGBASE
 {
@@ -6244,6 +6262,54 @@ struct MSG_UPDATE_GRADE : public MSGBASE
 	DWORD ItemIdx;
 	DWORD Pos;
 	DWORD Grade;
+};
+//装备觉醒结构体
+struct MSG_ITEM_QUALITY_MSG :public MSGBASE
+{
+	ITEMBASE	QualityItemBase;
+
+	DWORD ItemQualityIdx;
+	WORD  ItemQualityPos;
+	DWORD ItemTargetIdx;
+	WORD  ItemTargetPos;
+	DWORD ItemExtraTargetIdx;
+	WORD  ItemExtraTargetPos;
+};
+struct sCHANGEITEMUNIT
+{
+	WORD	wToItemIdx;
+	DWORD	dwToItemDur;
+	DWORD	dwPercent;
+};
+
+struct sCHANGEITEM
+{//箱子类物品结构体
+	WORD	wItemIdx;
+	WORD    wCurChangeItemKey;//增加钥匙类型字段
+	WORD    wToItemType;      //增加开出物品类型
+	WORD	wMaxToItem;
+	sCHANGEITEMUNIT* pItemUnit;
+
+	sCHANGEITEM() { wItemIdx = wMaxToItem = 0; }
+	~sCHANGEITEM() { if (pItemUnit) { delete[] pItemUnit; } }
+};
+
+struct sMULTICHANGEITEM
+{//箱子类物品结构体
+	WORD	wItemIdx;
+	WORD    wCurChangeItemKey;//增加钥匙类型字段
+	WORD    wToItemType;
+	WORD	wLimitLevel;
+	WORD	wMaxSet;
+	unsigned int    nMaxItemSpace;
+	sCHANGEITEM* pChangeItem;
+};
+struct SEND_SHOPITEM_BASEINFO1 : public MSGBASE
+{
+	POSTYPE ShopItemPosFrom;   // 源物品位置
+	POSTYPE ShopItemPosTo;     // 目标物品位置
+	DWORD GradeFrom;           // 源物品等级
+	DWORD GradeTo;             // 目标物品等级
 };
 #pragma pack(pop)
 #endif 

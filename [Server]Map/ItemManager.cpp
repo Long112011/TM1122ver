@@ -68,7 +68,7 @@ CItemManager::CItemManager()
 	m_AvatarEquipTable.Initialize(50);
 	m_Key = 0;
 	m_SetItemOptionList.Initialize(MAX_SETITEM_KIND_NUM);
-
+	m_SetItemQualityOptionList.Initialize(500);
 	m_TipItemList.Initialize(200);
 	LoadTipItem();
 }
@@ -137,6 +137,17 @@ CItemManager::~CItemManager()
 		pSetItemOption = NULL;
 	}
 	m_SetItemOptionList.RemoveAll();
+	//////////////////////////////////////////////////////////////
+	SET_ITEMQUALITY_OPTION* pSetItemQualityOption = NULL;
+	m_SetItemQualityOptionList.SetPositionHead();
+	while (pSetItemQualityOption = m_SetItemQualityOptionList.GetData())
+	{
+		delete pSetItemQualityOption;
+		pSetItemQualityOption = NULL;
+	}
+	m_SetItemQualityOptionList.RemoveAll();
+
+	//////////////////////////////////////////////////////////////
 }
 ITEMOBTAINARRAYINFO * CItemManager::Alloc(CPlayer * pPlayer, WORD c, WORD p, DWORD dwObjectID, DWORD dwFurnisherIdx, WORD wType, WORD ObtainNum, DBResult CallBackFunc, DBResultEx CallBackFuncEx, int BuyType)
 {
@@ -616,24 +627,32 @@ int CItemManager::DivideItem(CPlayer* pPlayer, WORD ItemIdx, POSTYPE FromPos, PO
 		return 1;
 	if (FromDur == 0) return 1;
 	if (ToDur == 0) return 1;
-	if (pFromSlot->UpdateItemAbs(pPlayer, FromPos, FromItemBase->dwDBIdx, 0, 0, 0, FromDur, UB_DURA, SS_CHKDBIDX) != EI_TRUE)
+	if (pFromSlot->UpdateItemAbs(pPlayer, FromPos, FromItemBase->dwDBIdx, 0, 0, 0, FromDur,  FromItemBase->ItemQuality, FromItemBase->ItemEntry1, FromItemBase->ItemEntry2, FromItemBase->ItemEntry3, UB_DURA, SS_CHKDBIDX) != EI_TRUE)
 	{
 		return 7;
 	}
 	ITEMOBTAINARRAYINFO * pArrayInfo = Alloc(pPlayer, MP_ITEM, MP_ITEM_DIVIDE_ACK, pPlayer->GetID(), pPlayer->GetID(), eLog_ItemObtainDivide, 2, (DBResult)DivideItemDBResult);
-	pArrayInfo->ItemArray.AddItem(FromItemBase->dwDBIdx,
+	pArrayInfo->ItemArray.AddItem(
+		FromItemBase->dwDBIdx,
 		FromItemBase->wIconIdx,
 		FromDur,
 		FromItemBase->Position,
 		FromItemBase->QuickPosition,
 		FromItemBase->ItemParam,
 		FromItemBase->RareIdx,
-		FromItemBase->ItemStatic);
-	ItemUpdatebyTable(pPlayer, FromItemBase->dwDBIdx, FromItemBase->wIconIdx, FromDur, FromItemBase->Position, FromItemBase->QuickPosition);
+		FromItemBase->ItemStatic,
+		FromItemBase->ItemGrow,     //  修正：加入 ItemGrow
+		FromItemBase->Grade30,      //  修正：加入 Grade30
+		FromItemBase->ItemQuality,  // 正确对齐 ItemQuality
+		FromItemBase->ItemEntry1,
+		FromItemBase->ItemEntry2,
+		FromItemBase->ItemEntry3);
+
+	ItemUpdatebyTable(pPlayer, FromItemBase->dwDBIdx, FromItemBase->wIconIdx, FromDur, FromItemBase->Position, FromItemBase->QuickPosition, FromItemBase->RareIdx, FromItemBase->ItemStatic, FromItemBase->ItemQuality, FromItemBase->ItemEntry1, FromItemBase->ItemEntry2, FromItemBase->ItemEntry3);
 	WORD EmptyCellPos[1];
 	EmptyCellPos[0] = ToPos;
 	WORD EmptyCellNum = 1;
-	return ObtainItemEx(pPlayer, pArrayInfo, FromItemBase->wIconIdx, (WORD)ToDur, EmptyCellPos, EmptyCellNum, EmptyCellNum + 1, 0, FromItemBase->ItemStatic);
+	return ObtainItemEx(pPlayer, pArrayInfo, FromItemBase->wIconIdx, (WORD)ToDur, EmptyCellPos, EmptyCellNum, EmptyCellNum + 1, 0, FromItemBase->ItemStatic, FromItemBase->ItemQuality, FromItemBase->ItemEntry1, FromItemBase->ItemEntry2, FromItemBase->ItemEntry3);
 }
 void CItemManager::DivideItemDBResult(CPlayer* pPlayer, WORD ArrayID)
 {
@@ -681,11 +700,11 @@ int CItemManager::CombineItem(CPlayer* pPlayer, WORD ItemIdx, POSTYPE FromPos, P
 	DURTYPE SumDur = FromItemBase->Durability + ToItemBase->Durability;
 	if (SumDur > MAX_YOUNGYAKITEM_DUPNUM)
 	{
-		if (pFromSlot->UpdateItemAbs(pPlayer, FromPos, 0, 0, 0, FromItemBase->QuickPosition, (SumDur - MAX_YOUNGYAKITEM_DUPNUM), UB_DURA) != EI_TRUE)
+		if (pFromSlot->UpdateItemAbs(pPlayer, FromPos, 0, 0, 0, FromItemBase->QuickPosition, (SumDur - MAX_YOUNGYAKITEM_DUPNUM), FromItemBase->ItemStatic, FromItemBase->ItemQuality, FromItemBase->ItemEntry1, FromItemBase->ItemEntry2, FromItemBase->ItemEntry3, UB_DURA) != EI_TRUE)
 		{
 			return 5;
 		}
-		if (pToSlot->UpdateItemAbs(pPlayer, ToPos, 0, 0, 0, ToItemBase->QuickPosition, MAX_YOUNGYAKITEM_DUPNUM, UB_DURA) != EI_TRUE)
+		if (pToSlot->UpdateItemAbs(pPlayer, ToPos, 0, 0, 0, ToItemBase->QuickPosition, MAX_YOUNGYAKITEM_DUPNUM, FromItemBase->ItemStatic, FromItemBase->ItemQuality, FromItemBase->ItemEntry1, FromItemBase->ItemEntry2, FromItemBase->ItemEntry3, UB_DURA) != EI_TRUE)
 		{
 			return 6;
 		}
@@ -700,7 +719,7 @@ int CItemManager::CombineItem(CPlayer* pPlayer, WORD ItemIdx, POSTYPE FromPos, P
 		{
 			return 7;
 		}
-		if (pToSlot->UpdateItemAbs(pPlayer, ToPos, 0, 0, 0, ToItemBase->QuickPosition, SumDur, UB_DURA) != EI_TRUE)
+		if (pToSlot->UpdateItemAbs(pPlayer, ToPos, 0, 0, 0, ToItemBase->QuickPosition, SumDur, ToItemBase->ItemStatic, ToItemBase->ItemQuality, ToItemBase->ItemEntry1, ToItemBase->ItemEntry2, ToItemBase->ItemEntry3, UB_DURA) != EI_TRUE)
 		{
 			return 8;
 		}
@@ -771,16 +790,16 @@ int CItemManager::DiscardItem(CPlayer* pPlayer, POSTYPE whatPos, WORD whatItemId
 	if (IsDupItem(pItemBase->wIconIdx) && pItemBase->Durability > MAX_YOUNGYAKITEM_DUPNUM)
 		return 1;
 	if (IsDupItem(pItemBase->wIconIdx) && (pItemBase->Durability > whatItemNum))
-	{
-		if (pSlot->UpdateItemAbs(pPlayer, whatPos, 0, 0, 0, 0, pItemBase->Durability - whatItemNum, UB_DURA) != EI_TRUE)
+	{//可叠加物品删除处理
+		if (pSlot->UpdateItemAbs(pPlayer, whatPos, 0, 0, 0, 0, pItemBase->Durability - whatItemNum, pItemBase->ItemStatic, pItemBase->ItemQuality, pItemBase->ItemEntry1, pItemBase->ItemEntry2, pItemBase->ItemEntry3, UB_DURA) != EI_TRUE)
 		{
 			return 2;
-		}
+		}		//更新到数据库
 		ItemUpdateToDB(pPlayer->GetID(), pItemBase->dwDBIdx, pItemBase->wIconIdx,
-			pItemBase->Durability, pItemBase->Position, pItemBase->QuickPosition, pItemBase->RareIdx);
+			pItemBase->Durability, pItemBase->Position, pItemBase->QuickPosition, pItemBase->RareIdx, pItemBase->ItemStatic, pItemBase->ItemQuality, pItemBase->ItemEntry1, pItemBase->ItemEntry2, pItemBase->ItemEntry3);
 	}
 	else
-	{
+	{//非叠加物品删除处理
 		ITEM_INFO* pItemInfo = GetItemInfo(pItemBase->wIconIdx);
 		if (!pItemInfo)	return eItemUseErr_Discard;
 		ITEMBASE DelItemOut;
@@ -1252,6 +1271,25 @@ void CItemManager::MonsterObtainItem(CPlayer * pPlayer, WORD obtainItemIdx, DWOR
 	ITEM_RARE_OPTION_INFO RareOptionInfo;
 	BOOL bRare = RAREITEMMGR->GetRare(obtainItemIdx, &RareOptionInfo, pPlayer);
 	pPlayer->GetPetManager()->GetPetBuffResultRt(ePB_Item_DoubleChance, &bGetTwice);
+	WORD ItemQuality = ITEMMGR->GetItemQuality();
+	WORD ItemEntry1 = 0;
+	WORD ItemEntry2 = 0;
+
+	if (ItemQuality == 4)
+	{
+		ItemEntry1 = GetItemEntry1();
+		ItemEntry2 = 0;
+	}
+	else if (ItemQuality == 3)
+	{
+		ItemEntry1 = GetItemEntry1();
+		ItemEntry2 = 0;
+	}
+	else
+	{
+		ItemEntry1 = 0;
+		ItemEntry2 = 0;
+	}
 	int rt = 0;
 	for (int i = 0; i < 1 + bGetTwice; ++i)
 	{
@@ -1267,23 +1305,25 @@ void CItemManager::MonsterObtainItem(CPlayer * pPlayer, WORD obtainItemIdx, DWOR
 		if (pInfo->ItemKind & eSHOP_ITEM)
 			rt = ObtainItemEx(pPlayer, Alloc(pPlayer, MP_ITEM, MP_ITEM_MONSTER_OBTAIN_NOTIFY, pPlayer->GetID(), dwFurnisherIdx, eLog_ItemObtainMonster, obtainItemNum, (DBResult)(ObtainItemDBResult), NULL), obtainItemIdx, obtainItemNum, EmptyCellPos, EmptyCellNum, EmptyCellNum, 1);
 		else if (pInfo->ItemKind & eEQUIP_ITEM)
-		{
+		{//掉落装备
 			if (FALSE == bRare)
-			{
-				if (FORTWARMGR->AddProfitItemFromMonster(pPlayer, obtainItemIdx, 1) == FALSE)
-					rt = ObtainItemEx(pPlayer, Alloc(pPlayer, MP_ITEM, MP_ITEM_MONSTER_OBTAIN_NOTIFY, pPlayer->GetID(), dwFurnisherIdx, eLog_ItemObtainMonster, obtainItemNum, (DBResult)(ObtainItemDBResult), NULL), obtainItemIdx, obtainItemNum, EmptyCellPos, EmptyCellNum, EmptyCellNum, 0);
+			{	//怪物掉落普通装备
+				rt = FORTWARMGR->AddProfitItemFromMonster(pPlayer, obtainItemIdx, 1);
+				if (rt == FALSE)
+					rt = ObtainItemEx(pPlayer, Alloc(pPlayer, MP_ITEM, MP_ITEM_MONSTER_OBTAIN_NOTIFY, pPlayer->GetID(), dwFurnisherIdx, eLog_ItemObtainMonster, obtainItemNum, (DBResult)(ObtainItemDBResult), NULL), obtainItemIdx, obtainItemNum, EmptyCellPos, EmptyCellNum, EmptyCellNum, 0, 0, ItemQuality, ItemEntry1, ItemEntry2, 0);
 			}
 			else
-			{
-				rt = ObtainRareItem(pPlayer, Alloc(pPlayer, MP_ITEM, MP_ITEM_MONSTER_RAREOBTAIN_NOTIFY, pPlayer->GetID(), dwFurnisherIdx, eLog_ItemObtainMonster, obtainItemNum, NULL, (DBResultEx)(RareItemDBResult)), obtainItemIdx, obtainItemNum, EmptyCellPos, EmptyCellNum, &RareOptionInfo);
+			{//怪物掉落绿装备
+				rt = ObtainRareItem(pPlayer, Alloc(pPlayer, MP_ITEM, MP_ITEM_MONSTER_RAREOBTAIN_NOTIFY, pPlayer->GetID(), dwFurnisherIdx, eLog_ItemObtainMonster, obtainItemNum, NULL, (DBResultEx)(RareItemDBResult)), obtainItemIdx, obtainItemNum, EmptyCellPos, EmptyCellNum, &RareOptionInfo, ItemQuality, ItemEntry1, ItemEntry2, 0);
 			}
 		}
-		else
+		else//掉落其他物品
 			rt = ObtainItemEx(pPlayer, Alloc(pPlayer, MP_ITEM, MP_ITEM_MONSTER_OBTAIN_NOTIFY, pPlayer->GetID(), dwFurnisherIdx, eLog_ItemObtainMonster, obtainItemNum, (DBResult)(ObtainItemDBResult), NULL), obtainItemIdx, obtainItemNum, EmptyCellPos, EmptyCellNum, EmptyCellNum, 0);
 		if (rt == 0 && pPlayer->GetPartyIdx())
 		{
-			PARTYMGR->SendObtainItemMsg(pPlayer, obtainItemIdx);
+			PARTYMGR->SendObtainItemMsg(pPlayer, obtainItemIdx, ItemQuality);
 		}
+		//ITEMMGR->SetItemValue(3);
 	}
 	return;
 }
@@ -1327,7 +1367,7 @@ int CItemManager::CheatObtainRareItem(CPlayer* pPlayer, WORD obtainItemIdx, WORD
 	RareOptionInfo.AttrRegist.SetElement_Val(ATTR_WATER, pOptionInfo->AttrRegist.GetElement_Val(ATTR_WATER));
 	return ObtainRareItem(pPlayer, Alloc(pPlayer, MP_ITEM, MP_ITEM_MONSTER_RAREOBTAIN_NOTIFY, pPlayer->GetID(), 0, eLog_ItemRareObtainCheat, obtainItemNum, NULL, (DBResultEx)(RareItemDBResult)), obtainItemIdx, obtainItemNum, EmptyCellPos, EmptyCellNum, &RareOptionInfo);
 }
-int CItemManager::ObtainRareItem(CPlayer* pPlayer, ITEMOBTAINARRAYINFO* pArrayInfo, WORD whatItemIdx, WORD whatItemNum, WORD * EmptyCellPos, WORD ArrayInfoUnitNum, ITEM_RARE_OPTION_INFO* pRareOptionInfo)
+int CItemManager::ObtainRareItem(CPlayer* pPlayer, ITEMOBTAINARRAYINFO* pArrayInfo, WORD whatItemIdx, WORD whatItemNum, WORD * EmptyCellPos, WORD ArrayInfoUnitNum, ITEM_RARE_OPTION_INFO* pRareOptionInfo, WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2, WORD ItemEntry3)
 {
 	if (IsDupItem(whatItemIdx)) ASSERT(0);
 	WORD obtainItemNum = whatItemNum;
@@ -1339,6 +1379,10 @@ int CItemManager::ObtainRareItem(CPlayer* pPlayer, ITEMOBTAINARRAYINFO* pArrayIn
 	NewItemBase.Durability = 9;
 	NewItemBase.RareIdx = 9;
 	NewItemBase.ItemParam = 9;
+	NewItemBase.ItemQuality = 9;
+	NewItemBase.ItemEntry1 = 9;
+	NewItemBase.ItemEntry2 = 9;
+	NewItemBase.ItemEntry3 = 9;
 	CItemSlot* pSlot = pPlayer->GetSlot(EmptyCellPos[0]);
 	BOOL bIsEmpty = pSlot->IsEmpty(EmptyCellPos[0]);
 	if (bIsEmpty)
@@ -1349,7 +1393,7 @@ int CItemManager::ObtainRareItem(CPlayer* pPlayer, ITEMOBTAINARRAYINFO* pArrayIn
 			ASSERT(0);
 			return 1;
 		}
-		ItemRareInsertToDB(pPlayer->GetID(), whatItemIdx, EmptyCellPos[0], MAKEDWORD(ArrayInfoUnitNum, pArrayInfo->wObtainArrayID), pRareOptionInfo);
+		ItemRareInsertToDB(pPlayer->GetID(), whatItemIdx, EmptyCellPos[0], MAKEDWORD(ArrayInfoUnitNum, pArrayInfo->wObtainArrayID), pRareOptionInfo, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
 		obtainItemNum--;
 		ASSERT(!obtainItemNum);
 	}
@@ -1360,8 +1404,8 @@ int CItemManager::ObtainRareItem(CPlayer* pPlayer, ITEMOBTAINARRAYINFO* pArrayIn
 	}
 	return 0;
 }
-int CItemManager::ObtainItemEx(CPlayer * pPlayer, ITEMOBTAINARRAYINFO * pArrayInfo, WORD whatItemIdx, WORD whatItemNum, WORD * EmptyCellPos, WORD EmptyCellNum, WORD ArrayInfoUnitNum, WORD bSeal, WORD BuyType)
-{
+int CItemManager::ObtainItemEx(CPlayer * pPlayer, ITEMOBTAINARRAYINFO * pArrayInfo, WORD whatItemIdx, WORD whatItemNum, WORD * EmptyCellPos, WORD EmptyCellNum, WORD ArrayInfoUnitNum, WORD bSeal, WORD BuyType, WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2, WORD ItemEntry3)
+{//重写更新函数，增加购买类型
 	DWORD obtainItemIdx = whatItemIdx;
 	WORD obtainItemNum = whatItemNum;
 	POSTYPE i = 0;
@@ -1374,7 +1418,11 @@ int CItemManager::ObtainItemEx(CPlayer * pPlayer, ITEMOBTAINARRAYINFO * pArrayIn
 	NewItemBase.ItemParam = 9;
 	NewItemBase.RareIdx = 9;
 	NewItemBase.ItemStatic = 9;
-	if (BuyType == 1)
+	NewItemBase.ItemQuality = 9;
+	NewItemBase.ItemEntry1 = 9;
+	NewItemBase.ItemEntry2 = 9;
+	NewItemBase.ItemEntry3 = 9;
+	if (BuyType == 1)//购买类型为1 泡点物品 增加物品状态更新为1 
 		NewItemBase.ItemStatic = 1;
 	BOOL bDBReturn = FALSE;
 	if (IsDupItem(whatItemIdx))
@@ -1395,7 +1443,7 @@ int CItemManager::ObtainItemEx(CPlayer * pPlayer, ITEMOBTAINARRAYINFO * pArrayIn
 						return 3;
 						ASSERT(0);
 					}
-					ItemInsertToDB(pPlayer->GetID(), obtainItemIdx, MAX_YOUNGYAKITEM_DUPNUM, EmptyCellPos[i], MAKEDWORD(ArrayInfoUnitNum, pArrayInfo->wObtainArrayID), bSeal, BuyType, 0);
+					ItemInsertToDB(pPlayer->GetID(), obtainItemIdx, MAX_YOUNGYAKITEM_DUPNUM, EmptyCellPos[i], MAKEDWORD(ArrayInfoUnitNum, pArrayInfo->wObtainArrayID), bSeal, BuyType, 0, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
 					obtainItemNum -= MAX_YOUNGYAKITEM_DUPNUM;
 				}
 				else
@@ -1406,7 +1454,7 @@ int CItemManager::ObtainItemEx(CPlayer * pPlayer, ITEMOBTAINARRAYINFO * pArrayIn
 						return 4;
 						ASSERT(0);
 					}
-					ItemInsertToDB(pPlayer->GetID(), obtainItemIdx, obtainItemNum, EmptyCellPos[i], MAKEDWORD(ArrayInfoUnitNum, pArrayInfo->wObtainArrayID), bSeal, BuyType, 0);
+					ItemInsertToDB(pPlayer->GetID(), obtainItemIdx, obtainItemNum, EmptyCellPos[i], MAKEDWORD(ArrayInfoUnitNum, pArrayInfo->wObtainArrayID), bSeal, BuyType, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
 					obtainItemNum = 0;
 				}
 			}
@@ -1415,28 +1463,12 @@ int CItemManager::ObtainItemEx(CPlayer * pPlayer, ITEMOBTAINARRAYINFO * pArrayIn
 				if (pItemBase->Durability + obtainItemNum > MAX_YOUNGYAKITEM_DUPNUM)
 				{
 					obtainItemNum = obtainItemNum + (WORD)pItemBase->Durability - MAX_YOUNGYAKITEM_DUPNUM;
-					if (pSlot->UpdateItemAbs(pPlayer, pItemBase->Position, 0, 0, 0, 0, MAX_YOUNGYAKITEM_DUPNUM, UB_DURA, SS_PREINSERT) != EI_TRUE)
+					if (pSlot->UpdateItemAbs(pPlayer, pItemBase->Position, 0, 0, 0, 0, MAX_YOUNGYAKITEM_DUPNUM, pItemBase->ItemStatic, pItemBase->ItemQuality, pItemBase->ItemEntry1, pItemBase->ItemEntry2, pItemBase->ItemEntry3, UB_DURA, SS_PREINSERT) != EI_TRUE)
 					{
 						return 1;
 					}
-					pArrayInfo->ItemArray.AddItem(pItemBase->dwDBIdx,
-						pItemBase->wIconIdx,
-						pItemBase->Durability,
-						pItemBase->Position,
-						pItemBase->QuickPosition,
-						pItemBase->ItemParam,
-						pItemBase->ItemStatic,
-						pItemBase->ItemGrow);
-					ItemUpdateToDB(pPlayer->GetID(), pItemBase->dwDBIdx, pItemBase->wIconIdx,
-						pItemBase->Durability, pItemBase->Position, pItemBase->QuickPosition);
-				}
-				else
-				{
-					if (pSlot->UpdateItemAbs(pPlayer, pItemBase->Position, 0, 0, 0, 0, pItemBase->Durability + obtainItemNum, UB_DURA, SS_PREINSERT) != EI_TRUE)
-					{
-						return 2;
-					}
-					pArrayInfo->ItemArray.AddItem(pItemBase->dwDBIdx,
+					pArrayInfo->ItemArray.AddItem(
+						pItemBase->dwDBIdx,
 						pItemBase->wIconIdx,
 						pItemBase->Durability,
 						pItemBase->Position,
@@ -1444,9 +1476,40 @@ int CItemManager::ObtainItemEx(CPlayer * pPlayer, ITEMOBTAINARRAYINFO * pArrayIn
 						pItemBase->ItemParam,
 						pItemBase->RareIdx,
 						pItemBase->ItemStatic,
-						pItemBase->ItemGrow);
+						pItemBase->ItemGrow,
+						pItemBase->Grade30,
+						pItemBase->ItemQuality,
+						pItemBase->ItemEntry1,
+						pItemBase->ItemEntry2,
+						pItemBase->ItemEntry3);
+
 					ItemUpdateToDB(pPlayer->GetID(), pItemBase->dwDBIdx, pItemBase->wIconIdx,
-						pItemBase->Durability, pItemBase->Position, pItemBase->QuickPosition);
+						pItemBase->Durability, pItemBase->Position, pItemBase->QuickPosition, pItemBase->RareIdx, pItemBase->ItemStatic, pItemBase->ItemQuality, pItemBase->ItemEntry1, pItemBase->ItemEntry2, pItemBase->ItemEntry3);
+				}
+				else
+				{
+					if (pSlot->UpdateItemAbs(pPlayer, pItemBase->Position, 0, 0, 0, 0, pItemBase->Durability + obtainItemNum, pItemBase->ItemStatic, pItemBase->ItemQuality, pItemBase->ItemEntry1, pItemBase->ItemEntry2, pItemBase->ItemEntry3, UB_DURA, SS_PREINSERT) != EI_TRUE)
+					{
+						return 2;
+					}
+					pArrayInfo->ItemArray.AddItem(
+						pItemBase->dwDBIdx,
+						pItemBase->wIconIdx,
+						pItemBase->Durability,
+						pItemBase->Position,
+						pItemBase->QuickPosition,
+						pItemBase->ItemParam,
+						pItemBase->RareIdx,
+						pItemBase->ItemStatic,
+						pItemBase->ItemGrow,         // 
+						pItemBase->Grade30,          // 补上
+						pItemBase->ItemQuality,      // 
+						pItemBase->ItemEntry1,
+						pItemBase->ItemEntry2,
+						pItemBase->ItemEntry3);
+
+					ItemUpdateToDB(pPlayer->GetID(), pItemBase->dwDBIdx, pItemBase->wIconIdx,
+						pItemBase->Durability, pItemBase->Position, pItemBase->QuickPosition, pItemBase->RareIdx, pItemBase->ItemStatic, pItemBase->ItemQuality, pItemBase->ItemEntry1, pItemBase->ItemEntry2, pItemBase->ItemEntry3);
 					obtainItemNum = 0;
 				}
 			}
@@ -1478,7 +1541,7 @@ int CItemManager::ObtainItemEx(CPlayer * pPlayer, ITEMOBTAINARRAYINFO * pArrayIn
 					ASSERT(0);
 				}
 				--obtainItemNum;
-				ItemInsertToDB(pPlayer->GetID(), obtainItemIdx, 0, EmptyCellPos[i], MAKEDWORD(ArrayInfoUnitNum, pArrayInfo->wObtainArrayID), bSeal, BuyType, 0);
+				ItemInsertToDB(pPlayer->GetID(), obtainItemIdx, 0, EmptyCellPos[i], MAKEDWORD(ArrayInfoUnitNum, pArrayInfo->wObtainArrayID), bSeal, BuyType, 0, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
 			}
 		}
 	}
@@ -2710,7 +2773,7 @@ int CItemManager::ReinforceItem(CPlayer* pPlayer, WORD wTargetItemIdx, POSTYPE T
 		if (pTargetItemBase->Durability != 0)
 			CharacterItemOptionDelete(pTargetItemBase->Durability, pTargetItemBase->dwDBIdx);
 		CItemSlot * pTargetSlot = pPlayer->GetSlot(TargetPos);
-		if (pTargetSlot->UpdateItemAbs(pPlayer, TargetPos, 0, 0, 0, 0, 0, UB_DURA, SS_PREINSERT) != EI_TRUE)
+		if (pTargetSlot->UpdateItemAbs(pPlayer, TargetPos, 0, 0, 0, 0, 0, pTargetItemBase->ItemStatic, pTargetItemBase->ItemQuality, pTargetItemBase->ItemEntry1, pTargetItemBase->ItemEntry2, pTargetItemBase->ItemEntry3, UB_DURA, SS_PREINSERT) != EI_TRUE)
 		{
 			return 6;
 		}
@@ -3060,7 +3123,7 @@ int CItemManager::ReinforceItemWithShopItem(CPlayer* pPlayer, WORD wTargetItemId
 		if (pTargetItemBase->Durability != 0)
 			CharacterItemOptionDelete(pTargetItemBase->Durability, pTargetItemBase->dwDBIdx);
 		CItemSlot * pTargetSlot = pPlayer->GetSlot(TargetPos);
-		if (pTargetSlot->UpdateItemAbs(pPlayer, TargetPos, 0, 0, 0, 0, 0, UB_DURA, SS_PREINSERT) != EI_TRUE)
+		if (pTargetSlot->UpdateItemAbs(pPlayer, TargetPos, 0, 0, 0, 0, 0, pShop->ItemStatic, pShop->ItemQuality, pShop->ItemEntry1, pShop->ItemEntry2, pShop->ItemEntry3, UB_DURA, SS_PREINSERT) != EI_TRUE)
 		{
 			return 6;
 		}
@@ -3082,7 +3145,7 @@ int CItemManager::ReinforceItemWithShopItem(CPlayer* pPlayer, WORD wTargetItemId
 void CItemManager::ReinforceItemDBResult(CPlayer * pPlayer, WORD wItemIdx, POSTYPE TargetPos, ITEM_OPTION_INFO * pOptionInfo)
 {
 	CItemSlot * pTargetSlot = pPlayer->GetSlot(TargetPos);
-	if (pTargetSlot->UpdateItemAbs(pPlayer, TargetPos, 0, 0, 0, 0, pOptionInfo->dwOptionIdx, UB_DURA) != EI_TRUE)
+	if (pTargetSlot->UpdateItemAbs(pPlayer, TargetPos, 0, 0, 0, 0, pOptionInfo->dwOptionIdx, 0, 0, 0, 0, 0, UB_DURA) != EI_TRUE)
 	{
 		return;
 	}
@@ -3183,10 +3246,10 @@ int CItemManager::UpgradeItem(CPlayer* pPlayer, WORD & TargetItemIdx, POSTYPE Ta
 		eLog_ItemDestroyUpgrade, pPlayer->GetMoney(eItemTable_Inventory), 0, 0,
 		TargetItemIdx, 0, MatItemPos, 0, 0, pPlayer->GetPlayerExpPoint());
 	CItemSlot * pSlot = pPlayer->GetSlot(TargetPos);
-	pSlot->UpdateItemAbs(pPlayer, TargetPos, 0, TargetItemIdx, 0, 0, 0, UB_ICONIDX);
+	pSlot->UpdateItemAbs(pPlayer, TargetPos, 0, TargetItemIdx, 0, 0, 0, 0, 0, 0, 0, 0, UB_ICONIDX);
 	const ITEMBASE * pItemBase = pSlot->GetItemInfoAbs(TargetPos);
 	ItemUpdateToDB(pPlayer->GetID(), pItemBase->dwDBIdx, pItemBase->wIconIdx,
-		pItemBase->Durability, pItemBase->Position, pItemBase->QuickPosition, pItemBase->RareIdx);
+		pItemBase->Durability, pItemBase->Position, pItemBase->QuickPosition, pItemBase->RareIdx, pItemBase->ItemStatic, pItemBase->ItemQuality, pItemBase->ItemEntry1, pItemBase->ItemEntry2, pItemBase->ItemEntry3);
 	return 0;
 }
 ITEM_INFO * CItemManager::GetItemInfo(WORD wItemIdx)
@@ -4483,6 +4546,157 @@ void CItemManager::NetworkMsgParse(DWORD dwConnectionIndex, BYTE Protocol, void*
 										pPlayer->SendMsg(&msg, sizeof(msg));
 	}
 		break;
+	case MP_ITEM_SHOPITEM_GRADECHANGE_SYN:	// 武器升阶值转移卷
+	{
+		MSG_DWORD6* pmsg = (MSG_DWORD6*)pMsg;
+
+		// 添加日志：接收到协议信息
+		// g_Console.LOG(4, "接收到协议: MP_ITEM_SHOPITEM_GRADECHANGE_SYN, ObjectID=%d, Data0=%d, Data1=%d, Data2=%d, Data3=%d, Data4=%d, Data5=%d",
+		// 	pmsg->dwObjectID, pmsg->dwData0, pmsg->dwData1, pmsg->dwData2, pmsg->dwData3, pmsg->dwData4, pmsg->dwData5);
+
+		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pmsg->dwObjectID);
+		if (!pPlayer)
+		{
+			// g_Console.LOG(4, "玩家未找到: ObjectID=%d", pmsg->dwObjectID);
+			return;
+		}
+		MSG_DWORD msg;
+		SetProtocol(&msg, MP_ITEM, MP_ITEM_SHOPITEM_GRADECHANGE_NACK);
+
+		if (!IsUseAbleShopItem(pPlayer, (WORD)pmsg->dwData0, (POSTYPE)pmsg->dwData1))	// 百宝物品检测返回
+		{
+			msg.dwData = 1;
+			pPlayer->SendMsg(&msg, sizeof(msg));
+			// g_Console.LOG(4, "百宝物品检测失败: Data0=%d, Data1=%d", pmsg->dwData0, pmsg->dwData1);
+			return;
+		}
+
+		ITEMBASE* pShopItem = (ITEMBASE*)GetItemInfoAbsIn(pPlayer, (POSTYPE)pmsg->dwData1);
+		ITEMBASE* pFromItem = (ITEMBASE*)GetItemInfoAbsIn(pPlayer, (POSTYPE)pmsg->dwData3);
+		ITEMBASE* pToItem = (ITEMBASE*)GetItemInfoAbsIn(pPlayer, (POSTYPE)pmsg->dwData5);
+
+		if (!pShopItem || !pFromItem || !pToItem)	// 检查角色物品不存在返回
+		{
+			msg.dwData = 2;
+			pPlayer->SendMsg(&msg, sizeof(msg));
+			// g_Console.LOG(4, "物品不存在: ShopItem=%p, FromItem=%p, ToItem=%p", pShopItem, pFromItem, pToItem);
+			return;
+		}
+
+		if (pShopItem->ItemStatic == 1)	// 如果是泡点卷 转换后变成泡点物
+			ItemLockUpdate(pPlayer->GetID(), pToItem->dwDBIdx, 1);
+
+		ITEM_INFO* pShopItemInfo = GetItemInfo((WORD)pmsg->dwData0);
+		ITEM_INFO* pFromItemInfo = GetItemInfo((WORD)pmsg->dwData2);
+		ITEM_INFO* pToItemInfo = GetItemInfo((WORD)pmsg->dwData4);
+
+		if (!pShopItemInfo || !pFromItemInfo || !pToItemInfo)	// 检查 ItemList 物品不存在返回
+		{
+			msg.dwData = 3;
+			pPlayer->SendMsg(&msg, sizeof(msg));
+			// g_Console.LOG(4, "物品信息未找到: ShopItemInfo=%p, FromItemInfo=%p, ToItemInfo=%p", pShopItemInfo, pFromItemInfo, pToItemInfo);
+			return;
+		}
+
+		if (pShopItem->wIconIdx != eSundries_GradeChange)	// 百宝物品使用物检查
+		{
+			msg.dwData = 4;
+			pPlayer->SendMsg(&msg, sizeof(msg));
+			// g_Console.LOG(4, "物品图标索引不匹配: wIconIdx=%d", pShopItem->wIconIdx);
+			return;
+		}
+
+		if (!(pFromItemInfo->ItemKind & eEQUIP_ITEM_WEAPON) && !(pFromItemInfo->ItemKind & eEQUIP_ITEM_UNIQUE))	// 转换物品类型错误返回
+		{
+			msg.dwData = 5;
+			pPlayer->SendMsg(&msg, sizeof(msg));
+			// g_Console.LOG(4, "转换物品类型错误: FromItemKind=%d", pFromItemInfo->ItemKind);
+			return;
+		}
+
+		if (!(pToItemInfo->ItemKind & eEQUIP_ITEM_WEAPON) && !(pToItemInfo->ItemKind & eEQUIP_ITEM_UNIQUE))	// 转换物品类型错误返回
+		{
+			msg.dwData = 5;
+			pPlayer->SendMsg(&msg, sizeof(msg));
+			// g_Console.LOG(4, "转换物品类型错误: ToItemKind=%d", pToItemInfo->ItemKind);
+			return;
+		}
+
+		if (EI_TRUE != DiscardItem(pPlayer, (POSTYPE)pmsg->dwData1, (WORD)pmsg->dwData0, 1))	// 物品扣除
+		{
+			msg.dwData = 6;
+			pPlayer->SendMsg(&msg, sizeof(msg));
+			// g_Console.LOG(4, "物品扣除失败: Data1=%d, Data0=%d", pmsg->dwData1, pmsg->dwData0);
+			return;
+		}
+
+		DWORD GetFromGrade = pFromItem->Grade30;
+
+		// 检查等级是否足够
+		if (GetFromGrade < 5)
+		{
+			// 向客户端发送错误消息
+			MSG_DWORD msg;
+			SetProtocol(&msg, MP_ITEM, MP_ITEM_SHOPITEM_GRADECHANGE_NACK);
+			msg.dwData = 7; // 错误码：等级不足
+			pPlayer->SendMsg(&msg, sizeof(msg));
+
+			// g_Console.LOG(4, "转移失败: FromItem等级不足, Grade=%d", GetFromGrade);
+			return;
+		}
+
+		// 检查是否有足够的等级扣除
+		DWORD TransferredGrade = GetFromGrade - 5;
+
+		// 将 pFromItem 的 Grade 清零
+		UpdateGradeItem(pPlayer->GetID(), pFromItem->dwDBIdx, 0, pFromItem->ItemStatic);
+
+		// 将实际转移的 Grade 加到 pToItem
+		UpdateGradeItem(pPlayer->GetID(), pToItem->dwDBIdx, TransferredGrade, pToItem->ItemStatic);
+
+		// 添加日志，记录转移情况
+		// g_Console.LOG(4, "转移完成: FromItem(Grade=%d -> 0), ToItem(Grade=+%d)", GetFromGrade, TransferredGrade);
+
+		ITEMBASE* pUpdatedFromItem = (ITEMBASE*)GetItemInfoAbsIn(pPlayer, (POSTYPE)pmsg->dwData3);
+		ITEMBASE* pUpdatedToItem = (ITEMBASE*)GetItemInfoAbsIn(pPlayer, (POSTYPE)pmsg->dwData5);
+
+		// if (pUpdatedFromItem) {
+		//     DWORD fromItemGrade = pUpdatedFromItem->Grade; // 获取最新 Grade
+		//     // g_Console.LOG(4, "Updated FromItem Grade: %d", fromItemGrade);
+		// }
+
+		// if (pUpdatedToItem) {
+		//     DWORD toItemGrade = pUpdatedToItem->Grade; // 获取最新 Grade
+		//     // g_Console.LOG(4, "Updated ToItem Grade: %d", toItemGrade);
+		// }
+
+		SEND_SHOPITEM_BASEINFO usemsg;
+		SetProtocol(&usemsg, MP_ITEM, MP_ITEM_SHOPITEM_USE_ACK);
+		usemsg.ShopItemPos = (POSTYPE)pmsg->dwData1;
+		usemsg.ShopItemIdx = (WORD)pmsg->dwData0;
+		SendAckMsg(pPlayer, &usemsg, sizeof(usemsg));
+
+		// 发送升阶信息
+		SEND_SHOPITEM_BASEINFO1 EEWWQ;
+		SetProtocol(&EEWWQ, MP_ITEM, MP_ITEM_SHOPITEM_GRADECHANGE_ACK);
+
+		// 设置源和目标物品的位置
+		EEWWQ.ShopItemPosFrom = (POSTYPE)pmsg->dwData3;  // 从 pmsg 中获取源物品位置
+		EEWWQ.ShopItemPosTo = (POSTYPE)pmsg->dwData5;    // 从 pmsg 中获取目标物品位置
+
+		// 直接使用 GetFromGrade 和 TransferredGrade 发送给客户端
+		EEWWQ.GradeFrom = 0;
+		EEWWQ.GradeTo = TransferredGrade;
+
+		// 发送消息到客户端
+		pPlayer->SendMsg(&EEWWQ, sizeof(EEWWQ));
+
+		// 日志记录
+		// g_Console.LOG(4, "处理完成: MP_ITEM_SHOPITEM_GRADECHANGE_ACK, ShopItemPosFrom=%d, GradeFrom=%d, ShopItemPosTo=%d, GradeTo=%d",
+		// 	EEWWQ.ShopItemPosFrom, EEWWQ.GradeFrom, EEWWQ.ShopItemPosTo, EEWWQ.GradeTo);
+
+	}
+	break;
 	case MP_ITEM_SHOPITEM_CHANGEMAP_SYN:
 	{
 										   MSG_DWORD* pmsg = (MSG_DWORD*)pMsg;
@@ -5255,7 +5469,7 @@ void CItemManager::NetworkMsgParse(DWORD dwConnectionIndex, BYTE Protocol, void*
 												{
 												}
 												CharacterItemOptionDelete(pTargetItem->Durability, pTargetItem->dwDBIdx);
-												ItemUpdateToDB(pPlayer->GetID(), pTargetItem->dwDBIdx, pTargetItem->wIconIdx, 0, pTargetItem->Position, pTargetItem->QuickPosition, pTargetItem->RareIdx);
+												ItemUpdateToDB(pPlayer->GetID(), pTargetItem->dwDBIdx, pTargetItem->wIconIdx, 0, pTargetItem->Position, pTargetItem->QuickPosition, pTargetItem->RareIdx, pTargetItem->ItemStatic, pTargetItem->ItemQuality, pTargetItem->ItemEntry1, pTargetItem->ItemEntry2, pTargetItem->ItemEntry3);
 												LogItemMoney(pPlayer->GetID(), pPlayer->GetObjectName(), pPlayer->GetID(), pPlayer->GetObjectName(), eLog_ShopItem_ReinforceReset,
 													pPlayer->GetMoney(), pPlayer->GetMoney(), 0, pTargetItem->wIconIdx, pTargetItem->dwDBIdx,
 													pTargetItem->Position, pTargetItem->Position, pTargetItem->Durability, pPlayer->GetPlayerExpPoint());
@@ -5301,11 +5515,12 @@ void CItemManager::NetworkMsgParse(DWORD dwConnectionIndex, BYTE Protocol, void*
 											if (pShopItem->wIconIdx != eSundries_RareItemCreate50 &&
 												pShopItem->wIconIdx != eSundries_RareItemCreate70 &&
 												pShopItem->wIconIdx != eSundries_RareItemCreate90 &&
-												pShopItem->wIconIdx != eSundries_RareItemCreate99 &&
-												pShopItem->wIconIdx != eSpecialBlessingStoneSTR &&
-												pShopItem->wIconIdx != eSpecialBlessingStoneAGI &&
-												pShopItem->wIconIdx != eSpecialBlessingStoneCON &&
-												pShopItem->wIconIdx != eSpecialBlessingStoneINT)
+												pShopItem->wIconIdx != eSundries_RareItemCreate99 //&&
+												//pShopItem->wIconIdx != eSpecialBlessingStoneSTR &&
+												//pShopItem->wIconIdx != eSpecialBlessingStoneAGI &&
+												//pShopItem->wIconIdx != eSpecialBlessingStoneCON &&
+												//pShopItem->wIconIdx != eSpecialBlessingStoneINT
+												)
 											{
 												msg.dwData = 4;
 												pPlayer->SendMsg(&msg, sizeof(msg));
@@ -5353,7 +5568,8 @@ void CItemManager::NetworkMsgParse(DWORD dwConnectionIndex, BYTE Protocol, void*
 												return;
 											}
 											ITEM_RARE_OPTION_INFO rareoption;
-											if (RAREITEMMGR->GetRare(pTargetItem->wIconIdx, &rareoption, pPlayer, TRUE, pShopItem->wIconIdx) == FALSE)
+											ITEMBASE BaseItem = *pTargetItem;
+											if (RAREITEMMGR->GetRareExt(pTargetItem->wIconIdx, &rareoption, pPlayer, &BaseItem, TRUE) == FALSE)
 											{
 												msg.dwData = 10;
 												pPlayer->SendMsg(&msg, sizeof(msg));
@@ -5956,7 +6172,26 @@ void CItemManager::NetworkMsgParseExt(DWORD dwConnectionIndex, BYTE Protocol, vo
 													   WORD obtainItemNum = GetCanBuyNumInSpace(pPlayer, pSlot, (WORD)pInfo->dwCurseCancellation, 1, EmptyCellPos, EmptyCellNum);
 													   if (obtainItemNum == 0)
 														   break;
-													   ObtainItemEx(pPlayer, Alloc(pPlayer, MP_ITEMEXT, MP_ITEMEXT_SHOPITEM_CURSE_CANCELLATION_ACK, pPlayer->GetID(), 0, eLog_ItemObtainTitan, obtainItemNum, (DBResult)(ObtainItemDBResult)), (WORD)pInfo->dwCurseCancellation, obtainItemNum, EmptyCellPos, EmptyCellNum, EmptyCellNum);
+													   WORD ItemQuality = GetItemQuality();
+													   WORD ItemEntry1 = 0;
+													   WORD ItemEntry2 = 0;
+
+													   if (ItemQuality == 4)
+													   {
+														   ItemEntry1 = GetItemEntry1();
+														   ItemEntry2 = 0;
+													   }
+													   else if (ItemQuality == 3)
+													   {
+														   ItemEntry1 = ITEMMGR->GetItemEntry1();
+														   ItemEntry2 = 0;
+													   }
+													   else
+													   {
+														   ItemEntry1 = 0;
+														   ItemEntry2 = 0;
+													   }
+													   ObtainItemEx(pPlayer, Alloc(pPlayer, MP_ITEMEXT, MP_ITEMEXT_SHOPITEM_CURSE_CANCELLATION_ACK, pPlayer->GetID(), 0, eLog_ItemObtainTitan, obtainItemNum, (DBResult)(ObtainItemDBResult)), (WORD)pInfo->dwCurseCancellation, obtainItemNum, EmptyCellPos, EmptyCellNum, EmptyCellNum, 0, 0, ItemQuality, ItemEntry1, ItemEntry2, 0);
 												   UniqueItemCurseCancellation:
 													   pPlayer->SendMsg(&msg, sizeof(msg));
 													   return;
@@ -6102,7 +6337,26 @@ void CItemManager::NetworkMsgParseExt(DWORD dwConnectionIndex, BYTE Protocol, vo
 										  WORD obtainItemNum = ITEMMGR->GetCanBuyNumInSpace(pPlayer, pSlot, wResultItemIdx, 1, EmptyCellPos, EmptyCellNum);
 										  if (obtainItemNum == 0)
 											  return;
-										  ITEMMGR->ObtainItemEx(pPlayer, ITEMMGR->Alloc(pPlayer, MP_ITEMEXT, MP_ITEMEXT_UNIQUEITEM_MIX_ACK, pPlayer->GetID(), 0, eLog_ItemObtainTitan, obtainItemNum, (DBResult)(ITEMMGR->ObtainItemDBResult)), wResultItemIdx, obtainItemNum, EmptyCellPos, EmptyCellNum, EmptyCellNum);
+										  WORD ItemQuality = GetItemQuality();
+										  WORD ItemEntry1 = 0;
+										  WORD ItemEntry2 = 0;
+
+										  if (ItemQuality == 4)
+										  {
+											  ItemEntry1 = GetItemEntry1();
+											  ItemEntry2 = 0;
+										  }
+										  else if (ItemQuality == 3)
+										  {
+											  ItemEntry1 = GetItemEntry1();
+											  ItemEntry2 = 0;
+										  }
+										  else
+										  {
+											  ItemEntry1 = 0;
+											  ItemEntry2 = 0;
+										  }
+										  ITEMMGR->ObtainItemEx(pPlayer, ITEMMGR->Alloc(pPlayer, MP_ITEMEXT, MP_ITEMEXT_UNIQUEITEM_MIX_ACK, pPlayer->GetID(), 0, eLog_ItemObtainTitan, obtainItemNum, (DBResult)(ITEMMGR->ObtainItemDBResult)), wResultItemIdx, obtainItemNum, EmptyCellPos, EmptyCellNum, EmptyCellNum, 0, 0, ItemQuality, ItemEntry1, ItemEntry2, 0);
 	}
 		break;
 	case MP_ITEMEXT_SKINITEM_SELECT_SYN:
@@ -6513,9 +6767,356 @@ void CItemManager::NetworkMsgParseExt(DWORD dwConnectionIndex, BYTE Protocol, vo
 
 	}
 	break;
+
+	case MP_ITEMEXT_QUALITY_SYN:
+	{
+		MSG_ITEM_QUALITY_MSG* pmsg = (MSG_ITEM_QUALITY_MSG*)pMsg;
+		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pmsg->dwObjectID);
+		if (pPlayer == NULL)
+			return;
+		//if (pPlayer->IsSafeLock())
+		//{//安全锁锁定
+		//	MSG_DWORD2 msg;
+		//	msg.Category = MP_SAFELOCK;
+		//	msg.Protocol = MP_SAFELOCK_LOCKEDTOCLIENT_ACK;
+		//	msg.dwData1 = 8;
+		//	pPlayer->SendMsg(&msg, sizeof(msg));
+		//	return;
+		//}
+		WORD rt = 0;
+		if (EI_TRUE == (rt = QualityItem(pPlayer, pmsg)))
+		{//使用觉醒石成功后发送客户端提醒
+			SEND_SHOPITEM_BASEINFO usemsg;
+			SetProtocol(&usemsg, MP_ITEM, MP_ITEM_SHOPITEM_USE_ACK);
+			usemsg.ShopItemPos = (POSTYPE)pmsg->ItemQualityPos;
+			usemsg.ShopItemIdx = (WORD)pmsg->ItemQualityIdx;
+			SendAckMsg(pPlayer, &usemsg, sizeof(usemsg));
+
+			MSG_DWORD msg;
+			msg.Category = MP_ITEMEXT;
+			msg.Protocol = MP_ITEMEXT_QUALITY_ACK;
+			msg.dwData = pmsg->ItemExtraTargetPos;//材料装备pos
+			pPlayer->SendMsg(&msg, sizeof(msg));
+		}
+		else
+		{//觉醒失败
+			if (rt == 10)
+			{
+				SEND_SHOPITEM_BASEINFO usemsg;
+				SetProtocol(&usemsg, MP_ITEM, MP_ITEM_SHOPITEM_USE_ACK);
+				usemsg.ShopItemPos = (POSTYPE)pmsg->ItemQualityPos;
+				usemsg.ShopItemIdx = (WORD)pmsg->ItemQualityIdx;
+				SendAckMsg(pPlayer, &usemsg, sizeof(usemsg));
+
+				MSG_DWORD3 msg;
+				msg.Category = MP_ITEMEXT;
+				msg.Protocol = MP_ITEMEXT_QUALITY_NACK;
+				msg.dwData1 = pmsg->ItemTargetPos;//主装备pos
+				msg.dwData2 = pmsg->ItemExtraTargetPos;//材料装备pos
+				msg.dwData3 = rt;
+				pPlayer->SendMsg(&msg, sizeof(msg));
+			}
+			else
+			{
+				MSG_DWORD3 msg;
+				msg.Category = MP_ITEMEXT;
+				msg.Protocol = MP_ITEMEXT_QUALITY_NACK;
+				msg.dwData1 = pmsg->ItemTargetPos;//主装备pos
+				msg.dwData2 = pmsg->ItemExtraTargetPos;//材料装备pos
+				msg.dwData3 = rt;
+				pPlayer->SendMsg(&msg, sizeof(msg));
+			}
+		}
+	}
+	break;
+	case MP_ITEMEXT_QUALITYCHANGE_SYN:
+	{
+		MSG_ITEM_QUALITY_MSG* pmsg = (MSG_ITEM_QUALITY_MSG*)pMsg;
+		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pmsg->dwObjectID);
+		if (pPlayer == NULL)
+			return;
+		//if (pPlayer->IsSafeLock())
+		//{//安全锁锁定
+		//	MSG_DWORD2 msg;
+		//	msg.Category = MP_SAFELOCK;
+		//	msg.Protocol = MP_SAFELOCK_LOCKEDTOCLIENT_ACK;
+		//	msg.dwData1 = 8;
+		//	pPlayer->SendMsg(&msg, sizeof(msg));
+		//	return;
+		//}
+		WORD rt = 0;
+		if (EI_TRUE == (rt = QualityChangeItem(pPlayer, pmsg)))
+		{//使用转换石成功后发送客户端提醒
+			SEND_SHOPITEM_BASEINFO usemsg;
+			SetProtocol(&usemsg, MP_ITEM, MP_ITEM_SHOPITEM_USE_ACK);
+			usemsg.ShopItemPos = (POSTYPE)pmsg->ItemQualityPos;
+			usemsg.ShopItemIdx = (WORD)pmsg->ItemQualityIdx;
+			SendAckMsg(pPlayer, &usemsg, sizeof(usemsg));
+		}
+		else
+		{//转换失败
+			MSG_DWORD2 msg;
+			msg.Category = MP_ITEMEXT;
+			msg.Protocol = MP_ITEMEXT_QUALITYCHANGE_NACK;
+			msg.dwData1 = pmsg->ItemTargetPos;//主装备pos
+			msg.dwData2 = rt;
+			pPlayer->SendMsg(&msg, sizeof(msg));
+		}
+	}
+	break;
 	default:
 		break;
 	}
+}
+WORD CItemManager::QualityItem(CPlayer* pPlayer, MSG_ITEM_QUALITY_MSG* pMsg)
+{
+	MSG_ITEM_QUALITY_MSG* pmsg = (MSG_ITEM_QUALITY_MSG*)pMsg;
+
+	const ITEMBASE* pShopItemBase = GetItemInfoAbsIn(pPlayer, pmsg->ItemQualityPos);
+	const ITEMBASE* pTargetBase = GetItemInfoAbsIn(pPlayer, pmsg->ItemTargetPos);
+	const ITEMBASE* pExtraTargetBase = GetItemInfoAbsIn(pPlayer, pmsg->ItemExtraTargetPos);
+
+	if (!pShopItemBase || !pTargetBase || !pExtraTargetBase)
+		return 1; // 缺少物品信息
+
+	if (pShopItemBase->wIconIdx != pmsg->ItemQualityIdx ||
+		pTargetBase->wIconIdx != pmsg->ItemTargetIdx ||
+		pExtraTargetBase->wIconIdx != pmsg->ItemExtraTargetIdx)
+		return 2; // 客户端数据与服务端不一致
+
+	if (TP_WEAR_START <= pTargetBase->Position && pTargetBase->Position < TP_WEAR_END)
+		return 3; // 穿戴中的装备不能操作
+
+	if (TP_SHOPINVEN_START <= pTargetBase->Position && pTargetBase->Position < TP_SHOPINVEN_END)
+		return 4; // 百宝格不能操作
+
+	ITEM_INFO* pInfo1 = GetItemInfo(pTargetBase->wIconIdx);
+	ITEM_INFO* pInfo2 = GetItemInfo(pExtraTargetBase->wIconIdx);
+	ITEM_INFO* pShopItemInfo = GetItemInfo(pShopItemBase->wIconIdx);
+
+	if (pInfo1->LimitLevel < pShopItemInfo->GenGol || pInfo1->LimitLevel > pShopItemInfo->MinChub)
+		return 5; // 装备等级不符
+
+	if (!(pInfo1->ItemKind >= eEQUIP_ITEM_WEAPON && pInfo1->ItemKind <= eEQUIP_ITEM_UNIQUE))
+		return 6; // 主装备必须是装备类
+
+	WORD matID = pExtraTargetBase->wIconIdx;
+	WORD matQuality = pExtraTargetBase->ItemQuality;
+	WORD entry2 = pTargetBase->ItemEntry2;
+	WORD e1 = 0;
+	WORD e2 = 0;
+
+	// [1] 觉醒逻辑（Entry2 必须为 0）
+	if (matID == STONEJUEXING)
+	{
+		if (entry2 != 0) return 11; // 已觉醒
+		int newEntry2 = ITEMMGR->GetItemEntry2();
+		if (newEntry2 == 0) newEntry2 = 1; // 防止为0
+		DiscardItem(pPlayer, pShopItemBase->Position, pShopItemBase->wIconIdx, 1);
+		DiscardItem(pPlayer, pExtraTargetBase->Position, pExtraTargetBase->wIconIdx, 1);
+		ItemQualityUpdateToDB(pPlayer->GetID(), pTargetBase->dwDBIdx, pTargetBase->wIconIdx,
+			pTargetBase->Durability, pTargetBase->Position, pTargetBase->QuickPosition,
+			pTargetBase->RareIdx, pTargetBase->ItemStatic, pTargetBase->Grade30,
+			pTargetBase->ItemQuality, pTargetBase->ItemEntry1, newEntry2, pTargetBase->ItemEntry3);
+		return 0;
+	}
+
+	// [2] 洗练前置检查（entry2 必须已觉醒）
+	if (entry2 == 0) return 12;
+
+	// [3] 洗练逻辑
+	if (matID == STONECHANGE100) // 双洗
+	{
+		e1 = ITEMMGR->GetItemEntry1();
+		e2 = ITEMMGR->GetItemEntry2();
+		do { e1 = ITEMMGR->GetItemEntry1(); } while (e1 == pTargetBase->ItemEntry1);
+		do { e2 = ITEMMGR->GetItemEntry2(); } while (e2 == pTargetBase->ItemEntry2 || e2 == 0);
+		goto __UPDATE_ITEM;
+	}
+
+	if (matID == STONEENTRY1) // 只洗1
+	{
+		do { e1 = ITEMMGR->GetItemEntry1(); } while (e1 == pTargetBase->ItemEntry1);
+		e2 = pTargetBase->ItemEntry2;
+		goto __UPDATE_ITEM;
+	}
+
+	if (matID == STONEENTRY2) // 只洗2
+	{
+		e1 = pTargetBase->ItemEntry1;
+		do { e2 = ITEMMGR->GetItemEntry2(); } while (e2 == pTargetBase->ItemEntry2 || e2 == 0);
+		goto __UPDATE_ITEM;
+	}
+
+	if (pInfo2 && pInfo1->ItemIdx == pInfo2->ItemIdx && matQuality >= 2) // 同类装备洗练
+	{
+		int rate = (matQuality == 2 ? 30 : (matQuality == 3 ? 60 : 100));
+		if (GetItemRand() > rate)
+		{
+			DiscardItem(pPlayer, pExtraTargetBase->Position, pExtraTargetBase->wIconIdx, 1);
+			return 10;
+		}
+		do { e1 = ITEMMGR->GetItemEntry1(); } while (e1 == pTargetBase->ItemEntry1);
+		do { e2 = ITEMMGR->GetItemEntry2(); } while (e2 == pTargetBase->ItemEntry2 || e2 == 0);
+		goto __UPDATE_ITEM;
+	}
+
+	return 9; // 无效材料
+
+__UPDATE_ITEM:
+	DiscardItem(pPlayer, pShopItemBase->Position, pShopItemBase->wIconIdx, 1);
+	DiscardItem(pPlayer, pExtraTargetBase->Position, pExtraTargetBase->wIconIdx, 1);
+	ItemQualityUpdateToDB(pPlayer->GetID(), pTargetBase->dwDBIdx, pTargetBase->wIconIdx,
+		pTargetBase->Durability, pTargetBase->Position, pTargetBase->QuickPosition,
+		pTargetBase->RareIdx, pTargetBase->ItemStatic, pTargetBase->Grade30,
+		pTargetBase->ItemQuality, e1, e2, pTargetBase->ItemEntry3);
+	return 0;
+}
+
+
+//WORD CItemManager::QualityItem(CPlayer* pPlayer, MSG_ITEM_QUALITY_MSG* pMsg)
+//{
+//	MSG_ITEM_QUALITY_MSG* pmsg = (MSG_ITEM_QUALITY_MSG*)pMsg;
+//
+//	const ITEMBASE* pShopItemBase = GetItemInfoAbsIn(pPlayer, pmsg->ItemQualityPos);
+//
+//	const ITEMBASE* pTargetBase = GetItemInfoAbsIn(pPlayer, pmsg->ItemTargetPos);
+//
+//	const ITEMBASE* pExtraTargetBase = GetItemInfoAbsIn(pPlayer, pmsg->ItemExtraTargetPos);
+//
+//	if (!pShopItemBase || !pTargetBase || !pExtraTargetBase)
+//	{//没有物品信息
+//		return 1;
+//	}
+//	if (pShopItemBase->wIconIdx != pmsg->ItemQualityIdx ||
+//		pTargetBase->wIconIdx != pmsg->ItemTargetIdx ||
+//		pExtraTargetBase->wIconIdx != pmsg->ItemExtraTargetIdx)
+//	{//客户端发过来信息和服务端检测到的不一致
+//		return 2;
+//	}
+//	if (TP_WEAR_START <= pTargetBase->Position && pTargetBase->Position < TP_WEAR_END) //穿在身上的不能
+//	{
+//		return 3;
+//	}
+//	if (TP_SHOPINVEN_START <= pTargetBase->Position && pTargetBase->Position < TP_SHOPINVEN_END)  //百宝不能
+//	{
+//		return 4;
+//	}
+//
+//	ITEM_INFO* pInfo1 = GetItemInfo(pTargetBase->wIconIdx);
+//	ITEM_INFO* pInfo2 = GetItemInfo(pExtraTargetBase->wIconIdx);
+//	ITEM_INFO* pShopItemInfo = GetItemInfo(pShopItemBase->wIconIdx);
+//
+//	if (pInfo1->LimitLevel < pShopItemInfo->GenGol || pInfo1->LimitLevel > pShopItemInfo->MinChub)
+//	{//觉醒装备和百宝物品等级不符
+//		return 5;
+//	}
+//	if (!(pInfo1->ItemKind >= eEQUIP_ITEM_WEAPON && pInfo1->ItemKind <= eEQUIP_ITEM_UNIQUE))
+//	{//非装备物品
+//		return 6;
+//	}
+//	if (!(pInfo2->ItemKind >= eEQUIP_ITEM_WEAPON && pInfo2->ItemKind <= eEQUIP_ITEM_UNIQUE))
+//	{//觉醒材料非装备物品
+//		return 7;
+//	}
+//	if (pTargetBase->ItemQuality != 4)
+//	{//觉醒装备非顶级品质不能觉醒
+//		return 8;
+//	}
+//	if (pExtraTargetBase->ItemQuality < 3)
+//	{//觉醒材料品质限制
+//		return 8;
+//	}
+//	if (pExtraTargetBase->ItemQuality == 3 && GetItemRand() == 0)
+//	{//觉醒材料为【·传奇】时30%成功几率
+//		DiscardItem(pPlayer, pExtraTargetBase->Position, pExtraTargetBase->wIconIdx, 1);//删除材料物品
+//		return 10;
+//	}
+//	if (pInfo1->ItemIdx != pInfo2->ItemIdx)
+//	{
+//		return 9;
+//	}
+//	DiscardItem(pPlayer, pShopItemBase->Position, pShopItemBase->wIconIdx, 1);//删除觉醒石物品
+//	DiscardItem(pPlayer, pExtraTargetBase->Position, pExtraTargetBase->wIconIdx, 1);//删除材料物品
+//
+//	//此处重置装备品质属性词条
+//	int ItemEntry1 = ITEMMGR->GetItemEntry1();//重置第二个词条/ 修改为第二个词条保留
+//	int ItemEntry2 = ITEMMGR->GetItemEntry2();//重置第三个词条//如果不要重置就放pTargetBase
+//
+//	//100% 成功!更新到数据库
+//	ItemQualityUpdateToDB(pPlayer->GetID(), pTargetBase->dwDBIdx, pTargetBase->wIconIdx, pTargetBase->Durability, pTargetBase->Position, pTargetBase->QuickPosition, pTargetBase->RareIdx, pTargetBase->ItemStatic, pTargetBase->Grade30, pTargetBase->ItemQuality, ItemEntry1,ItemEntry2, pTargetBase->ItemEntry3);
+//	return 0;
+//}
+WORD CItemManager::QualityChangeItem(CPlayer* pPlayer, MSG_ITEM_QUALITY_MSG* pMsg)
+{
+	MSG_ITEM_QUALITY_MSG* pmsg = (MSG_ITEM_QUALITY_MSG*)pMsg;
+
+	const ITEMBASE* pShopItemBase = GetItemInfoAbsIn(pPlayer, pmsg->ItemQualityPos);
+
+	const ITEMBASE* pTargetBase = GetItemInfoAbsIn(pPlayer, pmsg->ItemTargetPos);
+
+
+	if (!pShopItemBase || !pTargetBase)
+	{//没有物品信息
+		return 1;
+	}
+	if (pShopItemBase->wIconIdx != pmsg->ItemQualityIdx || pTargetBase->wIconIdx != pmsg->ItemTargetIdx)
+	{//客户端发过来信息和服务端检测到的不一致
+		return 2;
+	}
+	if (TP_WEAR_START <= pTargetBase->Position && pTargetBase->Position < TP_WEAR_END) //穿在身上的不能
+	{
+		return 3;
+	}
+	if (TP_SHOPINVEN_START <= pTargetBase->Position && pTargetBase->Position < TP_SHOPINVEN_END)  //百宝不能
+	{
+		return 4;
+	}
+
+	ITEM_INFO* pInfo = GetItemInfo(pTargetBase->wIconIdx);
+	ITEM_INFO* pShopItemInfo = GetItemInfo(pShopItemBase->wIconIdx);
+
+	if (pInfo->LimitLevel < pShopItemInfo->GenGol || pInfo->LimitLevel > pShopItemInfo->MinChub)
+	{
+		return 5;
+	}
+	if (pShopItemInfo->ItemIdx < 51513 || pShopItemInfo->ItemIdx>51539)
+	{
+		return 6;
+	}
+	if (!(pInfo->ItemKind >= eEQUIP_ITEM_WEAPON && pInfo->ItemKind <= eEQUIP_ITEM_UNIQUE))
+	{
+		return 7;
+	}
+	if ((pInfo->ItemKind != pShopItemInfo->SellPrice) || (pInfo->ItemKind == eEQUIP_ITEM_UNIQUE && pShopItemInfo->BuyPrice != 2100))
+	{
+		return 8;
+	}
+
+	if (pTargetBase->ItemQuality >3)
+	{//只能转换普通装备
+		return 9;
+	}
+	DiscardItem(pPlayer, pShopItemBase->Position, pShopItemBase->wIconIdx, 1);//删除觉醒石物品
+	// 品质随机逻辑，1~4 之间，4 几率提高为 15%
+	BYTE newQuality = 1;
+	int r = rand() % 100;
+	if (r < 40)
+		newQuality = 1;       // 40%
+	else if (r < 65)
+		newQuality = 2;       // 25%
+	else if (r < 85)
+		newQuality = 3;       // 20%
+	else
+		newQuality = 4;       // 15%
+
+	//此处随机装备品质属性词条
+	int ItemEntry1 = rand() % 11 + 1;
+	int ItemEntry2 = 0;
+
+	//100% 成功!更新到数据库
+	ItemQualityChangeUpdateToDB(pPlayer->GetID(), pTargetBase->dwDBIdx, pTargetBase->wIconIdx, pTargetBase->Durability, pTargetBase->Position, pTargetBase->QuickPosition, pTargetBase->RareIdx, pTargetBase->ItemStatic, pTargetBase->Grade30, newQuality, ItemEntry1, ItemEntry2, pTargetBase->ItemEntry3);
+	return 0;
 }
 BOOL CItemManager::ItemMoveUpdateToDBbyTable(CPlayer* pPlayer, DWORD dwfromDBIdx, WORD dwfromIconIdx, POSTYPE frompos, DWORD dwtoDBIdx, POSTYPE topos)
 {
@@ -6558,23 +7159,23 @@ BOOL CItemManager::ItemMoveUpdateToDBbyTable(CPlayer* pPlayer, DWORD dwfromDBIdx
 	}
 	return TRUE;
 }
-void CItemManager::ItemUpdatebyTable(CPlayer* pPlayer, DWORD dwDBIdx, WORD wIconIdx, DURTYPE FromDur, POSTYPE Position, POSTYPE QuickPosition)
+void CItemManager::ItemUpdatebyTable(CPlayer* pPlayer, DWORD dwDBIdx, WORD wIconIdx, DURTYPE FromDur, POSTYPE Position, POSTYPE QuickPosition, DWORD iRareIdx, WORD ItemStatic, WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2, WORD ItemEntry3)
 {
 	if (TP_INVENTORY_START <= Position && Position < TP_WEAR_END)
 	{
-		ItemUpdateToDB(pPlayer->GetID(), dwDBIdx, wIconIdx, FromDur, Position, QuickPosition);
+		ItemUpdateToDB(pPlayer->GetID(), dwDBIdx, wIconIdx, FromDur, Position, QuickPosition, iRareIdx, ItemStatic, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
 	}
 	else if (TP_SHOPINVEN_START <= Position && Position < TP_SHOPINVEN_END)
 	{
-		ItemUpdateToDB(pPlayer->GetID(), dwDBIdx, wIconIdx, FromDur, Position, QuickPosition);
+		ItemUpdateToDB(pPlayer->GetID(), dwDBIdx, wIconIdx, FromDur, Position, QuickPosition, iRareIdx, ItemStatic, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
 	}
 	else if (TP_PETINVEN_START <= Position && Position < TP_PETINVEN_END)
 	{
-		ItemUpdateToDB(pPlayer->GetID(), dwDBIdx, wIconIdx, FromDur, Position, QuickPosition);
+		ItemUpdateToDB(pPlayer->GetID(), dwDBIdx, wIconIdx, FromDur, Position, QuickPosition, iRareIdx, ItemStatic, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
 	}
 	else if (TP_GUILDWAREHOUSE_START <= Position && Position < TP_GUILDWAREHOUSE_END)
 	{
-		ItemUpdateToDB(pPlayer->GetID(), dwDBIdx, wIconIdx, FromDur, Position, QuickPosition);
+		ItemUpdateToDB(pPlayer->GetID(), dwDBIdx, wIconIdx, FromDur, Position, QuickPosition, iRareIdx, ItemStatic, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
 	}
 	else
 	{
@@ -6692,40 +7293,101 @@ void CItemManager::LoadDealerItem()
 	}
 	fp.Release();
 }
-int CItemManager::ObtainItemFromQuest(CPlayer* pPlayer, WORD wItemKind, DWORD dwItemNum)
+int CItemManager::ObtainItemFromQuest(CPlayer* pPlayer, WORD wItemIdx, DWORD dwItemNum)
 {
+	ITEM_INFO* pItemInfo = GetItemInfo(wItemIdx);
+	if (!pItemInfo)
+		return 0;
 	WORD EmptyCellPos[255];
 	WORD EmptyCellNum;
+	WORD obtainItemNum = 0;
 	CItemSlot* pSlot = pPlayer->GetSlot(eItemTable_Inventory);
-	WORD obtainItemNum = GetCanBuyNumInSpace(pPlayer, pSlot, wItemKind, dwItemNum, EmptyCellPos, EmptyCellNum);
-	if (obtainItemNum == 0)
+	//WORD obtainItemNum = GetCanBuyNumInSpace( pPlayer, pSlot, wItemKind, dwItemNum, EmptyCellPos, EmptyCellNum );
+	WORD wbSeal = 0;
+	WORD wBuyType = 0;
+	if (pItemInfo->ItemKind >= eSHOP_ITEM && pItemInfo->ItemKind <= eSHOP_ITEM_PET_EQUIP)//修复牛巨任务获得物品为百宝物品时状态错误导致出错BUG 
+	{
+		wbSeal = 1;
+		wBuyType = 2; //2为 可交易   1为不可交易
+		pSlot = pPlayer->GetSlot(eItemTable_ShopInven);
+		obtainItemNum = GetCanBuyNumInSpace(pPlayer, pSlot, wItemIdx, dwItemNum, EmptyCellPos, EmptyCellNum);
+	}
+	else
+	{
+		pSlot = pPlayer->GetSlot(eItemTable_Inventory);
+		obtainItemNum = GetCanBuyNumInSpace(pPlayer, pSlot, wItemIdx, dwItemNum, EmptyCellPos, EmptyCellNum);
+	}
+
+	if (obtainItemNum == 0 || pSlot == NULL)
 		return 1;
-	return ObtainItemEx(pPlayer, Alloc(pPlayer, MP_QUEST, MP_QUEST_TAKEITEM_ACK,
-		pPlayer->GetID(), 0, eLog_ItemObtainQuest, obtainItemNum, (DBResult)(ObtainItemDBResult)),
-		wItemKind, obtainItemNum, EmptyCellPos, EmptyCellNum, EmptyCellNum);
+	WORD ItemQuality = ITEMMGR->GetItemQuality();
+	WORD ItemEntry1 = 0;
+	WORD ItemEntry2 = 0;
+
+	if (ItemQuality == 4)
+	{
+		ItemEntry1 = GetItemEntry1();
+		ItemEntry2 = 0;
+	}
+	else if (ItemQuality == 3)
+	{
+		ItemEntry1 = GetItemEntry1();
+		ItemEntry2 = 0;
+	}
+	else
+	{
+		ItemEntry1 = 0;
+		ItemEntry2 = 0;
+	}
+	if (pItemInfo->ItemKind & eEQUIP_ITEM || pItemInfo->ItemKind == eEQUIP_ITEM_UNIQUE)
+	{
+		return ObtainItemEx(pPlayer, Alloc(pPlayer, MP_QUEST, MP_QUEST_TAKEITEM_ACK,
+			pPlayer->GetID(), 0, eLog_ItemObtainQuest, obtainItemNum, (DBResult)(ObtainItemDBResult)),
+			wItemIdx, obtainItemNum, EmptyCellPos, EmptyCellNum, EmptyCellNum, wbSeal, wBuyType, ItemQuality, ItemEntry1, ItemEntry2, 0);
+	}
+	else
+	{
+		return ObtainItemEx(pPlayer, Alloc(pPlayer, MP_QUEST, MP_QUEST_TAKEITEM_ACK,
+			pPlayer->GetID(), 0, eLog_ItemObtainQuest, obtainItemNum, (DBResult)(ObtainItemDBResult)),
+			wItemIdx, obtainItemNum, EmptyCellPos, EmptyCellNum, EmptyCellNum, wbSeal, wBuyType, 0, 0, 0, 0);
+	}
+
+	//sTIPITEMINFO * GetItem = NULL;
+	//GetItem = ITEMMGR->GetTipItem(wItemIdx);
+	//if(GetItem)	//任务获得物品TIP全屏提示消息
+	//{
+	//	MSG_TIP msg;
+	//	msg.Category = MP_CLIENT;
+	//	msg.Protocol = MP_CLIENT_MSG_AGENT;
+	//	msg.Flag = eQuestGetItemTip;
+	//	SafeStrCpy(msg.Name1,pPlayer->GetObjectName(),MAX_NAME_LENGTH+1);
+	//	SafeStrCpy(msg.ItemName,GetItem->ItemName,MAX_ITEMNAME_LENGTH+1);
+	//	pPlayer->SendMsgToAllAgent(&msg, sizeof(msg));
+	//}
+	//ITEMMGR->SetItemValue(4);
 	return 0;
 }
-int CItemManager::ObtainItemFromChangeItem(CPlayer* pPlayer, WORD wItemKind, WORD wItemNum)
+int CItemManager::ObtainItemFromChangeItem(CPlayer* pPlayer, WORD wItemIdx, WORD wItemNum, WORD ItemStatic, WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2, WORD ItemEntry3)
 {
 	WORD EmptyCellPos[255];
 	WORD EmptyCellNum;
 	CItemSlot* pSlot = pPlayer->GetSlot(eItemTable_Inventory);
 	WORD bSeal = 0;
-	ITEM_INFO* pItemInfo = GetItemInfo(wItemKind);
+	ITEM_INFO* pItemInfo = GetItemInfo(wItemIdx);
 	if (!pItemInfo)		return 2;
 	if (pItemInfo->ItemKind & eSHOP_ITEM)
 	{
 		pSlot = pPlayer->GetSlot(eItemTable_ShopInven);
 		bSeal = 1;
 	}
-	WORD obtainItemNum = GetCanBuyNumInSpace(pPlayer, pSlot, wItemKind, wItemNum, EmptyCellPos, EmptyCellNum);
+	WORD obtainItemNum = GetCanBuyNumInSpace(pPlayer, pSlot, wItemIdx, wItemNum, EmptyCellPos, EmptyCellNum, ItemStatic);
 	if (obtainItemNum == 0)
 		return 1;
 	if (obtainItemNum != wItemNum)
 		return 2;
 	return ObtainItemEx(pPlayer, Alloc(pPlayer, MP_ITEM, MP_ITEM_USE_CHANGEITEM_ACK,
 		pPlayer->GetID(), 0, eLog_ItemObtainFromChangeItem, obtainItemNum, (DBResult)(ObtainItemDBResult)),
-		wItemKind, obtainItemNum, EmptyCellPos, EmptyCellNum, EmptyCellNum, bSeal);
+		wItemIdx, obtainItemNum, EmptyCellPos, EmptyCellNum, EmptyCellNum, bSeal, ItemStatic, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
 }
 BOOL CItemManager::CanbeMoved(WORD wIconIdx, POSTYPE pos, CPlayer* pPlayer)
 {
@@ -7189,11 +7851,11 @@ void CItemManager::ShopItemUseUpgrade(ITEM_INFO* pShopItemInfo, CPlayer* pPlayer
 	WORD flag = UB_ICONIDX;
 	if (!IsDupItem((WORD)(pSrcItem->wIconIdx + plusoption)))
 		flag |= UB_DURA;
-	if (EI_TRUE != pSlot->UpdateItemAbs(pPlayer, ItemPos, 0, (WORD)(pSrcItem->wIconIdx + plusoption), 0, 0, 0, flag, SS_LOCKOMIT))
+	if (EI_TRUE != pSlot->UpdateItemAbs(pPlayer, ItemPos, 0, (WORD)(pSrcItem->wIconIdx + plusoption), 0, 0, 0,0,0,0,0,0, flag, SS_LOCKOMIT))
 		return;
 	const ITEMBASE * pItemBase = pSlot->GetItemInfoAbs(ItemPos);
 	ItemUpdateToDB(pPlayer->GetID(), pItemBase->dwDBIdx, pItemBase->wIconIdx,
-		pItemBase->Durability, pItemBase->Position, pItemBase->QuickPosition);
+		pItemBase->Durability, pItemBase->Position, pItemBase->QuickPosition, pItemBase->RareIdx, pItemBase->ItemStatic, pItemBase->ItemQuality, pItemBase->ItemEntry1, pItemBase->ItemEntry2, pItemBase->ItemEntry3);
 	LogItemMoney(pPlayer->GetID(), pPlayer->GetObjectName(), pPlayer->GetID(), pPlayer->GetObjectName(), eLog_ShopItemUse_MixSuccess,
 		pPlayer->GetMoney(), pSrcItem->wIconIdx + plusoption, pPlayer->GetMoney(), pItemBase->wIconIdx, pItemBase->dwDBIdx, pItemBase->Position, pItemBase->Position, pItemBase->Durability,
 		pPlayer->GetPlayerExpPoint());
@@ -7818,7 +8480,7 @@ int CItemManager::GetItemShoneCount(ITEM_STONE_OPTION_INFO * pStoneInfo)
 void CItemManager::StoneItemDBResult(CPlayer * pPlayer, DWORD wItemDBIdx, POSTYPE TargetPos, ITEM_STONE_OPTION_INFO * pStoneInfo)
 {
 	CItemSlot * pTargetSlot = pPlayer->GetSlot(TargetPos);
-	if (pTargetSlot->UpdateItemAbs(pPlayer, TargetPos, 0, 0, 0, 0, 0, UB_STONE, SS_NONE, 0, pStoneInfo->dwStoneOptionIdx) != EI_TRUE)
+	if (pTargetSlot->UpdateItemAbs(pPlayer, TargetPos, 0, 0, 0, 0, 0,0,0,0,0,0, UB_STONE, SS_NONE, 0, pStoneInfo->dwStoneOptionIdx) != EI_TRUE)
 	{
 		return;
 	}
@@ -7835,7 +8497,7 @@ void CItemManager::StoneItemDBResult(CPlayer * pPlayer, DWORD wItemDBIdx, POSTYP
 void CItemManager::StoneItemDBResultEx(CPlayer * pPlayer, DWORD wItemDBIdx, POSTYPE TargetPos, ITEM_STONE_OPTION_INFO * pStoneInfo)
 {
 	CItemSlot * pTargetSlot = pPlayer->GetSlot(TargetPos);
-	if (pTargetSlot->UpdateItemAbs(pPlayer, TargetPos, 0, 0, 0, 0, 0, UB_DURA, SS_NONE, 0, pStoneInfo->dwStoneOptionIdx) != EI_TRUE)
+	if (pTargetSlot->UpdateItemAbs(pPlayer, TargetPos, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, UB_DURA, SS_NONE, 0, pStoneInfo->dwStoneOptionIdx) != EI_TRUE)
 	{
 		return;
 	}
@@ -8287,4 +8949,136 @@ int CItemManager::UpGradeOfficial_Func(CPlayer* pPlayer, MSG_OFFICIAL_ITEM_SYN* 
 	}
 
 	return 0;
+}
+DWORD CItemManager::GetItemQuality()
+{
+	return rand() % 5;
+}
+DWORD CItemManager::GetItemEntry1()
+{
+	return (rand() % 11 + 1);
+}
+DWORD CItemManager::GetItemEntry2()
+{
+	return (rand() % 18) + 1; // 保证返回范围为 [1~18]
+}
+
+BOOL CItemManager::LoadSetItemQualityOption()
+{
+	CMHFile file;
+#ifdef _FILE_BIN_
+	if (!file.Init("Resource/setitem_Quality.bin", "rb"))
+		return FALSE;
+#else
+	if (!file.Init("Resource/setitem_Quality.txt", "rt"))
+		return FALSE;
+#endif	// _FILE_BIN_
+
+	SET_ITEMQUALITY_OPTION* pInfo = NULL;
+	while (!file.IsEOF())
+	{
+		ASSERT(!pInfo);
+		pInfo = new SET_ITEMQUALITY_OPTION;
+
+		pInfo->wIndex = file.GetDword();
+		pInfo->ItemQuality = file.GetDword();
+		pInfo->ItemEntry1 = file.GetDword();
+		pInfo->ItemEntry2 = file.GetDword();
+
+		SafeStrCpy(pInfo->szSetItemName, file.GetString(), MAX_NAME_LENGTH + 1);
+		pInfo->RareVal = file.GetFloat();
+
+		pInfo->wGenGol = file.GetDword();
+		pInfo->wMinChub = file.GetDword();
+		pInfo->wCheRyuk = file.GetDword();
+		pInfo->wSimMek = file.GetDword();
+		pInfo->dwLife = file.GetDword();
+		pInfo->dwShield = file.GetDword();
+		pInfo->dwNaeRyuk = file.GetDword();
+		pInfo->AttrRegistDef = file.GetDword();
+		pInfo->wPhyDef = file.GetDword();
+		pInfo->NaegongDamage = file.GetDword();
+		pInfo->WoigongDamage = file.GetDword();
+
+		pInfo->wDodgeRate = file.GetDword();
+		pInfo->PlayerPhyDefDown = file.GetDword();
+		pInfo->PlayerAttrDefDown = file.GetDword();
+		pInfo->TargetPhyDefDown = file.GetDword();
+		pInfo->TargetAttrDefDown = file.GetDword();
+		pInfo->fDodgeRate = file.GetDword();
+		pInfo->MallMoneyPuls = file.GetDword();
+		pInfo->KyunggongSpeed = file.GetDword();
+		pInfo->AttMonsterDamage = file.GetDword();
+		pInfo->AttPlayerDamage = file.GetDword();
+		pInfo->RealDamageDown = file.GetDword();
+		pInfo->PVPLifePlus = file.GetDword();
+		pInfo->Resurrected = file.GetDword();
+		pInfo->Critical = file.GetDword();
+		pInfo->Decisive = file.GetDword();
+		pInfo->CriticalDamage = file.GetDword();
+		pInfo->DecisiveDamage = file.GetDword();
+		pInfo->ContinueAttAttack = file.GetDword();
+
+		ASSERT(!m_SetItemQualityOptionList.GetData(pInfo->wIndex));
+
+		m_SetItemQualityOptionList.Add(pInfo, pInfo->wIndex);
+		pInfo = NULL;
+	}
+	file.Release();
+
+	return TRUE;
+}
+
+SET_ITEMQUALITY_OPTION* CItemManager::GetSetItemQualityOption(WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2)
+{
+	SET_ITEMQUALITY_OPTION* pSetItemQualityOption = NULL;
+
+	m_SetItemQualityOptionList.SetPositionHead();
+	while (pSetItemQualityOption = m_SetItemQualityOptionList.GetData())
+	{
+		if (pSetItemQualityOption->ItemQuality == ItemQuality)
+		{
+			if (pSetItemQualityOption->ItemEntry1 == ItemEntry1 && pSetItemQualityOption->ItemEntry2 == ItemEntry2)
+			{
+				return pSetItemQualityOption;
+			}
+		}
+	}
+
+	return NULL;
+}
+
+void CItemManager::RemoveSetItemQualityOption(WORD wIndex, SET_ITEMQUALITY_OPTION* pSetItemQualityOptionOut)
+{
+	SET_ITEMQUALITY_OPTION* pInfo = m_SetItemQualityOptionList.GetData(wIndex);
+
+	if (pInfo == NULL)
+	{
+		ASSERT(0);
+		return;
+	}
+
+	if (pSetItemQualityOptionOut)
+		*pSetItemQualityOptionOut = *pInfo;
+	SAFE_DELETE(pInfo);
+	m_SetItemQualityOptionList.Remove(wIndex);
+}
+
+CYHHashTable<SET_ITEMQUALITY_OPTION>* CItemManager::GetSetItemQualityOptionList()
+{
+	return &m_SetItemQualityOptionList;
+}
+//void CItemManager::SetItemValue(WORD val)
+//{
+//	m_ItemVal = val;
+//}
+void CItemManager::SetChangeItemName(char* ItemName)
+{
+	SafeStrCpy(m_ItemName, ItemName, MAX_NAME_LENGTH + 1);
+}
+DWORD CItemManager::GetItemRand()
+{//【·传奇】装备觉醒几率
+	WORD r = rand() % 128;//0-127
+	if ((r % 6) == 2) return 1; //21%几率2,8,14,20,26,32,38,44,50,56,62,68,74,80,86,92,98,104,110,116,122
+	return 0;//79%几率失败
 }

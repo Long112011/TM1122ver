@@ -14,6 +14,10 @@ CExchangeItem::CExchangeItem()
 	m_dwParam		= 0;
 	m_Grow			= 0;
 	m_CurScrollImage = 0;
+	m_Quality = 0;
+	m_Entry1 = 0;
+	m_Entry2 = 0;
+	m_Entry3 = 0;
 	for(int i=0;i<22;i++)
 	{
 		SCRIPTMGR->GetImage(108+i, &m_ScrollImg[i], PFT_JACKPATH);
@@ -152,6 +156,7 @@ void CExchangeItem::Render()
 			CFONT_OBJ->RenderFont(7,buf1,strlen(buf1),&rect,RGBA_MERGE(m_fgColor,255));*/
 		}
 #endif
+
 		if (pInfo->ItemKind >= eEQUIP_ITEM && pInfo->ItemKind <= eEQUIP_ITEM_UNIQUE)
 		{
 			if (m_Grade > 0)
@@ -170,9 +175,56 @@ void CExchangeItem::Render()
 
 				CFONT_OBJ->RenderFont(21, temp, strlen(temp), &rectTmp, RGBA_MERGE(RGB_HALF(124, 252, 0), 255));
 			}
+
 		}
 
+		if (pInfo)
+		{
 
+		   if (pInfo->ItemKind & eEQUIP_ITEM || pInfo->ItemKind == eEQUIP_ITEM_UNIQUE)
+		    {
+			   if (GetQuality() == 4)
+			     {
+				cImage  imgBaseInfo;
+				SCRIPTMGR->GetImage(221, &imgBaseInfo, PFT_HARDPATH);
+				VECTOR2 vScale = { 1.0f, 1.0f };
+				VECTOR2 pos = { m_absPos.x, m_absPos.y };
+				imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+			    }
+			if (GetQuality() == 3)
+			{
+				cImage  imgBaseInfo;
+				SCRIPTMGR->GetImage(220, &imgBaseInfo, PFT_HARDPATH);
+				VECTOR2 vScale = { 1.0f, 1.0f };
+				VECTOR2 pos = { m_absPos.x, m_absPos.y };
+				imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+			}
+			if (GetQuality() == 2)
+			{
+				cImage  imgBaseInfo;
+				SCRIPTMGR->GetImage(217, &imgBaseInfo, PFT_HARDPATH);
+				VECTOR2 vScale = { 1.0f, 1.0f };
+				VECTOR2 pos = { m_absPos.x, m_absPos.y };
+				imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+			}
+			if (GetQuality() == 1)
+			{
+				cImage  imgBaseInfo;
+				SCRIPTMGR->GetImage(219, &imgBaseInfo, PFT_HARDPATH);
+				VECTOR2 vScale = { 1.0f, 1.0f };
+				VECTOR2 pos = { m_absPos.x, m_absPos.y };
+				imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+			}
+			if (GetQuality() == 0)
+			{
+				cImage  imgBaseInfo;
+				SCRIPTMGR->GetImage(222, &imgBaseInfo, PFT_HARDPATH);
+				VECTOR2 vScale = { 1.0f, 1.0f };
+				VECTOR2 pos = { m_absPos.x, m_absPos.y };
+				imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+			}
+		 }
+		}
 	}
 }
 char* CExchangeItem::GetItemName()

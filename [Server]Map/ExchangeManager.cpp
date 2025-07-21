@@ -463,7 +463,11 @@ void CExchangeManager::NetworkMsgParse( BYTE Protocol, void* pMsg )
 				pItemBase->Position != msg->ItemInfo.Position ||
 				pItemBase->ItemParam != msg->ItemInfo.ItemParam || 
 				pItemBase->StoneIdx!=msg->ItemInfo.StoneIdx || 
-				pItemBase->ItemGrow!= msg->ItemInfo.ItemGrow)   // 2014-12-15 判断协议完整性
+				pItemBase->ItemGrow!= msg->ItemInfo.ItemGrow || 
+				pItemBase->ItemQuality != msg->ItemInfo.ItemQuality ||
+				pItemBase->ItemEntry1 != msg->ItemInfo.ItemEntry1 ||
+				pItemBase->ItemEntry2 != msg->ItemInfo.ItemEntry2 ||
+				pItemBase->ItemEntry3 != msg->ItemInfo.ItemEntry3)   // 2014-12-15 判断协议完整性
 			{
 				ItemMsg.Protocol = MP_EXCHANGE_ADDITEM_NACK;
 				pPlayer1->SendMsg( &ItemMsg, sizeof( MSG_LINKITEM ) );

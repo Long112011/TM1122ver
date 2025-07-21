@@ -1,0 +1,213 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 中文(中华人民共和国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
+    "LANGUAGE 4, 2\r\n"
+    "#pragma code_page(936)\r\n"
+    "#include ""res\\MHAutoPatch.rc2""  // 非 Microsoft Visual C++ 编辑的资源\r\n"
+    "#include ""afxres.rc""     // 标准组件\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_MHAUTOPATCH_DIALOG DIALOGEX 0, 0, 517, 404
+STYLE DS_SETFONT | WS_POPUP | WS_VISIBLE
+EXSTYLE WS_EX_APPWINDOW
+FONT 9, "宋体", 0, 0, 0x1
+BEGIN
+    CONTROL         "开始",IDC_BUTTON_START,"Button",BS_OWNERDRAW | NOT WS_VISIBLE | WS_TABSTOP,367,366,50,14
+    CONTROL         "充值",IDC_BUTTON_PAY,"Button",BS_OWNERDRAW | NOT WS_VISIBLE | WS_TABSTOP,304,366,50,14
+    CONTROL         "官网",IDC_BUTTON_HOMEPAGE,"Button",BS_OWNERDRAW | NOT WS_VISIBLE | WS_TABSTOP,241,366,50,14
+    CONTROL         "客服",IDC_BUTTON_QQ,"Button",BS_OWNERDRAW | NOT WS_VISIBLE | WS_TABSTOP,178,366,50,14
+    CONTROL         "",IDC_CHECK_WDNMODE,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,19,155,8,8
+    COMBOBOX        IDC_COMBO_SCREEN,12,328,55,196,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Button1",IDC_BUTTON_CLOSE,"Button",BS_OWNERDRAW | NOT WS_VISIBLE | WS_TABSTOP,378,19,50,14
+    CONTROL         "",IDC_PROGRESS,"msctls_progress32",0x0,97,321,332,24
+    LTEXT           "",IDC_STATIC_Tip,31,287,8,8,NOT WS_VISIBLE
+    LTEXT           "",IDC_STATIC_FILESIZETIP,105,301,8,8,NOT WS_VISIBLE
+    CONTROL         "",IDC_EXPLORER_GG,
+                    "{8856F961-340A-11D0-A96B-00C04FD705A2}",NOT WS_VISIBLE | WS_TABSTOP,267,94,120,77
+    CTEXT           "",IDC_STATIC_VER,81,79,8,8,NOT WS_VISIBLE
+    CONTROL         "",IDC_PROGRESS_DONE,"msctls_progress32",NOT WS_VISIBLE,112,279,80,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080403a8"
+        BEGIN
+            VALUE "CompanyName", "TODO: <rookie>"
+            VALUE "FileDescription", "TODO: <rookie>"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "墨香登录器.exe"
+            VALUE "LegalCopyright", "TODO: (C) <rookie >。保留所有权利。"
+            VALUE "OriginalFilename", "墨香登录器.exe"
+            VALUE "ProductName", "TODO: <墨香登录器>"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 936
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_MHAUTOPATCH_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 510
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 397
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_MHAUTOPATCH_DIALOG DLGINIT
+BEGIN
+    IDC_EXPLORER_GG, 0x376, 160, 0
+0x0000, 0x0000, 0x004c, 0x0000, 0x129b, 0x0000, 0x0bfd, 0x0000, 0x0000, 
+0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+0x0000, 0x0000, 0x004c, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0001, 
+0x0000, 0xd0e0, 0x0057, 0x3573, 0x11cf, 0x69ae, 0x0008, 0x2e2b, 0x6212, 
+0x0008, 0x0000, 0x0000, 0x0000, 0x004c, 0x0000, 0x1401, 0x0002, 0x0000, 
+0x0000, 0x00c0, 0x0000, 0x0000, 0x4600, 0x0080, 0x0000, 0x0000, 0x0000, 
+0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0001, 0x0000, 
+0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\mh.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP_HOME_D       BITMAP                  "res\\Btn_Web_Press.bmp"
+IDB_BITMAP_CLOSE_U      BITMAP                  "res\\Btn_Close_Normal.bmp"
+IDB_BITMAP_CLOSE_D      BITMAP                  "res\\Btn_Close_Press.bmp"
+IDB_BITMAP_PAY_U        BITMAP                  "res\\Btn_Pay_Normal.bmp"
+IDB_BITMAP_PAY_D        BITMAP                  "res\\Btn_Pay_Press.bmp"
+IDB_BITMAP_START_X      BITMAP                  "res\\btn_Start_X.bmp"
+IDB_BITMAP_START_U      BITMAP                  "res\\btn_Start_U.bmp"
+IDB_BITMAP_START_D      BITMAP                  "res\\btn_Start_D.bmp"
+IDB_BITMAP_HOME_U       BITMAP                  "res\\Btn_Web_Normal.bmp"
+#endif    // 中文(中华人民共和国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE 4, 2
+#pragma code_page(936)
+#include "res\MHAutoPatch.rc2"  // 非 Microsoft Visual C++ 编辑的资源
+#include "afxres.rc"     // 标准组件
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

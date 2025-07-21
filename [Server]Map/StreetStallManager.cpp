@@ -337,7 +337,7 @@ BOOL cStreetStallManager::BuyItem( CPlayer* pOwner, cStreetStall* pStall, CPlaye
 
 	pGuest->SetGoldMoney(pItemInfo->dwGold,2);
 
-	ItemUpdateToDB( pGuest->GetID(), ItemBase.dwDBIdx ,ItemBase.wIconIdx, ItemBase.Durability, absPosOut, 0, ItemBase.RareIdx );
+	ItemUpdateToDB( pGuest->GetID(), ItemBase.dwDBIdx ,ItemBase.wIconIdx, ItemBase.Durability, absPosOut, 0, ItemBase.RareIdx, ItemBase.ItemStatic, ItemBase.ItemQuality, ItemBase.ItemEntry1, ItemBase.ItemEntry2, ItemBase.ItemEntry3);
 
 	
 
@@ -514,7 +514,7 @@ BOOL cStreetStallManager::BuyDupItem( CPlayer* pOwner, cStreetStall* pStall, CPl
 			goto ITEMBUY_FAILED;
 		}
 
-		ItemUpdateToDB( pGuest->GetID(), temp.dwDBIdx ,temp.wIconIdx, temp.Durability, absPosOut, 0 );
+		ItemUpdateToDB( pGuest->GetID(), temp.dwDBIdx ,temp.wIconIdx, temp.Durability, absPosOut, 0, temp.RareIdx, temp.ItemStatic, temp.ItemQuality, temp.ItemEntry1, temp.ItemEntry2, temp.ItemEntry3);
   
 		LogItemMoney(pOwner->GetID(), pOwner->GetObjectName(), pGuest->GetID(), pGuest->GetObjectName(),
 			eLog_StreetStallBuyAll, pOwner->GetMoney(), pGuest->GetMoney(), money,
@@ -559,7 +559,7 @@ BOOL cStreetStallManager::BuyDupItem( CPlayer* pOwner, cStreetStall* pStall, CPl
 	{
 		// 겹치�?아이템의 갯수�?줄인�? (상점)
 		DURTYPE LeftDurability = ItemBase.Durability - wBuyNum;
-		if( EI_TRUE != pOwnerInventory->UpdateItemAbs(pOwner, RealPos, ItemBase.dwDBIdx, ItemBase.wIconIdx, 0, 0, LeftDurability, UB_DURA, SS_LOCKOMIT|SS_CHKDBIDX ) )
+		if( EI_TRUE != pOwnerInventory->UpdateItemAbs(pOwner, RealPos, ItemBase.dwDBIdx, ItemBase.wIconIdx, 0, 0, LeftDurability, 0, 0, 0, 0, 0, UB_DURA, SS_LOCKOMIT|SS_CHKDBIDX ) )
 			goto ITEMBUY_FAILED;
 
 		pStall->UpdateCell( pos,  LeftDurability);
@@ -591,7 +591,7 @@ BOOL cStreetStallManager::BuyDupItem( CPlayer* pOwner, cStreetStall* pStall, CPl
 
 		pOwnerInventory->SetLock(RealPos, TRUE);
  
-		ItemUpdateToDB( pOwner->GetID(), ItemBase.dwDBIdx ,ItemBase.wIconIdx, LeftDurability, RealPos, 0 );
+		ItemUpdateToDB( pOwner->GetID(), ItemBase.dwDBIdx ,ItemBase.wIconIdx, LeftDurability, RealPos, 0, ItemBase.RareIdx, ItemBase.ItemStatic, ItemBase.ItemQuality, ItemBase.ItemEntry1, ItemBase.ItemEntry2, ItemBase.ItemEntry3);
   
 		LogItemMoney(pOwner->GetID(), pOwner->GetObjectName(), pGuest->GetID(), pGuest->GetObjectName(),
 			eLog_StreetStallSellDivide, pOwner->GetMoney(), pGuest->GetMoney(), money,
@@ -613,9 +613,13 @@ BOOL cStreetStallManager::BuyDupItem( CPlayer* pOwner, cStreetStall* pStall, CPl
 		NewItemBase.ItemStatic    = 9;//BY JACK
 		NewItemBase.StoneIdx        = 9;  // 2014-12-15 鑒앴
 		NewItemBase.ItemGrow        = 9;  // 2015-01-16 냥낀鑒앴
+		NewItemBase.ItemQuality = 9;
+		NewItemBase.ItemEntry1 = 9;
+		NewItemBase.ItemEntry2 = 9;
+		NewItemBase.ItemEntry3 = 9;
 		pGuestInventory->InsertItemAbs(pGuest, absPosOut, &NewItemBase, SS_PREINSERT);
 	
-		SSItemInsert( pGuest->GetID(), ItemBase.wIconIdx, wBuyNum, absPosOut, pOwner->GetID(), (WORD)(pInvenItem->ItemParam & ITEM_PARAM_SEAL),(DWORD)(pInvenItem->ItemStatic),(DWORD) (pInvenItem->ItemGrow));  // 2015-01-14 뵨냥낀鑒앴!;
+		SSItemInsert( pGuest->GetID(), ItemBase.wIconIdx, wBuyNum, absPosOut, pOwner->GetID(), (WORD)(pInvenItem->ItemParam & ITEM_PARAM_SEAL),(DWORD)(pInvenItem->ItemStatic),(DWORD) (pInvenItem->ItemGrow), (int)(pInvenItem->ItemQuality), (int)(pInvenItem->ItemEntry1), (int)(pInvenItem->ItemEntry2), (int)(pInvenItem->ItemEntry3));  // 2015-01-14 뵨냥낀鑒앴!;
 		/////////////////////////////////////////////////////////////
 	}
  
@@ -814,7 +818,7 @@ BOOL cStreetStallManager::SellItem( CPlayer* pOwner, cStreetStall* pStall, CPlay
 
 	pOwner->SetGoldMoney(pItemInfo->dwGold,2);
  
-	ItemUpdateToDB( pOwner->GetID(), ItemBase.dwDBIdx ,ItemBase.wIconIdx, ItemBase.Durability, absPosOut, 0, ItemBase.RareIdx );
+	ItemUpdateToDB( pOwner->GetID(), ItemBase.dwDBIdx ,ItemBase.wIconIdx, ItemBase.Durability, absPosOut, 0, ItemBase.RareIdx, ItemBase.ItemStatic, ItemBase.ItemQuality, ItemBase.ItemEntry1, ItemBase.ItemEntry2, ItemBase.ItemEntry3);
  
 	// Log 주인
 	LogItemMoney(pGuest->GetID(), pGuest->GetObjectName(), pOwner->GetID(), pOwner->GetObjectName(),
@@ -1086,7 +1090,7 @@ BOOL cStreetStallManager::SellDupItem( CPlayer* pOwner, cStreetStall* pStall, CP
 			goto ITEMSELL_FAILED;
 		}
   
-		ItemUpdateToDB( pOwner->GetID(), temp.dwDBIdx ,temp.wIconIdx, temp.Durability, absPosOut, 0 );
+		ItemUpdateToDB( pOwner->GetID(), temp.dwDBIdx ,temp.wIconIdx, temp.Durability, absPosOut, 0, temp.RareIdx, temp.ItemStatic, temp.ItemQuality, temp.ItemEntry1, temp.ItemEntry2, temp.ItemEntry3);
   
 		LogItemMoney(pGuest->GetID(), pOwner->GetObjectName(), pGuest->GetID(), pGuest->GetObjectName(),
 			eLog_StreetStallBuyAll, pOwner->GetMoney(), pGuest->GetMoney(), money,
@@ -1121,7 +1125,7 @@ BOOL cStreetStallManager::SellDupItem( CPlayer* pOwner, cStreetStall* pStall, CP
 	{	//팔려�?갯수가 인벤�?갯수보다 적으�?
 		//게스�?인벤에서 아이�?갯수�?줄이�?오너�?인벤�?넣는�?
 		DURTYPE LeftDurability = pInvenItem->Durability - wSellNum;
-		if( EI_TRUE != pGuestInventory->UpdateItemAbs(pGuest, RealPos, ItemBase.dwDBIdx, ItemBase.wIconIdx, 0, 0, LeftDurability, UB_DURA, SS_LOCKOMIT|SS_CHKDBIDX ) )
+		if( EI_TRUE != pGuestInventory->UpdateItemAbs(pGuest, RealPos, ItemBase.dwDBIdx, ItemBase.wIconIdx, 0, 0, LeftDurability, 0, 0, 0, 0, 0, UB_DURA, SS_LOCKOMIT|SS_CHKDBIDX ) )
 			goto ITEMSELL_FAILED;
   
 
@@ -1139,9 +1143,13 @@ BOOL cStreetStallManager::SellDupItem( CPlayer* pOwner, cStreetStall* pStall, CP
 		NewItemBase.RareIdx			= 9;
 		NewItemBase.StoneIdx        = 9;    // 斤口! 2014-12-15
 		NewItemBase.ItemGrow		= 9;    // 냥낀斤口  2015-01-17
+		NewItemBase.ItemQuality = 9;
+		NewItemBase.ItemEntry1 = 9;
+		NewItemBase.ItemEntry2 = 9;
+		NewItemBase.ItemEntry3 = 9;
 		pOwnerInventory->InsertItemAbs(pGuest, absPosOut, &NewItemBase, SS_PREINSERT);
   
-		SSItemInsert( pOwner->GetID(), ItemBase.wIconIdx, wSellNum, absPosOut, pGuest->GetID(), (WORD)(pInvenItem->ItemParam & ITEM_PARAM_SEAL),(WORD)(pInvenItem->ItemStatic),(DWORD) (pInvenItem->ItemGrow));  // 2015-01-14 뵨냥낀鑒앴!
+		SSItemInsert( pOwner->GetID(), ItemBase.wIconIdx, wSellNum, absPosOut, pGuest->GetID(), (WORD)(pInvenItem->ItemParam & ITEM_PARAM_SEAL),(WORD)(pInvenItem->ItemStatic),(DWORD) (pInvenItem->ItemGrow), (int)(pInvenItem->ItemQuality), (int)(pInvenItem->ItemEntry1), (int)(pInvenItem->ItemEntry2), (int)(pInvenItem->ItemEntry3)); // 2015-01-14 뵨냥낀鑒앴!
 		//////////////////////////////////////////////////////////////////////////
 
 		ItemBase.Position = RealPos;
@@ -1162,7 +1170,7 @@ BOOL cStreetStallManager::SellDupItem( CPlayer* pOwner, cStreetStall* pStall, CP
 
 		pGuestInventory->SetLock(RealPos, FALSE);
   
-		ItemUpdateToDB( pGuest->GetID(), ItemBase.dwDBIdx ,ItemBase.wIconIdx, LeftDurability, RealPos, 0 );
+		ItemUpdateToDB( pGuest->GetID(), ItemBase.dwDBIdx ,ItemBase.wIconIdx, LeftDurability, RealPos, 0, ItemBase.RareIdx, ItemBase.ItemStatic, ItemBase.ItemQuality, ItemBase.ItemEntry1, ItemBase.ItemEntry2, ItemBase.ItemEntry3);
   
 		LogItemMoney(pGuest->GetID(), pGuest->GetObjectName(), pOwner->GetID(), pOwner->GetObjectName(),
 			eLog_StreetStallSellDivide, pGuest->GetMoney(), pOwner->GetMoney(), money,
@@ -2435,6 +2443,10 @@ SELLITEMFAILEX:
 						msg.sInfo[i].dwDBIdx = pItemInfo->sItemBase.dwDBIdx;
 						msg.sInfo[i].dwStoneIdx=pItemInfo->sItemBase.StoneIdx; // 2014-12-15  阮초�?
 						msg.sInfo[i].dwGrow=pItemInfo->sItemBase.ItemGrow; // 2015-01-16  阮처 낀鑒앴
+						msg.sInfo[i].dwQuality = pItemInfo->sItemBase.ItemQuality;
+						msg.sInfo[i].dwEntry1 = pItemInfo->sItemBase.ItemEntry1;
+						msg.sInfo[i].dwEntry2 = pItemInfo->sItemBase.ItemEntry2;
+						msg.sInfo[i].dwEntry3 = pItemInfo->sItemBase.ItemEntry3;
 						if( eSK_SELL == pInfo->GetStallKind() )
 							msg.sInfo[i].dwDur = (DWORD)(pItemInfo->sItemBase.Durability);
 						else

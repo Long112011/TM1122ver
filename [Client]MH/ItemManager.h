@@ -110,7 +110,7 @@ class CItemManager
 	CYHHashTable<SHOPITEMBASE>		m_UsedItemList;
 	CYHHashTable<sRareItemInfo>		m_RareItemInfoTable;
 	CYHHashTable<SET_ITEM_OPTION>	m_SetItemOptionList; ///// 2007. 6. 8. CBH - 세트아이탬 관련 리스트 추가
-
+	CYHHashTable<SET_ITEMQUALITY_OPTION>	m_SetItemQualityOptionList;
 	CIndexGenerator m_IconIndexCreator;
 	BOOL			m_bAddPrice;
 	ITEMBASE		m_TempDeleteItem;
@@ -395,6 +395,13 @@ public:
 	// 06. 06. 2차 전직 - 이영준
 	// 은신/혜안
 	// 은신시 사용못하는 아이템
+	BOOL LoadSetItemQualityOption();
+	SET_ITEMQUALITY_OPTION* GetSetItemQualityOption(WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2);
+	void RemoveSetItemQualityOption(WORD wIndex, SET_ITEMQUALITY_OPTION* pSetItemQualityOptionOut);
+	CYHHashTable<SET_ITEMQUALITY_OPTION>* GetSetItemQualityOptionList();
+	void AddSetItemQualityToolTip(cIcon* pIcon, WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2, DWORD color);
+	void SetItemQualityToolTip(cIcon* pIcon, WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2, DWORD dwColor);
+
 	ITEM_INFO* IsUnfitItemInfoListForHide(WORD idx) { return m_UnfitItemInfoListForHide.GetData(idx); }
 	ITEM_INFO* IsAutoUseBuffItem(WORD idx) { return m_AutoUseBuffItem.GetData(idx); }
 	ITEM_INFO* IsCostumeHairSet(DWORD idx) { return m_CostumeHairSet.GetData(idx); }

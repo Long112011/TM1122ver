@@ -56,6 +56,10 @@ void CBuyItem::InitItem(ITEMBASE ItemInfo, WORD Volume, DWORD Money,DWORD Gold)
 	SetData( ItemInfo.wIconIdx );
 	SetGrow( ItemInfo.ItemGrow );  //CoNaN 初始化设置成长数据! 2016-08-20
 	SetGrade30(ItemInfo.Grade30);
+	SetQuality(ItemInfo.ItemQuality);
+	SetEntry1(ItemInfo.ItemEntry1);
+	SetEntry2(ItemInfo.ItemEntry2);
+	SetEntry3(ItemInfo.ItemEntry3);
 	ITEMMGR->SetToolTipIcon(this);
 }
 

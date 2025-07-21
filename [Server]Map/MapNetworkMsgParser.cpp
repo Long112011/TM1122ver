@@ -2162,7 +2162,7 @@ void MP_CHEATMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 					CharacterItemOptionDelete(pTargetItemBase->Durability, pTargetItemBase->dwDBIdx);
 
 				CItemSlot * pTargetSlot = pPlayer->GetSlot(pmsg->bPosition);
-				if( pTargetSlot->UpdateItemAbs(pPlayer, pmsg->bPosition, 0, 0, 0, 0, 0, UB_DURA, SS_PREINSERT ) != EI_TRUE )
+				if( pTargetSlot->UpdateItemAbs(pPlayer, pmsg->bPosition, 0, 0, 0, 0, 0,0,0,0,0,0, UB_DURA, SS_PREINSERT ) != EI_TRUE )
 				{
 					return;
 				}

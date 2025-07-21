@@ -233,6 +233,46 @@ void CItem::Render()
 
 			CFONT_OBJ->RenderFont(21, temp, strlen(temp), &rectTmp, RGBA_MERGE(RGB_HALF(124, 252, 0), 255));
 		}
+		if (m_ItemBaseInfo.ItemQuality == 4)
+		{
+			cImage  imgBaseInfo;
+			SCRIPTMGR->GetImage(221, &imgBaseInfo, PFT_HARDPATH);
+			VECTOR2 vScale = { 1.0f, 1.0f };
+			VECTOR2 pos = { m_absPos.x, m_absPos.y };
+			imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+		}
+		if (m_ItemBaseInfo.ItemQuality == 3)
+		{
+			cImage  imgBaseInfo;
+			SCRIPTMGR->GetImage(220, &imgBaseInfo, PFT_HARDPATH);
+			VECTOR2 vScale = { 1.0f, 1.0f };
+			VECTOR2 pos = { m_absPos.x, m_absPos.y };
+			imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+		}
+		if (m_ItemBaseInfo.ItemQuality == 2)
+		{
+			cImage  imgBaseInfo;
+			SCRIPTMGR->GetImage(217, &imgBaseInfo, PFT_HARDPATH);
+			VECTOR2 vScale = { 1.0f, 1.0f };
+			VECTOR2 pos = { m_absPos.x, m_absPos.y };
+			imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+		}
+		if (m_ItemBaseInfo.ItemQuality == 1)
+		{
+			cImage  imgBaseInfo;
+			SCRIPTMGR->GetImage(219, &imgBaseInfo, PFT_HARDPATH);
+			VECTOR2 vScale = { 1.0f, 1.0f };
+			VECTOR2 pos = { m_absPos.x, m_absPos.y };
+			imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+		}
+		if (m_ItemBaseInfo.ItemQuality == 0)
+		{
+			cImage  imgBaseInfo;
+			SCRIPTMGR->GetImage(222, &imgBaseInfo, PFT_HARDPATH);
+			VECTOR2 vScale = { 1.0f, 1.0f };
+			VECTOR2 pos = { m_absPos.x, m_absPos.y };
+			imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+		}
 
 #ifdef _LIKEPLAYPARK
 		if(pInfo->ItemGrade>=1&&pInfo->ItemGrade<=9)
@@ -403,6 +443,49 @@ void CItem::Render()
 			sprintf(temp, "+%d", m_ItemBaseInfo.Grade30);
 			//CFONT_OBJ->RenderFont(m_wFontIdx, "x", 128, &rectTmp, RGBA_MERGE(curLineNode->color, m_alpha * m_dwOptionAlpha / 100));
 			CFONT_OBJ->RenderFont(21, temp, strlen(temp), &rectTmp, RGBA_MERGE(RGB_HALF(124, 252, 0), 255));
+		}
+		if (pInfo->ItemKind & eEQUIP_ITEM || pInfo->ItemKind == eEQUIP_ITEM_UNIQUE)
+		{
+			if (m_ItemBaseInfo.ItemQuality == 4)
+			{
+				cImage  imgBaseInfo;
+				SCRIPTMGR->GetImage(221, &imgBaseInfo, PFT_HARDPATH);
+				VECTOR2 vScale = { 1.0f, 1.0f };
+				VECTOR2 pos = { m_absPos.x, m_absPos.y };
+				imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+			}
+			if (m_ItemBaseInfo.ItemQuality == 3)
+			{
+				cImage  imgBaseInfo;
+				SCRIPTMGR->GetImage(220, &imgBaseInfo, PFT_HARDPATH);
+				VECTOR2 vScale = { 1.0f, 1.0f };
+				VECTOR2 pos = { m_absPos.x, m_absPos.y };
+				imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+			}
+			if (m_ItemBaseInfo.ItemQuality == 2)
+			{
+				cImage  imgBaseInfo;
+				SCRIPTMGR->GetImage(217, &imgBaseInfo, PFT_HARDPATH);
+				VECTOR2 vScale = { 1.0f, 1.0f };
+				VECTOR2 pos = { m_absPos.x, m_absPos.y };
+				imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+			}
+			if (m_ItemBaseInfo.ItemQuality == 1)
+			{
+				cImage  imgBaseInfo;
+				SCRIPTMGR->GetImage(219, &imgBaseInfo, PFT_HARDPATH);
+				VECTOR2 vScale = { 1.0f, 1.0f };
+				VECTOR2 pos = { m_absPos.x, m_absPos.y };
+				imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+			}
+			if (m_ItemBaseInfo.ItemQuality == 0)
+			{
+				cImage  imgBaseInfo;
+				SCRIPTMGR->GetImage(222, &imgBaseInfo, PFT_HARDPATH);
+				VECTOR2 vScale = { 1.0f, 1.0f };
+				VECTOR2 pos = { m_absPos.x, m_absPos.y };
+				imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+			}
 		}
 	}
 #endif

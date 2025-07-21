@@ -996,7 +996,7 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">
-    <OutDir>.\..\Obj\DistributeServer\Release\</OutDir>
+    <OutDir>..\..\TMMSO\Mx_Client</OutDir>
     <IntDir>.\..\Obj\DistributeServer\Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
@@ -2458,7 +2458,7 @@
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>.\;..\[Lib]YHLibrary;..\[CC]Header;..\[CC]ServerModule;..\[CC]JACK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_USINGTOOL_;_DISTRIBUTESERVER_;_KOR_LOCAL_;_DISTJ_;_TMMSO_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_USINGTOOL_;_DISTRIBUTESERVER_;_KOR_LOCAL_;_DISTJ_;_TMMSO_;_JUEXING_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -2479,7 +2479,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;..\[Lib]YHLibrary\YHLibrary.lib;Wininet.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../Server/DistributeServer.exe</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ProgramDatabaseFile>.\..\Obj\DistributeServer\Release/DistributeServer.pdb</ProgramDatabaseFile>
@@ -4263,14 +4263,10 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\[CC]Header\Server_CMD.cpp" />
-    <ClCompile Include="..\[CC]JACK\Crc32Static.cpp">
-      <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='v120 JACKHAZIK|Win32'">false</WholeProgramOptimization>
-      <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='game JACKHAZIK_TEST|Win32'">false</WholeProgramOptimization>
-      <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='game JACKHAZIK|Win32'">false</WholeProgramOptimization>
-      <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='v120 JACKHAZIK_TEST|Win32'">false</WholeProgramOptimization>
-    </ClCompile>
+    <ClCompile Include="..\[CC]JACK\Crc32Static.cpp" />
     <ClCompile Include="..\[CC]JACK\DateMngr.cpp" />
     <ClCompile Include="..\[CC]JACK\HantarManager.cpp" />
+    <ClCompile Include="..\[CC]JACK\JackJack.cpp" />
     <ClCompile Include="..\[CC]JACK\MHFile.cpp" />
     <ClCompile Include="BuddyAuth.cpp" />
     <ClCompile Include="CommonNetworkMsgParser.cpp">
@@ -6026,7 +6022,6 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
       <Optimization Condition="'$(Configuration)|$(Platform)'=='LATEST RunupMxo|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release _GhostMSO_|Win32'">MaxSpeed</Optimization>
     </ClCompile>
-    <ClCompile Include="..\[CC]JACK\JackJack.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\[CC]Header\Server_CMD.h" />
@@ -6034,6 +6029,8 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
     <ClInclude Include="..\[CC]JACK\Crc32Static.h" />
     <ClInclude Include="..\[CC]JACK\DateMngr.h" />
     <ClInclude Include="..\[CC]JACK\HantarManager.h" />
+    <ClInclude Include="..\[CC]JACK\JackHeaderStruct.h" />
+    <ClInclude Include="..\[CC]JACK\JackJack.h" />
     <ClInclude Include="..\[CC]JACK\MHFile.h" />
     <ClInclude Include="BuddyAuth.h" />
     <ClInclude Include="CommonNetworkMsgParser.h" />
@@ -6103,8 +6100,6 @@ copy ..\Obj\DistributeServer\Debug\DistributeServer.pdb ..\ServerRelease
     <ClInclude Include="..\4DyuchiGRX_common\typedef.h" />
     <ClInclude Include="..\4DyuchiGXGFunc\global.h" />
     <ClInclude Include="..\4DyuchiGXGFunc\type.h" />
-    <ClInclude Include="..\[CC]JACK\JackHeaderStruct.h" />
-    <ClInclude Include="..\[CC]JACK\JackJack.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\4DyuchiGRX_common\math.inl" />

@@ -251,11 +251,11 @@ CItem * CItemShopDialog::GetItemForPos(POSTYPE absPos)
 
 
 void CItemShopDialog::MoveItemToItemShop(CItem* pFromItem)
-{//[ÓÒ¼ü²Ö´¢][BY:Ê®ÀïÆÂ½£Éñ][QQ:112582793][2019-4-16][19:41:44]
+{//[ÓÒ¼ü²Ö´¢][BY:Ê®ÀïÆÂ½£´«Ææ][QQ:112582793][2019-4-16][19:41:44]
 	ASSERT(pFromItem);
 	m_pItemGridDialog[m_curTabNum]->MoveItemToItemShopDlg(pFromItem,m_curTabNum*30);
 }
 void CItemShopDialog::OnActionEvnet(LONG lId, void * p, DWORD we)
-{//[ÓÒ¼ü²Ö´¢][BY:Ê®ÀïÆÂ½£Éñ][QQ:112582793][2019-4-16][19:41:44]
+{//[ÓÒ¼ü²Ö´¢][BY:Ê®ÀïÆÂ½£´«Ææ][QQ:112582793][2019-4-16][19:41:44]
 	m_pItemGridDialog[m_curTabNum]->OnActionEvnet(lId,p,we);
 }

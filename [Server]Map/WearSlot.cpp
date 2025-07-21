@@ -78,7 +78,7 @@ ERROR_ITEM CWearSlot::InsertItemAbs(CPlayer * pPlayer, POSTYPE absPos, ITEMBASE 
 }
 ERROR_ITEM CWearSlot::UpdateItemAbs(CPlayer * pPlayer, POSTYPE whatAbsPos, DWORD dwDBIdx, WORD wItemIdx, POSTYPE position, POSTYPE quickPosition, DURTYPE Dur, WORD flag, WORD state, DWORD RareDBIdx)
 {
-	ERROR_ITEM rt = CItemSlot::UpdateItemAbs(pPlayer, whatAbsPos, dwDBIdx, wItemIdx, position, quickPosition, Dur, flag, state);
+	ERROR_ITEM rt = CItemSlot::UpdateItemAbs(pPlayer, whatAbsPos, dwDBIdx, wItemIdx, position, quickPosition, Dur, 0, 0, 0, 0, 0, flag, state);
 	if(rt == EI_TRUE)	
 	{
 		if( pPlayer->GetState() == eObjectState_Immortal )

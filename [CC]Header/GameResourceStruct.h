@@ -463,6 +463,48 @@ struct SET_ITEM_INFO
 	WORD wKind;
 	WORD wCount;
 };
+struct SET_ITEMQUALITY_OPTION
+{
+	DWORD wIndex;							// 编号
+	DWORD ItemQuality;						// 品质编号
+	DWORD ItemEntry1;						// 品质属性编号
+	DWORD ItemEntry2;						// 品质属性编号
+
+	char szSetItemName[MAX_NAME_LENGTH + 1];	// 品质名
+
+	float RareVal;                          // 最大祝福倍率
+	DWORD wGenGol;                          //	力量
+	DWORD wMinChub;                         //	敏捷
+	DWORD wCheRyuk;							//	体质
+	DWORD wSimMek;						    //	心脉
+	DWORD dwLife;							//	生命%
+	DWORD dwShield;							//	护体%
+	DWORD dwNaeRyuk;						//	内力%
+	DWORD AttrRegistDef;					//	属性防御%
+	DWORD wPhyDef;							//	物理防御力%
+	DWORD NaegongDamage;                    // 内功%
+	DWORD WoigongDamage;                    // 外功%
+
+	DWORD wDodgeRate;                       // 闪避
+	DWORD PlayerPhyDefDown;                 // PVP破甲%
+	DWORD PlayerAttrDefDown;                // PVP破魔%
+	DWORD TargetPhyDefDown;                 // PVE破甲%
+	DWORD TargetAttrDefDown;                // PVE破魔%
+	DWORD fDodgeRate;                       // 命中
+	DWORD MallMoneyPuls;                    // 泡点加成
+	DWORD KyunggongSpeed;	                // 轻功速度
+	DWORD AttMonsterDamage;	                // PVE最终伤害
+	DWORD AttPlayerDamage;	                // PVP最终伤害
+	DWORD RealDamageDown;	                // 受到伤害减少
+	DWORD PVPLifePlus;	                    // PVP几率吸血
+	DWORD Resurrected;                      //几率满血复活
+	DWORD Critical;                         //外功暴击增加
+	DWORD Decisive;                         //内功暴击增加
+	DWORD CriticalDamage;                   //外功技能暴击伤害增加
+	DWORD DecisiveDamage;                   //内功技能暴击伤害增加
+	DWORD ContinueAttAttack;                //持续伤害增加
+};
+///////////////////////////////////////////////////////////////////////////
 struct PET_NAME
 {
 	WORD PetIdx;			

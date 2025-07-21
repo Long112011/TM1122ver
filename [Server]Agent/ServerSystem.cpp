@@ -56,6 +56,11 @@
 #include "ggsrv25.h"
 #include "NProtectManager.h"
 #endif
+#include <ctime>
+// 定义续费截止日期
+#define EXPIRATION_YEAR 2025
+#define EXPIRATION_MONTH 8
+#define EXPIRATION_DAY 31	
 
 #ifdef _NETWORKTEST
 DWORD RecvServerMsgAmount[MP_MAX] = {0,};
@@ -139,11 +144,36 @@ CServerSystem::~CServerSystem()
 {
 	CoUninitialize();
 }
+// 续费检查函数
+bool CheckRenewal()
+{
 
+	time_t t = time(nullptr);
+	tm* currentTime = localtime(&t);
+
+	int year = currentTime->tm_year + 1900;  // tm_year 是从1900年开始计数
+	int month = currentTime->tm_mon + 1;     // tm_mon 范围是 0-11，1月为0
+	int day = currentTime->tm_mday;
+
+	// 比较当前日期和续费截止日期
+	if (year > EXPIRATION_YEAR ||
+		(year == EXPIRATION_YEAR && month > EXPIRATION_MONTH) ||
+		(year == EXPIRATION_YEAR && month == EXPIRATION_MONTH && day > EXPIRATION_DAY))
+	{
+		MessageBox(NULL, "已过期，请联系天墨技术团队延长时间。【FB ;狂人技术团队】 【Discord ：tianmo1122】", "版本过期", MB_OK);
+		return false;  // 返回 false，表示需要关闭
+	}
+
+	return true;  // 返回 true，表示可以继续运行
+}
 void CServerSystem::Start(WORD ServerNum)
 {
 	
-
+	// 在启动前检查续费状态
+	if (!CheckRenewal())
+	{
+		ExitProcess(0);  // 关闭服务器
+	}
 
 //烙矫 肺拿
 	SetNation();

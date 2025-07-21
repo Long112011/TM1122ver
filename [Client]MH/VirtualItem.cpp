@@ -211,6 +211,51 @@ void CVirtualItem::Render()
 		CFONT_OBJ->RenderFont(0,nums,strlen(nums),&rect,RGBA_MERGE(m_dwImageRGB, m_alpha * m_dwOptionAlpha / 100 ));		// color hard coding : taiyo 
 	}
 #endif
+
+
+	if (pInfo->ItemKind & eEQUIP_ITEM || pInfo->ItemKind == eEQUIP_ITEM_UNIQUE)
+	{
+		if (m_pItemLink->GetQuality() == 4)
+		{
+			cImage  imgBaseInfo;
+			SCRIPTMGR->GetImage(221, &imgBaseInfo, PFT_HARDPATH);
+			VECTOR2 vScale = { 1.0f, 1.0f };
+			VECTOR2 pos = { m_absPos.x, m_absPos.y };
+			imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+		}
+		if (m_pItemLink->GetQuality() == 3)
+		{
+			cImage  imgBaseInfo;
+			SCRIPTMGR->GetImage(220, &imgBaseInfo, PFT_HARDPATH);
+			VECTOR2 vScale = { 1.0f, 1.0f };
+			VECTOR2 pos = { m_absPos.x, m_absPos.y };
+			imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+		}
+		if (m_pItemLink->GetQuality() == 2)
+		{
+			cImage  imgBaseInfo;
+			SCRIPTMGR->GetImage(217, &imgBaseInfo, PFT_HARDPATH);
+			VECTOR2 vScale = { 1.0f, 1.0f };
+			VECTOR2 pos = { m_absPos.x, m_absPos.y };
+			imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+		}
+		if (m_pItemLink->GetQuality() == 1)
+		{
+			cImage  imgBaseInfo;
+			SCRIPTMGR->GetImage(219, &imgBaseInfo, PFT_HARDPATH);
+			VECTOR2 vScale = { 1.0f, 1.0f };
+			VECTOR2 pos = { m_absPos.x, m_absPos.y };
+			imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+		}
+		if (m_pItemLink->GetQuality() == 0)
+		{
+			cImage  imgBaseInfo;
+			SCRIPTMGR->GetImage(222, &imgBaseInfo, PFT_HARDPATH);
+			VECTOR2 vScale = { 1.0f, 1.0f };
+			VECTOR2 pos = { m_absPos.x, m_absPos.y };
+			imgBaseInfo.RenderSprite(&vScale, NULL, 0.0f, &pos, 0xffffffff);
+		}
+	}
 }
 
 

@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "PackingTool.h"
 #include "PackingToolDlg.h"
-#include "MHFileEx.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -14,10 +13,7 @@ static char THIS_FILE[] = __FILE__;
 
 /////////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About
-extern int  OpenEncryptNum=Encrypto ;
-extern int	 SaveEncryptNum= Encrypts;
 extern DWORD m_FileSize;
-extern DWORD VerNumber=Encrypts;
 class CAboutDlg : public CDialog
 {
 public:
@@ -114,13 +110,13 @@ BEGIN_MESSAGE_MAP(CPackingToolDlg, CDialog)
 	//}}AFX_MSG_MAP
 	ON_EN_CHANGE(IDC_EDIT_OPENCRC, &CPackingToolDlg::OnEnChangeEditOpencrc)
 	ON_EN_CHANGE(IDC_EDIT_SAVECRC, &CPackingToolDlg::OnEnChangeEditSavecrc)
+
 	ON_BN_CLICKED(IDC_BUTTON1, &CPackingToolDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CPackingToolDlg::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_BUTTON3, &CPackingToolDlg::OnBnClickedButton3)
 	ON_BN_CLICKED(IDC_BUTTON_FINDSTR, &CPackingToolDlg::OnBnClickedButtonFindstr)
 	ON_EN_CHANGE(IDC_EDIT_FINDSTR, &CPackingToolDlg::OnEnChangeEditFindstr)
 	ON_BN_CLICKED(IDC_CHECK_OPENCRC, &CPackingToolDlg::OnBnClickedCheckOpencrc)
-	ON_EN_CHANGE(IDC_EDIT_VERNUMBER, &CPackingToolDlg::OnEnChangeEditVernumber)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -133,8 +129,8 @@ BOOL CPackingToolDlg::OnInitDialog()
 	// Add "About..." menu item to system menu.
 
 	// IDM_ABOUTBOX must be in the system command range.
-	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
-	ASSERT(IDM_ABOUTBOX < 0xF000);
+//	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
+	//ASSERT(IDM_ABOUTBOX < 0xF000);
 
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
 	if (pSysMenu != NULL)
@@ -144,14 +140,14 @@ BOOL CPackingToolDlg::OnInitDialog()
 		if (!strAboutMenu.IsEmpty())
 		{
 			pSysMenu->AppendMenu(MF_SEPARATOR);
-			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
+			//pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 		}
 	}
 
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
-	SetIcon(m_hIcon, FALSE);		// Set small icon
+	SetIcon(m_hIcon, TRUE);		// Set small icon
 	
 	// TODO: Add extra initialization here
 	m_nFileNum = 0;
@@ -167,7 +163,7 @@ BOOL CPackingToolDlg::OnInitDialog()
 	m_BtnSave.EnableWindow( FALSE );
 	m_Edit.EnableWindow( FALSE );
 	m_Edit.SetWindowText( NULL );
-	m_Edit.SetLimitText( 1024*1024*50 );
+	m_Edit.SetLimitText( 0x00400000 );
 	UpdateData( FALSE );
 /*
 	WINDOWPLACEMENT lp;
@@ -193,22 +189,15 @@ BOOL CPackingToolDlg::OnInitDialog()
 
 		UpdateData( FALSE );
 	}
-	BigenChar = 0;
+
+	InitSystemLang();	//语言判断初始化
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
 void CPackingToolDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
-	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
-	{
-		CAboutDlg dlgAbout;
-		dlgAbout.DoModal();
-	}
-	else
-	{
 		CDialog::OnSysCommand(nID, lParam);
-	}
 }
 
 // If you add a minimize button to your dialog, you will need the code below
@@ -250,7 +239,7 @@ HCURSOR CPackingToolDlg::OnQueryDragIcon()
 void CPackingToolDlg::OnButtonOpen() 
 {
 	CFileDialog dlg( TRUE, NULL, "*.*", OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY, 
-					 "Text 太阋(*.txt)|*.txt|Effect 太阋(*.eff)|*.eff|岫牦 太阋 (*.*)|*.*||", NULL );
+					 "Text 格式(*.txt)|*.txt|Effect 格式(*.eff)|*.eff|所有 格式 (*.*)|*.*||", NULL );
 	char buff[65535] = "";
 	dlg.m_ofn.lpstrFile = buff;
 	dlg.m_ofn.nMaxFile = 65535;
@@ -290,7 +279,7 @@ void CPackingToolDlg::OnButtonSaveToBin()
 void CPackingToolDlg::OnButtonOpenBin() 
 {
 	CFileDialog dlg( TRUE, NULL, "*.*", OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY, 
-					 "Binary 太阋|*.bin; *.beff; *.befl; *.bmhm; *.bsad|岫牦 太阋 (*.*)|*.*||", NULL );
+					 "Binary 格式|*.bin; *.beff; *.befl; *.bmhm; *.bsad|所有 格式 (*.*)|*.*||", NULL );
 	char buff[65535] = "";
 	dlg.m_ofn.lpstrFile = buff;
 	dlg.m_ofn.nMaxFile = 65535;
@@ -323,7 +312,11 @@ void CPackingToolDlg::OnButtonOpenBin()
 		// edit
 		m_Edit.EnableWindow( TRUE );
 		CMHFileEx* pFile = m_FileMng.GetFile( m_nFileNum-1 );
-		m_Edit.SetWindowText( pFile->GetData() );
+
+		//if (!GetIsSimple())	//繁体系统判断後转码
+		//	m_Edit.SetWindowText(GB2312ToBIG5(pFile->GetData()));
+		//else
+			m_Edit.SetWindowText( pFile->GetData() );
 
 		m_sCurFile = pFile->GetFullFileName();
 
@@ -377,7 +370,11 @@ void CPackingToolDlg::OnSelchangeListFile()
 
 	// edit
 	CMHFileEx* pFile = m_FileMng.GetFile( index );
-	m_Edit.SetWindowText( pFile->GetData() );
+
+	//if (!GetIsSimple())	//繁体系统判断後转码
+	//	m_Edit.SetWindowText(GB2312ToBIG5(pFile->GetData()));
+	//else
+		m_Edit.SetWindowText(pFile->GetData());
 
 	m_nOldIndex = index;
 
@@ -387,7 +384,7 @@ void CPackingToolDlg::OnSelchangeListFile()
 void CPackingToolDlg::OnButtonNew() 
 {
 	CFileDialog dlg( FALSE, NULL, "*.bin", OFN_FILEMUSTEXIST | OFN_HIDEREADONLY,
-					 "Binary 太阋|*.bin; *.beff; *.befl; *.bmhm; *.bsad|岫牦 太阋 (*.*)|*.*||", NULL );
+					 "Binary 格式|*.bin; *.beff; *.befl; *.bmhm; *.bsad|所有 格式 (*.*)|*.*||", NULL );
 
 	if( dlg.DoModal() == IDOK )
 	{
@@ -426,6 +423,9 @@ void CPackingToolDlg::SaveData( int index )
 	CString str;
 	m_Edit.GetWindowText(str);
 
+	//if (!GetIsSimple())	//繁体系统判断後转码
+	//	str = BIG5ToGB2312(str);
+
 	m_FileMng.SetFileData( index, str );
 	str.Empty();
 	//delete [] str;
@@ -434,7 +434,7 @@ void CPackingToolDlg::SaveData( int index )
 void CPackingToolDlg::OnButtonSaveAsBin() 
 {
 	CFileDialog dlg( FALSE, NULL, "*.bin", OFN_FILEMUSTEXIST | OFN_HIDEREADONLY,
-					 "Binary 太阋|*.bin; *.beff; *.befl; *.bmhm; *.bsad|岫牦 太阋 (*.*)|*.*||", NULL );
+					 "Binary 格式|*.bin; *.beff; *.befl; *.bmhm; *.bsad|所有 格式 (*.*)|*.*||", NULL );
 
 	if( dlg.DoModal() == IDOK )
 	{
@@ -463,10 +463,6 @@ void CPackingToolDlg::OnDropFiles(HDROP hDropInfo)
 			DragQueryFile( hDropInfo, ii, filename, MAX_PATH );
 			
 			OpenFile(filename);
-			if(IsCRCOpenMode.GetCheck()==BST_CHECKED)
-			{
-				OpenEncryptNum +=1;
-			}
 		}		
 	}
 	
@@ -541,7 +537,10 @@ void CPackingToolDlg::UpdateList()
 		// edit
 		m_Edit.EnableWindow( TRUE );
 		CMHFileEx* pFile = m_FileMng.GetFile( m_nFileNum-1 );
-		m_Edit.SetWindowText( pFile->GetData() );
+		//if (!GetIsSimple())	//繁体系统判断後转码
+		//	m_Edit.SetWindowText(GB2312ToBIG5(pFile->GetData()));
+		//else
+			m_Edit.SetWindowText(pFile->GetData());
 		m_sCurFile = pFile->GetFullFileName();
 		m_nOldIndex = m_nFileNum-1;
 	}
@@ -555,18 +554,13 @@ void CPackingToolDlg::OnSearch()
 
 void CPackingToolDlg::OnEnChangeEditOpencrc()
 {
-	OpenEncryptNum=GetDlgItemInt(IDC_EDIT_OPENCRC);
 }
 
 void CPackingToolDlg::OnEnChangeEditSavecrc()
 {
-	SaveEncryptNum=GetDlgItemInt(IDC_EDIT_SAVECRC);
 }
 
-void CPackingToolDlg::OnEnChangeEditVernumber()
-{
-	VerNumber = GetDlgItemInt(IDC_EDIT_VERNUMBER);
-}
+
 void CPackingToolDlg::OnBnClickedButton1()
 {
 	CString  Big5Buffer,str;
@@ -575,6 +569,15 @@ void CPackingToolDlg::OnBnClickedButton1()
 
 	m_Edit.SetWindowText(BIG5ToGB2312(Big5Buffer));
 }
+
+void CPackingToolDlg::InitSystemLang()	//增加系统语言判断
+{
+	IsSimple = FALSE;
+	LANGID lid = GetSystemDefaultLangID();
+	if (lid == 0x0804 || lid == 0x1004)
+		IsSimple = TRUE;
+}
+
 char* CPackingToolDlg::BIG5ToGB2312(const char* szBIG5String)
 {
 
@@ -708,7 +711,7 @@ void CPackingToolDlg::OnBnClickedButton3()
 	m_Edit.SetSel(0,m_FileSize);
 	m_Edit.SetFocus();
 	m_Edit.Copy();
-	::MessageBoxA(this->m_hWnd,"?黏圜晚","?黏",MB_OK);
+	::MessageBoxA(this->m_hWnd,"复制成功","复制",MB_OK);
 }
 
 void CPackingToolDlg::OnBnClickedButtonFindstr()
@@ -731,7 +734,4 @@ void CPackingToolDlg::OnEnChangeEditFindstr()
 
 void CPackingToolDlg::OnBnClickedCheckOpencrc()
 {
-	OpenEncryptNum = 1;
 }
-
-

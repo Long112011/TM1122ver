@@ -323,6 +323,9 @@
 #include "CharacterPVPDialog.h"
 
 #include "OfficialUpGradeDlg.h"//+30 
+#include "ItemQualityDlg.h"
+#include "ItemQualityChangeDlg.h"
+#include "GradeChangeDlg.h"			//ÎäÆ÷Éý½×Öµ×ªÒÆ¾í
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -495,7 +498,7 @@ void cScriptManager::InitScriptManager()
 			pPath->top = file.GetLong();
 			pPath->right = file.GetLong();
 			pPath->bottom = file.GetLong();
-
+			file.GetString();// ×¢ÊÍ
 			if( m_ImageHardPath.GetData( index ) )
 			{
 				SAFE_DELETE(pPath);
@@ -2777,9 +2780,31 @@ cWindow * cScriptManager::GetDlgInfoFromFile(char * filePath, char* mode)
 					__asm int 3;
 				break;
 			}
+			case eItemQualityDlg:
+			{
+				if ((fp.GetString())[0] == '{')
+					dlg = (cDialog*)GetInfoFromFile((cWindow*)(new CItemQualityDlg), &fp);
+				else
+					__asm int 3;
+				break;
+			}
+			case eItemQualityChangeDlg:
+			{
+				if ((fp.GetString())[0] == '{')
+					dlg = (cDialog*)GetInfoFromFile((cWindow*)(new CItemQualityChangeDlg), &fp);
+				else
+					__asm int 3;
+				break;
+			}
 
-
-
+			case eGradeChangeDLG:	//ÎäÆ÷Éý½×Öµ×ªÒÆ¾í
+			{
+				if ((fp.GetString())[0] == '{')
+					dlg = (cDialog*)GetInfoFromFile((cWindow*)(new CGradeChangeDlg), &fp);
+				else
+					__asm int 3;
+				break;
+			}
 
 
 
@@ -3057,7 +3082,7 @@ cWindow * cScriptManager::GetCtrlInfo(cWindow * wnd, char * buff, CMHFile * fp)
 			break;
 		}
 	case eShopItemInventPlusDlg:
-		{//[ShopInventoryPlus][By:Ê®ÀïÆÂ½£Éñ][QQ:112582793][2018/10/9]
+		{//[ShopInventoryPlus][By:Ê®ÀïÆÂ½£´«Ææ][QQ:112582793][2018/10/9]
 			cWindow * window = GetInfoFromFile((cWindow*)(new cShopItemInventPlusDlg), fp);
 			//ASSERT(wnd);
 			wnd->Add(window);

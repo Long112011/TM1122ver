@@ -226,7 +226,9 @@
 #include "FadeDlg.h"
 #include "TopDungeon.h"
 #include "CharacterPVPDialog.h"
-
+#include "ItemQualityDlg.h"
+#include "ItemQualityChangeDlg.h"
+#include "GradeChangeDlg.h"			//武器升阶值转移卷
 extern HWND _g_hWnd;
 extern BOOL m_SafeIconShow;
 #define FONTPATH ".\\Image\\InterfaceScript\\gamefont.ttc"
@@ -431,6 +433,9 @@ void cWindowManager::CreateGameIn()
 	CreateDungeonRankingDlg();
 	CreateCharPvPDlg();
 	CreateOfficialUpGradeDlg();
+	CreateItemQualityDlg();          //创建装备觉醒窗口
+	CreateItemQualityChangeDlg();     //创建装备转换窗口
+	CreateGradeChangeDlg();			//武器升阶值转移卷
 
 #ifdef	_DEBUGTICK
 	DWORD	dwEndTick = GetTickCount();
@@ -3819,13 +3824,13 @@ void cWindowManager::CreateOfficialUpGradeDlg()
 	window = GetDlgInfoFromFile("./image/InterfaceScript/OfficialUpGradeDlg.bin", "rb");
 
 
-	// 设置位置
-	VECTOR2 Pos1;
-	Pos1.x = ((float)GET_MAINWIN_W / 2 - window->GetWidth() / 2);
-	Pos1.y = ((float)GET_MAINWIN_H / 2 - window->GetHeight() / 2);
-	window->SetAbsXY(Pos1.x, Pos1.y);
+		// 设置位置
+		VECTOR2 Pos1;
+		Pos1.x = ((float)GET_MAINWIN_W / 2 - window->GetWidth() / 2);
+		Pos1.y = ((float)GET_MAINWIN_H / 2 - window->GetHeight() / 2);
+		window->SetAbsXY(Pos1.x, Pos1.y);
 
-	AddWindow(window);
+		AddWindow(window);
 
 	// 尝试类型转换
 	COfficialUpGradeDlg* pDlg = dynamic_cast<COfficialUpGradeDlg*>(window);
@@ -3838,4 +3843,80 @@ void cWindowManager::CreateOfficialUpGradeDlg()
 	pDlg->Linking();
 
 
+}
+
+void cWindowManager::CreateItemQualityDlg()
+{
+	cWindow* window = NULL;
+#ifdef _FILE_BIN_
+	window = GetDlgInfoFromFile("./image/InterfaceScript/ItemQualityDialog.bin", "rb");
+#else
+	window = GetDlgInfoFromFile("./image/InterfaceScript/ItemQualityDialog.txt");
+#endif
+	// 设置位置
+	VECTOR2 Pos1;
+	Pos1.x = ((float)GET_MAINWIN_W / 2 - window->GetWidth() / 2);
+	Pos1.y = ((float)GET_MAINWIN_H / 2 - window->GetHeight() / 2);
+	window->SetAbsXY(Pos1.x, Pos1.y);
+
+	AddWindow(window);
+	//CItemQualityDlg* pDlg = (CItemQualityDlg*)window;
+	//GAMEIN->SetItemQualityDlg(pDlg);
+	//GAMEIN->GetItemQualityDlg()->Linking();
+
+	// 尝试类型转换
+	CItemQualityDlg* pDlg = dynamic_cast<CItemQualityDlg*>(window);
+	
+
+	// 注册到 GAMEIN
+	GAMEIN->SetItemQualityDlg(pDlg);
+
+	// 调用 Linking，绑定子控件
+	pDlg->Linking();
+}
+
+void cWindowManager::CreateItemQualityChangeDlg()
+{
+	cWindow* window = NULL;
+#ifdef _FILE_BIN_
+	window = GetDlgInfoFromFile("./image/InterfaceScript/ItemQualityChangeDialog.bin", "rb");
+#else
+	window = GetDlgInfoFromFile("./image/InterfaceScript/ItemQualityChangeDialog.txt");
+#endif
+	// 设置位置
+	VECTOR2 Pos1;
+	Pos1.x = ((float)GET_MAINWIN_W / 2 - window->GetWidth() / 2);
+	Pos1.y = ((float)GET_MAINWIN_H / 2 - window->GetHeight() / 2);
+	window->SetAbsXY(Pos1.x, Pos1.y);
+
+	AddWindow(window);
+	//CItemQualityChangeDlg* pDlg = (CItemQualityChangeDlg*)window;
+	//GAMEIN->SetItemQualityChangeDlg(pDlg);
+	//GAMEIN->GetItemQualityChangeDlg()->Linking();
+
+	// 尝试类型转换
+	CItemQualityChangeDlg* pDlg = dynamic_cast<CItemQualityChangeDlg*>(window);
+
+
+	// 注册到 GAMEIN
+	GAMEIN->SetItemQualityChangeDlg(pDlg);
+
+	// 调用 Linking，绑定子控件
+	pDlg->Linking();
+}
+void cWindowManager::CreateGradeChangeDlg()	//武器升阶值转移卷
+{
+	cWindow* window = NULL;
+	window = GetDlgInfoFromFile("./image/InterfaceScript/gradechangedlg.bin", "rb");
+
+	ASSERT(window);
+	VECTOR2 Pos1;
+	Pos1.x = window->GetAbsX() + ((float)GAMERESRCMNGR->m_GameDesc.dispInfo.dwWidth - MIDRSLTN_W) / 2;
+	Pos1.y = window->GetAbsY() + ((float)GAMERESRCMNGR->m_GameDesc.dispInfo.dwHeight - MIDRSLTN_H) / 2;
+	window->SetAbsXY(Pos1.x, Pos1.y);
+	AddWindow(window);
+
+	CGradeChangeDlg* pDlg = (CGradeChangeDlg*)window;
+	GAMEIN->SetGradeChangeDlg(pDlg);
+	pDlg->Linking();
 }

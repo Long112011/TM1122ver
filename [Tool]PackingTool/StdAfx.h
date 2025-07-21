@@ -1,4 +1,4 @@
-﻿// stdafx.h : include file for standard system include files,
+// stdafx.h : include file for standard system include files,
 //  or project specific include files that are used frequently, but
 //      are changed infrequently
 //
@@ -22,8 +22,6 @@
 
 #pragma warning(disable : 4786)
 #include <map>
-
-#include "../[CC]JACK/JackHeaderStruct.h"
 using namespace std;
 
 //{{AFX_INSERT_LOCATION}}

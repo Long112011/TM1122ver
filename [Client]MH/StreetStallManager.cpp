@@ -86,6 +86,10 @@ BOOL CStreetStallManager::LinkItem( CItem* pItem, ITEMBASE* pBase )
 	pExItem->SetStoneIdx(pBase->StoneIdx);  // 2014-12-15 µ½°ÚÌ¯!
 	pExItem->SetGrow(pBase->ItemGrow);      // 2015-01-15 µ½°ÚÌ¯£¡
 	pExItem->SetGrade(pBase->Grade30);
+	pExItem->SetQuality(pBase->ItemQuality);
+	pExItem->SetEntry1(pBase->ItemEntry1);
+	pExItem->SetEntry2(pBase->ItemEntry2);
+	pExItem->SetEntry3(pBase->ItemEntry3);
 	pos = GAMEIN->GetStreetStallDialog()->AddItem( pExItem );
 	
 	if( pos == -1 ) 
@@ -833,6 +837,10 @@ void CStreetStallManager::LinkBuyItem( STREETSTALL_INFO* pStallInfo )
 			pExItem->SetStoneIdx(pStallInfo->Item[i].dwStoneIdx);   // 2014-12-15 µ½°ÚÌ¯!
 			pExItem->SetGrow(pStallInfo->Item[i].dwGrow);           // 2015-01-16 µ½°ÚÌ¯!
 			pExItem->SetGrade(pStallInfo->Item[i].dwGrade30);
+			pExItem->SetQuality(pStallInfo->Item[i].ItemQuality);
+			pExItem->SetEntry1(pStallInfo->Item[i].ItemEntry1);
+			pExItem->SetEntry2(pStallInfo->Item[i].ItemEntry2);
+			pExItem->SetEntry3(pStallInfo->Item[i].ItemEntry3);
 			//!!!
 			if( ITEMMGR->IsTitanEquipItem( pStallInfo->Item[i].wIconIdx ) )
 			{
@@ -1152,6 +1160,10 @@ void CStreetStallManager::NetworkMsgParse( BYTE Protocol, void* pMsg )
 			pExItem->SetLock( TRUE );
 			pExItem->SetMovable( FALSE );
 			pExItem->SetGrade(msg->ItemInfo.Grade30);
+			pExItem->SetQuality(msg->ItemInfo.ItemQuality);
+			pExItem->SetEntry1(msg->ItemInfo.ItemEntry1);
+			pExItem->SetEntry2(msg->ItemInfo.ItemEntry2);
+			pExItem->SetEntry3(msg->ItemInfo.ItemEntry3);
 			ITEMMGR->GetItemOptionsAndToolTipFromInfoMsg(pExItem, (MSG_LINKITEMOPTIONS*)msg);
 
 			char buf[32];

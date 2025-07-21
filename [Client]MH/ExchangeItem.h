@@ -41,6 +41,12 @@ protected:
 	cImage m_ScrollImg[22];
 	int m_CurScrollImage;
 	WORD			m_Grade;
+
+	WORD			m_Quality;
+	WORD			m_Entry1;
+	WORD			m_Entry2;
+	WORD			m_Entry3;
+
 public:
 
 	CExchangeItem();
@@ -87,6 +93,16 @@ public:
 
 	inline DWORD    GetGrade() { return m_Grade; }
 	inline void		SetGrade(DWORD Val) { m_Grade = Val; }
+
+	WORD	GetQuality() { return m_Quality; }
+	WORD	GetEntry1() { return m_Entry1; }
+	WORD	GetEntry2() { return m_Entry2; }
+	WORD	GetEntry3() { return m_Entry3; }
+	void	SetQuality(WORD val) { m_Quality = val; }
+	void	SetEntry1(WORD val) { m_Entry1 = val; }
+	void	SetEntry2(WORD val) { m_Entry2 = val; }
+	void	SetEntry3(WORD val) { m_Entry3 = val; }
+
 };
 
 

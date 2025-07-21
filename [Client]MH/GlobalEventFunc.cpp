@@ -259,7 +259,7 @@
 #include "InstancesDungeon/InsDGPartyMakeDialog.h"
 #include "InstancesDungeon/InsDGRankDialog.h"
 #include "CharacterPVPDialog.h"
-
+#include "GradeChangeDlg.h"		//武器升阶值转移卷
 #include "OfficialUpGradeDlg.h"
 extern HWND _g_hWnd;
 extern BOOL jTweak;
@@ -500,6 +500,9 @@ FUNC g_mt_func[] =
 
 	{CS_BtnChangePass,"CS_BtnChangePass"},
 	{ OfficialUpGradeDlg_Func, "OfficialUpGradeDlg_Func" },
+	{ ItemQuality_DlgFunc,"ItemQuality_DlgFunc" },
+	{ ItemQualityChange_DlgFunc,"ItemQualityChange_DlgFunc" },
+	{ GGD_Func, "GGD_Func" }, //武器升阶值转移卷
 	{NULL, ""},	
 };
 int FUNCSEARCH(char * funcName)
@@ -954,6 +957,13 @@ void IN_DlgFunc(LONG lId, void * p, DWORD we)
 	if(we == WE_LBTNCLICK ||we == WE_RBTNCLICK ||  we == WE_RBTNDBLCLICK || we == WE_LBTNDBLCLICK )
 	{
 		GAMEIN->GetInventoryDialog()->OnActionEvnet(lId, p, we);
+	}
+	if (lId == IN_GETBUFFLIST)
+	{
+		cImage ToolTipImage;
+		SCRIPTMGR->GetImage(63, &ToolTipImage, PFT_HARDPATH);
+		GAMEIN->GetInventoryDialog()->pBuffBtn->SetToolTip("", RGBA_MAKE(255, 255, 255, 255), &ToolTipImage, TTCLR_ITEM_CANEQUIP);
+		GAMEIN->GetInventoryDialog()->GetBuff();
 	}
 	if(lId == IN_SHOPITEMBTN1)
 	{
@@ -2526,6 +2536,16 @@ void MessageBox_Func( LONG lId, void * p, DWORD we )
 			}
 		}
 		break;
+	case MBI_RAREMAXOK://祝福最大后弹出的按确定信息
+
+	{
+		cDialog* pDlg = WINDOWMGR->GetWindowForID(RareCreateDLG);
+		if (pDlg)
+		{
+			pDlg->SetDisable(FALSE);
+		}
+	}
+	break;
 	case MBI_PKMODE:
 		{
 			if( we == MBI_YES )
@@ -4358,7 +4378,7 @@ void ITMALL_DlgBtnFunc(LONG lId, void * p, DWORD we)
 {
 	if(lId == ITMALL_BTN1 || lId == ITMALL_BTN2 || lId == ITMALL_BTN3)
 		GAMEIN->GetItemShopDialog()->TabChange(lId-ITMALL_BTN1);
-	if(GAMEIN->GetItemShopDialog()->IsActive())//[右键仓储][BY:十里坡剑神][QQ:112582793][2019-4-16][21:31:30]
+	if(GAMEIN->GetItemShopDialog()->IsActive())//[右键仓储][BY:十里坡剑传奇][QQ:112582793][2019-4-16][21:31:30]
 		GAMEIN->GetItemShopDialog()->OnActionEvnet(lId,p,we);
 }
 void SA_DlgBtnFunc(LONG lId, void * p, DWORD we)
@@ -5757,4 +5777,51 @@ void OfficialUpGradeDlg_Func(LONG lId, void* p, DWORD we)
 {
 	GAMEIN->GetOfficialUpGradeDlg()->CheckStatusItem();
 	GAMEIN->GetOfficialUpGradeDlg()->OnActionEvent(lId, p, we);
+}
+//装备觉醒
+#include "ItemQualityDlg.h"
+void ItemQuality_DlgFunc(LONG lId, void* p, DWORD we)
+{
+	CItemQualityDlg* pDlg = (CItemQualityDlg*)GAMEIN->GetItemQualityDlg();
+
+	switch (lId)
+	{
+	case ITEM_QUALITY_BTNOK:
+	{
+		pDlg->SendItemQualityMsg();
+	}
+	break;
+	case ITEM_QUALITY_BTNCANCER:
+	{
+		pDlg->ReleaseExt();
+		pDlg->Release(1);
+		pDlg->SetActive(FALSE);
+	}
+	break;
+	}
+}
+//装备觉醒
+#include "ItemQualityChangeDlg.h"
+void ItemQualityChange_DlgFunc(LONG lId, void* p, DWORD we)
+{
+	CItemQualityChangeDlg* pDlg = (CItemQualityChangeDlg*)GAMEIN->GetItemQualityChangeDlg();
+
+	switch (lId)
+	{
+	case ITEM_QUALITYCHANGE_BTNOK:
+	{
+		pDlg->SendItemQualityMsg();
+	}
+	break;
+	case ITEM_QUALITYCHANGE_BTNCANCER:
+	{
+		pDlg->Release();
+		pDlg->SetActive(FALSE);
+	}
+	break;
+	}
+}
+void GGD_Func(LONG lId, void* p, DWORD we)	//武器升阶值转移卷
+{
+	GAMEIN->GetGradeChangeDlg()->OnActionEvent(lId, p, we);
 }

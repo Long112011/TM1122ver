@@ -178,7 +178,7 @@ private:
 	SET_ITEM_OPTION m_setItemStats;		// 2007. 6. 12. CBH - 세트아이탬 능력치 구조체 추가
 	UNIQUE_ITEM_OPTION_INFO m_UniqueItemStats;	// magi82 - UniqueItem(070626)
 	ABILITY_STATS m_AbilityStats;
-		 
+	SET_ITEMQUALITY_OPTION m_setItemQualityStats;
 	// LIFE RECOVER는 COBJECT로
 	RECOVER_TIME m_NaeRyukRecoverTime;
 	YYRECOVER_TIME m_YYNaeRyukRecoverTime;
@@ -494,24 +494,24 @@ public:
 	// RaMa - 04.11.10    -> ShopItemOption 추가  AvatarOption추가(05.02.16)
 	// magi82 - UniqueItem(070629) - 스텟이 마이너스가 될 경우 예외처리 추가
 	WORD GetCheRyuk(){ return (int)(m_HeroInfo.wCheRyuk + GetAbilityStats()->StatChe + GetItemStats()->CheRyuk + GetShopItemStats()->Cheryuk
-		+ GetAvatarOption()->Cheryuk + GetSetItemStats()->wCheRyuk + GetUniqueItemStats()->nCheRyuk) >= 0 ? (WORD)(m_HeroInfo.wCheRyuk
+		+ GetAvatarOption()->Cheryuk + GetSetItemStats()->wCheRyuk + GetUniqueItemStats()->nCheRyuk) + GetSetItemQualityStats()->wCheRyuk >= 0 ? (WORD)(m_HeroInfo.wCheRyuk
 		+ GetAbilityStats()->StatChe + GetItemStats()->CheRyuk + GetShopItemStats()->Cheryuk + GetAvatarOption()->Cheryuk + GetSetItemStats()->wCheRyuk
-		+ GetUniqueItemStats()->nCheRyuk) : 0; }
+		+ GetUniqueItemStats()->nCheRyuk + GetSetItemQualityStats()->wCheRyuk) : 0; }
 
 	WORD GetSimMek(){ return (int)(m_HeroInfo.wSimMek + GetAbilityStats()->StatSim + GetItemStats()->SimMaek + GetShopItemStats()->Simmek
-		+ GetAvatarOption()->Simmek + GetSetItemStats()->wSimMek + GetUniqueItemStats()->nSimMek) >= 0 ? (WORD)(m_HeroInfo.wSimMek
+		+ GetAvatarOption()->Simmek + GetSetItemStats()->wSimMek + GetUniqueItemStats()->nSimMek + GetSetItemQualityStats()->wSimMek) >= 0 ? (WORD)(m_HeroInfo.wSimMek
 		+ GetAbilityStats()->StatSim + GetItemStats()->SimMaek + GetShopItemStats()->Simmek + GetAvatarOption()->Simmek + GetSetItemStats()->wSimMek
-		+ GetUniqueItemStats()->nSimMek) : 0; }
+		+ GetUniqueItemStats()->nSimMek + GetSetItemQualityStats()->wSimMek) : 0; }
 
 	WORD GetGenGol(){ return (int)(m_HeroInfo.wGenGol + GetAbilityStats()->StatGen + GetItemStats()->GenGol + GetShopItemStats()->Gengol
-		+ GetAvatarOption()->Gengol + GetSetItemStats()->wGenGol + GetUniqueItemStats()->nGengol) >= 0 ? (WORD)(m_HeroInfo.wGenGol
+		+ GetAvatarOption()->Gengol + GetSetItemStats()->wGenGol + GetUniqueItemStats()->nGengol + GetSetItemQualityStats()->wGenGol) >= 0 ? (WORD)(m_HeroInfo.wGenGol
 		+ GetAbilityStats()->StatGen + GetItemStats()->GenGol + GetShopItemStats()->Gengol + GetAvatarOption()->Gengol + GetSetItemStats()->wGenGol
-		+ GetUniqueItemStats()->nGengol) : 0; }
+		+ GetUniqueItemStats()->nGengol + GetSetItemQualityStats()->wGenGol) : 0; }
 
 	WORD GetMinChub(){ return (int)(m_HeroInfo.wMinChub + GetAbilityStats()->StatMin + GetItemStats()->MinChub + GetShopItemStats()->Minchub
-		+ GetAvatarOption()->Minchub + GetSetItemStats()->wMinChub + GetUniqueItemStats()->nMinChub) >= 0 ? (WORD)(m_HeroInfo.wMinChub
+		+ GetAvatarOption()->Minchub + GetSetItemStats()->wMinChub + GetUniqueItemStats()->nMinChub + GetSetItemQualityStats()->wMinChub) >= 0 ? (WORD)(m_HeroInfo.wMinChub
 		+ GetAbilityStats()->StatMin + GetItemStats()->MinChub + GetShopItemStats()->Minchub + GetAvatarOption()->Minchub + GetSetItemStats()->wMinChub
-		+ GetUniqueItemStats()->nMinChub) : 0; }
+		+ GetUniqueItemStats()->nMinChub + GetSetItemQualityStats()->wMinChub) : 0; }
 
 	void SetCheRyuk(WORD val);
 	void SetSimMek(WORD val);
@@ -757,6 +757,7 @@ public:
 	UNIQUE_ITEM_OPTION_INFO* GetUniqueItemStats(){	return &m_UniqueItemStats;	}	// magi82 - UniqueItem(070626)
 	SHOPITEMOPTION*		GetShopItemStats()		{	return &m_ShopItemOption;	}
 	AVATARITEMOPTION*	GetAvatarOption()		{	return &m_AvatarOption;		}
+	SET_ITEMQUALITY_OPTION* GetSetItemQualityStats() { return &m_setItemQualityStats; }
 
 	//////////////////////////////////////////////////////////////////////////
 	// 06. 06. 2차 전직 - 이영준
@@ -1192,7 +1193,8 @@ public:
 	void AddSetitemOption(SET_ITEM_OPTION* pSetItemOption);
 	void ClearSetitemOption();
 	///////////////////////////////////////////////////////
-
+	void AddSetitemQualityOption(SET_ITEMQUALITY_OPTION* pSetItemQualityOption);
+	void ClearSetitemQualityOption();
 	// 
 	void SetActionTime()				{	m_LastActionTime = gCurTime;	}
 	BOOL IsActionPanelty()				{	return m_bActionPanelty;		}

@@ -164,7 +164,7 @@ void CPlayer::SetWearedItemIdx(DWORD WearedPosition,WORD ItemIdx)
 }
 
 
-WORD CPlayer::GetWeaponEquipType()
+WORD CPlayer::GetWeaponEquipType()//获取当前武器是什么种类
 {
 	WORD WeaponItemIdx = GetWearedItemIdx(eWearedItem_Weapon);
 	if(WeaponItemIdx == 0)
@@ -1055,8 +1055,10 @@ float CPlayer::DoGetMoveSpeed()
 
 			// 酒官鸥 酒捞袍 版傍 胶乔靛 
 			Speed += GetAvatarOption()->KyunggongSpeed;
-			// 何利 版傍 档 惑铰
+			// 符咒加成
 			Speed += GetShopItemStats()->KyungGongSpeed;
+			//装备觉醒轻功加成
+			Speed += HERO->GetSetItemQualityStats()->KyunggongSpeed;
 		}
 		else
 		{

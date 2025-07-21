@@ -996,7 +996,7 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TMMSOnEW|Win32'">
-    <OutDir>.\..\Obj\AgentServer\Release\</OutDir>
+    <OutDir>..\..\TMMSO\Mx_Client</OutDir>
     <IntDir>.\..\Obj\AgentServer\Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
@@ -2419,7 +2419,7 @@
       <Optimization>Full</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>.\;..\[Lib]YHLibrary;..\[CC]Header;..\[CC]ServerModule;..\[CC]JACK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_USINGTOOL_;_AGENTSERVER;_KOR_LOCAL_;_AGJ_;_TMMSO_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_USINGTOOL_;_AGENTSERVER;_KOR_LOCAL_;_AGJ_;_TMMSO_;_JUEXING_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -2445,7 +2445,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;..\[Lib]YHLibrary\YHLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../Server/AgentServer.exe</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\..\Obj\AgentServer\Release/AgentServer.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>

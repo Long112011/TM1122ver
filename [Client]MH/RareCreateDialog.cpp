@@ -9,113 +9,110 @@
 #include "./Interface/cScriptManager.h"
 #include "ObjectStateManager.h"
 #include "ObjectManager.h"
-#include "MHFile.h"//js
-#include "GameIn.h"//js		   
+#include "GameIn.h"
+#include "InventoryExDialog.h"
+#include "MHFile.h"
+#include "cWindowManager.h"
+
 CRareCreateDialog::CRareCreateDialog(void)
 {
 	m_type = WT_ITEM_RARECREATE_DLG;
+
 	cImage imgToolTip;
 	SCRIPTMGR->GetImage(63, &imgToolTip, PFT_HARDPATH);
 	m_VirtualItem.SetToolTip("", RGB_HALF(255, 255, 255), &imgToolTip);
 	m_VirtualItem.SetMovable(FALSE);
+
 	m_ItemIdx = 0;
 	m_ItemPos = 0;
-	LoadRARE_Max_INFO();//js				 
+	m_pIconDlg = NULL;
+	Rare_Info = NULL;
+
+	LoadRareItemOptionInfo();
 }
+
 CRareCreateDialog::~CRareCreateDialog(void)
 {
-	Rare_Info->SetStaticText(" ");//js
-	RareMax_Info->SetStaticText(" ");//js	  
+	Rare_Info->SetStaticText(" ");
 }
+
 void CRareCreateDialog::Linking()
 {
 	m_pIconDlg = (cIconDialog*)GetWindowForID(RareCreate_ICON);
-	Rare_Info = (cStatic *)GetWindowForID(RareCreate_Info);//js
-	Rare_Info->SetMultiLine(TRUE);//js
-	Rare_Info->InitMultiLine();//js
-	RareMax_Info = (cStatic *)GetWindowForID(RareCreate_MaxInfo);//js //KIV 19022023
-	RareMax_Info->SetMultiLine(TRUE);//js
-	RareMax_Info->InitMultiLine();//js
+	Rare_Info = (cStatic*)GetWindowForID(ITMD_RareCreateItemInfo);
+	Rare_Info->SetMultiLine(TRUE);
+	Rare_Info->InitMultiLine();
 }
-BOOL CRareCreateDialog::FakeMoveIcon(LONG x, LONG y, cIcon * pOrigIcon)
+
+BOOL CRareCreateDialog::FakeMoveIcon(LONG x, LONG y, cIcon* pOrigIcon)
 {
-	//Rare_Info->SetStaticText(" ");//js					   
+	Rare_Info->SetStaticText(" ");
 	if (pOrigIcon->GetType() != WT_ITEM) return FALSE;
 	if (m_bDisable) return FALSE;
-	CItem * pOrigItem = (CItem *)pOrigIcon;
+
+	CItem* pOrigItem = (CItem*)pOrigIcon;
+
 	if (pOrigItem->IsLocked()) return FALSE;
+
 	ITEM_INFO* pBaseItemInfo = ITEMMGR->GetItemInfo(pOrigItem->GetItemIdx());
 	if (!pBaseItemInfo)
 		return FALSE;
+
+	// 厘厚酒捞袍 眉农
 	eITEM_KINDBIT bits = pOrigItem->GetItemKind();
 	if (!(bits & eEQUIP_ITEM))
 		return FALSE;
+
+	// 06.09.25 RaMa - 捞亥飘酒捞袍阑 碍拳, 饭绢甫 给 父甸档废
 	if (pBaseItemInfo->WeaponType > WP_KEY)
 	{
 		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1455));
 		return FALSE;
 	}
-	int bit1 = bits;
-	DWORD Itemidx = pOrigItem->GetItemIdx();
-	//if( bits <= eEQUIP_ITEM_SHOES && pOrigItem->GetItemIdx() % 10 )//backup jack
-	if (bits < eEQUIP_ITEM_WEAPON)//js
+
+	//HK080529	//itemidex 啊 捞固 炼钦包访 %10狼 逢阑 玻促.
+	// 炼钦等扒瘤 眉农
+	if (bits <= eEQUIP_ITEM_SHOES && pOrigItem->GetItemIdx() % 10)
 	{
 		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1234));
 		return FALSE;
 	}
+
+
+	// 碍拳 酒捞袍篮 给 棵扼埃促.
 	ITEM_OPTION_INFO* pOptionInfo = ITEMMGR->GetItemOption(pOrigItem->GetDurability());
 	if (pOrigItem->GetDurability() != 0 || pOptionInfo->dwOptionIdx != 0)
 	{
 		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1234));
 		return FALSE;
 	}
+	// 饭绢啊 啊瓷茄瘤 魄喊
 	if (!ITEMMGR->IsRareItemAble(pOrigItem->GetItemIdx()))
 	{
 		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1234));
 		return FALSE;
 	}
+
+	// 牢亥配府俊辑 坷绰瘤 眉农
+	ITEM_RARE_OPTION_INFO* RareInfo = ITEMMGR->GetItemRareOption(pOrigItem->GetRareness());
+	if (RareInfo)
+	{
+		SetRareInfo(RareInfo, pOrigItem->GetItemIdx());
+	}
 	if (!ITEMMGR->IsEqualTableIdxForPos(eItemTable_Inventory, pOrigItem->GetPosition()))
 		return FALSE;
+
 	ITEM_INFO* pShopItem = ITEMMGR->GetItemInfo((WORD)m_ItemIdx);
 	if (!pShopItem)
 		return FALSE;
+
 	if (pBaseItemInfo->LimitLevel < pShopItem->GenGol || pBaseItemInfo->LimitLevel > pShopItem->MinChub)
 	{
+		Rare_Info->SetStaticText(" ");
 		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1082));
 		return FALSE;
 	}
-
-	ITEM_RARE_OPTION_INFO* RareInfo = ITEMMGR->GetItemRareOption(pOrigItem->GetRareness());//js
-	if (RareInfo)
-	{
-		SetRareInfo(RareInfo);
-	}
-
-
-	if (bits >= eEQUIP_ITEM_WEAPON&&bits <= eEQUIP_ITEM_BELT)//js
-	{
-		int Index = 0;
-		switch (bits)
-		{
-		case eEQUIP_ITEM_WEAPON:
-			Index = 0;
-			break;
-		case eEQUIP_ITEM_DRESS:
-		case eEQUIP_ITEM_HAT:
-		case eEQUIP_ITEM_SHOES:
-			Index = 1;
-			break;
-		case eEQUIP_ITEM_RING:
-		case eEQUIP_ITEM_CAPE:
-		case eEQUIP_ITEM_NECKLACE:
-		case eEQUIP_ITEM_ARMLET:
-		case eEQUIP_ITEM_BELT:
-			Index = 2;
-			break;
-		}
-		SetRARE_Max_INFO(Index);
-	}
-	if (m_VirtualItem.GetSrcItemKind() != eKIND_ITEM_MAX)//js
+	if (m_VirtualItem.GetSrcItemKind() != eKIND_ITEM_MAX)
 	{
 		CItem* pItem = ITEMMGR->GetItem(m_VirtualItem.GetLinkItem()->GetDBIdx());
 		if (pItem)
@@ -129,58 +126,76 @@ BOOL CRareCreateDialog::FakeMoveIcon(LONG x, LONG y, cIcon * pOrigIcon)
 			}
 		}
 	}
+
 	pOrigItem->SetLock(TRUE);
 	AddVirtualItem(pOrigItem);
-	//ITEMMGR->SetDisableDialog(TRUE, eItemTable_Inventory);//jack
-	//ITEMMGR->SetDisableDialog(TRUE, eItemTable_Pyoguk);//jack
-	//ITEMMGR->SetDisableDialog(TRUE, eItemTable_GuildWarehouse);//jack
-	//ITEMMGR->SetDisableDialog(TRUE, eItemTable_Shop);//jack
+
+	//ITEMMGR->SetDisableDialog(TRUE, eItemTable_Inventory);
+	//ITEMMGR->SetDisableDialog(TRUE, eItemTable_Pyoguk);
+	//ITEMMGR->SetDisableDialog(TRUE, eItemTable_GuildWarehouse);
+	//ITEMMGR->SetDisableDialog(TRUE, eItemTable_Shop);
+
+
 	return FALSE;
 }
-void CRareCreateDialog::Clear_RARE_INFO()//js
-{
-	Rare_Info->SetStaticText(" ");
-	RareMax_Info->SetStaticText(" ");
-}
+
 void CRareCreateDialog::ReleaseItem()
 {
 	if (m_pIconDlg)
 	{
 		CVirtualItem* pVItem = NULL;
+
 		m_pIconDlg->DeleteIcon(0, (cIcon**)&pVItem);
 		if (pVItem)
 			pVItem->GetLinkItem()->SetLock(FALSE);
+
 		m_VirtualItem.SetLinkItem(NULL);
 	}
+
 	CItem* pOriItem = ITEMMGR->GetItemofTable(eItemTable_ShopInven, (POSTYPE)m_ItemPos);
 	if (pOriItem)
 		pOriItem->SetLock(FALSE);
+
 	m_ItemIdx = 0;
 	m_ItemPos = 0;
+
+
 	ITEMMGR->SetDisableDialog(FALSE, eItemTable_Inventory);
 	ITEMMGR->SetDisableDialog(FALSE, eItemTable_Pyoguk);
 	ITEMMGR->SetDisableDialog(FALSE, eItemTable_MunpaWarehouse);
 	ITEMMGR->SetDisableDialog(FALSE, eItemTable_Shop);
+
 	OBJECTSTATEMGR->EndObjectState(HERO, eObjectState_Deal);
-	Rare_Info->SetStaticText(" ");//js
-	RareMax_Info->SetStaticText(" ");//js						  
+
+	Rare_Info->SetStaticText(" ");
 	SetActive(FALSE);
 }
+
 void CRareCreateDialog::AddVirtualItem(CItem* pItem)
 {
 	m_VirtualItem.SetData(pItem->GetItemIdx());
 	m_VirtualItem.SetLinkItem(pItem);
+	if (pItem->GetDurability() != 0 && !ITEMMGR->IsDupItem(pItem->GetItemIdx()))//添加绿化时候显示物品的渲染文字
+	{
+		ITEMMGR->SetToolTipIcon((cIcon*)&m_VirtualItem, ITEMMGR->GetItemOption(pItem->GetDurability())
+			, ITEMMGR->GetItemRareOption(pItem->GetRareness()));
+	}
+	else
+		ITEMMGR->SetToolTipIcon((cIcon*)&m_VirtualItem, NULL, ITEMMGR->GetItemRareOption(pItem->GetRareness()));
+
 	SHOPITEMBASE* pShopItemInfo = NULL;
 	pShopItemInfo = ITEMMGR->GetUsedItemInfo(pItem->GetItemBaseInfo()->wIconIdx);
 	if (pShopItemInfo)
 		ITEMMGR->AddUsedAvatarItemToolTip(pShopItemInfo);
 	m_pIconDlg->AddIcon(0, (cIcon*)&m_VirtualItem);
-	ITEMMGR->SetToolTipIcon((cIcon*)&m_VirtualItem, NULL, ITEMMGR->GetItemRareOption(pItem->GetRareness()), 0, ITEMMGR->GetItemStoneOption(pItem->GetStoneIdx()));//jack
 }
+
 void CRareCreateDialog::ItemRareCreateSyn()
 {
 	if (!m_VirtualItem.GetLinkItem())		return;
+
 	CItem* pItem = ITEMMGR->GetItem(m_VirtualItem.GetLinkItem()->GetDBIdx());
+
 	if (!pItem)
 	{
 		if (m_pIconDlg)
@@ -190,15 +205,19 @@ void CRareCreateDialog::ItemRareCreateSyn()
 			if (pVItem)
 				pVItem->GetLinkItem()->SetLock(FALSE);
 		}
+
 		m_ItemIdx = 0;
 		m_ItemPos = 0;
+
 		ITEMMGR->SetDisableDialog(FALSE, eItemTable_Inventory);
 		ITEMMGR->SetDisableDialog(FALSE, eItemTable_Pyoguk);
 		ITEMMGR->SetDisableDialog(FALSE, eItemTable_MunpaWarehouse);
 		ITEMMGR->SetDisableDialog(FALSE, eItemTable_Shop);
+
 		OBJECTSTATEMGR->EndObjectState(HERO, eObjectState_Deal);
 		return;
 	}
+
 	MSG_DWORD4	msg;
 	SetProtocol(&msg, MP_ITEM, MP_ITEM_SHOPITEM_RARECREATE_SYN);
 	msg.dwObjectID = HEROID;
@@ -207,335 +226,458 @@ void CRareCreateDialog::ItemRareCreateSyn()
 	msg.dwData3 = pItem->GetItemBaseInfo()->wIconIdx;
 	msg.dwData4 = pItem->GetItemBaseInfo()->Position;
 	NETWORK->Send(&msg, sizeof(msg));
+
+	//SetActive( FALSE );
 }
-void CRareCreateDialog::ItemRareCreateAck()
+#include "cMsgBox.h"
+
+void CRareCreateDialog::ItemRareCreateAck()//祝福成功之后，删除道具栏的物品
 {
 	CVirtualItem* pVItem = NULL;
-	CItem* pItem = ITEMMGR->GetItem(m_VirtualItem.GetLinkItem()->GetDBIdx());
-	if (pItem)
+
+	CItem* pItemEx = GAMEIN->GetInventoryDialog()->GetItemLike(m_ItemIdx);
+
+	if (pItemEx)
 	{
-		ITEMMGR->SetToolTipIcon((cIcon*)pItem, NULL, ITEMMGR->GetItemRareOption(pItem->GetRareness()), 0, ITEMMGR->GetItemStoneOption(pItem->GetStoneIdx()));//jack
-		AddVirtualItem(pItem);//jack
-		ITEM_RARE_OPTION_INFO* RARE_OPTION_ITEM = ITEMMGR->GetItemRareOption(pItem->GetRareness());//js
-		if (RARE_OPTION_ITEM)
+		m_ItemIdx = m_ItemIdx;
+		m_ItemPos = pItemEx->GetPosition();
+		CItem* pItem = ITEMMGR->GetItem(m_VirtualItem.GetLinkItem()->GetDBIdx());
+		if (pItem)
 		{
-			ITEMMGR->SetToolTipIcon((cIcon*)pItem, NULL, RARE_OPTION_ITEM, 0);
-			SetRareInfo(RARE_OPTION_ITEM);
+			ITEMMGR->SetToolTipIcon((cIcon*)pItem, NULL, ITEMMGR->GetItemRareOption(pItem->GetRareness()));
+
+			if (pItem->GetDurability() != 0 && !ITEMMGR->IsDupItem(pItem->GetItemIdx()))//添加绿化时候显示物品的渲染文字
+				ITEMMGR->SetToolTipIcon((cIcon*)&m_VirtualItem, ITEMMGR->GetItemOption(pItem->GetDurability()), ITEMMGR->GetItemRareOption(pItem->GetRareness()), 0, ITEMMGR->GetItemStoneOption(pItem->GetStoneIdx()));
+			else
+				ITEMMGR->SetToolTipIcon((cIcon*)&m_VirtualItem, NULL, ITEMMGR->GetItemRareOption(pItem->GetRareness()), 0, ITEMMGR->GetItemStoneOption(pItem->GetStoneIdx()));
+			ITEM_RARE_OPTION_INFO* pRareItemInfo = ITEMMGR->GetItemRareOption(pItem->GetRareness());
+			if (pRareItemInfo)
+			{
+				SetRareInfo(pRareItemInfo, pItem->GetItemIdx());
+			}
+			WORD vale = 0;
+			if (pItem->GetQuality() == 4)
+				vale = 3;
+			else if (pItem->GetQuality() == 3)
+				vale = 2;
+			else if (pItem->GetQuality() == 2)
+				vale = 1.5;
+			else if (pItem->GetQuality() == 1)
+				vale = 1.2;
+			else if (pItem->GetQuality() == 0)
+				vale = 1.0;
+
+			ITEM_RARE_OPTION_INFO* m_ItemRareOptionMaxInfo;//物品祝福最大值
+			m_ItemRareOptionMaxInfo = GetRareItemMaxValue(pItem->GetItemIdx());
+
+			if (pItem->GetItemKind() == eEQUIP_ITEM_WEAPON)
+			{
+				if (pRareItemInfo->PhyAttack >= m_ItemRareOptionMaxInfo->PhyAttack * vale ||
+					pRareItemInfo->Life >= m_ItemRareOptionMaxInfo->Life * vale ||
+					pRareItemInfo->Shield >= m_ItemRareOptionMaxInfo->Shield * vale ||
+					pRareItemInfo->NaeRyuk >= m_ItemRareOptionMaxInfo->NaeRyuk * vale)
+				{
+					this->SetDisable(TRUE);
+					cMsgBox* pMsgBox = WINDOWMGR->MsgBox(MBI_RAREMAXOK, MBT_OK, "装备至少有一条属性达到满值，点击确认后可继续祝福");
+					if (pMsgBox)
+					{
+						pMsgBox->SetAbsXY(this->GetAbsX(), this->GetAbsY() + this->GetHeight() / 2);
+					}
+				}
+			}
+			if (pItem->GetItemKind() == eEQUIP_ITEM_DRESS || pItem->GetItemKind() == eEQUIP_ITEM_HAT || pItem->GetItemKind() == eEQUIP_ITEM_SHOES)
+			{
+				if (pRareItemInfo->Life >= m_ItemRareOptionMaxInfo->Life * vale ||
+					pRareItemInfo->Shield >= m_ItemRareOptionMaxInfo->Shield * vale ||
+					pRareItemInfo->NaeRyuk >= m_ItemRareOptionMaxInfo->NaeRyuk * vale ||
+					pRareItemInfo->PhyDefense >= m_ItemRareOptionMaxInfo->PhyDefense * vale)
+				{
+					this->SetDisable(TRUE);
+					cMsgBox* pMsgBox = WINDOWMGR->MsgBox(MBI_RAREMAXOK, MBT_OK, "装备至少有一条属性达到满值，点击确认后可继续祝福");
+					if (pMsgBox)
+					{
+						pMsgBox->SetAbsXY(this->GetAbsX(), this->GetAbsY() + this->GetHeight() / 2);
+					}
+				}
+				for (int i = ATTR_FIRE; i <= ATTR_MAX; ++i)
+				{
+					if (100 * pRareItemInfo->AttrAttack.GetElement_Val(i) >= m_ItemRareOptionMaxInfo->AttrAttack.GetElement_Val(i) * vale ||
+						100 * pRareItemInfo->AttrRegist.GetElement_Val(i) >= m_ItemRareOptionMaxInfo->AttrRegist.GetElement_Val(i) * vale)
+					{
+						this->SetDisable(TRUE);
+						cMsgBox* pMsgBox = WINDOWMGR->MsgBox(MBI_RAREMAXOK, MBT_OK, "装备至少有一条属性达到满值，点击确认后可继续祝福");
+						if (pMsgBox)
+						{
+							pMsgBox->SetAbsXY(this->GetAbsX(), this->GetAbsY() + this->GetHeight() / 2);
+						}
+					}
+				}
+			}
+			if (pItem->GetItemKind() == eEQUIP_ITEM_RING || pItem->GetItemKind() == eEQUIP_ITEM_ARMLET ||
+				pItem->GetItemKind() == eEQUIP_ITEM_CAPE || pItem->GetItemKind() == eEQUIP_ITEM_BELT ||
+				pItem->GetItemKind() == eEQUIP_ITEM_NECKLACE)
+			{
+				if (pRareItemInfo->GenGol >= m_ItemRareOptionMaxInfo->GenGol * vale ||
+					pRareItemInfo->MinChub >= m_ItemRareOptionMaxInfo->MinChub * vale ||
+					pRareItemInfo->CheRyuk >= m_ItemRareOptionMaxInfo->CheRyuk * vale ||
+					pRareItemInfo->SimMek >= m_ItemRareOptionMaxInfo->SimMek * vale)
+				{
+					this->SetDisable(TRUE);
+					cMsgBox* pMsgBox = WINDOWMGR->MsgBox(MBI_RAREMAXOK, MBT_OK, "装备至少有一条属性达到满值，点击确认后可继续祝福");
+					if (pMsgBox)
+					{
+						pMsgBox->SetAbsXY(this->GetAbsX(), this->GetAbsY() + this->GetHeight() / 2);
+					}
+				}
+			}
 		}
-		if (!GAMEIN->GetRareCreateDlg()->IsActive())
+	}
+	else
+	{
+		m_ItemIdx = 0;
+		m_ItemPos = 0;
+
+		CItem* pItem = ITEMMGR->GetItem(m_VirtualItem.GetLinkItem()->GetDBIdx());
+		if (pItem)
 		{
 			pItem->SetLock(FALSE);
+
 			if (m_pIconDlg)
 				m_pIconDlg->DeleteIcon(0, (cIcon**)&pVItem);
+
+			ITEMMGR->SetToolTipIcon((cIcon*)pItem, NULL, ITEMMGR->GetItemRareOption(pItem->GetRareness()));
+
 			m_VirtualItem.SetLinkItem(NULL);
 		}
 	}
-	if (!GAMEIN->GetRareCreateDlg()->IsActive())//js
+
+	if (!GAMEIN->GetRareCreateDlg()->IsActive())
 	{
 		ITEMMGR->SetDisableDialog(FALSE, eItemTable_Inventory);
 		ITEMMGR->SetDisableDialog(FALSE, eItemTable_Pyoguk);
 		ITEMMGR->SetDisableDialog(FALSE, eItemTable_MunpaWarehouse);
 		ITEMMGR->SetDisableDialog(FALSE, eItemTable_Shop);
+
 		OBJECTSTATEMGR->EndObjectState(HERO, eObjectState_Deal);
 	}
-}
-BOOL CRareCreateDialog::Ishint()//js
-{
-	if (!m_VirtualItem.GetLinkItem())		return FALSE;
-	CItem* pItem = ITEMMGR->GetItem(m_VirtualItem.GetLinkItem()->GetDBIdx());
-	if (pItem)
-	{
-		ITEM_RARE_OPTION_INFO* RareInfo = ITEMMGR->GetItemRareOption(pItem->GetRareness());
-		if (RareInfo)
-		{
-			int Index = 0;
-			switch (pItem->GetItemKind())
-			{
-			case eEQUIP_ITEM_WEAPON:
-				Index = 0;
-				break;
-			case eEQUIP_ITEM_DRESS:
-			case eEQUIP_ITEM_HAT:
-			case eEQUIP_ITEM_SHOES:
-				Index = 1;
-				break;
-			case eEQUIP_ITEM_RING:
-			case eEQUIP_ITEM_CAPE:
-			case eEQUIP_ITEM_NECKLACE:
-			case eEQUIP_ITEM_ARMLET:
-			case eEQUIP_ITEM_BELT:
-				Index = 2;
-				break;
-			}
-			ITEM_RARE_Max_INFO oITEM_RARE_Max_INFO = GetRARE_Max_INFO(Index);
-			if (oITEM_RARE_Max_INFO.ThreeMax>0)
-			{
-				if (RareInfo->GenGol >= oITEM_RARE_Max_INFO.ThreeMax ||
-					RareInfo->MinChub >= oITEM_RARE_Max_INFO.ThreeMax ||
-					RareInfo->SimMek >= oITEM_RARE_Max_INFO.ThreeMax)
-				{
-					return TRUE;
-				}
-			}
-			if (oITEM_RARE_Max_INFO.CheRyukMax>0 && RareInfo->CheRyuk >= oITEM_RARE_Max_INFO.CheRyukMax)
-			{
-				return TRUE;
-			}
-			if (oITEM_RARE_Max_INFO.LifeMax>0)
-			{
-				if (RareInfo->Life >= oITEM_RARE_Max_INFO.LifeMax ||
-					RareInfo->NaeRyuk >= oITEM_RARE_Max_INFO.LifeMax ||
-					RareInfo->Shield >= oITEM_RARE_Max_INFO.LifeMax)
-				{
-					return TRUE;
-				}
-			}
-			if (oITEM_RARE_Max_INFO.PhyAttackMax>0 && RareInfo->PhyAttack >= oITEM_RARE_Max_INFO.PhyAttackMax)
-			{
-				return TRUE;
-			}
-			if (oITEM_RARE_Max_INFO.PhyDefenseMax> 0 && RareInfo->PhyDefense >= oITEM_RARE_Max_INFO.PhyDefenseMax)
-			{
-				return TRUE;
-			}
-			if (oITEM_RARE_Max_INFO.AttrAttackMax>0)
-			{
-				for (size_t i = ATTR_FIRE; i <= ATTR_MAX; i++)
-				{
-					if ((RareInfo->AttrAttack.GetElement_Val(i) + 0.0005) * 100 >= oITEM_RARE_Max_INFO.AttrAttackMax)
-					{
-						return TRUE;
-					}
-				}
-			}
-			if (oITEM_RARE_Max_INFO.AttrRegistMax>0)
-			{
-				for (size_t i = ATTR_FIRE; i <= ATTR_MAX; i++)
-				{
-					if ((RareInfo->AttrRegist.GetElement_Val(i) + 0.0005) * 100 >= oITEM_RARE_Max_INFO.AttrRegistMax)
-					{
-						return TRUE;
-					}
-				}
-			}
-		}
-	}
-	return FALSE;
 }
 void CRareCreateDialog::ItemRareCreateNAck()
 {
 	CVirtualItem* pVItem = NULL;
+
+	/*m_ItemIdx = 0;
+	m_ItemPos = 0;*/
 	CItem* pItem = ITEMMGR->GetItem(m_VirtualItem.GetLinkItem()->GetDBIdx());
 	if (pItem)
 	{
-		//AddVirtualItem(pItem);//jack
 		pItem->SetLock(FALSE);
+
 		if (m_pIconDlg)
 			m_pIconDlg->DeleteIcon(0, (cIcon**)&pVItem);
+
 		m_VirtualItem.SetLinkItem(NULL);
 	}
-	ITEMMGR->SetDisableDialog(FALSE, eItemTable_Inventory);//js
-	ITEMMGR->SetDisableDialog(FALSE, eItemTable_Pyoguk);//js
-	ITEMMGR->SetDisableDialog(FALSE, eItemTable_MunpaWarehouse);//js
-	ITEMMGR->SetDisableDialog(FALSE, eItemTable_Shop);//js
-	OBJECTSTATEMGR->EndObjectState(HERO, eObjectState_Deal);//js			   
+
+	ITEMMGR->SetDisableDialog(FALSE, eItemTable_Inventory);
+	ITEMMGR->SetDisableDialog(FALSE, eItemTable_Pyoguk);
+	ITEMMGR->SetDisableDialog(FALSE, eItemTable_MunpaWarehouse);
+	ITEMMGR->SetDisableDialog(FALSE, eItemTable_Shop);
+
+	OBJECTSTATEMGR->EndObjectState(HERO, eObjectState_Deal);
 }
-void CRareCreateDialog::SetRareInfo(ITEM_RARE_OPTION_INFO* RareInfo)
+
+void CRareCreateDialog::SetRareInfo(ITEM_RARE_OPTION_INFO* pRareOptionInfo, DWORD ItemIdx)
 {
-	if (RareInfo)
+	ITEM_RARE_OPTION_INFO* m_ItemRareOptionMaxInfo;//物品祝福最大值
+	ITEM_INFO* pInfo = ITEMMGR->GetItemInfo(ItemIdx);
+	float attrRareOptValue = 0;
+	float attrRareOptMaxValue = 0;
+	m_ItemRareOptionMaxInfo = GetRareItemMaxValue(ItemIdx);
+	float RareRate = 1.0f;
+
+	char line[128] = { 0, };
+	char szDescText[384] = { 0, };
+	sprintf(line, "[%s] ^n^n", pInfo->ItemName);
+	strcat(szDescText, line);
+
+	DWORD RareState;
+
+	if (m_ItemRareOptionMaxInfo->GenGol > 0)
 	{
-		char line[128] = { 0, };
-		char szDescText[384] = { 0, };
-		if (RareInfo->GenGol != 0)
+		if (pRareOptionInfo->GenGol != 0)
+			RareState = pRareOptionInfo->GenGol;
+		else
+			RareState = 0;
+
+		if (RareState)
 		{
-			wsprintf(line, "%s  	[+%d] ^n", CHATMGR->GetChatMsg(261), RareInfo->GenGol);
+			wsprintf(line, "%s  	+%d  /  %d ^n", CHATMGR->GetChatMsg(382), RareState, m_ItemRareOptionMaxInfo->GenGol);
 			strcat(szDescText, line);
 		}
-		if (RareInfo->MinChub != 0)
-		{
-			wsprintf(line, "%s  	[+%d] ^n", CHATMGR->GetChatMsg(262), RareInfo->MinChub);
-			strcat(szDescText, line);
-		}
-		if (RareInfo->CheRyuk != 0)
-		{
-			wsprintf(line, "%s  	[+%d] ^n", CHATMGR->GetChatMsg(263), RareInfo->CheRyuk);
-			strcat(szDescText, line);
-		}
-		if (RareInfo->SimMek != 0)
-		{
-			wsprintf(line, "%s  	[+%d] ^n", CHATMGR->GetChatMsg(264), RareInfo->SimMek);
-			strcat(szDescText, line);
-		}
-		if (RareInfo->Life > 0)
-		{
-			wsprintf(line, "%s  	[+%d] ^n", CHATMGR->GetChatMsg(386), RareInfo->Life);
-			strcat(szDescText, line);
-		}
-		if (RareInfo->NaeRyuk > 0)
-		{
-			wsprintf(line, "%s  	[+%d] ^n", CHATMGR->GetChatMsg(387), RareInfo->NaeRyuk);
-			strcat(szDescText, line);
-		}
-		if (RareInfo->Shield > 0)
-		{
-			wsprintf(line, "%s  	[+%d] ^n", CHATMGR->GetChatMsg(388), RareInfo->Shield);
-			strcat(szDescText, line);
-		}
-		if (RareInfo->PhyAttack > 0)
-		{
-			wsprintf(line, "%s  	[+%d] ^n", CHATMGR->GetChatMsg(681), RareInfo->PhyAttack);
-			strcat(szDescText, line);
-		}
-		if (RareInfo->PhyDefense != 0)
-		{
-			wsprintf(line, "%s	[+%d] ^n", CHATMGR->GetChatMsg(397), RareInfo->PhyDefense);
-			strcat(szDescText, line);
-		}
-		for (size_t i = ATTR_FIRE; i <= ATTR_MAX; i++)
-		{
-			if ((RareInfo->AttrRegist.GetElement_Val(i)) != 0)
-			{
-				wsprintf(line, "%s  	[+%d%%] ^n", CHATMGR->GetChatMsg(264 + i), (int)(RareInfo->AttrRegist.GetElement_Val(i) * 100 + 0.005));
-				strcat(szDescText, line);
-			}
-			if (RareInfo->AttrAttack.GetElement_Val(i) != 0)
-			{
-				wsprintf(line, "%s	[+%d%%] ^n", CHATMGR->GetChatMsg(391 + i), (int)(RareInfo->AttrAttack.GetElement_Val(i) * 100 + 0.005));
-				strcat(szDescText, line);
-			}
-		}
-		Rare_Info->SetStaticText(szDescText);
 	}
-	else
-		Rare_Info->SetStaticText("");
+	if (m_ItemRareOptionMaxInfo->MinChub > 0)
+	{
+		if (pRareOptionInfo->MinChub != 0)
+			RareState = pRareOptionInfo->MinChub;
+		else
+			RareState = 0;
+
+		if (RareState)
+		{
+			wsprintf(line, "%s  	+%d  /  %d ^n", CHATMGR->GetChatMsg(383), RareState, m_ItemRareOptionMaxInfo->MinChub);
+			strcat(szDescText, line);
+		}
+	}
+	if (m_ItemRareOptionMaxInfo->CheRyuk > 0)
+	{
+		if (pRareOptionInfo->CheRyuk != 0)
+			RareState = pRareOptionInfo->CheRyuk;
+		else
+			RareState = 0;
+
+		if (RareState)
+		{
+			wsprintf(line, "%s  	+%d  /  %d ^n", CHATMGR->GetChatMsg(384), RareState, m_ItemRareOptionMaxInfo->CheRyuk);
+			strcat(szDescText, line);
+		}
+	}
+	if (m_ItemRareOptionMaxInfo->SimMek > 0)
+	{
+		if (pRareOptionInfo->SimMek != 0)
+			RareState = pRareOptionInfo->SimMek;
+		else
+			RareState = 0;
+
+		if (RareState)
+		{
+			wsprintf(line, "%s  	+%d  /  %d ^n", CHATMGR->GetChatMsg(385), RareState, m_ItemRareOptionMaxInfo->SimMek);
+			strcat(szDescText, line);
+		}
+	}
+	if (m_ItemRareOptionMaxInfo->Life > 0)
+	{
+		if (pRareOptionInfo->Life != 0)
+			RareState = pRareOptionInfo->Life;
+		else
+			RareState = 0;
+
+		if (RareState)
+		{
+			wsprintf(line, "%s  	+%d  /  %d ^n", CHATMGR->GetChatMsg(386), RareState, m_ItemRareOptionMaxInfo->Life);
+			strcat(szDescText, line);
+		}
+	}
+	if (m_ItemRareOptionMaxInfo->NaeRyuk > 0)
+	{
+		if (pRareOptionInfo->NaeRyuk != 0)
+			RareState = pRareOptionInfo->NaeRyuk;
+		else
+			RareState = 0;
+
+		if (RareState)
+		{
+			wsprintf(line, "%s  	+%d  /  %d ^n", CHATMGR->GetChatMsg(387), RareState, m_ItemRareOptionMaxInfo->NaeRyuk);
+			strcat(szDescText, line);
+		}
+	}
+	if (m_ItemRareOptionMaxInfo->Shield > 0)
+	{
+		if (pRareOptionInfo->Shield != 0)
+			RareState = pRareOptionInfo->Shield;
+		else
+			RareState = 0;
+
+		if (RareState)
+		{
+			wsprintf(line, "%s  	+%d  /  %d ^n", CHATMGR->GetChatMsg(388), RareState, m_ItemRareOptionMaxInfo->Shield);
+			strcat(szDescText, line);
+		}
+	}
+	for (int i = ATTR_FIRE; i <= ATTR_MAX; ++i)
+	{
+		if (pRareOptionInfo)
+		{
+			attrRareOptValue = 100 * pRareOptionInfo->AttrRegist.GetElement_Val(i);
+		}
+		else
+			attrRareOptValue = 0;
+
+		attrRareOptMaxValue = m_ItemRareOptionMaxInfo->AttrRegist.GetElement_Val(i) * RareRate;
+
+		if (attrRareOptValue)
+		{
+			wsprintf(line, "%s  	+%d%%  /  %d%% ^n", CHATMGR->GetChatMsg(265 + i - 1), (int)(attrRareOptValue), (int)(attrRareOptMaxValue));
+			strcat(szDescText, line);
+		}
+
+	}
+	if (m_ItemRareOptionMaxInfo->PhyAttack > 0)
+	{
+		if (pInfo->MeleeAttackMin || pInfo->MeleeAttackMax)
+		{
+			if (pRareOptionInfo)
+				RareState = pRareOptionInfo->PhyAttack;
+			else
+				RareState = 0;
+
+			if (RareState)
+			{
+				wsprintf(line, "%s  	+%d  /  %d ^n", CHATMGR->GetChatMsg(389), RareState, m_ItemRareOptionMaxInfo->PhyAttack);
+				strcat(szDescText, line);
+			}
+		}
+		if (pInfo->RangeAttackMin || pInfo->RangeAttackMax)
+		{
+			if (pRareOptionInfo)
+				RareState = pRareOptionInfo->PhyAttack;
+			else
+				RareState = 0;
+
+			if (RareState)
+			{
+				wsprintf(line, "%s  	+%d  /  %d ^n", CHATMGR->GetChatMsg(391), RareState, m_ItemRareOptionMaxInfo->PhyAttack);
+				strcat(szDescText, line);
+			}
+		}
+	}
+	for (int j = ATTR_FIRE; j <= ATTR_MAX; ++j)
+	{
+
+		if (pRareOptionInfo)
+		{
+			attrRareOptValue = 100 * pRareOptionInfo->AttrAttack.GetElement_Val(j);
+		}
+		else
+			attrRareOptValue = 0;
+		attrRareOptMaxValue = m_ItemRareOptionMaxInfo->AttrAttack.GetElement_Val(j) * RareRate;
+
+		if (attrRareOptValue)
+		{
+			wsprintf(line, "%s	+%d%%  /  %d%% ^n", CHATMGR->GetChatMsg(392 + j - 1), (int)(attrRareOptValue), (int)(attrRareOptMaxValue));
+			strcat(szDescText, line);
+		}
+	}
+	if (m_ItemRareOptionMaxInfo->PhyDefense > 0)
+	{
+		if (pRareOptionInfo)
+			RareState = pRareOptionInfo->PhyDefense;
+		else
+			RareState = 0;
+
+		if (RareState)
+		{
+			wsprintf(line, "%s	+%d  /  %d ^n", CHATMGR->GetChatMsg(397), RareState, m_ItemRareOptionMaxInfo->PhyDefense);
+			strcat(szDescText, line);
+		}
+	}
+	Rare_Info->SetStaticText(szDescText);
 }
-void CRareCreateDialog::LoadRARE_Max_INFO()
+
+void CRareCreateDialog::Clear()
+{
+	Rare_Info->SetStaticText(" ");
+}
+
+ITEM_RARE_OPTION_INFO* CRareCreateDialog::GetRareItemMaxValue(DWORD ItemIdx)//获取物品祝福最大值
+{
+	ITEM_INFO* pInfo = ITEMMGR->GetItemInfo(ItemIdx);
+
+	if (!pInfo)  return NULL;
+
+	eITEM_KINDBIT eItemKind = GetItemKind(ItemIdx);
+
+	if (!(eItemKind & eEQUIP_ITEM)) return NULL;
+
+	DWORD RareItemKind = 0;
+
+	if (eItemKind == eEQUIP_ITEM_WEAPON)
+	{
+		RareItemKind = pInfo->WeaponType - 1;
+	}
+	else if (eItemKind == eEQUIP_ITEM_DRESS)			RareItemKind = eRI_DRESS;
+	else if (eItemKind == eEQUIP_ITEM_HAT)				RareItemKind = eRI_HAT;
+	else if (eItemKind == eEQUIP_ITEM_SHOES)			RareItemKind = eRI_SHOES;
+	else if (eItemKind == eEQUIP_ITEM_RING)			RareItemKind = eRI_RING;
+	else if (eItemKind == eEQUIP_ITEM_CAPE)			RareItemKind = eRI_CAPE;
+	else if (eItemKind == eEQUIP_ITEM_NECKLACE)		RareItemKind = eRI_NECKLACE;
+	else if (eItemKind == eEQUIP_ITEM_ARMLET)			RareItemKind = eRI_ARMLET;
+	else if (eItemKind == eEQUIP_ITEM_BELT)			RareItemKind = eRI_BELT;
+
+	if (RareItemKind >= RareItemKindMAX) return NULL;
+
+	return (ITEM_RARE_OPTION_INFO*)&m_RereItemInfo[RareItemKind];
+}
+
+bool CRareCreateDialog::LoadRareItemOptionInfo()//客户端加载祝福信息
 {
 	CMHFile fp;
+
 	char szBuf[256] = { 0, };
 	char line[512];
+
 	char FileName[256];
-	sprintf(FileName, "Resource/Item_RareOptionMaxInfo.bin");
+
+	sprintf(FileName, "Resource/Item_RareOptionInfo.bin");
 	if (!fp.Init(FileName, "rb"))
-		return;
+		return FALSE;
+
 	DWORD dwItemKindIdx = 0;
 	while (!fp.IsEOF())
 	{
-		if (dwItemKindIdx == 3)
+		if (dwItemKindIdx == RareItemKindMAX)
 			break;
+
 		fp.GetString(szBuf);
+
 		if (szBuf[0] == '@')
 		{
 			fp.GetLineX(line, 512);
 			continue;
 		}
-		SafeStrCpy(RARE_Max_INFO[dwItemKindIdx].TypeName, szBuf, MAX_ITEMNAME_LENGTH + 1);
-		RARE_Max_INFO[dwItemKindIdx].ThreeMax = fp.GetWord();
-		RARE_Max_INFO[dwItemKindIdx].CheRyukMax = fp.GetWord();
-		RARE_Max_INFO[dwItemKindIdx].LifeMax = fp.GetWord();
-		RARE_Max_INFO[dwItemKindIdx].PhyAttackMax = fp.GetWord();
-		RARE_Max_INFO[dwItemKindIdx].PhyDefenseMax = fp.GetWord();
-		RARE_Max_INFO[dwItemKindIdx].AttrRegistMax = fp.GetWord();
-		RARE_Max_INFO[dwItemKindIdx].AttrAttackMax = fp.GetWord();
-		dwItemKindIdx++;
-	}
-	fp.Release();
-}
-ITEM_RARE_Max_INFO CRareCreateDialog::GetRARE_Max_INFO(int Index)
-{
-	if (Index >= 0 && Index < 3)
-	{
-		return RARE_Max_INFO[Index];
-	}
-	else
-	{
-		return RARE_Max_INFO[0];
-	}
-}
-//void CRareCreateDialog::SetRARE_Max_INFO(int Index)
-//{
-//	ITEM_RARE_Max_INFO Max_INFO = GetRARE_Max_INFO(Index);
-//	char line[128] = { 0, };
-//	char szDescText[384] = { 0, };
-//	if (Max_INFO.CheRyukMax>0)
-//	{
-//		wsprintf(line, "[Physical attributes]: %d ^n", Max_INFO.CheRyukMax);
-//		strcat(szDescText, line);
-//	}
-//	if (Max_INFO.ThreeMax > 0)
-//	{
-//		wsprintf(line, "[force | sensitivity | heart]: %d ^n", Max_INFO.ThreeMax);
-//		strcat(szDescText, line);
-//	}
-//	if (Max_INFO.LifeMax > 0)
-//	{
-//		wsprintf(line, "[blood|guard|inner]: %d ^n", Max_INFO.LifeMax);
-//		strcat(szDescText, line);
-//	}
-//	if (Max_INFO.PhyAttackMax > 0)
-//	{
-//		wsprintf(line, "[weapon attack]: %d ^n", Max_INFO.PhyAttackMax);
-//		strcat(szDescText, line);
-//	}
-//	if (Max_INFO.PhyDefenseMax > 0)
-//	{
-//		wsprintf(line, "[physical defense]: %d ^n", Max_INFO.PhyDefenseMax);
-//		strcat(szDescText, line);
-//	}
-//	if (Max_INFO.AttrAttackMax > 0)
-//	{
-//		wsprintf(line, "[Five elements attack]: %d ^n", Max_INFO.AttrAttackMax);
-//		strcat(szDescText, line);
-//	}
-//	if (Max_INFO.AttrRegistMax > 0)
-//	{
-//		wsprintf(line, "[Five Elements Defense]: %d ^n", Max_INFO.AttrRegistMax);
-//		strcat(szDescText, line);
-//	}
-//	RareMax_Info->SetStaticText(szDescText);
-//}
-void CRareCreateDialog::SetRARE_Max_INFO(int Index)
-{
-	ITEM_RARE_Max_INFO Max_INFO = GetRARE_Max_INFO(Index);
-	char line[128] = { 0, };
-	char szDescText[384] = { 0, };
 
-	if (Max_INFO.CheRyukMax > 0)
-	{
-		sprintf(line, CHATMGR->GetChatMsg(2758), Max_INFO.CheRyukMax);
-		strcat(szDescText, line);
-	}
-	if (Max_INFO.ThreeMax > 0)
-	{
-		sprintf(line, CHATMGR->GetChatMsg(2759), Max_INFO.ThreeMax);
-		strcat(szDescText, line);
-	}
-	if (Max_INFO.LifeMax > 0)
-	{
-		sprintf(line, CHATMGR->GetChatMsg(2760), Max_INFO.LifeMax);
-		strcat(szDescText, line);
-	}
-	if (Max_INFO.PhyAttackMax > 0)
-	{
-		sprintf(line, CHATMGR->GetChatMsg(2761), Max_INFO.PhyAttackMax);
-		strcat(szDescText, line);
-	}
-	if (Max_INFO.PhyDefenseMax > 0)
-	{
-		sprintf(line, CHATMGR->GetChatMsg(2762), Max_INFO.PhyDefenseMax);
-		strcat(szDescText, line);
-	}
-	if (Max_INFO.AttrAttackMax > 0)
-	{
-		sprintf(line, CHATMGR->GetChatMsg(2763), Max_INFO.AttrAttackMax);
-		strcat(szDescText, line);
-	}
-	if (Max_INFO.AttrRegistMax > 0)
-	{
-		sprintf(line, CHATMGR->GetChatMsg(2764), Max_INFO.AttrRegistMax);
-		strcat(szDescText, line);
+		if (szBuf[0] == '#')
+		{
+			m_RereItemInfo[dwItemKindIdx].wRareRate = fp.GetWord();//新增几率控制
+
+			m_RereItemInfo[dwItemKindIdx].GenGol_Min = fp.GetWord();
+			m_RereItemInfo[dwItemKindIdx].GenGol = fp.GetWord();
+
+			m_RereItemInfo[dwItemKindIdx].MinChub_Min = fp.GetWord();
+			m_RereItemInfo[dwItemKindIdx].MinChub = fp.GetWord();
+			m_RereItemInfo[dwItemKindIdx].CheRyuk_Min = fp.GetWord();
+			m_RereItemInfo[dwItemKindIdx].CheRyuk = fp.GetWord();
+			m_RereItemInfo[dwItemKindIdx].SimMek_Min = fp.GetWord();
+			m_RereItemInfo[dwItemKindIdx].SimMek = fp.GetWord();
+			m_RereItemInfo[dwItemKindIdx].Life_Min = fp.GetDword();
+			m_RereItemInfo[dwItemKindIdx].Life = fp.GetDword();
+			m_RereItemInfo[dwItemKindIdx].NaeRyuk_Min = fp.GetWord();
+			m_RereItemInfo[dwItemKindIdx].NaeRyuk = fp.GetWord();
+			m_RereItemInfo[dwItemKindIdx].Shield_Min = fp.GetDword();
+			m_RereItemInfo[dwItemKindIdx].Shield = fp.GetDword();
+			m_RereItemInfo[dwItemKindIdx].PhyAttack_Min = fp.GetWord();
+			m_RereItemInfo[dwItemKindIdx].PhyAttack = fp.GetWord();
+			m_RereItemInfo[dwItemKindIdx].PhyDefense_Min = fp.GetWord();
+			m_RereItemInfo[dwItemKindIdx].PhyDefense = fp.GetWord();
+			for (int i = ATTR_FIRE; i <= ATTR_MAX; ++i)
+			{
+				m_RereItemInfo[dwItemKindIdx].AttrAttack_Min.SetElement_Val(i, fp.GetFloat());
+				m_RereItemInfo[dwItemKindIdx].AttrAttack.SetElement_Val(i, fp.GetFloat());
+			}
+			for (int j = ATTR_FIRE; j <= ATTR_MAX; ++j)
+			{
+				m_RereItemInfo[dwItemKindIdx].AttrRegist_Min.SetElement_Val(j, fp.GetFloat());
+				m_RereItemInfo[dwItemKindIdx].AttrRegist.SetElement_Val(j, fp.GetFloat());
+			}
+
+			dwItemKindIdx++;
+		}
+
 	}
 
-	RareMax_Info->SetStaticText(szDescText);
+	return TRUE;
 }
+
+
+
+
 

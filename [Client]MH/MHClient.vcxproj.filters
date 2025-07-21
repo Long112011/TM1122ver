@@ -683,6 +683,15 @@
     <Filter Include="新功能\pvp">
       <UniqueIdentifier>{e13d6df6-d67a-442f-885b-2b24a05403e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="新功能\觉醒品质">
+      <UniqueIdentifier>{e1bfad4b-fa02-450d-ba40-2967a46eb0bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="新功能\品质转换">
+      <UniqueIdentifier>{9f989953-7885-483c-a680-4b432026dc1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="新功能\升阶继承">
+      <UniqueIdentifier>{df2de775-f9a6-4e14-bd31-f32d1364bdea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MHClient.cpp">
@@ -1882,9 +1891,6 @@
     <ClCompile Include="FilteringTable.cpp">
       <Filter>ETC_CLASS</Filter>
     </ClCompile>
-    <ClCompile Include="MHFile.cpp">
-      <Filter>ETC_CLASS</Filter>
-    </ClCompile>
     <ClCompile Include="StringLoader.cpp">
       <Filter>ETC_CLASS</Filter>
     </ClCompile>
@@ -2707,6 +2713,18 @@
     </ClCompile>
     <ClCompile Include="CharacterPVPDialog.cpp">
       <Filter>新功能\pvp</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemQualityDlg.cpp">
+      <Filter>新功能\觉醒品质</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemQualityChangeDlg.cpp">
+      <Filter>新功能\品质转换</Filter>
+    </ClCompile>
+    <ClCompile Include="GradeChangeDlg.cpp">
+      <Filter>新功能\升阶继承</Filter>
+    </ClCompile>
+    <ClCompile Include="MHFile.cpp">
+      <Filter>aJACK</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3937,9 +3955,6 @@
     <ClInclude Include="FilteringTable.h">
       <Filter>ETC_CLASS</Filter>
     </ClInclude>
-    <ClInclude Include="MHFile.h">
-      <Filter>ETC_CLASS</Filter>
-    </ClInclude>
     <ClInclude Include="StringLoader.h">
       <Filter>ETC_CLASS</Filter>
     </ClInclude>
@@ -4875,6 +4890,18 @@
     </ClInclude>
     <ClInclude Include="CharacterPVPDialog.h">
       <Filter>新功能\pvp</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemQualityDlg.h">
+      <Filter>新功能\觉醒品质</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemQualityChangeDlg.h">
+      <Filter>新功能\品质转换</Filter>
+    </ClInclude>
+    <ClInclude Include="GradeChangeDlg.h">
+      <Filter>新功能\升阶继承</Filter>
+    </ClInclude>
+    <ClInclude Include="MHFile.h">
+      <Filter>aJACK</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

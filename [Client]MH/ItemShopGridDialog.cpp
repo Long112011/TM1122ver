@@ -225,7 +225,7 @@ BOOL CItemShopGridDialog::CanBeMoved(CItem* pItem,POSTYPE pos)
 
 
 void CItemShopGridDialog::MoveItemToItemShopDlg(CItem* pFromItem,WORD num)
-{//[ÓÒ¼ü²Ö´¢][BY:Ê®ÀïÆÂ½£Éñ][QQ:112582793][2019-4-16][19:38:19]
+{//[ÓÒ¼ü²Ö´¢][BY:Ê®ÀïÆÂ½£´«Ææ][QQ:112582793][2019-4-16][19:38:19]
 	CItem * pToItem = NULL;
 	if( pFromItem->GetUseParam() == 1 )
 	{
@@ -251,7 +251,7 @@ void CItemShopGridDialog::MoveItemToItemShopDlg(CItem* pFromItem,WORD num)
 #include "GameIn.h"
 #include "InventoryExDialog.h"
 void CItemShopGridDialog::OnActionEvnet(LONG lId, void * p, DWORD we)
-{//[ÓÒ¼ü²Ö´¢][BY:Ê®ÀïÆÂ½£Éñ][QQ:112582793][2019-4-16][21:30:28]
+{//[ÓÒ¼ü²Ö´¢][BY:Ê®ÀïÆÂ½£´«Ææ][QQ:112582793][2019-4-16][21:30:28]
 	if(we == WE_RBTNCLICK)
 	{
 		CItem * pItem = NULL;

@@ -590,6 +590,7 @@ void CServerSystem::Start(WORD ServerNum)
 	//ITEMMGR->LoadMixItemInfo();
 	MIXMGR->LoadMixList();
 	ITEMMGR->LoadSetItemOption();
+		ITEMMGR->LoadSetItemQualityOption();//加载装备品质信息
 	ITEMMGR->LoadReinforceItemInfo();
 	ITEMMGR->LoadDealerItem();
 

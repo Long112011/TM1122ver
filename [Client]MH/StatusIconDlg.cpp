@@ -344,7 +344,7 @@ void CStatusIconDlg::Render()
 
 					//by JACK
 					/*cImage imgToolTip2;
-					SCRIPTMGR->GetImage(218, &imgToolTip2, PFT_HARDPATH);
+					SCRIPTMGR->GetImage(219, &imgToolTip2, PFT_HARDPATH);
 					m_toolTip.AddImageTop(&imgToolTip2);
 
 					cImage imgEquipInfo;

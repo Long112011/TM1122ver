@@ -69,6 +69,7 @@ public:
 
 	// magi82 - UniqueItem(070626)
 	void CalcUniqueItemStats(PLAYERTYPE* pPlayer);
+	void CalcSetItemQualityStats(CPlayer* pPlayer);
 };
 
 #endif // !defined(AFX_STATSCALCMANAGER_H__1BA578DC_5092_4667_8FFC_6E3B15BF7B2E__INCLUDED_)

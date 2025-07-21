@@ -2,18 +2,18 @@
 #define __MHFILEEX_H__
 
 #include <stdio.h>
-
-#define		MEGA		1024*1024*10
-
-/*#define    EncryptNumber	17                       //weiye Ñ«??èËÎ¥?43???äÈ??!
-#define    Encrypto    20180930
-#define    Encrypts	   20181117*/
+#ifdef _AES_FILE_
+#include "..\[CC]Header\AESFile.h"
+#endif
+#define		MEGA	0x00400000
+#define		DOFHEADER	20041120
+#define		DOFTAIL		20040921
 
 struct MHFILE_HEADER
 {
-	DWORD	dwVersion;	// version
-	DWORD	dwType;		// file ?×ÀÖØ?
-	DWORD	dwDataSize;	// data size
+	DWORD	dwVersion;
+	DWORD	dwType;		
+	DWORD	dwDataSize;
 };
 
 struct DOF_HEADER
@@ -42,9 +42,6 @@ protected:
 	char			m_crc2;
 	char*			m_pData;
 	char*			m_pBinData;
-
-	char         m_Encrypto[9];
-	char         m_Encrypts[9];
 	
 public:
 	CMHFileEx();
@@ -60,7 +57,6 @@ public:
 	BOOL	SaveToBin();
 	BOOL	CheckCRC();
 	BOOL	ConvertBin();
-	BOOL	CheckHeader();
 
 	void	InitFileName( const char* fullfilename );				
 	char*	GetFullFileName()								{ return m_szFullFileName; }
@@ -73,7 +69,20 @@ public:
 	char*	GetData()										{ return m_pData; }
 	void	SetData( CString str );
 	MHFILE_HEADER	GetHeader()								{ return m_Header; }
-
+protected:
+	DOF_HEADER		m_DOFHeader;
+	DOF_TAIL		m_DOFTail;
+	char			m_szDOF[256];
+public:
+	BOOL	SaveToDOF( const char* filename );
+	BOOL	SaveToDOF();
+	BOOL	ConvertDOF();	
+	BOOL	MakeDOFName();
+	BOOL	OpenDOF( const char* fullfilename );
+	BOOL	CheckDOF();
+#ifdef _AES_FILE_
+	cAESFile	m_AESFile;
+#endif
 };
 
 #endif

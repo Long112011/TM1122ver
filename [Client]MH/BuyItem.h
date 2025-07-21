@@ -27,6 +27,10 @@ class CBuyItem : public cIcon
 	int m_CurScrollImage;
 
 	DWORD m_Grade30;
+	WORD		m_bQuality;
+	WORD		m_bEntry1;
+	WORD		m_bEntry2;
+	WORD		m_bEntry3;
 		
 public:
 	CBuyItem();
@@ -52,6 +56,15 @@ public:
 
 	virtual DWORD   GetGrade30() { return  m_Grade30; }
 	virtual void    SetGrade30(DWORD Val) { m_Grade30 = Val; }
+
+	virtual WORD   GetQuality() { return  m_bQuality; }
+	virtual void   SetQuality(DWORD Val) { m_bQuality = Val; }
+	virtual WORD   GetEntry1() { return  m_bEntry1; }
+	virtual void   SetEntry1(DWORD Val) { m_bEntry1 = Val; }
+	virtual WORD   GetEntry2() { return  m_bEntry2; }
+	virtual void   SetEntry2(DWORD Val) { m_bEntry2 = Val; }
+	virtual WORD   GetEntry3() { return  m_bEntry3; }
+	virtual void   SetEntry3(DWORD Val) { m_bEntry3 = Val; }
 };
 
 #endif // !defined(AFX_BUYITEM_H__3002E03D_BE93_4267_B015_37BB522D150A__INCLUDED_)

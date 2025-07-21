@@ -447,7 +447,9 @@ int CExchangeRoom::DoExchange()
 
 			ItemUpdateToDB( m_ExchangeData[!j].pPlayer->GetID(), m_ExchangeData[j].ItemInfo[i].dwDBIdx,
 							m_ExchangeData[j].ItemInfo[i].wIconIdx, m_ExchangeData[j].ItemInfo[i].Durability,
-							EmptyPos, 0, m_ExchangeData[j].ItemInfo[i].RareIdx );
+							EmptyPos, 0, m_ExchangeData[j].ItemInfo[i].RareIdx,
+				m_ExchangeData[j].ItemInfo[i].ItemQuality, m_ExchangeData[j].ItemInfo[i].ItemEntry1,
+				m_ExchangeData[j].ItemInfo[i].ItemEntry2, m_ExchangeData[j].ItemInfo[i].ItemEntry3);
 
 
 			m_ExchangeData[j].ItemInfo[i].Position = EmptyPos;

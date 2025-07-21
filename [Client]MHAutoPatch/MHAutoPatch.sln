@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MHAutoPatch", "MHAutoPatch\MHAutoPatch.vcproj", "{E9F9F664-5378-4B8B-BAC3-870746491971}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PatchMaker", "PatchMaker\PatchMaker.vcproj", "{BA3ADB35-0C94-42AA-8C83-6F33F0B4B507}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UpDataLuch", "UpDataLuch\UpDataLuch.vcproj", "{9BA1CFCB-3095-4D7C-8E65-B10737713A01}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E9F9F664-5378-4B8B-BAC3-870746491971}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E9F9F664-5378-4B8B-BAC3-870746491971}.Debug|Win32.Build.0 = Debug|Win32
+		{E9F9F664-5378-4B8B-BAC3-870746491971}.Release|Win32.ActiveCfg = Release|Win32
+		{E9F9F664-5378-4B8B-BAC3-870746491971}.Release|Win32.Build.0 = Release|Win32
+		{BA3ADB35-0C94-42AA-8C83-6F33F0B4B507}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BA3ADB35-0C94-42AA-8C83-6F33F0B4B507}.Debug|Win32.Build.0 = Debug|Win32
+		{BA3ADB35-0C94-42AA-8C83-6F33F0B4B507}.Release|Win32.ActiveCfg = Release|Win32
+		{BA3ADB35-0C94-42AA-8C83-6F33F0B4B507}.Release|Win32.Build.0 = Release|Win32
+		{9BA1CFCB-3095-4D7C-8E65-B10737713A01}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9BA1CFCB-3095-4D7C-8E65-B10737713A01}.Debug|Win32.Build.0 = Debug|Win32
+		{9BA1CFCB-3095-4D7C-8E65-B10737713A01}.Release|Win32.ActiveCfg = Release|Win32
+		{9BA1CFCB-3095-4D7C-8E65-B10737713A01}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

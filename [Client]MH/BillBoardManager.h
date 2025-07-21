@@ -47,7 +47,7 @@ public:
 	TOPLISTINFOGUILD*  GetGuildTop(){ return &m_TopListInfo.GuildList[0]; }
 	KILLPLAYERTOPLIST* GetKillTop(){ return &m_TopListInfo.KillerList[0]; }
 	SYSTEMTIME GetUpdateTime(){ return UpdataTime; }
-	//[排行标志设置][By:十里坡剑神][QQ:112582793][2018/2/25]
+	//[排行标志设置][By:十里坡剑传奇][QQ:112582793][2018/2/25]
 	
 	bool IsCanUpdate();
 	*/

@@ -103,6 +103,14 @@
 #define TTTC_BRIGHT_YELLOW				RGB_HALF(255,255,200)
 #define	TTTC_NEWDESCRIPTION				RGB_HALF( 204, 204, 153 )
 
+#define TTTC_ITEMGROW					RGB_HALF( 149,255,149)      //成长引用颜色
+#define TTTC_ITEMGROW0					RGB_HALF( 149,255,149)	    //成长引用颜色LV0  淡绿 
+#define TTTC_ITEMGROW1					RGB_HALF( 0,250,250)		//成长引用颜色LV1  淡蓝
+#define TTTC_ITEMGROW2					RGB_HALF( 32,183,255)		//成长引用颜色LV2  蓝色
+#define TTTC_ITEMGROW3					RGB_HALF( 255,0,255)		//成长引用颜色LV3  洋红
+#define TTTC_ITEMGROW4					RGB_HALF( 255,220,50)		//成长引用颜色LV4  黄色
+#define TTTC_ITEMGROW5					RGB_HALF( 255,0,26)	       //成长引用颜色LV5  红色
+
 //KES INTERFACE 030922
 enum TEXT_ALIGN
 {

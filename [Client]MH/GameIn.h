@@ -328,6 +328,9 @@ class CFadeDlg;
 
 class CCharacterPvpDialog;
 class COfficialUpGradeDlg;
+class CItemQualityDlg;          //觉醒装备
+class CItemQualityChangeDlg;     //装备品质转换
+class CGradeChangeDlg;		//武器升阶值转移卷
 #define GAMEIN USINGTON(CGameIn)
 
 class CGameIn : public CGameState  
@@ -691,7 +694,9 @@ private:
 	cHousingWebDlg*			m_pHousingWebDlg;
 
 	CFadeDlg*				m_pFadeDlg;
-
+	CItemQualityDlg* m_QualityDlg;                //装备觉醒
+	CItemQualityChangeDlg* m_QualityChangeDlg;     //装备转换
+	CGradeChangeDlg* m_GGDDlg;				//武器升阶值转移卷
 	BOOL	m_bInitForGame;
 	int		m_GameInInitKind;	
 	DWORD	m_MovePoint;
@@ -1518,8 +1523,17 @@ public:
 
 	void UpdataGoldMoney();
 	BOOL CopyToClipboard(const char* pszData, const int nDataLen);
-	
 
+	//装备觉醒
+	CItemQualityDlg* GetItemQualityDlg() { return m_QualityDlg; }
+	void SetItemQualityDlg(CItemQualityDlg* dlg) { m_QualityDlg = dlg; }
+
+	//装备品质转换
+	CItemQualityChangeDlg* GetItemQualityChangeDlg() { return m_QualityChangeDlg; }
+	void SetItemQualityChangeDlg(CItemQualityChangeDlg* dlg) { m_QualityChangeDlg = dlg; }
+	//武器升阶值转移卷
+	CGradeChangeDlg* GetGradeChangeDlg() { return m_GGDDlg; }
+	void SetGradeChangeDlg(CGradeChangeDlg* dlg) { m_GGDDlg = dlg; }
 	//////////////////////////////////////////////////////////////////////////
 	COfficialUpGradeDlg* GetOfficialUpGradeDlg() { return m_OfficialUpGradeDlg; }
 	void SetOfficialUpGradeDlg(COfficialUpGradeDlg* dlg) { m_OfficialUpGradeDlg = dlg; }

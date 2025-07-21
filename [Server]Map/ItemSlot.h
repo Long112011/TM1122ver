@@ -19,8 +19,29 @@
 
 //SW050920 Rare
 
-enum UPDATE_BIT{ UB_DBIDX = 1, UB_ICONIDX=2, UB_ABSPOS=4, UB_QABSPOS=8, UB_DURA=16, UB_RARE=32,UB_STONE=64,UB_LOCK=128,UB_UNLOCK=256,UB_GROW=512,UB_POWERUP=1024,UB_GREEN=2048, UB_GRADE30=4096, UB_ALL= 8192, };  // 2014-11-14 
-enum ERROR_ITEM { EI_TRUE = 0, EI_OUTOFPOS = 1, EI_NOTEQUALDATA, EI_EXISTED, EI_NOTEXIST, EI_LOCKED, EI_PASSWD, EI_NOTENOUGHMONEY, EI_NOSPACE, EI_MAXMONEY };
+enum UPDATE_BIT {
+	UB_DBIDX = 1,
+	UB_ICONIDX = 2,
+	UB_ABSPOS = 4,
+	UB_QABSPOS = 8,
+	UB_DURA = 16,
+	UB_RARE = 32,
+	UB_STONE = 64,
+	UB_LOCK = 128,
+	UB_UNLOCK = 256,
+	UB_GROW = 512,
+	UB_POWERUP = 1024,
+	UB_GREEN = 2048,
+	UB_GRADE30 = 4096,
+
+	// ÐÂÔö£º
+	UB_QUALITY = 8192,
+	UB_ENTRY1 = 16384,
+	UB_ENTRY2 = 32768,
+	UB_ENTRY3 = 65536,
+
+	UB_ALL = 65537  // ÔÊÐíÎ»ÑÚÂëÈ«¿ª
+}; enum ERROR_ITEM { EI_TRUE = 0, EI_OUTOFPOS = 1, EI_NOTEQUALDATA, EI_EXISTED, EI_NOTEXIST, EI_LOCKED, EI_PASSWD, EI_NOTENOUGHMONEY, EI_NOSPACE, EI_MAXMONEY };
 // SS_LOCKOMIT À» ¼öÇàÇÑ ÇÔ¼ö ÈÄ¿¡ ¶ôÀÌ Ç®¸°´Ù. 
 // ÁÖÀÇ : Updateitemabsµµ ¶ôÀÌ Ç®¸°´Ù!
 enum SLOT_STATE { SS_NONE = 0, SS_PREINSERT=1, SS_LOCKOMIT = 2, SS_CHKDBIDX = 4, };
@@ -39,14 +60,14 @@ public:
 	void Release();
 	
 	virtual ITEMBASE /*const*/ * GetItemInfoAbs(POSTYPE absPos);//kiv const
-
+	virtual void SetItemInfoAbs(ITEMBASE* pItemBase, POSTYPE absPos);
 	void GetItemInfoAll(ITEMBASE * pItemBaseAll);
 	void SetItemInfoAll(ITEMBASE * pItemBaseAll);
 	char * _ToStringSlot();
 
 
     // 2014-11-14 UpdateItemAbs  ³É³¤Êý¾Ý
-	virtual ERROR_ITEM UpdateItemAbs(CPlayer * pPlayer, POSTYPE whatAbsPos, DWORD dwDBIdx, WORD wItemIdx, POSTYPE position, POSTYPE quickPosition, DURTYPE Dur, WORD flag=UB_ALL, WORD state=SS_NONE, DWORD RareDBIdx = 0, DWORD StoneIdx=0,DWORD Grow=0,char * PowerUp="NULL",char * Green = "NULL", DWORD Grade30 = 0);
+	virtual ERROR_ITEM UpdateItemAbs(CPlayer * pPlayer, POSTYPE whatAbsPos, DWORD dwDBIdx, WORD wItemIdx, POSTYPE position, POSTYPE quickPosition, DURTYPE Dur, WORD itemstatic,  WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2, WORD ItemEntry3, WORD flag=UB_ALL, WORD state=SS_NONE, DWORD RareDBIdx = 0, DWORD StoneIdx=0,DWORD Grow=0,char * PowerUp="NULL",char * Green = "NULL", DWORD Grade30 = 0);
 	virtual ERROR_ITEM InsertItemAbs(CPlayer * pPlayer, POSTYPE absPos, ITEMBASE * pItem, WORD state=SS_NONE);
 	virtual ERROR_ITEM DeleteItemAbs(CPlayer * pPlayer, POSTYPE absPos, ITEMBASE * pItemOut, WORD state=SS_NONE);
 		

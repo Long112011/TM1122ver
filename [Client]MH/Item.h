@@ -114,6 +114,16 @@ public:
 	virtual inline DWORD    GetGrade() { return   m_ItemBaseInfo.Grade30; }
 	virtual inline void     SetGrade(DWORD Val) { m_ItemBaseInfo.Grade30 = Val; }
 	virtual inline WORD		GetGradeIdx() { return m_ItemGrade.ItemGrade; }
+
+	virtual inline void		SetQuality(WORD val) { m_ItemBaseInfo.ItemQuality = val; }
+	virtual inline void		SetEntry1(WORD val) { m_ItemBaseInfo.ItemEntry1 = val; }
+	virtual inline void		SetEntry2(WORD val) { m_ItemBaseInfo.ItemEntry2 = val; }
+	virtual inline void		SetEntry3(WORD val) { m_ItemBaseInfo.ItemEntry3 = val; }
+
+	virtual inline	WORD	GetQuality() { return m_ItemBaseInfo.ItemQuality; }
+	virtual inline	WORD	GetEntry1() { return m_ItemBaseInfo.ItemEntry1; }
+	virtual inline	WORD	GetEntry2() { return m_ItemBaseInfo.ItemEntry2; }
+	virtual inline	WORD	GetEntry3() { return m_ItemBaseInfo.ItemEntry3; }
 };
 
 #endif // !defined(AFX_ITEM_H__68113CBB_0A76_42D7_90B6_C64FBAF3E85C__INCLUDED_)

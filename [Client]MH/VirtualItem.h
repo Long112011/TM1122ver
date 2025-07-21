@@ -42,6 +42,10 @@ public:
 	DWORD    GetGrade() { return  m_pItemLink->GetGrade(); }
 	void SetIsWTF(bool Val) { IsWTF = Val; }
 	//void     SetGrade(DWORD Val) {}
+	WORD  GetQuality() { return m_pItemLink->GetQuality(); }
+	WORD  GetEntry1() { return m_pItemLink->GetEntry1(); }
+	WORD  GetEntry2() { return m_pItemLink->GetEntry2(); }
+	WORD  GetEntry3() { return m_pItemLink->GetEntry3(); }
 	void SetLinkItem(CBaseItem * pItem);
 	CBaseItem * GetLinkItem()
 	{

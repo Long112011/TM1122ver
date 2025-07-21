@@ -556,6 +556,7 @@ enum eITEM_KINDBIT
 	eQUEST_INSDUNGEON_ITEM_GET = 16421,
 	eCHANGE_ITEM		= 32768,	
 	eCHANGE_ITEM_LOCK	= 32769,	
+	eCHANGE_ITEM_KEY = 32770,    //开箱子所需要是类型添加
 	eKIND_ITEM_MAX,
 };
 #define MAX_QUERY_RESULT 100
@@ -1521,7 +1522,8 @@ enum eLogitemmoney
 	eLog_ItemObtainFromSeigeWarWare,
 
 	eLog_ItemObtainFromInsDungeon = 2300,
-
+	eLog_ChangeItemGetGoldMoney,
+	eLog_ChangeItemGetMallMoney,
 	eLog_Max,
 };
 enum eLogExppoint
@@ -1889,23 +1891,33 @@ enum
 	eSundries_Shout = 55631,                 // 普通喊话 - 約 3G
 	eSundries_Shout_Once = 55632,            // 普通喊话（1次） - 約 1G
 	eSundries_Shout_Once_NoTrade = 57593,    // 普通喊话（不可交易） - 約 1G
-	eSundries_RareItemCreate50 = 55640,      // 稀有道具制造 Lv50 - 約 80YB
-	eSundries_RareItemCreate70 = 55641,      // 稀有道具制造 Lv70 - 約 100YB
-	eSundries_RareItemCreate90 = 55642,      // 稀有道具制造 Lv90 - 約 120YB
-	eSundries_RareItemCreate99 = 63084,      // 稀有道具制造 Lv99 - 約 150YB
+	eSundries_RareItemCreate50 = 55640,      // 祝福 Lv50 - 約 80YB
+	eSundries_RareItemCreate70 = 55641,      // 祝福 Lv70 - 約 100YB
+	eSundries_RareItemCreate90 = 55642,      // 祝福 Lv90 - 約 120YB
+	eSundries_RareItemCreate99 = 63084,      // 祝福 Lv99 - 約 150YB
 	eItemStone_Dk1 = 51000,                  // 黑龙石 Lv1 - 約 20YB
 	eItemStone_Dk2 = 51001,                  // 黑龙石 Lv2 - 約 50YB
 	eItemStone_Dk3 = 51002,                  // 黑龙石 Lv3 - 約 80YB
 	eItemStone_Xq = 51003,                   // 星器石 - 約 30YB
 	eItemLockStone = 51500,                  // 锁定石 - 約 10YB
 	eItemUnLockStone = 51501,                // 解锁石 - 約 10YB
+	eItemUnLockStoneForPD = 51502,//泡点解锁。=================还没加25k
 	eItemReincarnation = 51600,              // 转生石 - 約 120YB
-	eItemFlashName1 = 59700,                 // 闪光名称 Lv1 - 約 80YB
-	eItemFlashName2 = 59701,                 // 闪光名称 Lv2 - 約 120YB
-	eSpecialBlessingStoneSTR = 55661,        // 祝福石（力量） - 約 60YB
-	eSpecialBlessingStoneAGI = 55662,        // 祝福石（敏捷） - 約 60YB
-	eSpecialBlessingStoneCON = 55663,        // 祝福石（体力） - 約 60YB
-	eSpecialBlessingStoneINT = 55664,        // 祝福石（智力） - 約 60YB
+	eItemFlashName1 = 52003,                 // 闪光名称 Lv1 - 約 80YB
+	eItemFlashName2 = 52004,                 // 闪光名称 Lv2 - 約 120YB
+	eLazyItem_N = 51509,		//牛任务卷轴=================还没加25k
+	eLazyItem_J = 51510,		//巨任务卷轴=================还没加25k
+	//eSpecialBlessingStoneSTR = 55661,        // 祝福石（力量） - 約 60YB
+	//eSpecialBlessingStoneAGI = 55662,        // 祝福石（敏捷） - 約 60YB
+	//eSpecialBlessingStoneCON = 55663,        // 祝福石（体力） - 約 60YB
+	//eSpecialBlessingStoneINT = 55664,        // 祝福石（智力） - 約 60YB
+#ifdef _JUEXING_
+	eItemStone_Quality1_50 = 51503,//觉醒石
+	eItemStone_Quality51_70 = 51504,//觉醒石
+	eItemStone_Quality71_999 = 51505,//觉醒石
+#endif // _JUEXING_
+
+	eSundries_GradeChange = 51512,		//武器升阶值转移卷
 
 };
 enum
@@ -2555,6 +2567,18 @@ enum CHANGE_APPEAR_FLAG
 };
 
 
+enum eChangeItemKind
+{
+	eChangeGuildExp = 7992,		//帮会经验
+	eChangeMallMoney = 7993,		//泡点类
+	eChangeGoldMoney = 7994,		//元宝类型
+	ChangeToMonster = 7995,		//经验类型
+	ChangeToEvent2 = 7996,		//活动物品2
+	ChangeToSuryun = 7997,		//技能点
+	ChangeToEvent1 = 7998,		//活动物品1
+	eChangeMoney = 7999,		//游戏币
+	MaxChangeType = 8000,
+};
 
 #define MAX_INSDUNGEONNAME_LENGTH	32
 enum eINSDG_TYPE

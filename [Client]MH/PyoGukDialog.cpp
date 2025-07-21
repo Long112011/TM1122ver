@@ -585,7 +585,7 @@ void CPyogukDialog::PyoGukMsgBoxClr()
 }
 
 void CPyogukDialog::OnActionEvnet(LONG lId, void * p, DWORD we)
-{//[ÓÒ¼ü²Ö´¢][BY:Ê®ÀïÆÂ½£Éñ][QQ:112582793][2019-4-16][18:18:03]
+{//[ÓÒ¼ü²Ö´¢][BY:Ê®ÀïÆÂ½£´«Ææ][QQ:112582793][2019-4-16][18:18:03]
 	if(m_CurPyogukMode >= ePyogukMode_NoWare)
 	{
 		char buf[128];
@@ -599,7 +599,7 @@ void CPyogukDialog::OnActionEvnet(LONG lId, void * p, DWORD we)
 	m_PyogukItemDlg[m_CurPyogukMode-1]->OnActionEvnet(lId,p,we);
 }
 void CPyogukDialog::MoveItemToPyoguk(CItem* pFromItem)
-{//[ÓÒ¼ü²Ö´¢][BY:Ê®ÀïÆÂ½£Éñ][QQ:112582793][2019-4-16][18:18:03]
+{//[ÓÒ¼ü²Ö´¢][BY:Ê®ÀïÆÂ½£´«Ææ][QQ:112582793][2019-4-16][18:18:03]
 	if(m_CurPyogukMode >= ePyogukMode_NoWare)
 	{
 		char buf[128];

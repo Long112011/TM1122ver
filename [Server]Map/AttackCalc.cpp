@@ -13,7 +13,7 @@
 #include "PartyManager.h"
 #include "Party.h"
 
-
+#include "ItemManager.h"
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -80,7 +80,7 @@ DWORD CAttackCalc::GetPlayerExpPoint( int level_gap, DWORD MonsterExp )
 }
 //新的pvp加成暴击///////////////////////////////////////////////////////////////////////////////////////////
 BOOL CAttackCalc::getCritical(CObject* pAttacker, CObject* pTarget, float fCriticalRate)
-{
+{//外功奋力一击概率计算
 	int nRand = rand() % 100;
 
 	DWORD attackercritical = pAttacker->GetCritical();
@@ -98,11 +98,20 @@ BOOL CAttackCalc::getCritical(CObject* pAttacker, CObject* pTarget, float fCriti
 	// magi82 - UniqueItem(070629)
 	if (pAttacker->GetObjectKind() == eObjectKind_Player)
 	{
-		int uniqueCriRate = ((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriRate;
-		if (((int)wCriticalPercent + uniqueCriRate) < 0)
+		if (((int)wCriticalPercent + ((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriRate) < 0)
+		{
 			wCriticalPercent = 0;
+		}
 		else
-			wCriticalPercent += uniqueCriRate;
+		{
+			wCriticalPercent += ((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriRate;
+		}
+		//特殊属性
+		const ITEMBASE* pTargetItemBase = ITEMMGR->GetItemInfoAbsIn((CPlayer*)pAttacker, 81);
+		ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(pTargetItemBase->wIconIdx);
+		if (pItemInfo->WeaponType == 1)//攻击者穿戴剑时，奋力一击几率增加15
+			wCriticalPercent = wCriticalPercent + 15;
+
 	}
 
 	// [新增] 天墨 PvP 爆击率加成（仅在 PvP 情况下）
@@ -173,6 +182,11 @@ BOOL	CAttackCalc::getDecisive(CObject* pAttacker, CObject* pTarget, float fCriti
 		{
 			wCriticalPercent += ((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriRate;
 		}
+		//特殊属性
+		const ITEMBASE* pTargetItemBase = ITEMMGR->GetItemInfoAbsIn((CPlayer*)pAttacker, 81);
+		ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(pTargetItemBase->wIconIdx);
+		if (pItemInfo->WeaponType == 1)//攻击者穿戴剑时，奋力一击几率增加15
+			wCriticalPercent = wCriticalPercent + 15;
 	}
 	//天墨 PVP妮┦阑璸衡
 	if (pAttacker->GetObjectKind() == eObjectKind_Player &&

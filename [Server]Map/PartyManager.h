@@ -84,7 +84,7 @@ public:
 	void MemberLevelUp(DWORD PartyIDX, DWORD PlayerIDX, LEVELTYPE lvl);
 	void DoMemberLevelUp(DWORD PartyIDX, DWORD PlayerIDX, LEVELTYPE lvl);
 	
-	void SendObtainItemMsg(CPlayer* pPlayer, WORD ObtainIdx);
+	void SendObtainItemMsg(CPlayer* pPlayer, WORD ObtainIdx, WORD ItemQuality = 0);
 
 	void MasterToPartyRequest(CPlayer* pPlayer, MSG_NAME_DWORD2* pMsg);	// 2008. 5. 23. CBH - 방파장에게 방파 신청 ////
 	void MasterToPartyRequestErr(DWORD dwPlayerID, DWORD dwErrIndex);	//2008. 5. 23. CBH - 방파 신청 실패	

@@ -826,10 +826,36 @@ void CQuestManager::NetworkMsgParse( BYTE Protocol, void* pMsg )
 			QUICKMGR->RefreshQickItem();
 
 			if( !pItem ) return;
-			if( pItem->GetItemKind() == eQUEST_ITEM_EQUIP )
-				CHATMGR->AddMsg( CTC_QUEST, CHATMGR->GetChatMsg(656), pItem->GetItemInfo()->ItemName );
+			if (pItem->GetItemKind() == eQUEST_ITEM_EQUIP)
+				CHATMGR->AddMsg(CTC_QUEST, CHATMGR->GetChatMsg(656), pItem->GetItemInfo()->ItemName);
 			else
-				CHATMGR->AddMsg( CTC_QUEST, CHATMGR->GetChatMsg(607), pItem->GetItemInfo()->ItemName );
+			{
+				if (pItem->GetItemKind() & eEQUIP_ITEM || pItem->GetItemKind() == eEQUIP_ITEM_UNIQUE)
+				{
+					if (pItem->GetQuality() == 4)
+					{
+						CHATMGR->AddMsg(CTC_QUEST, CHATMGR->GetChatMsg(2770), pItem->GetItemInfo()->ItemName);
+					}
+					else if (pItem->GetQuality() == 3)
+					{
+						CHATMGR->AddMsg(CTC_QUEST, CHATMGR->GetChatMsg(2769), pItem->GetItemInfo()->ItemName);
+					}
+					else if (pItem->GetQuality() == 2)
+					{
+						CHATMGR->AddMsg(CTC_QUEST, CHATMGR->GetChatMsg(2768), pItem->GetItemInfo()->ItemName);
+					}
+					else if (pItem->GetQuality() == 1)
+					{
+						CHATMGR->AddMsg(CTC_QUEST, CHATMGR->GetChatMsg(2767), pItem->GetItemInfo()->ItemName);
+					}
+					else if (pItem->GetQuality() == 0)
+					{
+						CHATMGR->AddMsg(CTC_QUEST, CHATMGR->GetChatMsg(2766), pItem->GetItemInfo()->ItemName);
+					}
+				}
+				else
+					CHATMGR->AddMsg(CTC_QUEST, CHATMGR->GetChatMsg(607), pItem->GetItemInfo()->ItemName);
+			}
 
 			// magi82(4) - Titan(071023) Å¸ÀÌÅºÀÏ¶§ ÀÌÆåÆ® Ã³¸®(Äù½ºÆ®¾ÆÀÌÅÛ È¹µæ)
 //			if( HERO->InTitan() == TRUE )

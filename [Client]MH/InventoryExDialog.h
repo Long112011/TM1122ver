@@ -185,6 +185,8 @@ private:
 	cStatic* p_Money;	//返回金额到钱包
 	cStatic* p_PaoDian;	//返回泡点到钱包
 	cStatic* p_Gold;	//返回元宝到钱包
+	public:
+		cButton* pBuffBtn;
 // quest
 public:
 	cMsgBox*			m_pQuestMsgBox;
@@ -221,6 +223,6 @@ public:
 	void SetUnlockAll();
 
 	bool	IsChangeLookButtonPushed();
-
+	void GetBuff();
 
 };

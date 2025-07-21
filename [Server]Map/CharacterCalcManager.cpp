@@ -165,7 +165,8 @@ void CCharacterCalcManager::CalcMaxLife(CPlayer * pPlayer)
 
 	//2007. 6. 13. CBH -  技飘酒捞牌 啊魂 
 	MaxLife += pPlayer->GetSetItemStats()->dwLife;
-	
+	//装备品质最大生命提升附加
+	MaxLife += (pPlayer->GetItemStats()->MaxLife) * ((pPlayer->GetSetItemQualityStats()->dwLife) * 0.01f);
 	// + 漂扁 啊魂
 	MaxLife += pPlayer->GetAbilityStats()->LifeUp;
 
@@ -213,7 +214,8 @@ void CCharacterCalcManager::CalcMaxShield(CPlayer * pPlayer)
 
 	//2007. 6. 13. CBH -  技飘酒捞牌 啊魂 
 	MaxShield += pPlayer->GetSetItemStats()->dwShield;
-	
+	//装备品质最大护体提升附加
+	MaxShield += (pPlayer->GetItemStats()->MaxShield) * ((pPlayer->GetSetItemQualityStats()->dwShield) * 0.01f);
 	// + 漂扁 啊魂
 	MaxShield += pPlayer->GetAbilityStats()->ShieldUp;
 	
@@ -257,7 +259,8 @@ void CCharacterCalcManager::CalcMaxNaeRyuk(CPlayer * pPlayer)
 
 	//2007. 6. 13. CBH -  技飘酒捞牌 啊魂 
 	MaxEnergy += pPlayer->GetSetItemStats()->dwNaeRyuk;
-	
+	//装备品质最大内力提升附加
+	MaxEnergy += (pPlayer->GetItemStats()->MaxNaeRyuk) * ((pPlayer->GetSetItemQualityStats()->dwNaeRyuk) * 0.01f);
 	// + 漂扁 啊魂
 	MaxEnergy += pPlayer->GetAbilityStats()->NaeRyukUp;
 

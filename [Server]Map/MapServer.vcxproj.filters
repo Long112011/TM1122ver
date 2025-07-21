@@ -1292,9 +1292,6 @@
     <ClCompile Include="..\[CC]JACK\Crc32Static.cpp">
       <Filter>JACK</Filter>
     </ClCompile>
-    <ClCompile Include="..\[CC]JACK\MHFile.cpp">
-      <Filter>JACK</Filter>
-    </ClCompile>
     <ClCompile Include="InsDGMission.cpp">
       <Filter>Dungeon\InstanceDungeon</Filter>
     </ClCompile>
@@ -1357,6 +1354,9 @@
       <Filter>JACK</Filter>
     </ClCompile>
     <ClCompile Include="..\[CC]JACK\HantarManager.cpp">
+      <Filter>JACK</Filter>
+    </ClCompile>
+    <ClCompile Include="..\[CC]JACK\MHFile.cpp">
       <Filter>JACK</Filter>
     </ClCompile>
   </ItemGroup>
@@ -2470,9 +2470,6 @@
     <ClInclude Include="..\[CC]JACK\Crc32Static.h">
       <Filter>JACK</Filter>
     </ClInclude>
-    <ClInclude Include="..\[CC]JACK\MHFile.h">
-      <Filter>JACK</Filter>
-    </ClInclude>
     <ClInclude Include="InsDGMission.h">
       <Filter>Dungeon\InstanceDungeon</Filter>
     </ClInclude>
@@ -2535,6 +2532,9 @@
       <Filter>JACK</Filter>
     </ClInclude>
     <ClInclude Include="..\[CC]JACK\HantarManager.h">
+      <Filter>JACK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\[CC]JACK\MHFile.h">
       <Filter>JACK</Filter>
     </ClInclude>
   </ItemGroup>

@@ -80,6 +80,8 @@
 #include "ItemStoneXqDialog.h"   
 #include "ItemStepReinforceDialog.h"
 #include "OfficialUpGradeDlg.h"
+#include "ItemQualityDlg.h"
+#include "ItemQualityChangeDlg.h"
 #include "ItemLockManager.h"         
 #include "ItemUnLockManager.h"       
 #include "ItemGambleManager.h"       
@@ -122,6 +124,7 @@ CItemManager::CItemManager()
 	m_ItemOptionList.Initialize(MAX_ITEM_OPTION_NUM);
 	m_ItemStoneOptionList.Initialize(MAX_ITEM_OPTION_NUM); 
 	m_ItemRareOptionList.Initialize(MAX_ITEM_OPTION_NUM);
+	m_SetItemQualityOptionList.Initialize(500);
 	m_UsedItemList.Initialize(32);
 	m_IconIndexCreator.Init(IG_MUGONG_STARTINDEX-IG_ITEM_STARTINDEX, IG_ITEM_STARTINDEX);//m_IconIndexCreator.Init(MAX_ITEMICON_NUM, IG_ITEM_STARTINDEX);
 	m_bAddPrice = FALSE;
@@ -240,6 +243,17 @@ CItemManager::~CItemManager()
 	}
 	m_StageLogoList.RemoveAll();*/
 	m_ClearPacketInfoList.clear();
+	//////////////////////////////////////////////////////////////
+	SET_ITEMQUALITY_OPTION* pSetItemQualityOption = NULL;
+	m_SetItemQualityOptionList.SetPositionHead();
+	while (pSetItemQualityOption = m_SetItemQualityOptionList.GetData())
+	{
+		delete pSetItemQualityOption;
+		pSetItemQualityOption = NULL;
+	}
+	m_SetItemQualityOptionList.RemoveAll();
+
+	//////////////////////////////////////////////////////////////
 #ifdef _OLDGOLDDIALOG_
 	ITEM_GOLD_SHOP * pGoldShopInfo = NULL;
 	m_GoldShopInfoList.SetPositionHead();
@@ -647,22 +661,49 @@ void CItemManager::SetToolTipIcon(
 		if(bNormalTip==0)
 		{
 			char line[256];
-			cImage imgToolLine;
+			CExchangeItem* pExcItem = NULL;
+			CItem* pcItem = NULL;
+			int quality = -1;
+			DWORD color = TTTC_DEFAULT;
+			const char* qualityName = "";
 
-			// 设定物品名称（附带强化等级与选项星号）
-			if (Grade30 > 0)
+			// 获取 Item 对象并取得品质
+			if (pIcon->GetType() == WT_EXCHANGEITEM || pIcon->GetType() == WT_STALLITEM || pIcon->GetType() == WT_BUYITE)
 			{
-				if (pOptionInfo && pOptionInfo->dwOptionIdx != 0)
-					sprintf(line, "[%s*/+%d]", pInfo->ItemName, Grade30);
-				else
-					sprintf(line, "[%s/+%d]", pInfo->ItemName, Grade30);
+				pExcItem = (CExchangeItem*)pIcon;
+				quality = pExcItem->GetQuality();
 			}
 			else
 			{
-				if (pOptionInfo && pOptionInfo->dwOptionIdx != 0)
-					sprintf(line, "[%s*]", pInfo->ItemName);
+				pcItem = (CItem*)pIcon;
+				quality = pcItem->GetQuality();
+			}
+
+			// 映射品质值到 S~SSSSS
+			switch (quality)
+			{
+			case 0: qualityName = "·普通"; color = TTTC_DEFAULT; break;
+			case 1: qualityName = "·优秀"; color = TTTC_ITEMGROW0; break;
+			case 2: qualityName = "·精良"; color = TTTC_ITEMGROW2; break;
+			case 3: qualityName = "·传奇"; color = TTTC_ITEMGROW4; break;
+			case 4: qualityName = "·神话"; color = TTTC_ITEMGROW5; break;
+			default: qualityName = ""; break;
+			}
+
+			// 构建名称字符串
+			if (Grade30 > 0)
+			{
+				if (pOptionInfo)
+					sprintf(line, "[%s +%d*]%s", pInfo->ItemName, Grade30, qualityName);
 				else
-					sprintf(line, "[%s]", pInfo->ItemName);
+					sprintf(line, "[%s +%d]%s", pInfo->ItemName, Grade30, qualityName);
+			}
+			else
+			{
+				if (pOptionInfo)
+					sprintf(line, "[%s*]%s", pInfo->ItemName, qualityName);
+				else
+					sprintf(line, "[%s]%s", pInfo->ItemName, qualityName);
 			}
 			int nLen = strlen( pInfo->ItemName );
 			if(pRareOptionInfo && pRareOptionInfo->dwItemDBIdx)
@@ -680,7 +721,8 @@ void CItemManager::SetToolTipIcon(
 				pIcon->AddToolTipLine( line, RGB_HALF(255,212,234),NULL,6);
 #endif
 			else
-				pIcon->AddToolTipLine( line,TTTC_DEFAULT,NULL,6);
+				pIcon->AddToolTipLine( line, color,NULL,6);
+
 			pIcon->AddToolTipLine( JACKJACK );
 			SetEquipItemToolTip(pIcon,pInfo,pOptionInfo,pRareOptionInfo,pStoneOptionInfo,bIsQuey, Grade30);
 			pIcon->AddToolTipLine( JACKJACK );
@@ -690,23 +732,45 @@ void CItemManager::SetToolTipIcon(
 		{
 			char line[256];
 			cImage imgToolLine;
+			CExchangeItem* pExcItem = NULL;
+			CItem* pcItem = NULL;
+			
 
-			// 设定物品名称（附带强化等级与选项星号）
+			// 获取品质值（优先从 ExchangeItem，其次从 Item）
+			int quality = -1;
+			if (pExcItem)
+				quality = pExcItem->GetQuality();
+			else if (pcItem)
+				quality = pcItem->GetQuality();
+			DWORD color = TTTC_DEFAULT;
+			// 获取品质文字与颜色
+			const char* qualityName = "";
+			switch (quality)
+			{
+			case 0: qualityName = "·普通"; color = TTTC_DEFAULT; break;
+			case 1: qualityName = "·优秀"; color = TTTC_ITEMGROW0; break;
+			case 2: qualityName = "·精良"; color = TTTC_ITEMGROW2; break;
+			case 3: qualityName = "·传奇"; color = TTTC_ITEMGROW4; break;
+			case 4: qualityName = "·神话"; color = TTTC_ITEMGROW5; break;
+			default: qualityName = ""; break;
+			}
+
+			// 构建最终文字
 			if (Grade30 > 0)
 			{
-				if (pOptionInfo && pOptionInfo->dwOptionIdx != 0)
-					sprintf(line, "[%s*/+%d]", pInfo->ItemName, Grade30);
+				if (pOptionInfo)
+					sprintf(line, "[%s +%d*]%s", pInfo->ItemName, Grade30, qualityName);
 				else
-					sprintf(line, "[%s/+%d]", pInfo->ItemName, Grade30);
+					sprintf(line, "[%s +%d]%s", pInfo->ItemName, Grade30, qualityName);
 			}
 			else
 			{
-				if (pOptionInfo && pOptionInfo->dwOptionIdx != 0)
-					sprintf(line, "[%s*]", pInfo->ItemName);
+				if (pOptionInfo)
+					sprintf(line, "[%s*]%s", pInfo->ItemName, qualityName);
 				else
-					sprintf(line, "[%s]", pInfo->ItemName);
+					sprintf(line, "[%s]%s", pInfo->ItemName, qualityName);
 			}
-			int nLen = strlen( pInfo->ItemName );
+			int nLen = strlen(pInfo->ItemName);
 			if(pRareOptionInfo && pRareOptionInfo->dwItemDBIdx)
 				pIcon->AddToolTipLine( line, TTTC_RAREITEM,NULL,6);
 			else if(pInfo->wSetItemKind != 0)
@@ -1127,7 +1191,7 @@ void CItemManager::AddGoldShopToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	char buf[256] = { 0, };
 
 	cImage  imgTopLine;
-	SCRIPTMGR->GetImage(219,&imgTopLine,PFT_HARDPATH);
+	SCRIPTMGR->GetImage(217,&imgTopLine,PFT_HARDPATH);
 
 	cImage * imgGoldShopinfo;
 	imgGoldShopinfo=pIcon->GetBasicImage();
@@ -1135,7 +1199,7 @@ void CItemManager::AddGoldShopToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	{
 		pIcon->AddToolTipImageEquip(imgGoldShopinfo);
 	}
-	//[分割线][By:十里坡剑神][QQ:112582793][2017/11/28]
+	//[分割线][By:十里坡剑传奇][QQ:112582793][2017/11/28]
 //	pIcon->AddImagTopLine(&imgTopLine,pIcon->GetTipLineCount());
 	
 	if( pItemInfo->GenGol != 0 )
@@ -1665,7 +1729,7 @@ void CItemManager::AddGoldShopToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
 		}
 	}
-	//[分割线][By:十里坡剑神][QQ:112582793][2017/11/28]
+	//[分割线][By:十里坡剑传奇][QQ:112582793][2017/11/28]
 //	pIcon->AddImagTopLine(&imgTopLine,pIcon->GetTipLineCount());
 		//天墨技术团 PVP妮┦陪ボ
 	float fPVP = 100 * pItemInfo->PVPCri;
@@ -2223,7 +2287,7 @@ DWORD CalStatusGradeInt(DWORD Status, WORD Grade)
 	float getdmgmin = Status;
 	for (int i = 0; i < Grade; i++)
 	{
-		getdmgmin = getdmgmin + (getdmgmin * 2.80 / 100);//狂人2.5 //财神3.5
+		getdmgmin = getdmgmin + (getdmgmin * 2.80 / 100);//狂人2.5 //财传奇3.5
 	}
 	int CalGrade = static_cast<int>(getdmgmin);
 	return CalGrade;
@@ -2231,25 +2295,36 @@ DWORD CalStatusGradeInt(DWORD Status, WORD Grade)
 void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPTION_INFO * pOptionInfo, ITEM_RARE_OPTION_INFO* pRareOptionInfo,ITEM_STONE_OPTION_INFO * pStoneOptionInfo,BOOL bIsQuey, DWORD Grade30)
 {
 	CExchangeItem* pExcItem = NULL;
-	CItem * pcItem = NULL;
-	if( pIcon->GetType() == WT_EXCHANGEITEM || pIcon->GetType() == WT_STALLITEM || pInfo->ItemKind == eSHOP_ITEM_PET ||pIcon->GetType() == WT_BUYITE)
+	CItem* pcItem = NULL;
+
+	if (pIcon->GetType() == WT_EXCHANGEITEM || pIcon->GetType() == WT_STALLITEM ||
+		pInfo->ItemKind == eSHOP_ITEM_PET || pIcon->GetType() == WT_BUYITE)
 		pExcItem = (CExchangeItem*)pIcon;
 	else
 		pcItem = (CItem*)pIcon;
-	char line3[128];
-	if (Grade30 > 0)
+
+	// 获取品质值（优先从 ExchangeItem，其次从 Item）
+	int quality = -1;
+	if (pExcItem)
+		quality = pExcItem->GetQuality();
+	else if (pcItem)
+		quality = pcItem->GetQuality();
+	DWORD color = TTTC_DEFAULT;
+	// 获取品质文字与颜色
+	const char* qualityName = "";
+	switch (quality)
 	{
-		if (pOptionInfo)
-			sprintf(line3, "[%s + %d*]", pInfo->ItemName, Grade30);
-		else
-			sprintf(line3, "[%s  + %d]", pInfo->ItemName, Grade30);
+	case 0: qualityName = "·普通"; color = TTTC_DEFAULT; break;
+	case 1: qualityName = "·优秀"; color = TTTC_ITEMGROW0; break;
+	case 2: qualityName = "·精良"; color = TTTC_ITEMGROW2; break;
+	case 3: qualityName = "·传奇"; color = TTTC_ITEMGROW4; break;
+	case 4: qualityName = "·神话"; color = TTTC_ITEMGROW5; break;
+	default: qualityName = ""; break;
 	}
-	else {
-		if (pOptionInfo)
-			sprintf(line3, "[%s*]", pInfo->ItemName);
-		else
-			sprintf(line3, "[%s]", pInfo->ItemName);
-	}
+
+
+//	pIcon->AddToolTipLine(line3, color);
+
 
 	//int nLen = strlen(pInfo->ItemName);
 
@@ -2347,6 +2422,12 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 		else
 			pIcon->AddToolTipLine( line, TTTC_FREELIMIT );
 	}
+	pIcon->AddToolTipLine("");
+	//装备品质
+	if (pExcItem)
+		AddSetItemQualityToolTip(pIcon, pExcItem->GetQuality(), pExcItem->GetEntry1(), pExcItem->GetEntry2(), color);
+	else
+		AddSetItemQualityToolTip(pIcon, pcItem->GetQuality(), pcItem->GetEntry1(), pcItem->GetEntry2(), color);
 	pIcon->AddToolTipLine("");
 	//=======================================================GenGol
 	DWORD RareStateGenGol = (pRareOptionInfo && pRareOptionInfo->GenGol) ? pRareOptionInfo->GenGol : 0;
@@ -3256,6 +3337,86 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 			}
 		}
 	}
+	//if (pInfo->ItemKind == eEQUIP_ITEM_WEAPON || pInfo->ItemKind == eEQUIP_ITEM_UNIQUE)
+	//{
+	//	pIcon->AddToolTipLine("");
+	//	//sprintf(line, "武器专属", pInfo->ItemName, pInfo->Plus_Value);
+	//	//pIcon->AddToolTipLine( line, RGB_HALF(252,180,93) );
+	//}
+	switch (pInfo->WeaponType)
+	{
+
+
+
+
+	case WP_GUM:
+	{
+		pIcon->AddToolTipLine("");   // 添一空行
+		sprintf(line, "< 武器特殊加成>");
+		pIcon->AddToolTipLine(line, RGB_HALF(255, 0, 0));
+		sprintf(line, "- 命中+10");
+		pIcon->AddToolTipLine(line, RGBA_MERGE(RGB_HALF(180, 0, 255), 255));
+		sprintf(line, "- 奋力一击几率+15");
+		pIcon->AddToolTipLine(line, RGBA_MERGE(RGB_HALF(180, 0, 255), 255));
+	}
+	break;
+	case WP_GWUN:
+	{
+		pIcon->AddToolTipLine("");   // 添一空行
+		sprintf(line, "< 武器特殊加成>");
+		pIcon->AddToolTipLine(line, RGB_HALF(255, 0, 0));
+		sprintf(line, "- 每10点体质属性，攻击力增加1点");
+		pIcon->AddToolTipLine(line, RGBA_MERGE(RGB_HALF(180, 0, 255), 255));
+	}
+	break;
+	case WP_DO:
+	{
+		pIcon->AddToolTipLine("");   // 添一空行
+		sprintf(line, "< 武器特殊加成>");
+		pIcon->AddToolTipLine(line, RGB_HALF(255, 0, 0));
+		sprintf(line, "- 使用技能(含内功技能)时，奋力一击伤害增加15%%");
+		pIcon->AddToolTipLine(line, RGBA_MERGE(RGB_HALF(180, 0, 255), 255));
+	}
+	break;
+	case WP_CHANG:
+	{
+		pIcon->AddToolTipLine("");   // 添一空行
+		sprintf(line, "< 武器特殊加成>");
+		pIcon->AddToolTipLine(line, RGB_HALF(255, 0, 0));
+		sprintf(line, "- 闪避+10");
+		pIcon->AddToolTipLine(line, RGBA_MERGE(RGB_HALF(180, 0, 255), 255));
+		sprintf(line, "- 最终伤害减少5%%");
+		pIcon->AddToolTipLine(line, RGBA_MERGE(RGB_HALF(180, 0, 255), 255));
+	}
+	break;
+	case WP_GUNG:
+	{
+		pIcon->AddToolTipLine("");   // 添一空行
+		sprintf(line, "< 武器特殊加成>");
+		pIcon->AddToolTipLine(line, RGB_HALF(255, 0, 0));
+		sprintf(line, "- 使用弓职业技能时，破甲增加15%%");
+		pIcon->AddToolTipLine(line, RGBA_MERGE(RGB_HALF(180, 0, 255), 255));
+	}
+	break;
+	case WP_AMGI:
+	{
+		pIcon->AddToolTipLine("");   // 添一空行
+		sprintf(line, "< 武器特殊加成>");
+		pIcon->AddToolTipLine(line, RGB_HALF(255, 0, 0));
+		sprintf(line, "- PVP破魔增加5%%");
+		pIcon->AddToolTipLine(line, RGBA_MERGE(RGB_HALF(180, 0, 255), 255));
+		sprintf(line, "- PVE破魔增加15%%");
+		pIcon->AddToolTipLine(line, RGBA_MERGE(RGB_HALF(180, 0, 255), 255));
+		sprintf(line, "- 使用技能(含内功技能)时，技能伤害增加5%%，");
+		pIcon->AddToolTipLine(line, RGBA_MERGE(RGB_HALF(180, 0, 255), 255));
+		sprintf(line, "  当角色血量< 50%%时，技能伤害增加15%%");
+		pIcon->AddToolTipLine(line, RGBA_MERGE(RGB_HALF(180, 0, 255), 255));
+	}
+	break;
+		
+	}
+	
+
 	AddItemDescriptionToolTip( pIcon, pInfo->ItemTooltipIdx );
 	if(!bIsQuey )
 	{
@@ -3519,7 +3680,7 @@ void CItemManager::SetPetSummonItemToolTip(cIcon * pIcon, ITEM_INFO * pInfo, DWO
 	pIcon->AddToolTipLine( line, TTTC_QUESTITEM );
 	//BOOL IsGoldShop = true;
 	
-	if (IsGoldShop && pInfo->ItemIdx == 55889)//神鵰
+	if (IsGoldShop && pInfo->ItemIdx == 55889)//传奇鵰
 	{
 		pList = new BASE_PET_LIST;
 		pPetInfo = new PET_TOTALINFO;
@@ -5003,10 +5164,44 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 			{
 				((cDivideBox*)pDlg)->ExcuteDBFunc( 0 );	
 			}
-			if( pItem )
+			if (pItem)
 			{
+				if (pItem->GetItemKind() & eEQUIP_ITEM || pItem->GetItemKind() == eEQUIP_ITEM_UNIQUE)
+				{
+					if (pItem->GetQuality() == 4)
+					{
+						CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2770), pItem->GetItemInfo()->ItemName);
+					}
+					else if (pItem->GetQuality() == 3)
+					{
+						CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2769), pItem->GetItemInfo()->ItemName);
+					}
+					else if (pItem->GetQuality() == 2)
+					{
+						CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2768), pItem->GetItemInfo()->ItemName);
+					}
+					else if (pItem->GetQuality() == 1)
+					{
+						CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2767), pItem->GetItemInfo()->ItemName);
+					}
+					else if (pItem->GetQuality() == 0)
+					{
+						CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2766), pItem->GetItemInfo()->ItemName);
+					}
+				}
+				else
+				{
+					CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(121), pItem->GetItemInfo()->ItemName);
+				}
+				//EFFECTMGR->StartHeroEffectProcess(eEffect_GetItem);
+				ItemDropEffect(pItem->GetItemIdx());
+			}
+
+
+
 				if(ITEMMGR->IsClearPacketItemCheck(pItem->GetItemIdx()))
 				{
+
 					//WINDOWMGR->DestroyWindowProcess();
 					//WINDOWMGR->AddListDestroyWindow( pItem );
 					ITEMMGR->FakeDeleteItem(pItem);
@@ -5014,10 +5209,9 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 					CHATMGR->AddMsg( CTC_KILLED, CHATMGR->GetChatMsg( 2094 ), pItem->GetItemInfo()->ItemName );
 					break;
 				}
-				CHATMGR->AddMsg( CTC_GETITEM, CHATMGR->GetChatMsg( 121 ), pItem->GetItemInfo()->ItemName );			
-				ItemDropEffect( pItem->GetItemIdx() );
-			}
-			QUICKMGR->RefreshQickItem();
+
+				QUICKMGR->RefreshQickItem();
+
 		}
 		break;
 	case MP_ITEM_REINFORCE_SUCCESS_ACK:
@@ -5237,8 +5431,39 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 			{
 				((cDivideBox*)pDlg)->ExcuteDBFunc( 0 );	
 			}
-			if( pItem )
+			if (pItem)
 			{
+				if (pItem->GetItemKind() & eEQUIP_ITEM || pItem->GetItemKind() == eEQUIP_ITEM_UNIQUE)
+				{
+					if (pItem->GetQuality() == 4)
+					{
+						CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2770), pItem->GetItemInfo()->ItemName);
+					}
+					else if (pItem->GetQuality() == 3)
+					{
+						CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2769), pItem->GetItemInfo()->ItemName);
+					}
+					else if (pItem->GetQuality() == 2)
+					{
+						CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2768), pItem->GetItemInfo()->ItemName);
+					}
+					else if (pItem->GetQuality() == 1)
+					{
+						CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2767), pItem->GetItemInfo()->ItemName);
+					}
+					else if (pItem->GetQuality() == 0)
+					{
+						CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2766), pItem->GetItemInfo()->ItemName);
+					}
+				}
+				else
+				{
+					CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(121), pItem->GetItemInfo()->ItemName);
+				}
+				//EFFECTMGR->StartHeroEffectProcess(eEffect_GetItem);
+				ItemDropEffect(pItem->GetItemIdx());
+			}
+
 				if(ITEMMGR->IsClearPacketItemCheck(pItem->GetItemIdx()))
 				{
 					//WINDOWMGR->DestroyWindowProcess();
@@ -5247,11 +5472,10 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 					CHATMGR->AddMsg( CTC_KILLED, CHATMGR->GetChatMsg( 2094 ), pItem->GetItemInfo()->ItemName );
 					break;
 				}
-				CHATMGR->AddMsg( CTC_GETITEM, CHATMGR->GetChatMsg( 121 ), pItem->GetItemInfo()->ItemName );
-				ItemDropEffect( pItem->GetItemIdx() );
-			}
-			QUICKMGR->RefreshQickItem();
+				QUICKMGR->RefreshQickItem();
 		}
+
+		
 		break;
 	case MP_ITEM_MOVE_NACK:
 		{
@@ -5769,6 +5993,43 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 			GAMEIN->GetMixDialog()->SetActiveRecursive( FALSE );
 		}
 		break;
+	case MP_ITEM_MIX_SUCCESS_MSGTOCLIENT:
+	{//FROM map 
+		MSG_ITEM_QUALITY_MSG* pmsg = (MSG_ITEM_QUALITY_MSG*)pMsg;
+		CItem* pItem = NULL;
+
+		pItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->ItemTargetPos);
+		pItem->SetItemBaseInfo(&pmsg->QualityItemBase);//设置装备信息
+		//装备组合成功在此提示，取消前面提示信息
+		if (pItem->GetItemKind() & eEQUIP_ITEM)
+		{
+			if (pItem->GetQuality() == 4)
+			{
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2770), pItem->GetItemInfo()->ItemName);
+			}
+			else if (pItem->GetQuality() == 3)
+			{
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2769), pItem->GetItemInfo()->ItemName);
+			}
+			else if (pItem->GetQuality() == 2)
+			{
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2768), pItem->GetItemInfo()->ItemName);
+			}
+			else if (pItem->GetQuality() == 1)
+			{
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2767), pItem->GetItemInfo()->ItemName);
+			}
+			else if (pItem->GetQuality() == 0)
+			{
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2766), pItem->GetItemInfo()->ItemName);
+			}
+		}
+		else
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(207), pItem->GetItemInfo()->ItemName);//物品组合成功提示
+
+		ITEMMGR->RefreshItem(pItem);
+	}
+	break;
 	case MP_ITEM_TPM_ADDITEM_ACK:
 		{
 			SetDisableDialog(FALSE, eItemTable_Inventory);
@@ -6466,11 +6727,36 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 			{
 				DWORD SellPrice = SWPROFIT->CalTexRateForSell( pItem->GetItemInfo()->SellPrice );
 				SellPrice = FORTWARMGR->CalTexRateForSell( pItem->GetItemInfo()->SellPrice );
-				if( pmsg->SellItemNum == 0 || IsOptionItem(pItem->GetItemIdx(), pItem->GetDurability()) )
-					CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(217), pItem->GetItemInfo()->ItemName, AddComma( SellPrice ) );
+				if (pmsg->SellItemNum == 0 || IsOptionItem(pItem->GetItemIdx(), pItem->GetDurability()))
+				{
+					if (pItem->GetItemKind() & eEQUIP_ITEM || pItem->GetItemKind() == eEQUIP_ITEM_UNIQUE)
+					{
+						if (pItem->GetQuality() == 4)
+						{
+							CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2775), pItem->GetItemInfo()->ItemName, AddComma(SellPrice));
+						}
+						if (pItem->GetQuality() == 3)
+						{
+							CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2774), pItem->GetItemInfo()->ItemName, AddComma(SellPrice));
+						}
+						if (pItem->GetQuality() == 2)
+						{
+							CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2773), pItem->GetItemInfo()->ItemName, AddComma(SellPrice));
+						}
+						if (pItem->GetQuality() == 1)
+						{
+							CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2772), pItem->GetItemInfo()->ItemName, AddComma(SellPrice));
+						}
+						if (pItem->GetQuality() == 0)
+						{
+							CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2771), pItem->GetItemInfo()->ItemName, AddComma(SellPrice));
+						}
+					}
+					else
+						CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(217), pItem->GetItemInfo()->ItemName, AddComma(SellPrice));
+				}
 				else
-					CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(218), pItem->GetItemInfo()->ItemName, pmsg->SellItemNum, AddComma( SellPrice*pmsg->SellItemNum ) );
-				DeleteItemofTable(GetTableIdxForAbsPos(pmsg->TargetPos), pmsg->TargetPos);
+					CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(218), pItem->GetItemInfo()->ItemName, pmsg->SellItemNum, AddComma(SellPrice * pmsg->SellItemNum));				DeleteItemofTable(GetTableIdxForAbsPos(pmsg->TargetPos), pmsg->TargetPos);
 			}
 			GAMEIN->GetInventoryDialog()->SetDisable( FALSE );
 			GAMEIN->GetDealDialog()->SetDisable( FALSE );
@@ -6714,6 +7000,7 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 			HERO->SetMoney(pmsg->dwTotalMoney);
 		}
 		break;
+
 	case MP_ITEM_MONEY_ERROR:
 		{
 			CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(115) );
@@ -6933,8 +7220,39 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 			{
 				((cDivideBox*)pDlg)->ExcuteDBFunc( 0 );	
 			}
-			if( pItem )
+			if (pItem)
 			{
+				if (pItem->GetItemKind() & eEQUIP_ITEM || pItem->GetItemKind() == eEQUIP_ITEM_UNIQUE)
+				{
+					if (pItem->GetQuality() == 4)
+					{
+						CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2770), pItem->GetItemInfo()->ItemName);
+					}
+					else if (pItem->GetQuality() == 3)
+					{
+						CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2769), pItem->GetItemInfo()->ItemName);
+					}
+					else if (pItem->GetQuality() == 2)
+					{
+						CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2768), pItem->GetItemInfo()->ItemName);
+					}
+					else if (pItem->GetQuality() == 1)
+					{
+						CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2767), pItem->GetItemInfo()->ItemName);
+					}
+					else if (pItem->GetQuality() == 0)
+					{
+						CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2766), pItem->GetItemInfo()->ItemName);
+					}
+				}
+				else
+				{
+					CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(121), pItem->GetItemInfo()->ItemName);
+				}
+				//EFFECTMGR->StartHeroEffectProcess(eEffect_GetItem);
+				ItemDropEffect(pItem->GetItemIdx());
+			} 
+
 				if(ITEMMGR->IsClearPacketItemCheck(pItem->GetItemIdx()))
 				{
 					//WINDOWMGR->DestroyWindowProcess();
@@ -6943,16 +7261,16 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 					CHATMGR->AddMsg( CTC_KILLED, CHATMGR->GetChatMsg( 2094 ), pItem->GetItemInfo()->ItemName );
 					break;
 				}
-				CHATMGR->AddMsg( CTC_GETITEM, CHATMGR->GetChatMsg( 121 ), pItem->GetItemInfo()->ItemName );
-				ItemDropEffect( pItem->GetItemIdx() );
+
 
 				if (m_SShout)
 				{
 					SafeStrCpy(ItemObtained, pItem->GetItemInfo()->ItemName, MAX_NAME_LENGTH + 1);
 					//ShoutGetItem();
 				}
-			}
-			QUICKMGR->RefreshQickItem();
+			
+		      	QUICKMGR->RefreshQickItem();
+
 		}
 		break;
 	case MP_ITEM_SHOPITEM_INFO_ACK:
@@ -7740,6 +8058,53 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 			CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(1233) );
 		}
 		break;
+	case MP_ITEM_SHOPITEM_GRADECHANGE_ACK: // 武器升阶值转移卷
+	{
+		// 将 pMsg 强制转换为对应的协议结构
+		SEND_SHOPITEM_BASEINFO1* pRecvMsg = (SEND_SHOPITEM_BASEINFO1*)pMsg;
+
+		// 根据物品位置获取对应的物品对象
+		CItem* MainItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pRecvMsg->ShopItemPosFrom);
+		CItem* MainItem2 = GAMEIN->GetInventoryDialog()->GetItemForPos(pRecvMsg->ShopItemPosTo);
+
+		// 检查物品是否有效
+		if (MainItem && MainItem2)
+		{
+			// 使用服务端传来的等级信息
+			MainItem->SetGrade(pRecvMsg->GradeFrom); // 设置源物品等级
+			MainItem2->SetGrade(pRecvMsg->GradeTo); // 设置目标物品等级
+
+			// 刷新工具提示
+			ITEMMGR->RefreshItemToolTip(MainItem->GetDBIdx());
+			ITEMMGR->RefreshItemToolTip(MainItem2->GetDBIdx());
+
+			// 刷新快速物品栏
+			QUICKMGR->RefreshQickItem();
+		}
+
+		// 添加系统消息
+		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2639)); // 显示系统消息ID 2639 的内容
+
+		break;
+	}
+	break;
+	case MP_ITEM_SHOPITEM_GRADECHANGE_NACK: // 武器升阶值转移卷
+	{
+		MSG_DWORD* pmsg = (MSG_DWORD*)pMsg;
+		if (pmsg->dwData == 5) // 转换物品类型错误
+		{
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2640));
+		}
+		else if (pmsg->dwData == 7) // 等级不足错误
+		{
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2642)); // 新增错误消息编号 2642
+		}
+		else // 其他错误
+		{
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2641));
+		}
+	}
+	break;
 	case MP_ITEM_SHOPITEM_RARECREATE_ACK:
 		{
 			MSG_ITEM_RAREITEM_GET* pmsg = (MSG_ITEM_RAREITEM_GET*)pMsg;
@@ -8087,6 +8452,7 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 			CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(2116) );
 		 }
 		 break;
+
 	 case MP_ITEM_LOCKEX_ACK:
 		 {
              MSG_DWORD2* pmsg=(MSG_DWORD2*)pMsg;
@@ -8830,6 +9196,7 @@ void CItemManager::NetworkMsgParseExt(BYTE Protocol,void* pMsg)
 					GAMEIN->GetOfficialUpGradeDlg()->SetStateBg(1);
 				}
 				AUDIOMGR->Play(1677, HERO);
+
 				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2739));//【升阶】成功升阶装备。"
 			}
 		}
@@ -8923,6 +9290,153 @@ void CItemManager::NetworkMsgParseExt(BYTE Protocol,void* pMsg)
 			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2753));
 		}
 
+	}
+	break;
+	case MP_ITEMEXT_QUALITY_ACK:
+	{
+		MSG_DWORD* pmsg = (MSG_DWORD*)pMsg;
+		ITEMBASE* pItemBase = (ITEMBASE*)GetItemInfoAbsIn(HERO, pmsg->dwData);
+
+		if (!pItemBase)	return;
+		DeleteItemofTable(GetTableIdxForAbsPos(pmsg->dwData), pmsg->dwData);
+		GAMEIN->GetItemQualityDlg()->Release(0);
+	}
+	break;
+	case MP_ITEMEXT_QUALITY_SUCCESS_ACK:
+	{
+		MSG_ITEM_QUALITY_MSG* pmsg = (MSG_ITEM_QUALITY_MSG*)pMsg;
+		CItem* pItem = NULL;
+
+		pItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->ItemTargetPos);
+		pItem->SetItemBaseInfo(&pmsg->QualityItemBase);//设置装备信息
+		ITEMMGR->RefreshItem(pItem);
+		
+		GAMEIN->GetItemQualityDlg()->Release(0);
+		GAMEIN->GetItemQualityDlg()->AddVirtualItemExt(pItem);
+
+		CHATMGR->AddMsg(CTC_SYSMSG, "[ [%s] ]觉醒/洗练·成功。", pItem->GetItemInfo()->ItemName);
+	}
+	break;
+	case MP_ITEMEXT_QUALITY_NACK:
+	{
+		MSG_DWORD3* pmsg = (MSG_DWORD3*)pMsg;
+
+		CItem* pTargetItem = NULL;
+		CItem* pExtraTargetItem = NULL;
+		pTargetItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->dwData1);//主装备
+		pExtraTargetItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->dwData2);//材料装备
+		if (pTargetItem)
+		{
+			pTargetItem->SetActive(TRUE);
+		}
+		if (pExtraTargetItem)
+		{
+			pExtraTargetItem->SetActive(TRUE);
+		}
+		GAMEIN->GetItemQualityDlg()->Release(0);
+
+		switch (pmsg->dwData3)
+		{
+		case 1:
+			CHATMGR->AddMsg(CTC_SYSMSG, "未查找到物品，请认真检查后再次觉醒！");
+			break;
+		case 2:
+			CHATMGR->AddMsg(CTC_SYSMSG, "请勿使用非法软件修改信息！");
+			break;
+		case 3:
+			CHATMGR->AddMsg(CTC_SYSMSG, "穿戴在身上的装备不能觉醒！");
+			break;
+		case 4:
+			CHATMGR->AddMsg(CTC_SYSMSG, "百宝物品不能觉醒！");
+			break;
+		case 5:
+			CHATMGR->AddMsg(CTC_SYSMSG, "觉醒装备与觉醒石等级不符！");
+			break;
+		case 6:
+			CHATMGR->AddMsg(CTC_SYSMSG, "觉醒装备类型错误！");
+			break;
+		case 7:
+			CHATMGR->AddMsg(CTC_SYSMSG, "材料装备类型错误！");
+			break;
+		case 8:
+			CHATMGR->AddMsg(CTC_SYSMSG, "只有【优秀~神话】品质装备才能觉醒！");
+			break;
+		case 9:
+			CHATMGR->AddMsg(CTC_SYSMSG, "觉醒装备与材料装备不一致！");
+			break;
+		case 10:
+			DeleteItemofTable(GetTableIdxForAbsPos(pmsg->dwData2), pmsg->dwData2);
+			CHATMGR->AddMsg(CTC_SYSMSG, "觉醒失败！");
+			break;
+		case 11:
+			CHATMGR->AddMsg(CTC_SYSMSG, "该装备已觉醒，无需重复操作！");
+			break;
+		case 12:
+			CHATMGR->AddMsg(CTC_SYSMSG, "该装备尚未觉醒，无法进行洗练！");
+			break;
+		}
+
+	}
+	break;
+	case MP_ITEMEXT_QUALITYCHANGE_ACK:
+	{
+		MSG_ITEM_QUALITY_MSG* pmsg = (MSG_ITEM_QUALITY_MSG*)pMsg;
+		CItem* pItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->ItemTargetPos);
+		if (!pItem) break;
+
+		pItem->SetItemBaseInfo(&pmsg->QualityItemBase); // 更新装备数据
+		ITEMMGR->RefreshItem(pItem); // 刷新 tooltip 数据
+
+		//  关键：让界面重新绑定并刷新显示
+		GAMEIN->GetItemQualityChangeDlg()->OnItemQualityChanged(pItem);
+
+		CHATMGR->AddMsg(CTC_SYSMSG, "[ %s ]装备品质转换成功。", pItem->GetItemInfo()->ItemName);
+		break;
+	}
+
+	break;
+	case MP_ITEMEXT_QUALITYCHANGE_NACK:
+	{
+		MSG_DWORD2* pmsg = (MSG_DWORD2*)pMsg;
+		CItem* pTargetItem = NULL;
+
+		pTargetItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->dwData1);//主装备
+		if (pTargetItem)
+		{
+			pTargetItem->SetActive(TRUE);
+		}
+		GAMEIN->GetItemQualityChangeDlg()->Release();
+
+		switch (pmsg->dwData2)
+		{
+		case 1:
+			CHATMGR->AddMsg(CTC_SYSMSG, "未查找到物品，请认真检查后再次觉醒！");
+			break;
+		case 2:
+			CHATMGR->AddMsg(CTC_SYSMSG, "觉醒石已使用完毕");
+			break;
+		case 3:
+			CHATMGR->AddMsg(CTC_SYSMSG, "穿戴在身上的装备不能觉醒，请再次尝试觉醒！");
+			break;
+		case 4:
+			CHATMGR->AddMsg(CTC_SYSMSG, "百宝物品不能觉醒，请再次尝试觉醒");
+			break;
+		case 5:
+			CHATMGR->AddMsg(CTC_SYSMSG, "转换石与主装备等级不符！");
+			break;
+		case 6:
+			CHATMGR->AddMsg(CTC_SYSMSG, "转换石信息错误！");
+			break;
+		case 7:
+			CHATMGR->AddMsg(CTC_SYSMSG, "转换物品类型错误！");
+			break;
+		case 8:
+			CHATMGR->AddMsg(CTC_SYSMSG, "装备物品与转换石类型不符！");
+		case 9:
+			CHATMGR->AddMsg(CTC_SYSMSG, "品质高于传说无法再觉醒");
+			//GAMEIN->GetItemQualityChangeDlg()->Release();
+			break;
+		}
 	}
 	break;
 	default:
@@ -12488,4 +13002,445 @@ void CItemManager::ShoutGetItem()
 	if (!m_SShout)return;
 	CHATMGR->AddMsg(CTC_SHOUTITEM, CHATMGR->GetChatMsg(2455), HeroName, ItemOpened, ItemObtained);
 	m_SShout = FALSE;
+}
+BOOL CItemManager::LoadSetItemQualityOption()
+{
+	CMHFile file;
+#ifdef _FILE_BIN_
+	if (!file.Init("Resource/setitem_Quality.bin", "rb"))
+		return FALSE;
+#else
+	if (!file.Init("Resource/setitem_Quality.txt", "rt"))
+		return FALSE;
+#endif	// _FILE_BIN_
+
+	SET_ITEMQUALITY_OPTION* pInfo = NULL;
+	while (!file.IsEOF())
+	{
+		ASSERT(!pInfo);
+		pInfo = new SET_ITEMQUALITY_OPTION;
+
+		pInfo->wIndex = file.GetDword();
+		pInfo->ItemQuality = file.GetDword();
+		pInfo->ItemEntry1 = file.GetDword();
+		pInfo->ItemEntry2 = file.GetDword();
+
+		SafeStrCpy(pInfo->szSetItemName, file.GetString(), MAX_NAME_LENGTH + 1);
+		pInfo->RareVal = file.GetFloat();
+
+		pInfo->wGenGol = file.GetDword();
+		pInfo->wMinChub = file.GetDword();
+		pInfo->wCheRyuk = file.GetDword();
+		pInfo->wSimMek = file.GetDword();
+		pInfo->dwLife = file.GetDword();
+		pInfo->dwShield = file.GetDword();
+		pInfo->dwNaeRyuk = file.GetDword();
+		pInfo->AttrRegistDef = file.GetDword();
+		pInfo->wPhyDef = file.GetDword();
+		pInfo->NaegongDamage = file.GetDword();
+		pInfo->WoigongDamage = file.GetDword();
+
+		pInfo->wDodgeRate = file.GetDword();
+		pInfo->PlayerPhyDefDown = file.GetDword();
+		pInfo->PlayerAttrDefDown = file.GetDword();
+		pInfo->TargetPhyDefDown = file.GetDword();
+		pInfo->TargetAttrDefDown = file.GetDword();
+		pInfo->fDodgeRate = file.GetDword();
+		pInfo->MallMoneyPuls = file.GetDword();
+		pInfo->KyunggongSpeed = file.GetDword();
+		pInfo->AttMonsterDamage = file.GetDword();
+		pInfo->AttPlayerDamage = file.GetDword();
+		pInfo->RealDamageDown = file.GetDword();
+		pInfo->PVPLifePlus = file.GetDword();
+		pInfo->Resurrected = file.GetDword();
+		pInfo->Critical = file.GetDword();
+		pInfo->Decisive = file.GetDword();
+		pInfo->CriticalDamage = file.GetDword();
+		pInfo->DecisiveDamage = file.GetDword();
+		pInfo->ContinueAttAttack = file.GetDword();
+
+		ASSERT(!m_SetItemQualityOptionList.GetData(pInfo->wIndex));
+
+		m_SetItemQualityOptionList.Add(pInfo, pInfo->wIndex);
+		pInfo = NULL;
+	}
+	file.Release();
+
+	return TRUE;
+}
+
+SET_ITEMQUALITY_OPTION* CItemManager::GetSetItemQualityOption(WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2)
+{
+	SET_ITEMQUALITY_OPTION* pSetItemQualityOption = NULL;
+
+	m_SetItemQualityOptionList.SetPositionHead();
+	while (pSetItemQualityOption = m_SetItemQualityOptionList.GetData())
+	{
+		if (pSetItemQualityOption->ItemQuality == ItemQuality)
+		{
+			if (pSetItemQualityOption->ItemEntry1 == ItemEntry1 && pSetItemQualityOption->ItemEntry2 == ItemEntry2)
+			{
+				return pSetItemQualityOption;
+			}
+		}
+	}
+
+	return NULL;
+}
+
+void CItemManager::RemoveSetItemQualityOption(WORD wIndex, SET_ITEMQUALITY_OPTION* pSetItemOptionOut)
+{
+	SET_ITEMQUALITY_OPTION* pInfo = m_SetItemQualityOptionList.GetData(wIndex);
+
+	if (pInfo == NULL)
+	{
+		ASSERT(0);
+		return;
+	}
+
+	if (pSetItemOptionOut)
+		*pSetItemOptionOut = *pInfo;
+	SAFE_DELETE(pInfo);
+	m_SetItemQualityOptionList.Remove(wIndex);
+}
+
+void CItemManager::AddSetItemQualityToolTip(cIcon* pIcon, WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2, DWORD color)
+{
+	char line[128];
+
+	m_SetItemQualityOptionList.SetPositionHead();
+	SET_ITEMQUALITY_OPTION* pSetItemQualityOption = NULL;
+	while (pSetItemQualityOption = m_SetItemQualityOptionList.GetData())
+	{
+		if (pSetItemQualityOption->ItemQuality == ItemQuality && pSetItemQualityOption->ItemEntry1 == ItemEntry1 && pSetItemQualityOption->ItemEntry2 == ItemEntry2)
+		{
+			//sprintf( line, "觉醒属性");
+			//pIcon->AddToolTipLine(line,color);
+			//pIcon->AddToolTipLine("");
+			SetItemQualityToolTip(pIcon, ItemQuality, ItemEntry1, ItemEntry2, color);
+			return;
+		}
+	}
+}
+void CItemManager::SetItemQualityToolTip(cIcon* pIcon, WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2, DWORD dwColor)
+{
+	char line[128];
+	float attrvalue = 0;
+
+	SET_ITEMQUALITY_OPTION* pSetItemOption = NULL;
+	pSetItemOption = GetSetItemQualityOption(ItemQuality, ItemEntry1, ItemEntry2);
+
+	if (pSetItemOption == NULL)
+	{
+		return;
+	}
+	if (ItemQuality == 0)
+	{
+		if (pSetItemOption->RareVal != 0)
+		{
+			sprintf(line, "【·普通】最大祝福倍率+%0.1f", pSetItemOption->RareVal);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+	}
+	if (ItemQuality == 1)
+	{
+		if (pSetItemOption->RareVal != 0)
+		{
+			sprintf(line, "【·优秀】最大祝福倍率+%0.1f", pSetItemOption->RareVal);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+	}
+	if (ItemQuality == 2)
+	{
+		if (pSetItemOption->RareVal != 0)
+		{
+			sprintf(line, "【·精良】最大祝福倍率+%0.1f", pSetItemOption->RareVal);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->wGenGol != 0 && ItemEntry1 == 1 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·精良】力量+%d", pSetItemOption->wGenGol);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->wMinChub != 0 && ItemEntry1 == 2 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·精良】敏捷+%d", pSetItemOption->wMinChub);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->wCheRyuk != 0 && ItemEntry1 == 3 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·精良】体质+%d", pSetItemOption->wCheRyuk);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->wSimMek != 0 && ItemEntry1 == 4 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·精良】心脉+%d", pSetItemOption->wSimMek);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->dwLife != 0 && ItemEntry1 == 5 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·精良】生命+%d%%", pSetItemOption->dwLife);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->dwShield != 0 && ItemEntry1 == 6 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·精良】护体+%d%%", pSetItemOption->dwShield);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->dwNaeRyuk != 0 && ItemEntry1 == 7 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·精良】内力+%d%%", pSetItemOption->dwNaeRyuk);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->AttrRegistDef != 0 && ItemEntry1 == 8 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·精良】属性防御+%d%%", pSetItemOption->AttrRegistDef);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->wPhyDef != 0 && ItemEntry1 == 9 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·精良】物理防御+%d%%", pSetItemOption->wPhyDef);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->NaegongDamage != 0 && ItemEntry1 == 10 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·精良】内功伤害+%d%%", pSetItemOption->NaegongDamage);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->WoigongDamage != 0 && ItemEntry1 == 11 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·精良】外功伤害+%d%%", pSetItemOption->WoigongDamage);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+
+	}
+	if (ItemQuality == 3)
+	{
+		if (pSetItemOption->RareVal != 0)
+		{
+			sprintf(line, "【·传奇】最大祝福倍率+%0.1f", pSetItemOption->RareVal);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->wGenGol != 0 && ItemEntry1 == 1 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·传奇】力量+%d", pSetItemOption->wGenGol);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->wMinChub != 0 && ItemEntry1 == 2 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·传奇】敏捷+%d", pSetItemOption->wMinChub);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->wCheRyuk != 0 && ItemEntry1 == 3 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·传奇】体质+%d", pSetItemOption->wCheRyuk);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->wSimMek != 0 && ItemEntry1 == 4 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·传奇】心脉+%d", pSetItemOption->wSimMek);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->dwLife != 0 && ItemEntry1 == 5 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·传奇】生命+%d%%", pSetItemOption->dwLife);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->dwShield != 0 && ItemEntry1 == 6 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·传奇】护体+%d%%", pSetItemOption->dwShield);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->dwNaeRyuk != 0 && ItemEntry1 == 7 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·传奇】内力+%d%%", pSetItemOption->dwNaeRyuk);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->AttrRegistDef != 0 && ItemEntry1 == 8 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·传奇】属性防御+%d%%", pSetItemOption->AttrRegistDef);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->wPhyDef != 0 && ItemEntry1 == 9 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·传奇】物理防御+%d%%", pSetItemOption->wPhyDef);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->NaegongDamage != 0 && ItemEntry1 == 10 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·传奇】内功伤害+%d%%", pSetItemOption->NaegongDamage);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->WoigongDamage != 0 && ItemEntry1 == 11 && ItemEntry2 == 0)
+		{
+			sprintf(line, "【·传奇】外功伤害+%d%%", pSetItemOption->WoigongDamage);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+	}
+	if (ItemQuality == 4)
+	{
+		if (pSetItemOption->RareVal != 0)
+		{
+			sprintf(line, "【·神话】最大祝福倍率+%0.1f", pSetItemOption->RareVal);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->wGenGol != 0 && ItemEntry1 == 1)
+		{
+			sprintf(line, "【·神话】力量+%d", pSetItemOption->wGenGol);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->wMinChub != 0 && ItemEntry1 == 2)
+		{
+			sprintf(line, "【·神话】敏捷+%d", pSetItemOption->wMinChub);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->wCheRyuk != 0 && ItemEntry1 == 3)
+		{
+			sprintf(line, "【·神话】体质+%d", pSetItemOption->wCheRyuk);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->wSimMek != 0 && ItemEntry1 == 4)
+		{
+			sprintf(line, "【·神话】心脉+%d", pSetItemOption->wSimMek);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->dwLife != 0 && ItemEntry1 == 5)
+		{
+			sprintf(line, "【·神话】生命+%d%%", pSetItemOption->dwLife);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->dwShield != 0 && ItemEntry1 == 6)
+		{
+			sprintf(line, "【·神话】护体+%d%%", pSetItemOption->dwShield);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->dwNaeRyuk != 0 && ItemEntry1 == 7)
+		{
+			sprintf(line, "【·神话】内力+%d%%", pSetItemOption->dwNaeRyuk);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->AttrRegistDef != 0 && ItemEntry1 == 8)
+		{
+			sprintf(line, "【·神话】属性防御+%d%%", pSetItemOption->AttrRegistDef);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->wPhyDef != 0 && ItemEntry1 == 9)
+		{
+			sprintf(line, "【·神话】物理防御+%d%%", pSetItemOption->wPhyDef);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->NaegongDamage != 0 && ItemEntry1 == 10)
+		{
+			sprintf(line, "【·神话】内功伤害+%d%%", pSetItemOption->NaegongDamage);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (pSetItemOption->WoigongDamage != 0 && ItemEntry1 == 11)
+		{
+			sprintf(line, "【·神话】外功伤害+%d%%", pSetItemOption->WoigongDamage);
+			pIcon->AddToolTipLine(line, dwColor);
+		}
+		if (ItemEntry2 == 0)
+		{
+			sprintf(line, "【·神话】未觉醒");
+			pIcon->AddToolTipLine(line, RGB_HALF(187, 187, 187));
+		}
+		else
+		{
+			if (pSetItemOption->wDodgeRate != 0 && ItemEntry2 == 1)
+			{
+				sprintf(line, "【·神话】闪避+%d%%", pSetItemOption->wDodgeRate);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+			if (pSetItemOption->PlayerPhyDefDown != 0 && ItemEntry2 == 2)
+			{
+				sprintf(line, "【·神话】PVP破甲+%d%%", pSetItemOption->PlayerPhyDefDown);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+			if (pSetItemOption->PlayerAttrDefDown != 0 && ItemEntry2 == 3)
+			{
+				sprintf(line, "【·神话】PVP破魔+%d%%", pSetItemOption->PlayerAttrDefDown);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+			if (pSetItemOption->TargetPhyDefDown != 0 && ItemEntry2 == 4)
+			{
+				sprintf(line, "【·神话】PVE破甲+%d%%", pSetItemOption->TargetPhyDefDown);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+			if (pSetItemOption->TargetAttrDefDown != 0 && ItemEntry2 == 5)
+			{
+				sprintf(line, "【·神话】PVE破魔+%d%%", pSetItemOption->TargetAttrDefDown);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+			if (pSetItemOption->fDodgeRate != 0 && ItemEntry2 == 6)
+			{
+				sprintf(line, "【·神话】命中+%d%%", pSetItemOption->fDodgeRate);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+			if (pSetItemOption->MallMoneyPuls != 0 && ItemEntry2 == 7)
+			{
+				sprintf(line, "【·神话】泡点加成+%d", pSetItemOption->MallMoneyPuls);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+			if (pSetItemOption->KyunggongSpeed != 0 && ItemEntry2 == 8)
+			{
+				sprintf(line, "【·神话】轻功速度+%d", pSetItemOption->KyunggongSpeed);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+			if (pSetItemOption->AttMonsterDamage != 0 && ItemEntry2 == 9)
+			{
+				sprintf(line, "【·神话】PVE最终伤害+%d%%", pSetItemOption->AttMonsterDamage);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+			if (pSetItemOption->AttPlayerDamage != 0 && ItemEntry2 == 10)
+			{
+				sprintf(line, "【·神话】PVP最终伤害+%d%%", pSetItemOption->AttPlayerDamage);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+			if (pSetItemOption->RealDamageDown != 0 && ItemEntry2 == 11)
+			{
+				sprintf(line, "【·神话】受到伤害减少%d%%", pSetItemOption->RealDamageDown);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+			if (pSetItemOption->PVPLifePlus != 0 && ItemEntry2 == 12)
+			{
+				sprintf(line, "【·神话】PVP吸血几率+%d%%", pSetItemOption->PVPLifePlus);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+			if (pSetItemOption->Resurrected != 0 && ItemEntry2 == 13)
+			{
+				sprintf(line, "【·神话】%d%%几率满血复活", pSetItemOption->Resurrected);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+			if (pSetItemOption->Critical != 0 && ItemEntry2 == 14)
+			{
+				sprintf(line, "【·神话】外功暴击率+%d%%", pSetItemOption->Critical);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+			if (pSetItemOption->Decisive != 0 && ItemEntry2 == 15)
+			{
+				sprintf(line, "【·神话】内功暴击率+%d%%", pSetItemOption->Decisive);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+			if (pSetItemOption->CriticalDamage != 0 && ItemEntry2 == 16)
+			{
+				sprintf(line, "【·神话】外功暴击伤害+%d%%", pSetItemOption->CriticalDamage);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+			if (pSetItemOption->DecisiveDamage != 0 && ItemEntry2 == 17)
+			{
+				sprintf(line, "【·神话】内功暴击伤害+%d%%", pSetItemOption->DecisiveDamage);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+			if (pSetItemOption->ContinueAttAttack != 0 && ItemEntry2 == 18)
+			{
+				sprintf(line, "【·神话】持续伤害+%d%%", pSetItemOption->ContinueAttAttack);
+				pIcon->AddToolTipLine(line, dwColor);
+			}
+		}
+	}
+}
+
+CYHHashTable<SET_ITEMQUALITY_OPTION>* CItemManager::GetSetItemQualityOptionList()
+{
+	return &m_SetItemQualityOptionList;
 }

@@ -354,6 +354,10 @@ void cStreetStall::GetStreetStallInfo( STREETSTALL_INFO& stall )
 		stall.Item[i].dwStoneIdx = m_sArticles[i].sItemBase.StoneIdx;  // 2014-12-15 鑒앴맒속
 		stall.Item[i].dwGrow     = m_sArticles[i].sItemBase.ItemGrow;  // 2015-01-16 냥낀斤口맒속
 		stall.Item[i].dwGrade30 = m_sArticles[i].sItemBase.Grade30;
+		stall.Item[i].ItemQuality = m_sArticles[i].sItemBase.ItemQuality;
+		stall.Item[i].ItemEntry1 = m_sArticles[i].sItemBase.ItemEntry1;
+		stall.Item[i].ItemEntry2 = m_sArticles[i].sItemBase.ItemEntry2;
+		stall.Item[i].ItemEntry3 = m_sArticles[i].sItemBase.ItemEntry3;
 		if( stall.Item[i].Fill )
 		{
 

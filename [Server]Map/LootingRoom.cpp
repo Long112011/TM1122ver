@@ -143,8 +143,8 @@ void CLootingRoom::MakeLootingRoom(CPlayer* pDiePlayer, CPlayer* pAttackPlayer)
 		}
 		ListNumber.DeleteAll();
 	}
-	m_nChance = LOOTINGMGR->GetLootingChance(pAttackPlayer->GetBadFame());
-	m_nItemLootCount = LOOTINGMGR->GetLootingItemNum(pAttackPlayer->GetBadFame());
+	m_nChance = LOOTINGMGR->GetLootingChance(pAttackPlayer->GetBadFame());//计算可抢夺几次
+	m_nItemLootCount = LOOTINGMGR->GetLootingItemNum(pAttackPlayer->GetBadFame());//计算可抢夺物品数量
 	m_dwLootingStartTime = gCurTime;
 	m_nLootedItemCount = 0;
 }
@@ -204,49 +204,94 @@ BOOL CLootingRoom::Loot( int nArrayNum, BOOL bForce )
 		}
 		return TRUE;
 	}
-	if( m_LootingItemArray[nArrayNum].nKind == eLI_ITEM )	
+	if (m_LootingItemArray[nArrayNum].nKind == eLI_ITEM)
 	{
-		CItemSlot* pAInven	= pAttackPlayer->GetSlot( eItemTable_Inventory );
+		//AttackPlayerAC
+		CItemSlot* pAInven = pAttackPlayer->GetSlot(eItemTable_Inventory);
 		WORD wEmptyPos;
-		if( pAInven->GetEmptyCell( &wEmptyPos ) == 0 )
+		if (pAInven->GetEmptyCell(&wEmptyPos) == 0)
 		{
 			MSG_DWORD msg;
-			msg.Category	= MP_PK;
-			msg.Protocol	= MP_PK_LOOTING_NOINVENSPACE;
-			msg.dwData		= m_dwDiePlayer;
-			pAttackPlayer->SendMsg( &msg, sizeof(msg) );
+			msg.Category = MP_PK;
+			msg.Protocol = MP_PK_LOOTING_NOINVENSPACE;
+			msg.dwData = m_dwDiePlayer;
+			pAttackPlayer->SendMsg(&msg, sizeof(msg));
 		}
 		else
 		{
-			CItemSlot* pDSlot = pDiePlayer->GetSlot( (POSTYPE)m_LootingItemArray[nArrayNum].dwData );
-			ITEMBASE ItemBase;
-			if( EI_TRUE != pDSlot->DeleteItemAbs( pDiePlayer, (POSTYPE)m_LootingItemArray[nArrayNum].dwData, &ItemBase ) )
-				return TRUE;
-			MSG_EXCHANGE_REMOVEITEM RemoveMsg;
-			RemoveMsg.Category		= MP_PK;
-			RemoveMsg.Protocol		= MP_PK_LOOTING_ITEMLOOTED;
-			RemoveMsg.wAbsPosition	= (POSTYPE)m_LootingItemArray[nArrayNum].dwData;
-			pDiePlayer->SendMsg( &RemoveMsg, sizeof( RemoveMsg ) );
-			ItemBase.Position		= wEmptyPos;
-			ItemBase.QuickPosition	= 0;
-			ItemUpdateToDB( m_dwAttacker, ItemBase.dwDBIdx, ItemBase.wIconIdx, ItemBase.Durability,
-				ItemBase.Position, ItemBase.QuickPosition, ItemBase.RareIdx );
-			int rt = pAInven->InsertItemAbs( NULL, ItemBase.Position, &ItemBase, SS_LOCKOMIT );
-			ASSERT( rt == EI_TRUE );
-			LogItemMoney(m_dwDiePlayer, pDiePlayer->GetObjectName(), m_dwAttacker, pAttackPlayer->GetObjectName(),
-				eLog_ItemObtainPK, pDiePlayer->GetMoney(eItemTable_Inventory), pAttackPlayer->GetMoney(eItemTable_Inventory), 
-				0, ItemBase.wIconIdx,  ItemBase.dwDBIdx, 0, ItemBase.Position, ItemBase.Durability, pDiePlayer->GetPlayerExpPoint());
-			MSG_LOOTINGITEM AddMsg;
-			AddMsg.Category = MP_PK;
-			AddMsg.Protocol = MP_PK_LOOTING_ITEMLOOTING;
-			AddMsg.dwMoney	= m_dwDiePlayer;	
-			AddMsg.ItemInfo	= ItemBase;
-			AddMsg.wAbsPosition = nArrayNum;
-			ITEMMGR->SetItemOptionsInfoMsg(pDiePlayer, &ItemBase, (MSG_LINKITEMOPTIONS*)&AddMsg);
-			pAttackPlayer->SendMsg( &AddMsg, sizeof( AddMsg ) );
-			++m_nLootedItemCount;
+			CItemSlot* pDSlot = pDiePlayer->GetSlot((POSTYPE)m_LootingItemArray[nArrayNum].dwData);
+			ITEMBASE* ItemBase = (ITEMBASE*)pDSlot->GetItemInfoAbs((POSTYPE)m_LootingItemArray[nArrayNum].dwData);
+			if (!ItemBase)return TRUE;
+			if (ITEMMGR->IsDupItem(ItemBase->wIconIdx) && ItemBase->Durability > 50)
+			{//抢夺叠加物品限制数量修改
+				if (pDSlot->UpdateItemAbs(pDiePlayer, ItemBase->Position, 0, 0, 0, 0, ItemBase->Durability - 50, ItemBase->ItemStatic, ItemBase->ItemQuality, ItemBase->ItemEntry1, ItemBase->ItemEntry2, ItemBase->ItemEntry3, UB_DURA) != EI_TRUE)
+				{
+					return TRUE;
+				}
+				MSG_EXCHANGE_REMOVEITEM RemoveMsg;
+				RemoveMsg.Category = MP_PK;
+				RemoveMsg.Protocol = MP_PK_LOOTING_ITEMLOOTED_UPDATE;
+				RemoveMsg.wAbsPosition = (POSTYPE)m_LootingItemArray[nArrayNum].dwData;
+				pDiePlayer->SendMsg(&RemoveMsg, sizeof(RemoveMsg));
+
+				ItemBase->Position = wEmptyPos;
+				ItemBase->QuickPosition = 0;
+				ItemUpdateToDB(pDiePlayer->GetID(), ItemBase->dwDBIdx, ItemBase->wIconIdx,
+					ItemBase->Durability, ItemBase->Position, ItemBase->QuickPosition, ItemBase->RareIdx, ItemBase->ItemStatic, ItemBase->ItemQuality, ItemBase->ItemEntry1, ItemBase->ItemEntry2, ItemBase->ItemEntry3);
+				pAttackPlayer->SetKilledPlayerID(m_dwDiePlayer);
+				pAttackPlayer->SetLootPos(nArrayNum);
+				ITEMMGR->LootObtainItem(pAttackPlayer, ItemBase->wIconIdx, 50);
+
+				LogItemMoney(m_dwDiePlayer, pDiePlayer->GetObjectName(), m_dwAttacker, pAttackPlayer->GetObjectName(),
+					eLog_ItemObtainPK, pDiePlayer->GetMoney(eItemTable_Inventory), pAttackPlayer->GetMoney(eItemTable_Inventory),
+					0, ItemBase->wIconIdx, ItemBase->dwDBIdx, 0, ItemBase->Position, ItemBase->Durability, pDiePlayer->GetPlayerExpPoint());
+
+				++m_nLootedItemCount;
+			}
+			else
+			{
+				CItemSlot* pDSlot = pDiePlayer->GetSlot((POSTYPE)m_LootingItemArray[nArrayNum].dwData);
+				ITEMBASE ItemBaseEx;
+				if (EI_TRUE != pDSlot->DeleteItemAbs(pDiePlayer, (POSTYPE)m_LootingItemArray[nArrayNum].dwData, &ItemBaseEx))
+					return TRUE;
+				//修复抢夺物品卡百宝武器BUG
+				ITEMMGR->CheckAvataChange(pDiePlayer, ItemBaseEx.wIconIdx, ItemBaseEx.Position);
+				//修复结束
+				MSG_EXCHANGE_REMOVEITEM RemoveMsg;
+				RemoveMsg.Category = MP_PK;
+				RemoveMsg.Protocol = MP_PK_LOOTING_ITEMLOOTED;
+				RemoveMsg.wAbsPosition = (POSTYPE)m_LootingItemArray[nArrayNum].dwData;
+				pDiePlayer->SendMsg(&RemoveMsg, sizeof(RemoveMsg));
+
+				//AttackPlaye
+				ItemBaseEx.Position = wEmptyPos;
+				ItemBaseEx.QuickPosition = 0;
+				ItemUpdateToDB(m_dwAttacker, ItemBaseEx.dwDBIdx, ItemBaseEx.wIconIdx, ItemBaseEx.Durability,
+					ItemBaseEx.Position, ItemBaseEx.QuickPosition, ItemBaseEx.RareIdx, ItemBaseEx.ItemStatic, ItemBaseEx.ItemQuality, ItemBaseEx.ItemEntry1, ItemBaseEx.ItemEntry2, ItemBaseEx.ItemEntry3);
+
+				int rt = pAInven->InsertItemAbs(NULL, ItemBaseEx.Position, &ItemBaseEx, SS_LOCKOMIT);
+				ASSERT(rt == EI_TRUE);
+
+				LogItemMoney(m_dwDiePlayer, pDiePlayer->GetObjectName(), m_dwAttacker, pAttackPlayer->GetObjectName(),
+					eLog_ItemObtainPK, pDiePlayer->GetMoney(eItemTable_Inventory), pAttackPlayer->GetMoney(eItemTable_Inventory),
+					0, ItemBaseEx.wIconIdx, ItemBaseEx.dwDBIdx, 0, ItemBaseEx.Position, ItemBaseEx.Durability, pDiePlayer->GetPlayerExpPoint());
+
+				MSG_LOOTINGITEM AddMsg;
+				AddMsg.Category = MP_PK;
+				AddMsg.Protocol = MP_PK_LOOTING_ITEMLOOTING;
+				AddMsg.dwMoney = m_dwDiePlayer;	//AddMsg.dwDiePlayerIdx
+				AddMsg.ItemInfo = ItemBaseEx;
+				AddMsg.wAbsPosition = nArrayNum;
+
+				ITEMMGR->SetItemOptionsInfoMsg(pDiePlayer, &ItemBaseEx, (MSG_LINKITEMOPTIONS*)&AddMsg);
+
+				pAttackPlayer->SendMsg(&AddMsg, sizeof(AddMsg));
+
+				++m_nLootedItemCount;
+			}
 		}
 	}
+
 	else if( m_LootingItemArray[nArrayNum].nKind == eLI_MONEY )		
 	{
 		MONEYTYPE AMoney	= pAttackPlayer->GetMoney();

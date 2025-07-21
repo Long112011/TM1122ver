@@ -22,7 +22,7 @@
 #include "Player.h"
 #include "PetManager.h"
 #include "GuildManager.h"
-
+#include "ItemManager.h"
 #include "..\[CC]Header\CommonCalcFunc.h"
 
 #include "..\[CC]Header\CommonCalcFunc.h"
@@ -70,22 +70,43 @@ DWORD CAttackManager::GetComboPhyDamage(CObject* pAttacker, CObject* pTargetObje
 	double attackPhyDamage = m_ATTACKCALC.getPhysicalAttackPower(pAttacker, PhyAttackRate, pDamageInfo->bCritical);
 
 	// 暴击判定处理
+// 暴击判定处理
 	if (pDamageInfo->bCritical)
 	{
 		attackPhyDamage *= 1.5f;
 
-		if ((pAttacker->GetObjectKind() & eObjectKind_Monster) && pTargetObject->GetObjectKind() == eObjectKind_Player)
-		{
-			((CPlayer*)pTargetObject)->GetPetManager()->GetPetBuffResultRt(ePB_ReduceCriticalDmg, &attackPhyDamage);
-		}
-
+		// 玩家攻击者：附加品质暴击伤害、特效伤害
 		if (pAttacker->GetObjectKind() == eObjectKind_Player)
 		{
+			// 品质套装暴击加成
+			const ITEMBASE* pTargetItemBase = ITEMMGR->GetItemInfoAbsIn((CPlayer*)pAttacker, 81);
+			if (pTargetItemBase)
+			{//特殊属性
+				ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(pTargetItemBase->wIconIdx);
+				if (pItemInfo && pItemInfo->WeaponType == 3)
+				{
+					attackPhyDamage += (attackPhyDamage * 0.15f); // 攻击者佩戴刀时，奋力一击伤害提升15%
+				}
+			}
+
+			// 套装暴击伤害百分比
+			float fBonusCrit = ((CPlayer*)pAttacker)->GetSetItemQualityStats()->CriticalDamage * 0.01f;
+			attackPhyDamage += (attackPhyDamage * fBonusCrit);
+
+			// 稀有道具固定暴击加成
 			attackPhyDamage += (double)(((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriDamage);
+
 			if (attackPhyDamage < 0.f)
 				attackPhyDamage = 1.f;
 		}
+
+		// 被攻击者为玩家时处理：宠物减暴击伤害（怪打人 / 人打人）
+		if (pTargetObject->GetObjectKind() == eObjectKind_Player)
+		{
+			((CPlayer*)pTargetObject)->GetPetManager()->GetPetBuffResultRt(ePB_ReduceCriticalDmg, &attackPhyDamage);
+		}
 	}
+
 
 	attackPhyDamage += AmplifiedPower;
 	attackPhyDamage *= fDecreaseDamageRate;
@@ -140,10 +161,15 @@ DWORD CAttackManager::GetComboPhyDamage(CObject* pAttacker, CObject* pTargetObje
 			if (g_pServerSystem->GetMap()->IsMapKind(eBossMap))
 				goto CalcEnd;
 
-			fdam = ((CPlayer*)pAttacker)->GetAvatarOption()->TargetPhyDefDown * 0.01f;
+			fdam = (((CPlayer*)pAttacker)->GetAvatarOption()->TargetPhyDefDown * 0.01f) + (((CPlayer*)pAttacker)->GetSetItemQualityStats()->TargetPhyDefDown * 0.01f);
 			attackPhyDamage *= (fdam + 1.0f);
 		}
+		if (pTargetObject->GetObjectKind() == eObjectKind_Player)
+		{//PVP破甲
+			fdam = (((CPlayer*)pAttacker)->GetSetItemQualityStats()->PlayerPhyDefDown * 0.01f);//PVP破甲
+			attackPhyDamage *= (fdam + 1.0f);
 
+		}
 		if (((CPlayer*)pAttacker)->IsMussangMode() && ((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage)
 			attackPhyDamage *= (((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage * 0.01f + 1.0f);
 
@@ -446,6 +472,7 @@ CalcEnd:
 //	return (DWORD)attackPhyDamage;
 //}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//武功物理伤害计算
 DWORD CAttackManager::GetMugongPhyDamage(CObject* pAttacker, CObject* pTargetObject, float PhyAttackRate, float fCriticalRate,
 	RESULTINFO* pDamageInfo, DWORD AmplifiedPower, float fDecreaseDamageRate)
 {
@@ -454,25 +481,44 @@ DWORD CAttackManager::GetMugongPhyDamage(CObject* pAttacker, CObject* pTargetObj
 
 	if (pDamageInfo->bCritical)
 	{
+		// 默认暴击倍率
 		attackPhyDamage *= 1.5f;
 
-		if ((pAttacker->GetObjectKind() & eObjectKind_Monster) && pTargetObject->GetObjectKind() == eObjectKind_Player)
-		{
-			((CPlayer*)pTargetObject)->GetPetManager()->GetPetBuffResultRt(ePB_ReduceCriticalDmg, &attackPhyDamage);
-		}
-
-		if ((pAttacker->GetObjectKind() & eObjectKind_Player) && pTargetObject->GetObjectKind() == eObjectKind_Player)
-		{
-			((CPlayer*)pTargetObject)->GetPetManager()->GetPetBuffResultRt(ePB_ReduceCriticalDmg, &attackPhyDamage);
-		}
-
+		// ① 玩家佩戴武器 + 装备暴击伤害加成
 		if (pAttacker->GetObjectKind() == eObjectKind_Player)
 		{
-			attackPhyDamage += (double)(((CPlayer*)pAttacker)->GetUniqueItemStats()->nCriDamage);
-			if (attackPhyDamage < 0.f)
-				attackPhyDamage = 1.f;
+			CPlayer* pPlayer = (CPlayer*)pAttacker;
+
+			const ITEMBASE* pTargetItemBase = ITEMMGR->GetItemInfoAbsIn(pPlayer, 81); // 81 = 武器槽
+			if (pTargetItemBase)
+			{//特殊属性
+				ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(pTargetItemBase->wIconIdx);
+				if (pItemInfo && pItemInfo->WeaponType == 3) // 刀类武器
+				{
+					attackPhyDamage += (attackPhyDamage * 0.15f); // +15%奋力一击伤害
+				}
+			}
+
+			// 品质系统暴击伤害倍率
+			attackPhyDamage += (attackPhyDamage * (pPlayer->GetSetItemQualityStats()->CriticalDamage * 0.01f));
+
+			// 稀有/特有装备附加暴击伤害
+			attackPhyDamage += (float)pPlayer->GetUniqueItemStats()->nCriDamage;
+		}
+
+		// ② 被攻击者是玩家 → 宠物暴击减伤
+		if (pTargetObject->GetObjectKind() == eObjectKind_Player)
+		{
+			CPlayer* pTargetPlayer = (CPlayer*)pTargetObject;
+			float fReduceCritDmg = 0.0f;
+			pTargetPlayer->GetPetManager()->GetPetBuffResultRt(ePB_ReduceCriticalDmg, &fReduceCritDmg);
+
+			// 安全判定与减伤应用
+			if (fReduceCritDmg > 0.0f && fReduceCritDmg <= 1.0f)
+				attackPhyDamage *= (1.0f - fReduceCritDmg);
 		}
 	}
+
 
 	attackPhyDamage += AmplifiedPower;
 	attackPhyDamage *= fDecreaseDamageRate;
@@ -513,32 +559,66 @@ DWORD CAttackManager::GetMugongPhyDamage(CObject* pAttacker, CObject* pTargetObj
 
 	float fdam = 0.0f;
 	if (pAttacker->GetObjectKind() == eObjectKind_Player)
-	{
+	{//外功伤害计算
 		fdam = (((CPlayer*)pAttacker)->GetShopItemStats()->WoigongDamage * 0.01f) +
-			(((CPlayer*)pAttacker)->GetAvatarOption()->WoigongDamage * 0.01f);
-		attackPhyDamage *= (fdam + 1.0f);
+			(((CPlayer*)pAttacker)->GetAvatarOption()->WoigongDamage * 0.01f) + (((CPlayer*)pAttacker)->GetSetItemQualityStats()->WoigongDamage * 0.01f);
 
+		attackPhyDamage *= (fdam + 1.0f);//PVP  倍率在前面全局已设置
+
+		//SW060719 巩颇器牢飘
 		if (((CPlayer*)pAttacker)->GetGuildIdx())
 			GUILDMGR->GetGuildPlustimeRt(((CPlayer*)pAttacker)->GetGuildIdx(), eGPT_DamageUp, &attackPhyDamage);
 
+		////PET %傍拜仿========================================================
 		((CPlayer*)pAttacker)->GetPetManager()->GetPetBuffResultRt(ePB_Demage_Percent, &attackPhyDamage);
-
-		if (pTargetObject->GetObjectKind() & eObjectKind_Monster)
-		{
+		//获取佩戴武器信息
+		const ITEMBASE* pTargetItemBase = ITEMMGR->GetItemInfoAbsIn((CPlayer*)pAttacker, 81);
+		ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(pTargetItemBase->wIconIdx);
+		// RaMa - 05.10.10 -> 秦		榜啊搁 可记眠啊
+		if (pTargetObject->GetObjectKind() == eObjectKind_Monster)
+		{//PVE破甲
+			//if( g_pServerSystem->GetMapNum() != BOSSMONSTER_MAP &&
+			//	g_pServerSystem->GetMapNum() != BOSSMONSTER_2NDMAP )
 			if (FALSE == g_pServerSystem->GetMap()->IsMapKind(eBossMap))
 			{
-				fdam = ((CPlayer*)pAttacker)->GetAvatarOption()->TargetPhyDefDown * 0.01f;
-				attackPhyDamage *= (fdam + 1.0f);
-			}
+				fdam = (((CPlayer*)pAttacker)->GetAvatarOption()->TargetPhyDefDown * 0.01f);
+				//attackPhyDamage *= (fdam+1.0f);
+			}//特殊属性
+			if (pItemInfo->WeaponType == 5)//如果穿戴的是弓，增加15%破甲
+				fdam += 0.15f;
+			//无视对方15%防御
+			fdam += fdam * (((CPlayer*)pAttacker)->GetSetItemQualityStats()->TargetPhyDefDown * 0.01f);
+
+
 		}
+		if (pTargetObject->GetObjectKind() == eObjectKind_Player)
+		{//PVP破甲//特殊属性
+			if (pItemInfo->WeaponType == 5)//如果穿戴的是弓，增加15%破甲（无视对方15%防御）
+				fdam = (((CPlayer*)pAttacker)->GetSetItemQualityStats()->PlayerPhyDefDown * 0.01f) + 0.15f;//PVP破甲
+			else
+				fdam = (((CPlayer*)pAttacker)->GetSetItemQualityStats()->PlayerPhyDefDown * 0.01f);//PVP破甲
+
+			//attackPhyDamage *= (fdam+1.0f);
+			attackPhyDamage *= (fdam + 1.0f);
+		}
+		// RaMa - 06.11.13 -> 公街葛靛老锭 傍拜仿刘啊 酒官鸥
 		if (((CPlayer*)pAttacker)->IsMussangMode() && ((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage)
 			attackPhyDamage *= (((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage * 0.01f + 1.0f);
 
+		// magi82 - UniqueItem(070627)
 		attackPhyDamage += (double)(((CPlayer*)pAttacker)->GetUniqueItemStats()->nPhyDamage);
+		//特殊属性
+		if (pItemInfo->WeaponType == 6)//攻击者佩戴暗器时，增加5%技能伤害
+		{
+			if (pAttacker->GetLife() < (pAttacker->DoGetMaxLife()) * 0.5)
+				attackPhyDamage = attackPhyDamage * 1.20;//血量低于50%时，15%技能伤害
+			else
+				attackPhyDamage = attackPhyDamage * 1.05;
+		}
 		if (attackPhyDamage < 0.f)
 			attackPhyDamage = 1.f;
 	}
-	else if (pAttacker->GetObjectKind() & eObjectKind_Monster)
+	else if (pAttacker->GetObjectKind() & eObjectKind_Monster)//怪物打人的伤害计算
 	{
 		if (pTargetObject->GetObjectKind() == eObjectKind_Player)
 		{
@@ -574,10 +654,18 @@ DWORD CAttackManager::GetMugongAttrDamage(CObject* pAttacker, CObject* pTargetOb
 		attackAttrDamage *= (1.0f + ((CPlayer*)pAttacker)->GetAvatarOption()->PVPAttack);
 	}
 
-	if (pDamageInfo->bDecisive)
+	if (pDamageInfo->bDecisive)//武功属性攻击暴击伤害
 	{
 		attackAttrDamage += attackAttrDamage * 0.6f;
+		if (pAttacker->GetObjectKind() == eObjectKind_Player)
+		{//特殊属性
+			const ITEMBASE* pTargetItemBase = ITEMMGR->GetItemInfoAbsIn((CPlayer*)pAttacker, 81);
+			ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(pTargetItemBase->wIconIdx);
+			if (pItemInfo->WeaponType == 3)//攻击者穿戴刀时，提升15%奋力一击伤害
+				attackAttrDamage += (attackAttrDamage * 0.15f);//法师暴击伤害倍率设置 
 
+			attackAttrDamage += (attackAttrDamage * ((((CPlayer*)pAttacker)->GetSetItemQualityStats()->DecisiveDamage) * 0.01f));
+		}
 		if ((pAttacker->GetObjectKind() & eObjectKind_Monster) && pTargetObject->GetObjectKind() == eObjectKind_Player)
 		{
 			((CPlayer*)pTargetObject)->GetPetManager()->GetPetBuffResultRt(ePB_ReduceCriticalDmg, &attackAttrDamage);
@@ -638,29 +726,64 @@ DWORD CAttackManager::GetMugongAttrDamage(CObject* pAttacker, CObject* pTargetOb
 
 	float fdam = 0.0f;
 	if (pAttacker->GetObjectKind() == eObjectKind_Player)
-	{
+	{//内功伤害计算
 		fdam = (((CPlayer*)pAttacker)->GetShopItemStats()->NeagongDamage * 0.01f) +
-			(((CPlayer*)pAttacker)->GetAvatarOption()->NeagongDamage * 0.01f);
-		resAttrDamage *= (fdam + 1.0f);
+			(((CPlayer*)pAttacker)->GetAvatarOption()->NeagongDamage * 0.01f) + (((CPlayer*)pAttacker)->GetSetItemQualityStats()->NaegongDamage * 0.01f);
 
+		//resAttrDamage = (resAttrDamage*(fdam+1.0f));
+		resAttrDamage *= (fdam + 1.0f);//PVP  倍率在前面全局已设置
+
+		//SW060719 巩颇器牢飘
 		if (((CPlayer*)pAttacker)->GetGuildIdx())
 			GUILDMGR->GetGuildPlustimeRt(((CPlayer*)pAttacker)->GetGuildIdx(), eGPT_DamageUp, &resAttrDamage);
 
+		//PET %傍拜仿
 		((CPlayer*)pAttacker)->GetPetManager()->GetPetBuffResultRt(ePB_Demage_Percent, &resAttrDamage);
+		//获取佩戴武器信息
+		const ITEMBASE* pTargetItemBase = ITEMMGR->GetItemInfoAbsIn((CPlayer*)pAttacker, 81);
+		ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(pTargetItemBase->wIconIdx);
 
-		if (pTargetObject->GetObjectKind() & eObjectKind_Monster)
-		{
-			if (g_pServerSystem->GetMap()->IsMapKind(eBossMap))
-				goto CalcEnd;
+		// RaMa - 05.10.10 -> 秦榜啊搁 可记眠啊
+		if (pTargetObject->GetObjectKind() == eObjectKind_Monster)
+		{//PVE破魔
+			//if( g_pServerSystem->GetMapNum() == BOSSMONSTER_MAP ||
+			//	g_pServerSystem->GetMapNum() == BOSSMONSTER_2NDMAP )	goto CalcEnd;
+			//if( g_pServerSystem->GetMap()->IsMapKind(eBossMap) )
+			//	goto CalcEnd;
+			if (FALSE == g_pServerSystem->GetMap()->IsMapKind(eBossMap))
+			{
+				fdam = (((CPlayer*)pAttacker)->GetAvatarOption()->TargetAttrDefDown * 0.01f);
+			}//特殊属性
+			if (pItemInfo->WeaponType == 6)//攻击者佩戴暗器时，pve破魔15%
+				fdam += 0.15f;
+			//无视对方15%防御
+			fdam += fdam * (((CPlayer*)pAttacker)->GetSetItemQualityStats()->TargetPhyDefDown * 0.01f);
 
-			fdam = ((CPlayer*)pAttacker)->GetAvatarOption()->TargetAttrDefDown * 0.01f;
+
+		}
+		if (pTargetObject->GetObjectKind() == eObjectKind_Player)
+		{//PVP破魔//特殊属性
+			if (pItemInfo->WeaponType == 6)//攻击者佩戴暗器时，pvp破魔8%
+				fdam = ((CPlayer*)pAttacker)->GetSetItemQualityStats()->PlayerAttrDefDown * 0.01f + 0.08f;
+			else
+				fdam = ((CPlayer*)pAttacker)->GetSetItemQualityStats()->PlayerAttrDefDown * 0.01f;
+
 			resAttrDamage *= (fdam + 1.0f);
 		}
-
+		// RaMa - 06.11.13 -> 公街葛靛老锭 傍拜仿刘啊 酒官鸥
 		if (((CPlayer*)pAttacker)->IsMussangMode() && ((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage)
 			resAttrDamage *= (((CPlayer*)pAttacker)->GetAvatarOption()->MussangDamage * 0.01f + 1.0f);
 
+		// magi82 - UniqueItem(070627)
 		resAttrDamage *= (((CPlayer*)pAttacker)->GetUniqueItemStats()->nAttR * 0.01f + 1.0f);
+		//特殊属性
+		if (pItemInfo->WeaponType == 6)//攻击者佩戴暗器时，增加5%技能伤害
+		{
+			if (pAttacker->GetLife() < (pAttacker->DoGetMaxLife()) * 0.5)
+				resAttrDamage = resAttrDamage * 1.15f;//血量低于50%时，15%技能伤害
+			else
+				resAttrDamage = resAttrDamage * 1.05f;
+		}
 	}
 	else if (pAttacker->GetObjectKind() & eObjectKind_Monster)
 	{
@@ -848,7 +971,18 @@ void CAttackManager::Attack(BOOL bMugong, CObject* pAttacker,CObject* pTarget,DW
 
 	// 获取目标闪避率
 	float fDodgeRate = pTarget->GetDodgeRate();
+	// 若目标为玩家，处理装备影响
+	if (pTarget->GetObjectKind() == eObjectKind_Player)
+	{//特殊属性
+		// 判断是否佩戴“枪”（WeaponType == 4），加成 +10%
+		const ITEMBASE* pTargetItemBase = ITEMMGR->GetItemInfoAbsIn((CPlayer*)pTarget, 81);
+		ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(pTargetItemBase->wIconIdx);
+		if (pItemInfo && pItemInfo->WeaponType == 4)
+			fDodgeRate += fDodgeRate * 0.1f;
 
+		// 套装品质闪避加成
+		fDodgeRate += fDodgeRate * (((CPlayer*)pTarget)->GetSetItemQualityStats()->wDodgeRate * 0.01f);
+	}
 	//  PvP 闪避修正逻辑（攻击者命中 & 目标闪避）
 	if (pAttacker->GetObjectKind() == eObjectKind_Player && pTarget->GetObjectKind() == eObjectKind_Player)
 	{
@@ -860,7 +994,15 @@ void CAttackManager::Attack(BOOL bMugong, CObject* pAttacker,CObject* pTarget,DW
 		fDodgeRate += ((CPlayer*)pTarget)->GetItemStats()->PVPADodge;
 		fDodgeRate += ((CPlayer*)pTarget)->GetAvatarOption()->PVPADodge;
 	}
+	if (pAttacker->GetObjectKind() == eObjectKind_Player)
+	{//特殊属性
+		const ITEMBASE* pTargetItemBase = ITEMMGR->GetItemInfoAbsIn((CPlayer*)pAttacker, 81);
+		ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(pTargetItemBase->wIconIdx);
+		if (pItemInfo->WeaponType == 1)//攻击者佩戴剑时，命中增加10
+			fDodgeRate = fDodgeRate - 10;
 
+		fDodgeRate -= (fDodgeRate * (((CPlayer*)pAttacker)->GetSetItemQualityStats()->fDodgeRate) * 0.01f);//装备命中加成
+	}
 	if(fDodgeRate != 0)
 	{
 		if(CheckRandom(fDodgeRate,pTarget->GetLevel(),pAttacker->GetLevel()) == TRUE)
@@ -955,8 +1097,14 @@ void CAttackManager::Attack(BOOL bMugong, CObject* pAttacker,CObject* pTarget,DW
 	}
 	#endif
 	*/
-	if(PhyAttackRate > 0.000001f)
+	//持续伤害加成计算
+	if (pAttacker->GetObjectKind() == eObjectKind_Player)
 	{
+		AttAttackMin += AttAttackMin * (((CPlayer*)pAttacker)->GetSetItemQualityStats()->ContinueAttAttack) * 0.01f ;
+		AttAttackMax += AttAttackMax * (((CPlayer*)pAttacker)->GetSetItemQualityStats()->ContinueAttAttack) * 0.01f ;
+	}
+	if(PhyAttackRate > 0.000001f)
+	{//外功伤害
 		if(bMugong)
 		{
 			PhyDamage = GetMugongPhyDamage(pAttacker,pTarget,PhyAttackRate,fCriticalRate,pDamageInfo,AmplifiedPower,fDecreaseDamageRate );
@@ -969,6 +1117,7 @@ void CAttackManager::Attack(BOOL bMugong, CObject* pAttacker,CObject* pTarget,DW
 
 	if(AttAttackMax != 0)
 	{
+		// 内功伤害
 		AttrDamage = GetMugongAttrDamage(pAttacker,pTarget,Attrib,AttAttackMin,AttAttackMax,AttAttackRate,fCriticalRate,pDamageInfo,fDecreaseDamageRate );
 	}
 
@@ -978,7 +1127,55 @@ void CAttackManager::Attack(BOOL bMugong, CObject* pAttacker,CObject* pTarget,DW
 		((CPlayer*)pTarget)->GetPetManager()->GetPetBuffResultRt(ePB_ReduceDemageRate, &AttrDamage);
 	}
 
-
+	//装备词条最终伤害加成
+	if (pAttacker->GetObjectKind() == eObjectKind_Player)
+	{
+		if (PhyAttackRate > 0.000001f)
+		{
+			if (pTarget->GetObjectKind() == eObjectKind_Player)
+			{//PVP
+				PhyDamage += (PhyDamage * (((CPlayer*)pAttacker)->GetSetItemQualityStats()->AttPlayerDamage) * 0.01f);
+			}
+			if (pTarget->GetObjectKind() == eObjectKind_Monster)
+			{//PVE
+				PhyDamage += (PhyDamage * (((CPlayer*)pAttacker)->GetSetItemQualityStats()->AttMonsterDamage) * 0.01f);
+			}
+		}
+		if (AttAttackMax != 0)
+		{
+			if (pTarget->GetObjectKind() == eObjectKind_Player)
+			{//PVP
+				AttrDamage += (AttrDamage * (((CPlayer*)pAttacker)->GetSetItemQualityStats()->AttPlayerDamage) * 0.01f);
+			}
+			if (pTarget->GetObjectKind() == eObjectKind_Monster)
+			{//PVE
+				AttrDamage += (AttrDamage * (((CPlayer*)pAttacker)->GetSetItemQualityStats()->AttMonsterDamage) * 0.01f);
+			}
+		}
+	}
+	float fdam = 0.0f;
+	//装备词条最终伤害减少
+	if (pTarget->GetObjectKind() == eObjectKind_Player)
+	{
+		fdam = ((CPlayer*)pTarget)->GetSetItemQualityStats()->RealDamageDown * 0.01f;
+		if (PhyAttackRate > 0.000001f)
+			PhyDamage *= (1.0f - fdam);
+		if (AttAttackMax != 0)
+			AttrDamage *= (1.0f - fdam);
+	}
+	//几率吸血
+	if (pAttacker->GetObjectKind() == eObjectKind_Player)
+	{
+		WORD value = rand() % 100 + 1;
+		if (value < (((CPlayer*)pAttacker)->GetSetItemQualityStats()->PVPLifePlus))
+		{
+			DWORD NowLife = ((CPlayer*)pAttacker)->GetLife();
+			if (PhyAttackRate > 0.000001f)
+				((CPlayer*)pAttacker)->SetLife(NowLife + (PhyDamage * 0.5f));
+			if (AttAttackMax != 0)
+				((CPlayer*)pAttacker)->SetLife(NowLife + (AttrDamage * 0.5f));
+		}
+	}
 	pAttacker->CalcRealAttack(pTarget, PhyDamage, AttrDamage, pDamageInfo, bContinueAttack );
 
 	//== 捞惑窍霸 登菌蝶 T_T 老窜 烙矫肺 弊成 癌矫促!
@@ -1104,7 +1301,13 @@ void CAttackManager::Attack(BOOL bMugong, CObject* pAttacker,CObject* pTarget,DW
 			pDamageInfo->RealDamage = (DWORD)(pDamageInfo->RealDamage * 1.05);
 	}
 #endif
-
+	if (pTarget->GetObjectKind() == eObjectKind_Player)
+	{//特殊属性
+		const ITEMBASE* pTargetItemBase = ITEMMGR->GetItemInfoAbsIn((CPlayer*)pTarget, 81);
+		ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(pTargetItemBase->wIconIdx);
+		if (pItemInfo->WeaponType == 4)//被攻击者佩戴枪时，最终伤害减少5%
+			pDamageInfo->RealDamage = (DWORD)(pDamageInfo->RealDamage * 0.95);
+	}
 	// magi82 cheat damage //////////////////////////////////////////////////////////////////////////
 	float fRate = m_nDamageRate * 0.01f;
 

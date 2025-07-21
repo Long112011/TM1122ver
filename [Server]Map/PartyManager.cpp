@@ -955,17 +955,17 @@ void CPartyManager::DoMemberLevelUp(DWORD PartyIDX, DWORD PlayerIDX, LEVELTYPE l
 	pParty->SendMsgExceptOne(&msg, sizeof(msg), PlayerIDX);
 }
 
-void CPartyManager::SendObtainItemMsg(CPlayer* pPlayer, WORD ObtainIdx)
+void CPartyManager::SendObtainItemMsg(CPlayer* pPlayer, WORD ObtainIdx, WORD ItemQuality)
 {
 	CParty* pParty = PARTYMGR->GetParty(pPlayer->GetPartyIdx());
 	if(pParty == NULL)
 		return;
-	MSG_DWORD_WORD msg;
+	MSG_DWORD_WORD2 msg;
 	msg.Category = MP_PARTY;
 	msg.Protocol = MP_PARTY_MONSTER_OBTAIN_NOTIFY;
 	msg.dwData = pPlayer->GetID();
-
-	msg.wData = ObtainIdx;
+	msg.wData1 = ObtainIdx;
+	msg.wData2 = ItemQuality;
 	pParty->SendMsgExceptOneinChannel(&msg, sizeof(msg), pPlayer->GetID(), pPlayer->GetGridID());
 }
 

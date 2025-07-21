@@ -481,6 +481,10 @@ extern void LoginIDDialog_hide(LONG lId, void * p, DWORD we);
 
 extern void		CS_BtnChangePass(LONG lId, void* p, DWORD we);
 extern void OfficialUpGradeDlg_Func(LONG lId, void* p, DWORD we);
+//×°±¸¾õÐÑ
+extern void ItemQuality_DlgFunc(LONG lId, void* p, DWORD we);
+extern void ItemQualityChange_DlgFunc(LONG lId, void* p, DWORD we);
+extern void GGD_Func(LONG lId, void* p, DWORD we);// ÎäÆ÷Éý½×Öµ×ªÒÆ¾í
 #endif //_GLOBALEVENTFUNC_H_
 
 

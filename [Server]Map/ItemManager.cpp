@@ -1454,7 +1454,7 @@ int CItemManager::ObtainItemEx(CPlayer * pPlayer, ITEMOBTAINARRAYINFO * pArrayIn
 						return 4;
 						ASSERT(0);
 					}
-					ItemInsertToDB(pPlayer->GetID(), obtainItemIdx, obtainItemNum, EmptyCellPos[i], MAKEDWORD(ArrayInfoUnitNum, pArrayInfo->wObtainArrayID), bSeal, BuyType, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
+					ItemInsertToDB(pPlayer->GetID(), obtainItemIdx, obtainItemNum, EmptyCellPos[i], MAKEDWORD(ArrayInfoUnitNum, pArrayInfo->wObtainArrayID), bSeal, BuyType,0, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
 					obtainItemNum = 0;
 				}
 			}
@@ -6862,6 +6862,129 @@ void CItemManager::NetworkMsgParseExt(DWORD dwConnectionIndex, BYTE Protocol, vo
 			msg.dwData2 = rt;
 			pPlayer->SendMsg(&msg, sizeof(msg));
 		}
+	}
+	break;
+	case MP_ITEMEXT_NJQUEST_SYN:
+	{//牛巨任务协议
+		MSGNJQUESTITEMUSE* pmsg = (MSGNJQUESTITEMUSE*)pMsg;
+		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pmsg->dwObjectID);
+		if (!pPlayer) return;
+		//if (pPlayer->IsSafeLock())
+		//{
+		//	MSG_DWORD2 msg;
+		//	msg.Category = MP_SAFELOCK;
+		//	msg.Protocol = MP_SAFELOCK_LOCKEDTOCLIENT_ACK;
+		//	msg.dwData1 = 4;
+		//	pPlayer->SendMsg(&msg, sizeof(msg));
+		//	return;
+		//}
+		const ITEMBASE* pItem = GetItemInfoAbsIn(pPlayer, pmsg->wPos);
+		if (!pItem) return;
+		if (pItem->dwDBIdx != pmsg->dwItemDBidx)return;
+
+		SEND_SHOPITEM_BASEINFO msg;
+		msg.Category = MP_ITEMEXT;
+		msg.Protocol = MP_ITEMEXT_NJQUEST_NACK;
+
+		if (EI_TRUE != DiscardItem(pPlayer, pmsg->wPos, pmsg->dwItemIdx, 1))
+		{
+			pPlayer->SendMsg(&msg, sizeof(msg));
+			return;
+		}
+		if (pmsg->dwItemIdx == eLazyItem_N)
+		{
+			UpdateQuestN(pmsg->dwObjectID);
+			SEND_SUBQUEST_DATA Submsg;
+			Submsg.Category = MP_QUEST;
+			Submsg.Protocol = MP_QUEST_SUBDATA_LOAD;
+			Submsg.dwObjectID = pPlayer->GetID();
+			Submsg.QuestList[0].QuestIdx = 286;
+			Submsg.QuestList[0].SubQuestIdx = 9;
+			Submsg.QuestList[0].state = 0;
+			Submsg.QuestList[0].time = 0;
+			Submsg.QuestList[1].QuestIdx = 286;
+			Submsg.QuestList[1].SubQuestIdx = 11;
+			Submsg.QuestList[1].state = 0;
+			Submsg.QuestList[1].time = 0;
+			Submsg.QuestList[2].QuestIdx = 286;
+			Submsg.QuestList[2].SubQuestIdx = 12;
+			Submsg.QuestList[2].state = 0;
+			Submsg.QuestList[2].time = 0;
+			Submsg.wCount = 3;
+			pPlayer->SendMsg(&Submsg, sizeof(Submsg));
+
+			SEND_MAINQUEST_DATA Mainmsg;
+
+			Mainmsg.Category = MP_QUEST;
+			Mainmsg.Protocol = MP_QUEST_MAINDATA_LOAD;
+			Mainmsg.dwObjectID = pPlayer->GetID();
+			Mainmsg.QuestList[0].QuestIdx = 286;
+			Mainmsg.QuestList[0].state.value = 0;
+			Mainmsg.QuestList[0].EndParam = 0;
+			Mainmsg.QuestList[0].Time = 0;
+			Mainmsg.QuestList[0].CheckType = 0;
+			Mainmsg.QuestList[0].CheckTime = 0;
+			Mainmsg.wCount = 1;
+			pPlayer->SendMsg(&Mainmsg, Mainmsg.GetSize());
+			SEND_QUESTITEM Itemmsg;
+			Itemmsg.Category = MP_QUEST;
+			Itemmsg.Protocol = MP_QUEST_ITEM_LOAD;
+			Itemmsg.dwObjectID = pPlayer->GetID();
+			Itemmsg.ItemList[0].ItemIdx = 545;
+			Itemmsg.ItemList[0].Count = 1;
+			Itemmsg.ItemList[0].QuestIdx = 286;
+
+			Itemmsg.ItemList[1].ItemIdx = 543;
+			Itemmsg.ItemList[1].Count = 1;
+			Itemmsg.ItemList[1].QuestIdx = 286;
+			Itemmsg.wCount = 2;
+			pPlayer->SendMsg(&Itemmsg, Itemmsg.GetSize());
+		}
+		if (pmsg->dwItemIdx == eLazyItem_J)
+		{
+			UpdateQuestJ(pmsg->dwObjectID);
+			SEND_SUBQUEST_DATA Submsg;
+			Submsg.Category = MP_QUEST;
+			Submsg.Protocol = MP_QUEST_SUBDATA_LOAD;
+			Submsg.dwObjectID = pPlayer->GetID();
+			Submsg.QuestList[0].QuestIdx = 283;
+			Submsg.QuestList[0].SubQuestIdx = 7;
+			Submsg.QuestList[0].state = 0;
+			Submsg.QuestList[0].time = 0;
+			Submsg.QuestList[1].QuestIdx = 283;
+			Submsg.QuestList[1].SubQuestIdx = 8;
+			Submsg.QuestList[1].state = 0;
+			Submsg.QuestList[1].time = 0;
+			Submsg.wCount = 2;
+			pPlayer->SendMsg(&Submsg, sizeof(Submsg));
+
+			SEND_MAINQUEST_DATA Mainmsg;
+
+			Mainmsg.Category = MP_QUEST;
+			Mainmsg.Protocol = MP_QUEST_MAINDATA_LOAD;
+			Mainmsg.dwObjectID = pPlayer->GetID();
+			Mainmsg.QuestList[0].QuestIdx = 283;
+			Mainmsg.QuestList[0].state.value = 0;
+			Mainmsg.QuestList[0].EndParam = 0;
+			Mainmsg.QuestList[0].Time = 0;
+			Mainmsg.QuestList[0].CheckType = 0;
+			Mainmsg.QuestList[0].CheckTime = 0;
+			Mainmsg.wCount = 1;
+			pPlayer->SendMsg(&Mainmsg, Mainmsg.GetSize());
+			SEND_QUESTITEM Itemmsg;
+			Itemmsg.Category = MP_QUEST;
+			Itemmsg.Protocol = MP_QUEST_ITEM_LOAD;
+			Itemmsg.dwObjectID = pPlayer->GetID();
+			Itemmsg.ItemList[0].ItemIdx = 536;
+			Itemmsg.ItemList[0].Count = 1;
+			Itemmsg.ItemList[0].QuestIdx = 283;
+			Itemmsg.wCount = 1;
+			pPlayer->SendMsg(&Itemmsg, Itemmsg.GetSize());
+		}
+		msg.Protocol = MP_ITEMEXT_NJQUEST_ACK;
+		msg.ShopItemIdx = pItem->dwDBIdx;
+		msg.ShopItemPos = pmsg->wPos;
+		pPlayer->SendMsg(&msg, sizeof(msg));
 	}
 	break;
 	default:

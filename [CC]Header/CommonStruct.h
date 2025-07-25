@@ -6326,5 +6326,14 @@ struct SEND_SHOPITEM_BASEINFO1 : public MSGBASE
 	DWORD GradeFrom;           // 源物品等级
 	DWORD GradeTo;             // 目标物品等级
 };
+//牛巨任务物品使用数据包结构
+struct MSGNJQUESTITEMUSE :public MSGBASE
+{
+	DWORD dwItemDBidx;
+	DWORD dwItemIdx;
+	WORD  wPos;
+	BYTE  bType;
+	BOOL  bRepeat;
+};
 #pragma pack(pop)
 #endif 

@@ -65,7 +65,7 @@ public:
 	CQuest*			GetQuest( DWORD dwQuestIdx )		{ return m_QuestTable.GetData( dwQuestIdx ); }
 	CYHHashTable<CQuest>*	GetQuestTable()				{ return &m_QuestTable; }
 	char*			GetQuestTitle( DWORD dwQuestIdx );
-
+	BOOL    IsStartQuest(DWORD dwQuestIdx);
 	char*			GetQuestDesc( DWORD dwQuestIdx );
 	BOOL	LoadQuestScript( char* strFileName );
 	BOOL	LoadQuestString( char* strFileName );

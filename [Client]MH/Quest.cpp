@@ -234,6 +234,21 @@ void CQuest::UnRegistCheckTime()
 
 	m_CheckTime.value = 0;
 }
+BOOL  CQuest::IsStartQuest()
+{//判断是否已经接了牛任务
+	if (m_CurSubQuestInfoArray[0] ||
+		(!m_CurSubQuestInfoArray[0] && m_CurSubQuestInfoArray[1]))
+		return FALSE;
+	else
+	{
+		BOOL bIsStart = FALSE;
+		for (int i = 0; i < 20; i++)
+		{
+			bIsStart |= (m_CurSubQuestInfoArray[i] ? TRUE : FALSE);
+		}
+		return bIsStart;
+	}
+}
 
 
 

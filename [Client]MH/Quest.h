@@ -82,6 +82,7 @@ public:
 
 	void	RegistCheckTime( BYTE bCheckType, DWORD dwCheckTime );
 	void	UnRegistCheckTime();
+	BOOL    IsStartQuest();
 };
 
 

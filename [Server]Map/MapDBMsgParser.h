@@ -2031,7 +2031,9 @@ void ItemQualityChangeUpdateToDB(DWORD CharacterIdx, DWORD dwDBIdx, WORD wItemId
 void RItemQualityChangeUpdate(LPQUERY pData, LPDBMESSAGE pMessage);
 //商城使用日志
 void ItemShopUseLog(WORD Type, DWORD dwChrID, char* CharName, WORD wItemIdx, char* ItemName, WORD wItemNum, DWORD TotalMall, DWORD UseMall, DWORD LastMall, DWORD TotalGold, DWORD UseGold, DWORD LastGold, DWORD TotalMoney, DWORD UseMoney, DWORD LastMoney);
-
+//牛巨任务
+void UpdateQuestN(DWORD characterIdx);
+void UpdateQuestJ(DWORD characterIdx);
 
 #endif //__MAPBMSGPARSER_H__
 

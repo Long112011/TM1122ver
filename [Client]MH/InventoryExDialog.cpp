@@ -1536,6 +1536,33 @@ void CInventoryExDialog::UseItem(CItem* pItem, BYTE ActionType)
 			GAMEIN->GetSkillPointResetDlg()->SetActive(TRUE);
 			OBJECTSTATEMGR->StartObjectState(HERO, eObjectState_Deal);
 		}
+		else if (pInfo->ItemIdx == eLazyItem_N || pInfo->ItemIdx == eLazyItem_J)
+		{//牛巨任务物品使用
+			if (MAP->GetMapNum() == 75 || MAP->GetMapNum() == 72)
+			{
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2771));
+				return;
+			}
+			BOOL IsGetQuest = FALSE;
+			if (pInfo->ItemIdx == eLazyItem_N)
+				IsGetQuest = QUESTMGR->IsStartQuest(286);
+			else if (pInfo->ItemIdx == eLazyItem_J)
+				IsGetQuest = QUESTMGR->IsStartQuest(283);
+			if (IsGetQuest)
+			{
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2272));
+				return;
+			}
+			MSGNJQUESTITEMUSE msg;
+			msg.Category = MP_ITEMEXT;
+			msg.Protocol = MP_ITEMEXT_NJQUEST_SYN;
+			msg.dwObjectID = HEROID;
+			msg.dwItemDBidx = pItem->GetDBIdx();
+			msg.dwItemIdx = pItem->GetItemIdx();
+			msg.wPos = pItem->GetPosition();
+			NETWORK->Send(&msg, sizeof(msg));
+			return;
+			}
 		else
 		{
 			if (pInfo->ItemKind == eSHOP_ITEM_CHARM && pInfo->EquipKind)

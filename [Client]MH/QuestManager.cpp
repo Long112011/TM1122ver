@@ -1088,7 +1088,14 @@ BOOL CQuestManager::IsQuestStarted( DWORD dwQuestIdx )
 	}
 	return FALSE;
 }
-
+BOOL  CQuestManager::IsStartQuest(DWORD dwQuestIdx)
+{
+	CQuest* pQuest = m_QuestTable.GetData(dwQuestIdx);
+	if (pQuest)
+	{
+		return pQuest->IsStartQuest();
+	}
+}
 char* CQuestManager::GetQuestTitle( DWORD dwQuestIdx )
 {
 	CQuest* pQuest = m_QuestTable.GetData( dwQuestIdx );

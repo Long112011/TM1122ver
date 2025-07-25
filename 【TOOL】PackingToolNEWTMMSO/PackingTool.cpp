@@ -34,7 +34,7 @@ UINT FontSize, FontColor, FontWeight, SizeX, SizeY;
 void CPackingToolApp::LoadRegistry(BYTE flag)
 {
 	FontWeight = GetProfileInt("Init", "FontWeight", 0);
-	FontColor = GetProfileInt("Init", "FontColor", 0);
+	FontColor = RGBA_MAKE(0, 255, 0, 0);  // 强制绿色
 	FontSize = GetProfileInt("Init", "FontSize", 0);
 
 	FontName = GetProfileString("Init", "FontName");

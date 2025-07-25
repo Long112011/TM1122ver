@@ -885,9 +885,8 @@ void CMacroManager::KeyboardInput(CKeyboard* keyInfo)
 		}
 		if ((keyInfo->GetKeyDown(KEY_Q) && keyInfo->GetKeyPressed(KEY_MENU)))
 		{
-			MAINGAME->EndGame();
-			//USERINFOMGR->SaveUserInfo(eUIK_INTERFACE);
-			//exit(0);
+			//MAINGAME->EndGame();
+
 		}
 
 

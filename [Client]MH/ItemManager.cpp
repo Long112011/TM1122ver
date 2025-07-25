@@ -9096,6 +9096,29 @@ void CItemManager::NetworkMsgParseExt(BYTE Protocol,void* pMsg)
 			CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(1043), msg->dwData);	
 		}
 		break;
+	case MP_ITEMEXT_NJQUEST_ACK:
+	{//牛巨任务物品使用成功返回协议
+		SEND_SHOPITEM_BASEINFO* pmsg = (SEND_SHOPITEM_BASEINFO*)pMsg;
+		ITEMBASE* pItemBase = (ITEMBASE*)GetItemInfoAbsIn(HERO, pmsg->ShopItemPos);
+		if (!pItemBase) return;
+		if (pItemBase->Durability > 1)
+		{
+			GAMEIN->GetInventoryDialog()->UpdateItemDurabilityAdd(pmsg->ShopItemPos, -1);
+		}
+		else
+		{
+			CItem* pItem = NULL;
+			DeleteItem(pmsg->ShopItemPos, &pItem);
+		}
+
+		GAMEIN->GetMainInterfaceDialog()->SetAlram(OPT_QUESTDLGICON, TRUE);//设置图标闪烁
+	}
+	break;
+	case MP_ITEMEXT_NJQUEST_NACK:
+	{
+
+	}
+	break;
 	case MP_ITEMEXT_FLASHNAME1_ACK:
 		{
 			MSGFLASHNAME * pmsg = (MSGFLASHNAME *)pMsg;

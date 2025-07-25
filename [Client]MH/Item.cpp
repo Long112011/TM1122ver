@@ -87,13 +87,13 @@ void CItem::Render()
 			VECTOR2 pos = { m_absPos.x+25, m_absPos.y-1};
 			m_JackIcon.RenderSprite( &vScale, NULL, 0.0f, &pos,0xffffffff);
 		}
-		if(m_ItemBaseInfo.ItemStatic == ITEM_STATIC_GD)		
-		{
-			SCRIPTMGR->GetImage( 24, &m_JackIcon, PFT_JACKPATH );
-			VECTOR2 vScale = { 1.0f, 1.0f };
-			VECTOR2 pos = { m_absPos.x+25, m_absPos.y-1};
-			m_JackIcon.RenderSprite( &vScale, NULL, 0.0f, &pos,0xffffffff);
-		}
+		//if(m_ItemBaseInfo.ItemStatic == ITEM_STATIC_GD)		
+		//{
+		//	SCRIPTMGR->GetImage( 24, &m_JackIcon, PFT_JACKPATH );
+		//	VECTOR2 vScale = { 1.0f, 1.0f };
+		//	VECTOR2 pos = { m_absPos.x+25, m_absPos.y-1};
+		//	m_JackIcon.RenderSprite( &vScale, NULL, 0.0f, &pos,0xffffffff);
+		//}
 		if(m_ItemBaseInfo.ItemStatic == ITEM_STATIC_NEWBIE)
 		{
 			RECT rect={(LONG)m_absPos.x+4, (LONG)m_absPos.y+26, 1,1};
@@ -117,14 +117,14 @@ void CItem::Render()
 		RECT rect={(LONG)m_absPos.x+4, (LONG)m_absPos.y+26, 1,1};
 		CFONT_OBJ->RenderNoticeMsg(0,CHATMGR->GetChatMsg(1794),strlen(CHATMGR->GetChatMsg(1794)),&rect,RGBA_MAKE(180,200,255,255),RGBA_MAKE(10,10,10,100));
 	}
-	else if(m_ItemBaseInfo.ItemStatic == ITEM_STATIC_GD)
-	{
-		cDialog::Render();		
-		SCRIPTMGR->GetImage( 24, &m_JackIcon, PFT_JACKPATH );
-		VECTOR2 vScale = { 1.0f, 1.0f };
-		VECTOR2 pos = { m_absPos.x+25, m_absPos.y-1};
-		m_JackIcon.RenderSprite( &vScale, NULL, 0.0f, &pos,0xffffffff);
-	}
+	//else if(m_ItemBaseInfo.ItemStatic == ITEM_STATIC_GD)
+	//{
+	//	cDialog::Render();		
+	//	SCRIPTMGR->GetImage( 24, &m_JackIcon, PFT_JACKPATH );
+	//	VECTOR2 vScale = { 1.0f, 1.0f };
+	//	VECTOR2 pos = { m_absPos.x+25, m_absPos.y-1};
+	//	m_JackIcon.RenderSprite( &vScale, NULL, 0.0f, &pos,0xffffffff);
+	//}
 	/*else if( m_ItemBaseInfo.ItemParam & ITEM_PARAM_TITAN_REGIST )
 	{
 		cDialog::Render();
@@ -367,13 +367,13 @@ void CItem::Render()
 		VECTOR2 pos = { m_absPos.x+25, m_absPos.y-1};
 		m_JackIcon.RenderSprite( &vScale, NULL, 0.0f, &pos,0xffffffff);
 	}
-	if(m_ItemBaseInfo.ItemStatic == ITEM_STATIC_GD)
-	{
-		SCRIPTMGR->GetImage( 24, &m_JackIcon, PFT_JACKPATH );
-		VECTOR2 vScale = { 1.0f, 1.0f };
-		VECTOR2 pos = { m_absPos.x+25, m_absPos.y-1};
-		m_JackIcon.RenderSprite( &vScale, NULL, 0.0f, &pos,0xffffffff);
-	}
+	//if(m_ItemBaseInfo.ItemStatic == ITEM_STATIC_GD)
+	//{
+	//	SCRIPTMGR->GetImage( 24, &m_JackIcon, PFT_JACKPATH );
+	//	VECTOR2 vScale = { 1.0f, 1.0f };
+	//	VECTOR2 pos = { m_absPos.x+25, m_absPos.y-1};
+	//	m_JackIcon.RenderSprite( &vScale, NULL, 0.0f, &pos,0xffffffff);
+	//}
 	if(ITEMMGR->IsDupItem(m_ItemBaseInfo.wIconIdx) && m_ItemBaseInfo.Durability >= 1 )
 	{
 		static char mData[MAX_ITEMNAME_LENGTH+1];

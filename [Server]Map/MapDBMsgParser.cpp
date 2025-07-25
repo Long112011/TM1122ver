@@ -10435,3 +10435,14 @@ void ItemShopUseLog(WORD Type, DWORD dwChrID, char* CharName, WORD wItemIdx, cha
 
 	g_DB.LogQuery(eQueryType_FreeQuery, eLogItemMoney, 0, txt);
 }
+//牛巨任务
+void UpdateQuestN(DWORD characterIdx)
+{
+	sprintf(txt, "EXEC MP_InsertNQuest %d", characterIdx);
+	g_DB.Query(eQueryType_FreeQuery, eNull, 0, txt);
+}
+void UpdateQuestJ(DWORD characterIdx)
+{
+	sprintf(txt, "EXEC MP_InsertJQuest %d", characterIdx);
+	g_DB.Query(eQueryType_FreeQuery, eNull, 0, txt);
+}

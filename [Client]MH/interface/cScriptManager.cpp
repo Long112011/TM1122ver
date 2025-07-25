@@ -431,6 +431,35 @@ void cScriptManager::ReleaseImagePathTable()
 		SAFE_DELETE(pEmojiPath);
 	}	
 	m_ImageEmojiPath.RemoveAll();
+	////////////////////////////////////////////////////////////
+	//³ÆºÅºÍvip
+		//Í¼Æ¬³ÆºÅ×ÊÔ´ÇåÀí
+	sIMAGHARDPATH* pImageNamePath = NULL;
+	while (pImageNamePath = m_ImageNamePath.GetData())
+	{
+		SAFE_DELETE(pImageNamePath);
+	}
+	m_ImageNamePath.RemoveAll();
+
+	IMAGENAMEINFO* pImageNameInfo = NULL;
+	while (pImageNameInfo = m_ImageNameInfo.GetData())
+	{
+		SAFE_DELETE(pImageNameInfo);
+	}
+	m_ImageNameInfo.RemoveAll();
+	sIMAGHARDPATH* pImageVipPath = NULL;
+	while (pImageVipPath = m_ImageVipPath.GetData())
+	{
+		SAFE_DELETE(pImageVipPath);
+	}
+	m_ImageVipPath.RemoveAll();
+
+	VIPIMGINFO* pImageVip = NULL;
+	while (pImageVip = m_ImageVipInfo.GetData())
+	{
+		SAFE_DELETE(pImageVip);
+	}
+	m_ImageVipInfo.RemoveAll();
 }
 
 char * cScriptManager::GetMsg( int idx )
@@ -471,7 +500,8 @@ void cScriptManager::GetImage( int idx, cImage * pImage, cImageRect * rect )
 
 void cScriptManager::InitScriptManager()
 {
-	m_ImageNameInfo.Initialize(400);
+	m_ImageNamePath.Initialize(2000);//¿ñÈË³ÆºÅ
+	m_ImageNameInfo.Initialize(2000); //¿ñÈË³ÆºÅ
 	m_ImageHardPath.Initialize(2000);
 	m_ItemHardPath.Initialize(1200);
 	m_MugongHardPath.Initialize(100);
@@ -485,7 +515,7 @@ void cScriptManager::InitScriptManager()
 
 	CMHFile file;
 	sIMAGHARDPATH* pPath = NULL;
-	IMAGENAMEINFO* pImageInfo = NULL;
+	//IMAGENAMEINFO* pImageInfo = NULL;
 	int index = 0;
 	if( file.Init( FILE_IMAGE_HARD_PATH, "rb" ) == TRUE )
 	{
@@ -651,33 +681,33 @@ void cScriptManager::InitScriptManager()
 
 
 //---------------------------------------JACK
-	if(file.Init("./resource/client/TCImgList.bin","rb") == TRUE)
-	{
-		while(!file.IsEOF())
-		{
-			pImageInfo = new IMAGENAMEINFO;
-			pImageInfo->idx = file.GetInt();
-			pImageInfo->ImageCount = file.GetLong();
-			if(pImageInfo->ImageCount>50)
-			{
-				pImageInfo->ImageCount=50;  
-			}
-			for(int i=0;i<pImageInfo->ImageCount;i++)
-			{
-				pImageInfo->Sticker[i] = file.GetLong();
-			}
-			pImageInfo->Width = file.GetInt();
-			pImageInfo->Height = file.GetInt();
-			pImageInfo->Speed = file.GetInt();
-			if(m_ImageNameInfo.GetData(pImageInfo->idx))
-			{
-				SAFE_DELETE(pImageInfo);
-				continue;
-			}
-			m_ImageNameInfo.Add(pImageInfo,pImageInfo->idx);
-		}
-		file.Release();
-	}
+	//if(file.Init("./resource/client/TCImgList.bin","rb") == TRUE)
+	//{
+	//	while(!file.IsEOF())
+	//	{
+	//		pImageInfo = new IMAGENAMEINFO;
+	//		pImageInfo->idx = file.GetInt();
+	//		pImageInfo->ImageCount = file.GetLong();
+	//		if(pImageInfo->ImageCount>50)
+	//		{
+	//			pImageInfo->ImageCount=50;  
+	//		}
+	//		for(int i=0;i<pImageInfo->ImageCount;i++)
+	//		{
+	//			pImageInfo->Sticker[i] = file.GetLong();
+	//		}
+	//		pImageInfo->Width = file.GetInt();
+	//		pImageInfo->Height = file.GetInt();
+	//		pImageInfo->Speed = file.GetInt();
+	//		if(m_ImageNameInfo.GetData(pImageInfo->idx))
+	//		{
+	//			SAFE_DELETE(pImageInfo);
+	//			continue;
+	//		}
+	//		m_ImageNameInfo.Add(pImageInfo,pImageInfo->idx);
+	//	}
+	//	file.Release();
+	//}//³ÆºÅjack
 	if( file.Init( "./image/image_jack_path.bin", "rb" ) == TRUE ) //BY JACK
 	{
 		while( !file.IsEOF() )
@@ -731,6 +761,97 @@ void cScriptManager::InitScriptManager()
 		}
 		file.Release();
 	}
+	//////////////////////////////
+	//³ÆºÅºÍvip
+		//Í¼Æ¬³ÆºÅ×ÊÔ´¼ÓÔØ
+	IMAGENAMEINFO* pImageInfo = NULL;
+	if (file.Init(FILE_IMAGE_NAME_INFO, "rb") == TRUE)
+	{
+		while (!file.IsEOF())
+		{
+			pImageInfo = new IMAGENAMEINFO;
+			pImageInfo->idx = file.GetWord();
+			pImageInfo->IsTrends = file.GetBool();
+			pImageInfo->ImageCount = file.GetWord();
+			pImageInfo->Hight = file.GetWord();
+			pImageInfo->Scaling.x = file.GetFloat();
+			pImageInfo->Scaling.y = file.GetFloat();
+			pImageInfo->LeftPosition = file.GetInt();
+			file.GetString();// ×¢ÊÍ
+			if (m_ImageNameInfo.GetData(pImageInfo->idx))
+			{
+				SAFE_DELETE(pImageInfo);
+				continue;
+			}
+			m_ImageNameInfo.Add(pImageInfo, pImageInfo->idx);
+		}
+		file.Release();
+	}
+	if (file.Init(FILE_IMAGE_NAME_PATH, "rb") == TRUE)
+	{
+		while (!file.IsEOF())
+		{
+			pPath = new sIMAGHARDPATH;
+			index = file.GetInt();
+			pPath->idx = file.GetInt();
+			pPath->left = file.GetLong();
+			pPath->top = file.GetLong();
+			pPath->right = file.GetLong();
+			pPath->bottom = file.GetLong();
+			file.GetString();// ×¢ÊÍ
+			if (m_ImageNamePath.GetData(index))
+			{
+				SAFE_DELETE(pPath);
+				continue;
+			}
+
+			m_ImageNamePath.Add(pPath, index);
+		}
+
+		file.Release();
+	}
+	/////////
+	VIPIMGINFO* pVipInfo = NULL;
+	if (file.Init(FILE_IMAGE_VIP_INFO, "rb") == TRUE)
+	{
+		while (!file.IsEOF())
+		{
+			pVipInfo = new VIPIMGINFO;
+			pVipInfo->idx = file.GetWord();
+			pVipInfo->IsTrends = file.GetBool();
+			pVipInfo->ImageCount = file.GetWord();
+			if (m_ImageVipInfo.GetData(pVipInfo->idx))
+			{
+				SAFE_DELETE(pVipInfo);
+				continue;
+			}
+			m_ImageVipInfo.Add(pVipInfo, pVipInfo->idx);
+		}
+		file.Release();
+	}
+	if (file.Init(FILE_IMAGE_VIP_PATH, "rb") == TRUE)
+	{
+		while (!file.IsEOF())
+		{
+			pPath = new sIMAGHARDPATH;
+			index = file.GetInt();
+			pPath->idx = file.GetInt();
+			pPath->left = file.GetLong();
+			pPath->top = file.GetLong();
+			pPath->right = file.GetLong();
+			pPath->bottom = file.GetLong();
+
+			if (m_ImageVipPath.GetData(index))
+			{
+				SAFE_DELETE(pPath);
+				continue;
+			}
+
+			m_ImageVipPath.Add(pPath, index);
+		}
+
+		file.Release();
+	}
 }
 
 
@@ -746,10 +867,13 @@ void cScriptManager::GetImage( int hard_idx, cImage * pImage , ePATH_FILE_TYPE t
 	case PFT_ABILITYPATH:	pData = m_AbilityHardPath.GetData( hard_idx );	break;
 	case PFT_BUFFPATH:	pData = m_BuffHardPath.GetData( hard_idx );	break;
 	case PFT_MINIMAPPATH:	pData = m_MiniMapHardPath.GetData( hard_idx );	break;
+	case PFT_IMAGENAME:	pData = m_ImageNamePath.GetData(hard_idx); break;  //Í¼Æ¬³ÆºÅ
+	case PFT_VIPIMGPATH:	pData = m_ImageVipPath.GetData(hard_idx); break;
 	case PFT_JACKPOTPATH:	pData = m_JackPotHardPath.GetData( hard_idx );	break;
 
 		case PFT_JACKPATH:	pData = m_ImageJackPath.GetData(hard_idx);break;  //BY JACK
 	}
+
 
 	if( pData == NULL )
 	{

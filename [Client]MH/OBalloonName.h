@@ -80,9 +80,10 @@ public:
 	LONG GetNickPosX()					{ return m_lNickPosX; }
 	void SetSiegeName( DWORD NameType, DWORD dwLength,BOOL SiegeMap=TRUE );
 	void SetFontIndex(BOOL bFontIndex);
-
+//≥∆∫≈
 	void SetImageName(WORD val);
-
+	//VIPÕº±Í
+	void SetOBalloonVIPImage(int val);
 	void SetFame(char* Fame);
 	void SetFamePosX(LONG pos)					{ m_lFamePosX = pos; }
 
@@ -127,12 +128,19 @@ protected:
 	BYTE m_ChangeMode;
 	BOOL m_bSiegeMap;
 	cMultiLineText* m_pSiegeName;
-
+	//VIPÕº±Í//≥∆∫≈
+	//…Ë÷√Õº∆¨≥∆∫≈
 	WORD m_ImageName;
 	int ImageNameCount;
 	DWORD m_ImageNameTime;
 	BOOL  Ischange;
 	IMAGENAMEINFO* ImageNameInfo;
+
+
+	VIPIMGINFO* VipImgInfo;
+	DWORD m_VipImgTime;
+	BOOL  IsVipImgchange;
+	int   VipImgCount;
 
 	LONG m_lFamePosX;
 	LONG m_lFameTall;

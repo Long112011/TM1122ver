@@ -7399,14 +7399,14 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 				if( bits & eSHOP_ITEM )
 				{
 					ITEM_INFO* pInfo = GetItemInfo( item->GetItemBaseInfo()->wIconIdx );
-					if( bits != eSHOP_ITEM_MAKEUP && bits != eSHOP_ITEM_DECORATION && bits != eSHOP_ITEM_PET )
+					if( bits != eSHOP_ITEM_MAKEUP && bits != eSHOP_ITEM_DECORATION && bits != eSHOP_ITEM_PET && bits != eSHOP_ITEM_IMAGENAME)//图片称号增加
 					{
 						if( item->GetDurability() > 1)
 						{
 							GAMEIN->GetInventoryDialog()->UpdateItemDurabilityAdd(pmsg->ShopItemPos,-1);
 						}
 						else
-						{							
+						{					//化名卷使用				
 							if( pInfo && pInfo->ItemType == 10 && pInfo->ItemIdx != eIncantation_ChangeName &&
 								pInfo->ItemIdx != eIncantation_ChangeName_Dntrade )
 							{
@@ -7683,7 +7683,7 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 			}
 			pPlayer->CalcAvatarOption();
 			ITEM_INFO* Item = GetItemInfo( pmsg->ItemIdx );
-			if(Item->ItemKind==eSHOP_ITEM_IMAGENAME)	
+			if(Item->ItemKind==eSHOP_ITEM_IMAGENAME)	//图片称号
 			{
 				if(pmsg->Avatar[8]==0)
 					pPlayer->SetImageNameBalloon(0);

@@ -12,6 +12,8 @@ DWORD COLORALPHA = 0xffffff;// 0x00ffffff
 #define COLOR_LENSIEGE 3
 static const DWORD changeTime = 320;
 #define COLOR_LEN 8
+static const DWORD ImagechangeTime = 80;  //Í¼Æ¬³ÆºÅ
+DWORD VipLink[10] = { 1,11,21,31,41,51,61,71,81,91 };
 DWORD g_NameColor[COLOR_LEN] = {
 	0xFFD700,
 	0xFF3030,
@@ -25,7 +27,7 @@ DWORD g_NameColor[COLOR_LEN] = {
 GLOBALTON(COBalloonName)
 COBalloonName::COBalloonName()
 {
-	ImageNameCount =
+
 	m_wFontIdx = 
 		m_lFortTall =
 		m_lFortPosX =
@@ -43,7 +45,7 @@ COBalloonName::COBalloonName()
 	m_FlashNameFlag =
 	m_nameIndex =
 	m_ChangeMode =
-	m_ImageNameTime =
+
 	m_lFamePosX =
 	m_lFameTall =
 	m_lStageLogoPosX =
@@ -56,8 +58,16 @@ COBalloonName::COBalloonName()
 	m_lTopRankTall =
 	m_lFlashNameTall =
 	m_lFlashNamePosX =
+////////////////////////////////
+
+
+////////////////////////////
 	m_lKillCountTall =
 	m_lKillCountPosX = 0;
+
+	//////////////////////////
+
+
 
 	m_fgColor		= RGB_HALF(255, 255, 255);
 	m_fgColor3		= m_fgColor;
@@ -80,7 +90,7 @@ COBalloonName::COBalloonName()
 //	FortUsingCustomNick = FALSE;
 //	ZeroMemory(FortCharacterName, sizeof(FortCharacterName));//kiv
 	
-	ImageNameInfo	= NULL;
+
 
 	Ischange		= FALSE;
 	m_bActive		= FALSE;
@@ -95,6 +105,17 @@ COBalloonName::COBalloonName()
 	TopListFlg[5]	= FALSE;
 	TopListFlg[6]	= FALSE;
 	TopListFlg[7]	= FALSE;	
+
+	//Í¼Æ¬³ÆºÅ
+	ImageNameInfo = NULL;
+	ImageNameCount = 0;
+	m_ImageNameTime = 0;
+	Ischange = FALSE;
+
+	VipImgInfo = NULL;
+	m_VipImgTime = 0;
+	IsVipImgchange = FALSE;
+	VipImgCount = 0;
 }
 COBalloonName::~COBalloonName()
 {
@@ -484,29 +505,31 @@ BOOL COBalloonName::Render(LONG absX, LONG absY)
 			PosY = PosY + 20;
 			if (ImageNameInfo)
 			{
-				if (ImageNameInfo->ImageCount > 1 && GetTickCount() >= m_ImageNameTime)
+				if (ImageNameInfo->IsTrends && GetTickCount() >= m_ImageNameTime)
 				{
-					m_ImageNameTime = GetTickCount() + (ImageNameInfo->Speed + 30);
-					if (ImageNameCount >= ImageNameInfo->ImageCount - 1)
-					{
-						Ischange = TRUE;
-					}
+					m_ImageNameTime = GetTickCount() + ImagechangeTime;
 					if (!Ischange)
 					{
 						ImageNameCount++;
 					}
-					else
+					else if (Ischange)
 					{
-						ImageNameCount = 0;
+						ImageNameCount = m_ImageName;
+
 						Ischange = FALSE;
+					}
+					if (ImageNameCount >= ImageNameInfo->ImageCount + m_ImageName - 1)
+					{
+						Ischange = TRUE;
 					}
 				}
 				cImage  image;
-				SCRIPTMGR->GetImage(ImageNameInfo->Sticker[0] + ImageNameCount, &image, PFT_HARDPATH);
+				SCRIPTMGR->GetImage(ImageNameCount, &image, PFT_IMAGENAME);
 				VECTOR2 curpos;
-				curpos.x = (long)(absX - ImageNameInfo->Width / 2);
-				curpos.y = (long)(absY - ImageNameInfo->Height - PosY);
-				image.RenderSprite(NULL, NULL, 0, &curpos, RGBA_MERGE(COLORALPHA, 255));
+
+				curpos.x = (long)((absX - (image.GetImageRect()->right - image.GetImageRect()->left) / 2) + ImageNameInfo->LeftPosition);
+				curpos.y = (long)(absY - ImageNameInfo->Hight);
+				image.RenderSprite(&ImageNameInfo->Scaling, NULL, 0, &curpos, 0xffffffff);
 			}
 		}
 	}
@@ -590,11 +613,17 @@ void COBalloonName::SetShiTuName(char* name)
 	SafeStrCpy(m_szShiTuName, name, MAX_MASTERNAME_LENGTH + 1);
 	SetShiTuNamePosX(-CFONT_OBJ->GetTextExtentEx(m_wFontIdx, m_szShiTuName, strlen(m_szShiTuName)) / 2);
 }
+//ÉèÖÃÍ¼Æ¬³ÆºÅ
 void COBalloonName::SetImageName(WORD val)
 {
-	m_ImageName = val;
-	ImageNameInfo = SCRIPTMGR->GetImageNameInfo(val);
-	ImageNameCount = 0;
+	if (val > 0)
+	{
+		m_ImageName = val;
+		ImageNameInfo = SCRIPTMGR->GetImageNameInfo(val);
+		ImageNameCount = m_ImageName;
+	}
+	else
+		m_ImageName = 0;
 }
 void COBalloonName::SetFame(char* Fame)
 {

@@ -72,7 +72,12 @@
 #define FILE_IMAGE_MINIMAP_PATH	"./image/image_Minimap_path.bin"
 #define FILE_IMAGE_JACKPOT_PATH	"./image/image_jackpot_path.bin"
 
+//Í¼Æ¬³ÆºÅ
+#define FILE_IMAGE_NAME_PATH	"./image/image_name.bin"
+#define FILE_IMAGE_NAME_INFO	"./image/image_name_info.bin"
 
+#define FILE_IMAGE_VIP_PATH	"./image/image_vip.bin"
+#define FILE_IMAGE_VIP_INFO	"./image/image_vip_info.bin"
 #else
 #define FILE_IMAGE_MSG			"./image/image_msg.txt"
 

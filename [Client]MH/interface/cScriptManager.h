@@ -39,7 +39,8 @@ enum ePATH_FILE_TYPE
 	PFT_BUFFPATH ,
 	PFT_MINIMAPPATH ,
 	PFT_JACKPOTPATH,
-	PFT_IMAGENAME,  //暠튬냔뵀	by:빚볶�?QQ:112582793
+	PFT_IMAGENAME,  //ͼƬ�ƺ�
+	PFT_VIPIMGPATH,
 	PFT_JACKPATH, //BY JACK
 	PFT_EMOJIPATH, //BY JACK
 };
@@ -87,11 +88,15 @@ public:
 	////////////////////////////////////////////////////////////
 
 	void InitScriptManager();
-
+	//////////////////////////////////////////
+	//	//ͼƬ�ƺ�
+	IMAGENAMEINFO* GetImageNameInfo(int idx) { return m_ImageNameInfo.GetData(idx); }
+	VIPIMGINFO* GetVipImgInfo(int idx) { return m_ImageVipInfo.GetData(idx); }
+	////////////////////////////////////////////////////////////////////////////
 	// 2007. 11. 1. CBH - IMAGEPATH 抛捞�?皋葛�?秦力 窃荐
 	void cScriptManager::ReleaseImagePathTable();
 
-	IMAGENAMEINFO* GetImageNameInfo(int idx){return m_ImageNameInfo.GetData(idx);}
+
 	sEMOJIPATH * GetEmoji(DWORD ItemIdx);
 protected:
 	void GetImage( CMHFile * fp, cImage * pImage );
@@ -112,8 +117,12 @@ protected:
 	CYHHashTable<sIMAGHARDPATH> m_MiniMapHardPath;
 	CYHHashTable<sIMAGHARDPATH> m_JackPotHardPath;
 
+	//ͼƬ�ƺ�
 	CYHHashTable<sIMAGHARDPATH> m_ImageNamePath;
 	CYHHashTable<IMAGENAMEINFO> m_ImageNameInfo;
+	CYHHashTable<sIMAGHARDPATH> m_ImageVipPath;
+	CYHHashTable<VIPIMGINFO> m_ImageVipInfo;
+
 	CYHHashTable<sIMAGHARDPATH> m_ImageJackPath; //BY JACK
 	CYHHashTable<sEMOJIPATH> m_ImageEmojiPath; //BY JACK
 };

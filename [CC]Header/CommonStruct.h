@@ -1110,16 +1110,31 @@ struct BASEOBJECT_INFO
 	BYTE ObjectState;
 	bool	SingleSpecialState[eSingleSpecialState_Max];
 };
-struct IMAGENAMEINFO
+//struct IMAGENAMEINFO
+//{
+//	int  idx;
+//	LONG ImageCount;
+//	LONG  Sticker[50];
+//	int  Width;
+//	int  Height;
+//	int  Speed;
+//};
+//图片称号结构体
+struct IMAGENAMEINFO//称号
 {
-	int  idx;
-	LONG ImageCount;
-	LONG  Sticker[50];
-	int  Width;
-	int  Height;
-	int  Speed;
+	WORD idx;
+	BOOL IsTrends;
+	WORD ImageCount;
+	WORD Hight;
+	VECTOR2 Scaling;
+	INT LeftPosition;
 };
-
+struct VIPIMGINFO//vip称号
+{
+	WORD  idx;
+	BOOL IsTrends;
+	WORD ImageCount;
+};
 struct CHARACTER_TOTALINFO
 {
 	DWORD	Life;						

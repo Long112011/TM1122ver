@@ -956,6 +956,27 @@ void CAppearanceManager::SetCharacterAvatarAppearance(CPlayer* pPlayer, CEngineO
 				if( pAvatarItem->Item[eAvatar_Shoes] == 0 )
 					pEngineObject->ChangePart(eAppearPart_Foot, "NULL.MOD");				
 			}
+			else if (i == eAvatar_Effect)
+			{
+			}
+			else
+			{
+				/*				char temp[256] = {0,};
+								if( pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_SNOWMAN1_HK || pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_SNOWMAN2_HK || pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_SNOWMAN3_HK )
+								{
+									strcpy( temp, "m_snow.mod" );
+									pEngineObject->ChangePart( PartType, temp );
+								}
+								else if( pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_RUDOLP1_HK || pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_RUDOLP2_HK || pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_RUDOLP3_HK )
+								{
+									strcpy( temp, "m_dolph.mod" );
+									pEngineObject->ChangePart( PartType, temp );
+								}
+								else
+								*/
+
+				pEngineObject->ChangePart(PartType, pDataInfo->pModList->ModFile[PartModelNum]);
+			}
 		}
 	}
 	if( pDataInfo->AvatarItemIdx[eAvatar_Hat] == 55576 || pDataInfo->AvatarItemIdx[eAvatar_Dress] == 55577 )

@@ -58,6 +58,14 @@ void CItemDropInfoDialog::AddItemToGridEasy()
 	CDropItem * pIcon = NULL;
 	char buf[256] = { 0, };
 	ClearIconGrid();
+
+	//  放在循环外初始化
+	int easyIdx = 0;
+	int mediumIdx = 0;
+	int hardIdx = 0;
+
+
+
 	for (int i = 1; i <= ITEMDROPMGR->GetItemTempNum(); i++)
 	{		
 		MONSTER_DROP_TEMP* pItem = (MONSTER_DROP_TEMP*)ITEMDROPMGR->GetItemTempInfo(i);
@@ -104,7 +112,8 @@ void CItemDropInfoDialog::AddItemToGridEasy()
 			ITEMMGR->SetExtraItemToolTip((cIcon*)pIcon, pInfo);
 			pIcon->AddToolTipLine("");
 
-			int b;
+
+		/*	int b;
 			int a;
 			if (pItem->wRate == 0)
 			{
@@ -119,7 +128,21 @@ void CItemDropInfoDialog::AddItemToGridEasy()
 			if (pItem->wRate == 2)
 			{
 				m_pItemGridDlgHard->AddIcon(i - (1 + a), pIcon);
+			}*/
+			// 用下面这段：
+			if (pItem->wRate == 0)
+			{
+				m_pItemGridDlgEasy->AddIcon(easyIdx++, pIcon);
 			}
+			else if (pItem->wRate == 1)
+			{
+				m_pItemGridDlgMedium->AddIcon(mediumIdx++, pIcon);
+			}
+			else if (pItem->wRate == 2)
+			{
+				m_pItemGridDlgHard->AddIcon(hardIdx++, pIcon);
+			}
+
 		}
 		pIcon = NULL;
 		pItem = NULL;

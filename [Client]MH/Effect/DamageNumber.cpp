@@ -17,25 +17,18 @@ cImageSelf* CDamageNumber::m_pCriticalImage;
 VECTOR2		CDamageNumber::m_CriticalImgSize;
 cImageSelf* CDamageNumber::m_pDodgeImage;
 
-void CDamageNumber::NumberData::Draw(float fAlpha,VECTOR2* pos)
+void CDamageNumber::NumberData::Draw(float fAlpha, VECTOR2* pos, float scale)
 {
-	VECTOR2 scale;
-	scale.x = 1;
-	scale.y = 1;
-	if(fAlpha == 2)
-	{
-		scale.x = 0.5f;
-		scale.y = 0.5f;
-	}
-	DWORD Color = COLORtoDWORD(1,1,1,fAlpha);
+	VECTOR2 scaleVec = { scale, scale };
+	DWORD Color = COLORtoDWORD(1, 1, 1, fAlpha);
 
 	VECTOR2 dispos;
 	dispos.x = spos.x + pos->x;
 	dispos.y = spos.y + pos->y;
-	
-	pImage->RenderSprite(
-		&scale,NULL,0,&dispos,Color);
+
+	pImage->RenderSprite(&scaleVec, NULL, 0, &dispos, Color);
 }
+
 void CDamageNumber::NumberData::SetImage(cImageSelf* p,VECTOR2* pos)
 {
 	spos = *pos;
@@ -46,6 +39,10 @@ void CDamageNumber::NumberData::SetImage(cImageSelf* p,VECTOR2* pos)
 CDamageNumber::CDamageNumber()
 {
 	m_bDraw = FALSE;
+
+	m_fOffsetX = 0.f;   // 新增：水平偏移
+	m_fOffsetY = 0.f;   // 新增：垂直偏移
+	m_fScale = 1.f;   // 新增：缩放比例
 }
 
 CDamageNumber::~CDamageNumber()
@@ -199,8 +196,14 @@ void CDamageNumber::SetDamage(DWORD Damage,VECTOR3* pPos,VECTOR3* pVelocity,BYTE
 		tens /= 10;
 		ScreenPos.x += charwidth;
 	}
+	// 随机偏移：初始弹出位置
+	m_fOffsetX = ((rand() % 100) - 50) * 0.015f;  // -1.5 ~ +1.5（像素约 ±15）
+	m_fOffsetY = ((rand() % 100) - 50) * 0.015f;
 
+	m_fScale = 1.3f; // 初始比正常大一点
 	m_bDraw = TRUE;
+
+
 }
 
 BOOL CDamageNumber::Render()
@@ -271,10 +274,22 @@ BOOL CDamageNumber::Render()
 		DWORD Color = COLORtoDWORD(1,1,1,m_fAlpha);
 		m_pDodgeImage->RenderSprite(NULL,NULL,0,&ScreenPos,Color);
 	}
-	for(DWORD n=0;n<m_Jarisu;++n)
+	ScreenPos.x += m_fOffsetX * 100.f;
+	ScreenPos.y += m_fOffsetY * 100.f;
+
+	// 动态 scale 缩放（从大到正常）
+	float growTime = 150.f;
+	float finalScale = m_fScale;
+	if (Elapsedtime < growTime)
+		finalScale = m_fScale + (1.0f - m_fScale) * (Elapsedtime / growTime);
+	else
+		finalScale = 1.0f;
+
+	for (DWORD n = 0; n < m_Jarisu; ++n)
 	{
-		m_Numbers[n].Draw(m_fAlpha,&ScreenPos);
+		m_Numbers[n].Draw(m_fAlpha, &ScreenPos, m_fScale);
 	}
+
 	
 
 	//////////////////////////////////////////////////////////////////////////

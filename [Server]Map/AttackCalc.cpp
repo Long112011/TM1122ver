@@ -270,7 +270,7 @@ BOOL	CAttackCalc::getDecisive(CObject* pAttacker, CObject* pTarget, float fCriti
 //}
 
 double CAttackCalc::getPlayerPhysicalAttackPower(CPlayer * pPlayer,float PhyAttackRate, BOOL bCritical )
-{
+{//物理攻击力计算
 	double physicalAttackPower = 0;
 	DWORD minVal,maxVal;
 	minVal = pPlayer->GetPhyAttackPowerMin();
@@ -389,7 +389,7 @@ double CAttackCalc::getPlayerAttributeAttackPower(CPlayer * pPlayer,
 // monster
 
 double	CAttackCalc::getMonsterPhysicalAttackPower(CMonster * pMonster, float PhyAttackRate, BOOL bCritical)
-{
+{//怪物物理攻击力计算
 	BYTE bAttackType = MONSTER_ATTACKTYPE1;
 	
 	double physicalAttackPower= 0;
@@ -428,7 +428,7 @@ double	CAttackCalc::getMonsterPhysicalAttackPower(CMonster * pMonster, float Phy
 }
 
 double	CAttackCalc::getMonsterAttributeAttackPower(CMonster * pMonster, WORD Attrib, DWORD AttAttackMin,DWORD AttAttackMax)
-{
+{//怪物属性攻击力计算
 	monster_stats * mon_stats = pMonster->GetMonsterStats();
 	
 	ASSERT(AttAttackMax >= AttAttackMin);
@@ -589,12 +589,50 @@ double CAttackCalc::getPhyDefenceLevel(CObject* pObject, CObject* pAttacker)
 	}
 
 	LEVELTYPE AttackerLevel = pAttacker->GetLevel();
-	double phyDefenceLevel = (phyDefence * 2.0 + 50) / (AttackerLevel * 20 + 150);
-
-	if (phyDefenceLevel < 0.0)
+	double phyDefenceLevel = 0.f;
+	// PVP
+	if (pObject->GetObjectKind() == eObjectKind_Player && pAttacker->GetObjectKind() == eObjectKind_Player)
 	{
-		ASSERT(0);
-		phyDefenceLevel = 0;
+		// 夸货傈 柳青矫 1盲澄俊辑父 函版等 逢 利侩
+		//if( ((CPlayer*)pAttacker)->GetChannelID() == 1 && FORTWARMGR->GetFortWarState() == eFortWarState_Ing )
+		//{
+		//	phyDefenceLevel = (phyDefence*2.0 + 50) / ( AttackerLevel*600 + 500 );
+
+		//	if(phyDefenceLevel < 0.0 )
+		//	{
+		//		ASSERT(0);
+		//		phyDefenceLevel = 0;
+		//	}
+
+		//	if(phyDefenceLevel > 0.99)
+		//		phyDefenceLevel = 0.99;
+		//}
+		//else
+		//{
+		phyDefenceLevel = (phyDefence * 2.0 + 50) / (AttackerLevel * 70 + 150);//20
+
+		if (phyDefenceLevel < 0.0)
+		{
+			ASSERT(0);
+			phyDefenceLevel = 0;
+		}
+
+		if (phyDefenceLevel > 0.9)
+			phyDefenceLevel = 0.9;
+		//}	
+	}
+	else
+	{//PVE
+		phyDefenceLevel = (phyDefence * 2.0 + 50) / (AttackerLevel * 30 + 150);//5834最大
+
+		if (phyDefenceLevel < 0.0)
+		{
+			ASSERT(0);
+			phyDefenceLevel = 0;
+		}
+
+		if (phyDefenceLevel > 0.9)
+			phyDefenceLevel = 0.9;
 	}
 
 	// === 新增 PvP 防御加成，仅限玩家对玩家 ===

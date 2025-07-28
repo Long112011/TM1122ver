@@ -4875,6 +4875,18 @@ void RItemInsert(LPQUERY pData, LPDBMESSAGE pMessage)
 
 
 							);
+		//g_Console.LOG(4,
+		//	"[RItemInsert] 玩家[%u] 插入物品：Idx=%u, DBIdx=%u, Pos=%u, QPos=%u, Quality=%d, Entry1=%d, Entry2=%d, Entry3=%d, Grade30=%d",
+		//	dwObjectID,
+		//	dwItemIdx,
+		//	dwDBIdx,
+		//	dwPos,
+		//	dwQPos,
+		//	dwQuality,
+		//	dwEntry1,
+		//	dwEntry2,
+		//	dwEntry3,
+		//	dweGrade30);
 
 		if( lastNo == pItemArrayInfo->ItemArray.ItemNum )
 		{

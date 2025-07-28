@@ -37,6 +37,8 @@ BOOL ItemDropManager::LoadMonsterDropItemList()
 {
 	ClearMonsterDropItemList();
 	char filename[64];
+	char MapName[MAX_MONSTER_NAME_LENGTH + 1];
+	char MonsterName[MAX_MONSTER_NAME_LENGTH + 1];
 	CMHFile file;
 	sprintf(filename, DROPINFOPATH);
 	if(!file.Init(filename, "rb"))
@@ -48,6 +50,8 @@ BOOL ItemDropManager::LoadMonsterDropItemList()
 		MONSTER_DROP_ITEM* pDropItem = new MONSTER_DROP_ITEM;
 		memset(pDropItem, 0, sizeof(MONSTER_DROP_ITEM));
 		pDropItem->wItemDropIndex = file.GetWord();
+		SafeStrCpy(MapName, file.GetString(), MAX_MONSTER_NAME_LENGTH + 1);//地图
+		SafeStrCpy(MonsterName, file.GetString(), MAX_MONSTER_NAME_LENGTH + 1);//怪物
 		WORD totalnum = 0;
 		for(int idx=0; idx<MAX_DROPITEM_NUM; ++idx)
 		{
@@ -129,31 +133,20 @@ void ItemDropManager::DevMonsterDrop(DWORD idx)
 			if (itemdroptemp[d] == 0)
 				continue;
 
-			MONSTER_DROP_ITEM * pDropItem = GetMonsterItemDrop(itemdroptemp[d]);
+			MONSTER_DROP_ITEM* pDropItem = GetMonsterItemDrop(itemdroptemp[d]);
 			if (pDropItem == NULL)
-				return;
+				continue;  // 不中断整个流程，只跳过当前
 
 			if (pDropItem->dwCurTotalRate == 0)
 			{
 				if (ReloadMonsterDropItem(pDropItem) == FALSE)
-					return;
+					continue;  // 同上
 			}
-
 
 			WORD CurTotalRate = pDropItem->dwCurTotalRate;
 			WORD TotalNum = pDropItem->wTotalNum;
 
-
-			//if (d == 0)
-			//	strcpy(Column, "BD");
-			//if (d == 1)
-			//	strcpy(Column, "BE");
-			//if (d == 2)
-			//	strcpy(Column, "BF");
-
-			
-
-			for (WORD i = 0; i < pDropItem->wTotalNum; ++i)
+			for (WORD i = 0; i < TotalNum; ++i)
 			{
 				WORD DropPercent = pDropItem->dwCurMonsterDropItemPercent[i];
 				WORD DropItemId = pDropItem->MonsterDropItemPercent[i].wItemIdx;

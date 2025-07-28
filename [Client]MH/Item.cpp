@@ -97,7 +97,7 @@ void CItem::Render()
 		if(m_ItemBaseInfo.ItemStatic == ITEM_STATIC_NEWBIE)
 		{
 			RECT rect={(LONG)m_absPos.x+4, (LONG)m_absPos.y+26, 1,1};
-			CFONT_OBJ->RenderNoticeMsg(0,CHATMGR->GetChatMsg(1794),strlen(CHATMGR->GetChatMsg(1794)),&rect,RGBA_MAKE(180,200,255,255),RGBA_MAKE(10,10,10,100));
+			CFONT_OBJ->RenderNoticeMsg(0,CHATMGR->GetChatMsg(2275),strlen(CHATMGR->GetChatMsg(2275)),&rect,RGBA_MAKE(180,200,255,255),RGBA_MAKE(10,10,10,100));
 		}
 	}
 	else if( m_ItemBaseInfo.ItemParam & ITEM_PARAM_SEAL && m_ItemBaseInfo.Position<=239 )
@@ -115,7 +115,7 @@ void CItem::Render()
 	{
 		cDialog::Render();		
 		RECT rect={(LONG)m_absPos.x+4, (LONG)m_absPos.y+26, 1,1};
-		CFONT_OBJ->RenderNoticeMsg(0,CHATMGR->GetChatMsg(1794),strlen(CHATMGR->GetChatMsg(1794)),&rect,RGBA_MAKE(180,200,255,255),RGBA_MAKE(10,10,10,100));
+		CFONT_OBJ->RenderNoticeMsg(0,CHATMGR->GetChatMsg(2275),strlen(CHATMGR->GetChatMsg(2275)),&rect,RGBA_MAKE(180,200,255,255),RGBA_MAKE(10,10,10,100));
 	}
 	//else if(m_ItemBaseInfo.ItemStatic == ITEM_STATIC_GD)
 	//{

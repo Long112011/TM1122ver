@@ -23,135 +23,6 @@ CLoginEventManager::~CLoginEventManager()
 
 void CLoginEventManager::LoadLoginEventItemList()
 {
-//---------------------------------------------------below is v1
-	/*CMHFile file;
-	if(!file.Init("./Resource/Server/LoginEvent.bin", "rb"))
-		return;
-
-	LOGINEVENTINFO * pInfo = NULL;
-	while(1)
-	{		
-		if(file.IsEOF())
-			break;
-
-		if(m_LoginEventListInfo.GetDataNum() >= 15)//max item per tab
-		{
-			g_Console.LOG( 4, "LoginEvent.bin lines over than 15!" );
-			return;
-		}
-		ASSERT(!pInfo);
-		pInfo				= new LOGINEVENTINFO;
-		pInfo->Key			= file.GetInt();
-		if( pInfo->Key == 0 )
-		{
-			file.Release();
-			return;
-		}		
-		pInfo->dwItemIdx	= file.GetDword();
-		pInfo->dwTiming		= file.GetInt();
-		pInfo->dwQuantity	= file.GetInt();		
-		pInfo->dwNextLine	= file.GetDword();
-		memset(pInfo->cTextSend, 0, sizeof(char)*(MAX_GUILD_NAME+1));
-		SafeStrCpy(pInfo->cTextSend,file.GetStringInQuotation(),MAX_GUILD_NAME+1);
-		ASSERT(m_LoginEventListInfo.GetData(pInfo->Key) == FALSE);
-		if( pInfo->dwQuantity == 0 )
-		{
-			pInfo->dwQuantity = 1;
-		}
-		if( pInfo->dwTiming == 0 || pInfo->dwTiming < 0 )
-		{
-			g_Console.LOG( 4, "dwTiming 0" );
-			pInfo->dwTiming = 1;
-		}
-		m_LoginEventListInfo.Add(pInfo,pInfo->Key);
-		pInfo=NULL;
-	}
-	file.Release();*/
-//------------------------------------------------------------------below is v2
-
-	/*CMHFile file;
-	
-	if(!file.Init("Resource/Server/LoginEvent.bin", "rb"))
-		return;
-
-
-
-	if( strcmp( file.GetString(), "TIME_START") == 0 )
-	{
-		DWORD year = file.GetDword();
-		DWORD month = file.GetDword();
-		DWORD day = file.GetDword();
-		m_FirstStartTime.SetTime( year, month, day, 0, 0, 0 );
-
-		g_Console.LOG( 4, "year:%d month:%d day:%d" ,year, month, day);
-	}
-
-	char TabName[17] = {0,};
-	char StrBuf[256] = {0,};
-
-	while(1)
-	{
-		if(file.IsEOF())
-			break;
-
-		file.GetString(StrBuf);
-
-		if( StrBuf[0] != '#' )
-		{
-			file.GetLine(StrBuf,256);
-			continue;
-		}
-		else if( strcmp( StrBuf , "#TAB" ) == 0 )
-		{			
-			file.GetWord();
-			SafeStrCpy( TabName, file.GetString(), 17 );
-			
-			
-			char StrBuf[256] = {0,};
-			LOGINEVENTINFO * pInfo = NULL;
-			while(1)
-			{
-				if(file.IsEOF())
-					break;
-
-				file.GetString(StrBuf);
-				if( StrBuf[0] != '#' )
-				{
-					file.GetLine(StrBuf,256);
-					continue;
-				}
-				else if( strcmp( StrBuf , "#CASHITEM" ) == 0 )
-				{
-					if(m_LoginEventListInfo.GetDataNum() >= 15)//max item per tab
-					{
-						return;
-					}
-
-					ASSERT(!pInfo);
-					LOGINEVENTINFO * pInfo = new LOGINEVENTINFO;
-					if(pInfo)
-					{
-						pInfo->Key				= file.GetInt();
-						pInfo->dwItemIdx		= file.GetDword();
-						pInfo->dwTiming			= file.GetInt();
-						pInfo->dwQuantity		= file.GetInt();		
-						pInfo->dwNextLine		= file.GetDword();
-						memset(pInfo->cTextSend, 0, sizeof(char)*(MAX_GUILD_NAME+1));
-						SafeStrCpy(pInfo->cTextSend,file.GetStringInQuotation(),MAX_GUILD_NAME+1);
-						ASSERT(m_LoginEventListInfo.GetData(pInfo->Key) == FALSE);
-						m_LoginEventListInfo.Add(pInfo,pInfo->Key);
-					}
-				}
-				else if( strcmp( StrBuf , "#TAB_END" ) == 0 )
-				{
-					break;
-				}
-				pInfo=NULL;
-			}
-		}
-	}
-	file.Release();*/
-//---------------------------------------------------------below is v3
 
 	CMHFile file;
 	
@@ -195,56 +66,9 @@ void CLoginEventManager::LoadLoginEventItemList()
 	}
 
 
-	//g_Console.LOG( 4, "%d %d %d" ,m_EndEventTime.GetYear()+16, m_EndEventTime.GetMonth(), m_EndEventTime.GetDay());
-
-	//g_Console.LOG( 4, "[st.wDayOfWeek:%d] [st.wHour:%d] [st.wMinute:%d]" ,st.wDayOfWeek, st.wHour, st.wMinute);
-
-	//g_Console.LOG( 4, "[st.wYear:%d] [st.wMonth:%d] [st.wDay:%d]" ,st.wYear, st.wMonth, st.wDay);
 
 
 
-
-
-	//stTIME ct;
-	//ct.value = GetCurTime();
-
-	//g_Console.LOG( 4, "[GetCurTime:%d] [ct.value:%d]",GetCurTime(),ct.value);
-
-
-
-	//g_Console.LOG( 4, "");
-	//g_Console.LOG( 4, "[m_FirstStartTime:%d] [m_EndEventTime.value:%d]",m_FirstStartTime.value,m_EndEventTime.value);
-
-	//g_Console.LOG( 4, "[GetCurTime:%d] [this->GetCurTime():%d]",GetCurTime(),this->GetCurTimeYear());
-
-
-	//g_Console.LOG( 4, "");
-
-	/*LOGINEVENTINFO * pInfo = NULL;
-	while(1)
-	{		
-		if(file.IsEOF())
-			break;
-
-		
-		ASSERT(!pInfo);
-		pInfo				= new LOGINEVENTINFO;
-		pInfo->Key			= file.GetDword();
-		
-		pInfo->dwItemIdx	= file.GetDword();
-		pInfo->dwTiming		= file.GetDword();
-		pInfo->dwQuantity	= file.GetDword();		
-		pInfo->dwNextLine	= file.GetDword();
-
-		memset(pInfo->cTextSend, 0, sizeof(char)*(MAX_GUILD_NAME+2));
-		SafeStrCpy(pInfo->cTextSend,file.GetStringInQuotation(),MAX_GUILD_NAME+2);
-
-		ASSERT(m_LoginEventListInfo.GetData(pInfo->Key) == FALSE);
-		
-		m_LoginEventListInfo.Add(pInfo,pInfo->Key);
-		pInfo=NULL;
-	}
-	file.Release();*/
 
 	LOGINEVENTINFO * pInfo = NULL;
 	while( 1 )
@@ -280,19 +104,23 @@ void CLoginEventManager::LoadLoginEventItemList()
 void CLoginEventManager::AddLastLine(DWORD idx)
 {
 	LOGINEVENTINFO* pInfo = m_LoginEventListInfo.GetData(idx);
-	if(!pInfo)
+	if (!pInfo)
 	{
+		LOGINEVENTINFO* pBase = GetLoginEventItemInfo(1);
+		if (!pBase || pBase->dwItemIdx == 0) return; // 防止插入无效物品
+
 		pInfo = new LOGINEVENTINFO;
-		pInfo->Key				= idx;
-		pInfo->dwItemIdx		= 0;
-		pInfo->dwTiming			= GetLoginEventItemInfo(1)->dwTiming;
-		pInfo->dwQuantity		= 1;		
-		pInfo->dwNextLine		= 1;
-		memset(pInfo->cTextSend, 0, sizeof(char)*(MAX_GUILD_NAME+2));
-		SafeStrCpy(pInfo->cTextSend,"GG",MAX_GUILD_NAME+2);
-		m_LoginEventListInfo.Add(pInfo,pInfo->Key);
+		pInfo->Key = idx;
+		pInfo->dwItemIdx = pBase->dwItemIdx;
+		pInfo->dwTiming = pBase->dwTiming;
+		pInfo->dwQuantity = 1;
+		pInfo->dwNextLine = 1;
+		memset(pInfo->cTextSend, 0, sizeof(char) * (MAX_GUILD_NAME + 2));
+		SafeStrCpy(pInfo->cTextSend, "GG", MAX_GUILD_NAME + 2);
+		m_LoginEventListInfo.Add(pInfo, pInfo->Key);
 	}
 }
+
 QSTATETYPE CLoginEventManager::GetCurTimeYear()
 {
 	SYSTEMTIME systime;

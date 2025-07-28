@@ -370,12 +370,7 @@ int CMixManager::MixItem(CPlayer* pPlayer, WORD wBasicItemIdx, POSTYPE BasicItem
 				{//重新刷新属性
 					ItemQuality = ITEMMGR->GetItemQuality();
 
-					if (ItemQuality == 4)
-					{
-						ItemEntry1 = ITEMMGR->GetItemEntry1();
-						ItemEntry2 = 0;
-					}
-					else if (ItemQuality == 3)
+					if (ItemQuality >= 1 && ItemQuality <= 4)
 					{
 						ItemEntry1 = ITEMMGR->GetItemEntry1();
 						ItemEntry2 = 0;

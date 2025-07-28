@@ -228,14 +228,9 @@ int CChangeItemMgr::UseNormalChangeItem(CPlayer* pPlayer, WORD TargetPos, WORD w
 	WORD ItemEntry1 = 0;
 	WORD ItemEntry2 = 0;
 
-	if (ItemQuality == 4)
+	if (ItemQuality >= 1 && ItemQuality <= 4)
 	{
-		ItemEntry1 = ITEMMGR->GetItemEntry1();
-		ItemEntry2 = 0;
-	}
-	else if (ItemQuality == 3)
-	{
-		ItemEntry1 = ITEMMGR->GetItemEntry1();
+		ItemEntry1 = ITEMMGR->GetItemEntry1(); // 1~11 随机值
 		ItemEntry2 = 0;
 	}
 	else
@@ -493,14 +488,9 @@ int CChangeItemMgr::UseMultiChangeItem(CPlayer* pPlayer, WORD TargetPos, WORD wI
 	int ItemEntry1 = 0;
 	int ItemEntry2 = 0;
 
-	if (ItemQuality == 4)
+	if (ItemQuality >= 1 && ItemQuality <= 4)
 	{
-		ItemEntry1 = ITEMMGR->GetItemEntry1();
-		ItemEntry2 = 0;
-	}
-	else if (ItemQuality == 3)
-	{
-		ItemEntry1 = ITEMMGR->GetItemEntry1();
+		ItemEntry1 = ITEMMGR->GetItemEntry1(); // 1~11 随机值
 		ItemEntry2 = 0;
 	}
 	else

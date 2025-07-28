@@ -5591,7 +5591,7 @@ void CD_DlgFunc(LONG lId, void * p, DWORD we)
 			char* codeName = pName->GetEditText();
 			if (strlen(codeName) > MAX_NAME_LENGTH)
 			{
-				CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(1799) );
+				CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(2360) );
 				GAMEIN->GetCodeDialog()->SetActive(FALSE);
 				return;
 			}

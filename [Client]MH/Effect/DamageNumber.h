@@ -38,7 +38,7 @@ class CDamageNumber
 
 		cImageSelf* pImage;
 		VECTOR2 spos;
-		void Draw(float fAlpha,VECTOR2* pos);
+		void Draw(float fAlpha, VECTOR2* pos, float scale);
 		void SetImage(cImageSelf* p,VECTOR2* pos);
 	};
 
@@ -68,6 +68,12 @@ class CDamageNumber
 
 	DWORD m_Damage;
 	DWORD m_Jarisu;	
+
+	float m_fOffsetX;
+	float m_fOffsetY;
+	float m_fScale;
+	float m_fShakeStrength;  // ¶¶¶¯Ç¿¶È
+	float m_fShakeFreq;      // ¶¶¶¯ÆµÂÊ
 public:
 	static BOOL LoadImage();		// ¸ÇÃ³À½ ÃÊ±âÈ­
 	static void DeleteImage();		// ¸Ç³ªÁß Áö¿ï¶§...

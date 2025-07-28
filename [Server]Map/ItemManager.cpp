@@ -1275,14 +1275,9 @@ void CItemManager::MonsterObtainItem(CPlayer * pPlayer, WORD obtainItemIdx, DWOR
 	WORD ItemEntry1 = 0;
 	WORD ItemEntry2 = 0;
 
-	if (ItemQuality == 4)
+	if (ItemQuality >= 1 && ItemQuality <= 4)
 	{
-		ItemEntry1 = GetItemEntry1();
-		ItemEntry2 = 0;
-	}
-	else if (ItemQuality == 3)
-	{
-		ItemEntry1 = GetItemEntry1();
+		ItemEntry1 = GetItemEntry1(); //
 		ItemEntry2 = 0;
 	}
 	else
@@ -1290,6 +1285,7 @@ void CItemManager::MonsterObtainItem(CPlayer * pPlayer, WORD obtainItemIdx, DWOR
 		ItemEntry1 = 0;
 		ItemEntry2 = 0;
 	}
+
 	int rt = 0;
 	for (int i = 0; i < 1 + bGetTwice; ++i)
 	{
@@ -1554,8 +1550,10 @@ int CItemManager::ObtainItemEx(CPlayer * pPlayer, ITEMOBTAINARRAYINFO * pArrayIn
 }
 void CItemManager::ObtainItemDBResult(CPlayer * pPlayer, WORD ArrayID)
 {
+
 	ITEMOBTAINARRAYINFO * pArrayInfo = pPlayer->GetArray(ArrayID);
 	MONEYTYPE ChangeMoney = 0;
+
 	for (int i = 0; i < pArrayInfo->ItemArray.ItemNum; ++i)
 	{
 		ITEMBASE * ItemInfo = pArrayInfo->ItemArray.GetItem(i);
@@ -4252,26 +4250,26 @@ void CItemManager::NetworkMsgParse(DWORD dwConnectionIndex, BYTE Protocol, void*
 		break;
 	case MP_ITEM_UPGRADE_SYN:
 	{
-								MSG_ITEM_UPGRADE_SYN * pmsg = (MSG_ITEM_UPGRADE_SYN *)pMsg;
-								CPlayer * pPlayer = (CPlayer *)g_pUserTable->FindUser(pmsg->dwObjectID);
-								if (pPlayer == NULL) return;
-								int rt = 0;
-								if (EI_TRUE == (rt = UpgradeItem(pPlayer, pmsg->wItemIdx, pmsg->ItemPos, pmsg->wMaterialItemIdx, pmsg->MaterialItemPos)))
-								{
-									MSG_ITEM_UPGRADE_ACK msg;
-									memcpy(&msg, pmsg, sizeof(MSG_ITEM_UPGRADE_SYN));
-									msg.Protocol = MP_ITEM_UPGRADE_SUCCESS_ACK;
-									SendAckMsg(pPlayer, &msg, sizeof(msg));
-								}
-								else
-								{
-									MSG_ITEM_ERROR msg;
-									msg.Category = MP_ITEM;
-									msg.Protocol = MP_ITEM_ERROR_NACK;
-									msg.dwObjectID = pPlayer->GetID();
-									msg.ECode = eItemUseErr_Upgrade;
-									SendErrorMsg(pPlayer, &msg, sizeof(msg), rt);
-								}
+								//MSG_ITEM_UPGRADE_SYN * pmsg = (MSG_ITEM_UPGRADE_SYN *)pMsg;
+								//CPlayer * pPlayer = (CPlayer *)g_pUserTable->FindUser(pmsg->dwObjectID);
+								//if (pPlayer == NULL) return;
+								//int rt = 0;
+								//if (EI_TRUE == (rt = UpgradeItem(pPlayer, pmsg->wItemIdx, pmsg->ItemPos, pmsg->wMaterialItemIdx, pmsg->MaterialItemPos)))
+								//{
+								//	MSG_ITEM_UPGRADE_ACK msg;
+								//	memcpy(&msg, pmsg, sizeof(MSG_ITEM_UPGRADE_SYN));
+								//	msg.Protocol = MP_ITEM_UPGRADE_SUCCESS_ACK;
+								//	SendAckMsg(pPlayer, &msg, sizeof(msg));
+								//}
+								//else
+								//{
+								//	MSG_ITEM_ERROR msg;
+								//	msg.Category = MP_ITEM;
+								//	msg.Protocol = MP_ITEM_ERROR_NACK;
+								//	msg.dwObjectID = pPlayer->GetID();
+								//	msg.ECode = eItemUseErr_Upgrade;
+								//	SendErrorMsg(pPlayer, &msg, sizeof(msg), rt);
+								//}
 	}
 		break;
 	case MP_ITEM_REINFORCE_SYN:
@@ -6176,14 +6174,9 @@ void CItemManager::NetworkMsgParseExt(DWORD dwConnectionIndex, BYTE Protocol, vo
 													   WORD ItemEntry1 = 0;
 													   WORD ItemEntry2 = 0;
 
-													   if (ItemQuality == 4)
+													   if (ItemQuality >= 1 && ItemQuality <= 4)
 													   {
-														   ItemEntry1 = GetItemEntry1();
-														   ItemEntry2 = 0;
-													   }
-													   else if (ItemQuality == 3)
-													   {
-														   ItemEntry1 = ITEMMGR->GetItemEntry1();
+														   ItemEntry1 = GetItemEntry1(); //
 														   ItemEntry2 = 0;
 													   }
 													   else
@@ -6191,6 +6184,7 @@ void CItemManager::NetworkMsgParseExt(DWORD dwConnectionIndex, BYTE Protocol, vo
 														   ItemEntry1 = 0;
 														   ItemEntry2 = 0;
 													   }
+
 													   ObtainItemEx(pPlayer, Alloc(pPlayer, MP_ITEMEXT, MP_ITEMEXT_SHOPITEM_CURSE_CANCELLATION_ACK, pPlayer->GetID(), 0, eLog_ItemObtainTitan, obtainItemNum, (DBResult)(ObtainItemDBResult)), (WORD)pInfo->dwCurseCancellation, obtainItemNum, EmptyCellPos, EmptyCellNum, EmptyCellNum, 0, 0, ItemQuality, ItemEntry1, ItemEntry2, 0);
 												   UniqueItemCurseCancellation:
 													   pPlayer->SendMsg(&msg, sizeof(msg));
@@ -6341,14 +6335,9 @@ void CItemManager::NetworkMsgParseExt(DWORD dwConnectionIndex, BYTE Protocol, vo
 										  WORD ItemEntry1 = 0;
 										  WORD ItemEntry2 = 0;
 
-										  if (ItemQuality == 4)
+										  if (ItemQuality >= 1 && ItemQuality <= 4)
 										  {
-											  ItemEntry1 = GetItemEntry1();
-											  ItemEntry2 = 0;
-										  }
-										  else if (ItemQuality == 3)
-										  {
-											  ItemEntry1 = GetItemEntry1();
+											  ItemEntry1 = GetItemEntry1(); //
 											  ItemEntry2 = 0;
 										  }
 										  else
@@ -6356,6 +6345,7 @@ void CItemManager::NetworkMsgParseExt(DWORD dwConnectionIndex, BYTE Protocol, vo
 											  ItemEntry1 = 0;
 											  ItemEntry2 = 0;
 										  }
+
 										  ITEMMGR->ObtainItemEx(pPlayer, ITEMMGR->Alloc(pPlayer, MP_ITEMEXT, MP_ITEMEXT_UNIQUEITEM_MIX_ACK, pPlayer->GetID(), 0, eLog_ItemObtainTitan, obtainItemNum, (DBResult)(ITEMMGR->ObtainItemDBResult)), wResultItemIdx, obtainItemNum, EmptyCellPos, EmptyCellNum, EmptyCellNum, 0, 0, ItemQuality, ItemEntry1, ItemEntry2, 0);
 	}
 		break;
@@ -7447,14 +7437,9 @@ int CItemManager::ObtainItemFromQuest(CPlayer* pPlayer, WORD wItemIdx, DWORD dwI
 	WORD ItemEntry1 = 0;
 	WORD ItemEntry2 = 0;
 
-	if (ItemQuality == 4)
+	if (ItemQuality >= 1 && ItemQuality <= 4)
 	{
-		ItemEntry1 = GetItemEntry1();
-		ItemEntry2 = 0;
-	}
-	else if (ItemQuality == 3)
-	{
-		ItemEntry1 = GetItemEntry1();
+		ItemEntry1 = GetItemEntry1(); //
 		ItemEntry2 = 0;
 	}
 	else
@@ -7462,6 +7447,7 @@ int CItemManager::ObtainItemFromQuest(CPlayer* pPlayer, WORD wItemIdx, DWORD dwI
 		ItemEntry1 = 0;
 		ItemEntry2 = 0;
 	}
+
 	if (pItemInfo->ItemKind & eEQUIP_ITEM || pItemInfo->ItemKind == eEQUIP_ITEM_UNIQUE)
 	{
 		return ObtainItemEx(pPlayer, Alloc(pPlayer, MP_QUEST, MP_QUEST_TAKEITEM_ACK,

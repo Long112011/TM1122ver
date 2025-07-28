@@ -387,6 +387,8 @@ BOOL CItemDrop::LoadMonsterDropItemList()
 	ClearMonsterDropItemList();
 
 	char filename[64];
+	char MapName[MAX_MONSTER_NAME_LENGTH + 1];
+	char MonsterName[MAX_MONSTER_NAME_LENGTH + 1];
 	CMHFile file;
 	sprintf(filename, DROPINFOPATH);
 	if(!file.Init(filename, "rb"))
@@ -401,6 +403,8 @@ BOOL CItemDrop::LoadMonsterDropItemList()
 		MONSTER_DROP_ITEM* pDropItem = new MONSTER_DROP_ITEM;
 		memset(pDropItem, 0, sizeof(MONSTER_DROP_ITEM));
 		pDropItem->wItemDropIndex = file.GetWord();
+		SafeStrCpy(MapName, file.GetString(), MAX_MONSTER_NAME_LENGTH + 1);//µÿÕº
+		SafeStrCpy(MonsterName, file.GetString(), MAX_MONSTER_NAME_LENGTH + 1);//π÷ŒÔ
 
 		WORD totalnum = 0;
 		for(int idx=0; idx<MAX_DROPITEM_NUM; ++idx)

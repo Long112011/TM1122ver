@@ -64,7 +64,7 @@ BOOL CItemQualityDlg::FakeMoveIcon(LONG x, LONG y, cIcon* pIcon)
 		}
 		if (quality != 4)
 		{
-			CHATMGR->AddMsg(CTC_SYSMSG, "主装备必须为品质4（·SSSSS）！");
+			CHATMGR->AddMsg(CTC_SYSMSG, "主装备必须为品质4（·神话）！");
 			return FALSE;
 		}
 		AddVirtualItem(pOrigItem);

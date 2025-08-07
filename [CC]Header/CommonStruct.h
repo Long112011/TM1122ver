@@ -4408,6 +4408,12 @@ enum eCheatEvent
 	eEvent_GetMoney,
 	eEvent_MugongExp,
 	eEvent_DamagePlayerToPlayerRate,
+	eEvent_MugongPhy,//PVP武功物理攻击
+	eEvent_MugongAttr,//PVP武功属性攻击
+	eEvent_MugongKillMonster,//PVE伤害倍率设置
+	eEvent_MugongPhyCritical,//PVP/PVE暴击倍率设置战士
+	eEvent_MugongAttrCritical,//PVP/PVE暴击倍率设置法师
+	eEvent_AssassinPhyDmg,
 	eEvent_Max,
 };
 enum ePartyEvent

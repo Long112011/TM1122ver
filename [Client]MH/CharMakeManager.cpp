@@ -529,13 +529,27 @@ BOOL cCharMakeManager::ReplaceCharMakeInfo(int idx, WORD wValue )
 				}
 			}
 
-			if( m_pNewPlayer )
+			if (m_pNewPlayer)
 			{
 				m_pNewPlayer->GetCharacterTotalInfo()->WearedItemIdx[eWearedItem_Weapon] = (WORD)value;
 
-				m_pNewPlayer->ChangeMotion(eMotion_Battle_Gum_Standard + wValue, 1);
-				m_pNewPlayer->ChangeBaseMotion(eMotion_Battle_Gum_Standard + wValue);	
+				switch (wValue)
+				{
+				case WP_AXE:
+					m_pNewPlayer->ChangeMotion(eMotion_Battle_Chang_Standard, 1); // 斧头动作编号（你定义好的）
+					m_pNewPlayer->ChangeBaseMotion(eMotion_Battle_Chang_Standard);
+					break;
+				case WP_DAGGER:
+					m_pNewPlayer->ChangeMotion(eMotion_Battle_Amgi_Standard, 1); // 刺客动作编号（你定义好的）
+					m_pNewPlayer->ChangeBaseMotion(eMotion_Battle_Amgi_Standard);
+					break;
+				default:
+					m_pNewPlayer->ChangeMotion(eMotion_Battle_Gum_Standard + wValue, 1);
+					m_pNewPlayer->ChangeBaseMotion(eMotion_Battle_Gum_Standard + wValue);
+					break;
+				}
 			}
+
 
 			return TRUE;
 		}
@@ -598,8 +612,24 @@ void cCharMakeManager::CreateNewCharacter(VECTOR3* pv3Pos)
 	MOVEMGR->SetPosition( m_pNewPlayer, &pos );
 	MOVEMGR->SetAngle( m_pNewPlayer, m_fAngle, 0 );
 	
-	m_pNewPlayer->ChangeMotion(eMotion_Battle_Gum_Standard + m_dwCurIndex[CE_WEAPON],1);
-	m_pNewPlayer->ChangeBaseMotion(eMotion_Battle_Gum_Standard + m_dwCurIndex[CE_WEAPON]);	
+	int weapon = m_dwCurIndex[CE_WEAPON];
+
+	if (weapon == 10) // 斧头
+	{
+		m_pNewPlayer->ChangeMotion(eMotion_Battle_Gum_Standard, 1);
+		m_pNewPlayer->ChangeBaseMotion(eMotion_Battle_Gum_Standard);
+	}
+	else if (weapon == 11) // 刺客（双匕首）
+	{
+		m_pNewPlayer->ChangeMotion(eMotion_Battle_Gum_Standard, 1);
+		m_pNewPlayer->ChangeBaseMotion(eMotion_Battle_Gum_Standard);
+	}
+	else
+	{
+		// 其余照旧，剑=0 ~ 暗器=5
+		m_pNewPlayer->ChangeMotion(eMotion_Battle_Gum_Standard + weapon, 1);
+		m_pNewPlayer->ChangeBaseMotion(eMotion_Battle_Gum_Standard + weapon);
+	}
 }
 
 void cCharMakeManager::NewCharacterRotate( int x )

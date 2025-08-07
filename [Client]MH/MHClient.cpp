@@ -24,9 +24,9 @@ BOOL m_SafeIconShow=TRUE;
 BOOL jTweak=FALSE;
 BOOL _debug = FALSE;
 BOOL _hantar = FALSE;
-BOOL IsMultiPet = FALSE;
+BOOL IsMultiPet = !FALSE;
 BOOL m_DebugEnabled, m_VsyncTest,m_DebugEnabledAll,m_DebugAutoReconnect;
-int  m_PetPos=-1;
+int  m_PetIdx =-1; // 
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);

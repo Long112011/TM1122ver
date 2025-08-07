@@ -515,20 +515,121 @@ void CMugongManager::SetToolTipIcon(CMugongBase *pMugong)
 	else
 		pMugong->AddToolTipLine( line, TTTC_TRANSMUGONGNAME,NULL,6 );
 	pMugong->AddToolTipLine( JACKJACK );
-	switch( pCommSkill->GetAttrib())
+
+	switch (pCommSkill->GetWeaponType())
 	{
-	case ATTR_FIRE:	 sprintf(line2,"%s",CHATMGR->GetChatMsg(473)); break;
-	case ATTR_WATER: sprintf(line2,"%s",CHATMGR->GetChatMsg(474)); break;
-	case ATTR_TREE:	 sprintf(line2,"%s",CHATMGR->GetChatMsg(475)); break;
-	case ATTR_IRON:	 sprintf(line2,"%s",CHATMGR->GetChatMsg(476)); break;
-	case ATTR_EARTH: sprintf(line2,"%s",CHATMGR->GetChatMsg(477)); break;
-	case ATTR_NONE:	 sprintf(line2,"%s",CHATMGR->GetChatMsg(478)); break;
-	case ATTR_NOATTR:	 sprintf(line2,"%s",CHATMGR->GetChatMsg(2459)); break;
-	case ATTR_ALLATTR:sprintf(line2,"%s",CHATMGR->GetChatMsg(479)); break;
+	case WP_GUM: //剑
+	{
+		sprintf(line, "%s", CHATMGR->GetChatMsg(2776 ));
+		pMugong->AddToolTipLine(line, TTTC_FREELIMIT);
 	}
-	wsprintf(line, "          %s%s",CHATMGR->GetChatMsg(460), line2);
+	break;
+	case WP_GWUN: //拳
+	{
+		sprintf(line, "%s", CHATMGR->GetChatMsg(2777 ));
+		pMugong->AddToolTipLine(line, TTTC_FREELIMIT);
+	}
+	break;
+	case WP_DO: //刀
+	{
+		sprintf(line, "%s", CHATMGR->GetChatMsg(2778));
+		pMugong->AddToolTipLine(line, TTTC_FREELIMIT);
+	}
+	break;
+	case WP_CHANG: //枪
+	{
+		sprintf(line, "%s", CHATMGR->GetChatMsg(2779));
+		pMugong->AddToolTipLine(line, TTTC_FREELIMIT);
+	}
+	break;
+	case WP_GUNG: //弓
+	{
+		sprintf(line, "%s", CHATMGR->GetChatMsg(2780));
+		pMugong->AddToolTipLine(line, TTTC_FREELIMIT);
+	}
+	break;
+	case WP_AMGI: //暗
+	{
+		sprintf(line, "%s", CHATMGR->GetChatMsg(2781));
+		pMugong->AddToolTipLine(line, TTTC_FREELIMIT);
+	}
+	break;
+	case WP_AXE: //斧
+	{
+		sprintf(line, "%s", CHATMGR->GetChatMsg(2832));
+		pMugong->AddToolTipLine(line, TTTC_FREELIMIT);
+	}
+	break;
+	case WP_DAGGER: //刺客
+	{
+		sprintf(line, "%s", CHATMGR->GetChatMsg(2833));
+		pMugong->AddToolTipLine(line, TTTC_FREELIMIT);
+	}
+	break;
+	}
+	switch (pCommSkill->GetAttrib())
+	{
+	case ATTR_FIRE: //火
+	{
+		sprintf(line, "%s", CHATMGR->GetChatMsg(2782));
+		pMugong->AddToolTipLine(line, TTTC_FREELIMIT);
+	}
+	break;
+	case ATTR_WATER: //水
+	{
+		sprintf(line, "%s", CHATMGR->GetChatMsg(2783));
+		pMugong->AddToolTipLine(line, TTTC_FREELIMIT);
+	}
+	break;
+	case ATTR_TREE: //木
+	{
+		sprintf(line, "%s", CHATMGR->GetChatMsg(2784));
+		pMugong->AddToolTipLine(line, TTTC_FREELIMIT);
+	}
+	break;
+	case ATTR_IRON: //金
+	{
+		sprintf(line, "%s", CHATMGR->GetChatMsg(2785));
+		pMugong->AddToolTipLine(line, TTTC_FREELIMIT);
+	}
+	break;
+	case ATTR_EARTH: //土
+	{
+		sprintf(line, "%s", CHATMGR->GetChatMsg(2786));
+		pMugong->AddToolTipLine(line, TTTC_FREELIMIT);
+	}
+	break;
+	case ATTR_NONE://无属性
+	{
+		sprintf(line, "%s", CHATMGR->GetChatMsg(2787));
+		pMugong->AddToolTipLine(line, TTTC_FREELIMIT);
+	}
+	break;
+	case ATTR_ALLATTR://全属性
+	{
+		sprintf(line, "%s", CHATMGR->GetChatMsg(2788));
+		pMugong->AddToolTipLine(line, TTTC_FREELIMIT);
+	}
+	break;
+	}
+	switch (pCommSkill->GetSkillKind())
+	{
+	case SKILLKIND_JINBUB: //阵法
+	{
+		sprintf(line, "%s", CHATMGR->GetChatMsg(2789));
+		pMugong->AddToolTipLine(line, TTTC_FREELIMIT);
+	}
+	break;
+	case SKILLKIND_SIMBUB: //心法
+	{
+		sprintf(line, "%s", CHATMGR->GetChatMsg(2790));
+		pMugong->AddToolTipLine(line, TTTC_FREELIMIT);
+	}
+	break;
+	}
+	wsprintf(line, "          %s", line2);
 	sprintf(line2,CHATMGR->GetChatMsg(472),pCommSkill->GetNeedNaeRyuk(mLevel));
-	wsprintf( line3, "                               %s",line2);
+	wsprintf( line3, "         %s",line2);
 
 	if( HERO->GetCharacterTotalInfo()->Level < pCommSkill->GetSkillInfo()->RestrictLevel )
 		pMugong->AddToolTipLine2( line, line3, TTTC_LIMIT,TTTC_BUYPRICE,NULL,0 );
@@ -539,310 +640,788 @@ void CMugongManager::SetToolTipIcon(CMugongBase *pMugong)
 	pMugong->AddToolTipLine( "" );
 
 
-	int NeedExp = pCommSkill->GetNeedExp( mLevel );
-	float DelayRate=pCommSkill->GetDelayTime();
-	if( NeedExp != 0)
+	int NeedExp = pCommSkill->GetNeedExp(mLevel);
+	float DelayRate = pCommSkill->GetDelayTime();
+	if (NeedExp != 0)
 	{
-		if( mLevel <= 12 && mLevel != 12 )
+		if (mLevel <= 12 && mLevel != 12)
 		{
 			float percent = pMugong->GetExpPoint() * 100.0f / NeedExp;
-			if( pMugong->GetExpPoint() != NeedExp-1 )
-			if( percent > 99.99f )
-			{
-				percent = 99.99f;
-			}
-			sprintf( line2, CHATMGR->GetChatMsg(2480), mLevel, percent );
+			if (pMugong->GetExpPoint() != NeedExp - 1)
+				if (percent > 99.99f)
+				{
+					percent = 99.99f;
+				}
+			sprintf(line2, CHATMGR->GetChatMsg(2480), mLevel, percent);
 		}
 		else
 		{
-			if(SKILLMGR->IsDeadlyMugong(pMugong->GetItemIdx()) == FALSE)
-				sprintf( line2, CHATMGR->GetChatMsg(2481), mLevel );
+			if (SKILLMGR->IsDeadlyMugong(pMugong->GetItemIdx()) == FALSE)
+				sprintf(line2, CHATMGR->GetChatMsg(2481), mLevel);
 			else
-				sprintf( line2, CHATMGR->GetChatMsg(2482), mLevel );
+				sprintf(line2, CHATMGR->GetChatMsg(2482), mLevel);
 		}
 		float delay = DelayRate;
-			sprintf(line3,CHATMGR->GetChatMsg(2462),delay/1000);
-			wsprintf( line, "                          %s",line3);
-			pMugong->AddToolTipLine2( line2, line, RGB_HALF(255,255,200),TTTC_RAREITEM,NULL,0,1 );
-			//pMugong->AddToolTipLine( "" );
+		sprintf(line3, CHATMGR->GetChatMsg(2462), delay / 1000);
+		wsprintf(line, "                          %s", line3);
+		pMugong->AddToolTipLine2(line2, line, RGB_HALF(255, 255, 200), TTTC_RAREITEM, NULL, 0, 1);
+		//pMugong->AddToolTipLine( "" );
 	}
 	else
 	{
 		//pMugong->AddToolTipLine( "" );
-		pMugong->AddToolTipLine( "" );
+		pMugong->AddToolTipLine("");
+	}
+
+	pMugong->AddToolTipLine("");
+
+
+
+	switch (pCommSkill->GetWeaponType())
+	{
+	case WP_GUM: //剑
+	{
+		if (pCommSkill->GetSkillInfo()->SkillRange)
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2791), pCommSkill->GetSkillInfo()->SkillRange, pMugong->GetSung() > 0);	//攻击距离
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+
+			if (pCommSkill->GetSkillInfo()->TargetRange)
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->TargetRange, pMugong->GetSung() > 0);	//攻击目标︰半径 内的所有目标 (目标为中心)
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+			else
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2793), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+		}
+		else
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2794), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+		}
+	}
+	break;
+	case WP_GWUN: //拳
+	{
+		if (pCommSkill->GetSkillInfo()->SkillRange)
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->SkillRange, pMugong->GetSung() > 0);	//攻击距离
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+
+			if (pCommSkill->GetSkillInfo()->TargetRange)
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->TargetRange, pMugong->GetSung() > 0);	//攻击目标︰半径 内的所有目标 (目标为中心)
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+			else
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2793), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+		}
+		else
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2794), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+		}
+	}
+	break;
+	case WP_DO: //刀
+	{
+		if (pCommSkill->GetSkillInfo()->SkillRange)
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->SkillRange, pMugong->GetSung() > 0);	//攻击距离
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+
+			if (pCommSkill->GetSkillInfo()->TargetRange)
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->TargetRange, pMugong->GetSung() > 0);	//攻击目标︰半径 内的所有目标 (目标为中心)
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+			else
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2793), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+		}
+		else
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2794), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+		}
+	}
+	break;
+	case WP_CHANG: //枪
+	{
+		if (pCommSkill->GetSkillInfo()->SkillRange)
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->SkillRange, pMugong->GetSung() > 0);	//攻击距离
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+
+			if (pCommSkill->GetSkillInfo()->TargetRange)
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->TargetRange, pMugong->GetSung() > 0);	//攻击目标︰半径 内的所有目标 (目标为中心)
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+			else
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2793), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+		}
+		else
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2794), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+		}
+	}
+	break;
+	case WP_GUNG: //弓
+	{
+		if (pCommSkill->GetSkillInfo()->SkillRange)
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->SkillRange, pMugong->GetSung() > 0);	//攻击距离
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+
+			if (pCommSkill->GetSkillInfo()->TargetRange)
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->TargetRange, pMugong->GetSung() > 0);	//攻击目标︰半径 内的所有目标 (目标为中心)
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+			else
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2793), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+		}
+		else
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2794), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+		}
+	}
+	break;
+	case WP_AMGI: //暗
+	{
+		if (pCommSkill->GetSkillInfo()->SkillRange)
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->SkillRange, pMugong->GetSung() > 0);	//攻击距离
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+
+			if (pCommSkill->GetSkillInfo()->TargetRange)
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->TargetRange, pMugong->GetSung() > 0);	//攻击目标︰半径 内的所有目标 (目标为中心)
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+			else
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2793), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+		}
+		else
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2794), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+		}
+	}
+	break;
+	case WP_AXE: //斧
+	{
+		if (pCommSkill->GetSkillInfo()->SkillRange)
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->SkillRange, pMugong->GetSung() > 0);	//攻击距离
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+
+			if (pCommSkill->GetSkillInfo()->TargetRange)
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->TargetRange, pMugong->GetSung() > 0);	//攻击目标︰半径 内的所有目标 (目标为中心)
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+			else
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2793), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+		}
+		else
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2794), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+		}
+	}
+	break;
+	case WP_DAGGER: //刺客
+	{
+		if (pCommSkill->GetSkillInfo()->SkillRange)
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->SkillRange, pMugong->GetSung() > 0);	//攻击距离
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+
+			if (pCommSkill->GetSkillInfo()->TargetRange)
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->TargetRange, pMugong->GetSung() > 0);	//攻击目标︰半径 内的所有目标 (目标为中心)
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+			else
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2793), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+		}
+		else
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2794), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+		}
+	}
+	break;
+	}
+	switch (pCommSkill->GetAttrib())
+	{
+	case ATTR_FIRE: //火
+	{
+		if (pCommSkill->GetSkillInfo()->SkillRange)
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->SkillRange, pMugong->GetSung() > 0);	//攻击距离
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+
+			if (pCommSkill->GetSkillInfo()->TargetRange)
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->TargetRange, pMugong->GetSung() > 0);	//攻击目标︰半径 内的所有目标 (目标为中心)
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+			else
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2793), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+		}
+		else
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2794), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+		}
+
+	}
+	break;
+	case ATTR_WATER: //水
+	{
+		if (pCommSkill->GetSkillInfo()->SkillRange)
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->SkillRange, pMugong->GetSung() > 0);	//攻击距离
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+
+			if (pCommSkill->GetSkillInfo()->TargetRange)
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->TargetRange, pMugong->GetSung() > 0);	//攻击目标︰半径 内的所有目标 (目标为中心)
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+			else
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2793), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+		}
+		else
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2794), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+		}
+
+	}
+	break;
+	case ATTR_TREE: //木
+	{
+		if (pCommSkill->GetSkillInfo()->SkillRange)
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->SkillRange, pMugong->GetSung() > 0);	//攻击距离
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+
+			if (pCommSkill->GetSkillInfo()->TargetRange)
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->TargetRange, pMugong->GetSung() > 0);	//攻击目标︰半径 内的所有目标 (目标为中心)
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+			else
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2793), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+		}
+		else
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2794), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+		}
+
+	}
+	break;
+	case ATTR_IRON: //金
+	{
+		if (pCommSkill->GetSkillInfo()->SkillRange)
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->SkillRange, pMugong->GetSung() > 0);	//攻击距离
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+
+			if (pCommSkill->GetSkillInfo()->TargetRange)
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->TargetRange, pMugong->GetSung() > 0);	//攻击目标︰半径 内的所有目标 (目标为中心)
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+			else
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2793), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+		}
+		else
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2794), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+		}
+
+	}
+	break;
+	case ATTR_EARTH: //土
+	{
+		if (pCommSkill->GetSkillInfo()->SkillRange)
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->SkillRange, pMugong->GetSung() > 0);	//攻击距离
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+
+			if (pCommSkill->GetSkillInfo()->TargetRange)
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->TargetRange, pMugong->GetSung() > 0);	//攻击目标︰半径 内的所有目标 (目标为中心)
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+			else
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2793), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+		}
+		else
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2794), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+		}
+
+	}
+	break;
+	case ATTR_NONE://无属性
+	{
+		if (pCommSkill->GetSkillInfo()->SkillRange)
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->SkillRange, pMugong->GetSung() > 0);	//攻击距离
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+
+			if (pCommSkill->GetSkillInfo()->TargetRange)
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->TargetRange, pMugong->GetSung() > 0);	//攻击目标︰半径 内的所有目标 (目标为中心)
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+			else
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2793), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+		}
+		else
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2794), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+		}
+	}
+	break;
+	case ATTR_ALLATTR://全属性
+	{
+		if (pCommSkill->GetSkillInfo()->SkillRange)
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->SkillRange, pMugong->GetSung() > 0);	//攻击距离
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+
+			if (pCommSkill->GetSkillInfo()->TargetRange)
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2792), pCommSkill->GetSkillInfo()->TargetRange, pMugong->GetSung() > 0);	//攻击目标︰半径 内的所有目标 (目标为中心)
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+			else
+			{
+				sprintf(line, CHATMGR->GetChatMsg(2793), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+				pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+			}
+		}
+		else
+		{
+			sprintf(line, CHATMGR->GetChatMsg(2794), pCommSkill->GetSkillInfo()->TargetRange);	//攻击目标︰单一目标
+			pMugong->AddToolTipLine(line, TTTC_EXTRAATTR);
+		}
+	}
+	break;
+	}
+	switch (pCommSkill->GetSkillKind())
+	{
+	case SKILLKIND_JINBUB: //阵法
+	{
+		pMugong->AddToolTipLine(CHATMGR->GetChatMsg(2794), TTTC_EXTRAATTR); break;
+	}
+	break;
+	case SKILLKIND_SIMBUB: //心法
+	{
+		pMugong->AddToolTipLine(CHATMGR->GetChatMsg(2794), TTTC_EXTRAATTR); break;
+	}
+	break;
+	}
+
+	pMugong->AddToolTipLine("");   // 添一空行
+	if (pCommSkill->GetFirstPhyAttack(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2795), pCommSkill->GetFirstPhyAttack(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetFirstAttAttackMin(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2796), pCommSkill->GetFirstAttAttackMin(pMugong->GetSung()), pCommSkill->GetFirstAttAttackMax(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+
+	if (pCommSkill->GetContinueAttAttack(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2797), pCommSkill->GetContinueAttAttack(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetContinueAttAttackRate(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2798), pCommSkill->GetContinueAttAttackRate(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetAttackRate(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2799), pCommSkill->GetAttackRate(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetCounterDodgeRate(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2800), pCommSkill->GetCounterDodgeRate(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetCriticalRate(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2801), pCommSkill->GetCriticalRate(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetStunRate(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2802), pCommSkill->GetStunRate(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetDamageRate(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2803), pCommSkill->GetDamageRate(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetContinueRecoverLife(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2804), pCommSkill->GetContinueRecoverLife(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetContinueRecoverShield(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2805), pCommSkill->GetContinueRecoverShield(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetReverseVampiricNaeryuk(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2806), pCommSkill->GetReverseVampiricNaeryuk(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetReverseVampiricLife(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2807), pCommSkill->GetReverseVampiricLife(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetAttackPhyLastUp(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2808), pCommSkill->GetAttackPhyLastUp(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetAttackAttLastUp(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2809), pCommSkill->GetAttackAttLastUp(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetAttackLifeRate(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2810), pCommSkill->GetAttackLifeRate(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetAttackShieldRate(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2811), pCommSkill->GetAttackShieldRate(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetUpMaxShield(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2812), pCommSkill->GetUpMaxShield(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetUpPhyAttack(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2813), pCommSkill->GetUpPhyAttack(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetUpMaxLife(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2814), pCommSkill->GetUpMaxLife(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetUpPhyDefense(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2815), pCommSkill->GetUpPhyDefense(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetUpAttDefense(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2816), pCommSkill->GetUpAttDefense(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetUpMaxNaeRyuk(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2817), pCommSkill->GetUpMaxNaeRyuk(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetContinueRecoverNaeRyuk(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2818), pCommSkill->GetContinueRecoverNaeRyuk(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetAmplifiedPowerPhy(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2819), pCommSkill->GetAmplifiedPowerPhy(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetDispelAttackFeelRate(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2820), pCommSkill->GetDispelAttackFeelRate(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetChangeSpeedProbability(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2821), pCommSkill->GetChangeSpeedProbability(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetDownMaxLife(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2822), pCommSkill->GetDownMaxLife(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetDownMaxNaeRyuk(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2823), pCommSkill->GetDownMaxNaeRyuk(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetDownMaxShield(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2824), pCommSkill->GetDownMaxShield(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetDownPhyDefense(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2825), pCommSkill->GetDownPhyDefense(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetDownAttDefense(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2826), pCommSkill->GetDownAttDefense(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetDownPhyAttack(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2827), pCommSkill->GetDownPhyAttack(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetAmplifiedPowerAtt(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2828), pCommSkill->GetAmplifiedPowerAtt(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
+	}
+	if (pCommSkill->GetAmplifiedPowerAttRate(pMugong->GetSung() > 0))
+	{
+		sprintf(line, CHATMGR->GetChatMsg(2829), pCommSkill->GetAmplifiedPowerAttRate(pMugong->GetSung()));
+		pMugong->AddToolTipLine(line, RGB_HALF(255, 255, 0));
 	}
 
 
-
-/*-------------------------------------------------------------------
-Attack Range:
----------------------------------------------------------------------*/
-	pMugong->AddToolTipLine( "" );
-	int AttRange = pCommSkill->GetSkillRange();
-	if( AttRange != 0 )
-	{
-		sprintf(line,CHATMGR->GetChatMsg(2463),AttRange);
-		pMugong->AddToolTipLine( line, TTTC_BUYPRICE );
-	}
-	/*else if(AttRange==0)
-	{
-		sprintf(line,CHATMGR->GetChatMsg(2464),CHATMGR->GetChatMsg(2465));
-		pMugong->AddToolTipLine( line, TTTC_BUYPRICE );
-	}*/
-
-
-
-/*-------------------------------------------------------------------
-Target:
----------------------------------------------------------------------*/
-	bool TargetKind=pCommSkill->IsTargetAreaFitToHero();
-	if(TargetKind/*==TRUE*/)
-	{
-		char range5[64];
-		wsprintf(range5, CHATMGR->GetChatMsg(2668),pCommSkill->GetSkillInfo()->TargetRange);
-		sprintf(line,CHATMGR->GetChatMsg(2464),/*CHATMGR->GetChatMsg(2668)*/range5);//All targets within the radius
-		pMugong->AddToolTipLine2( line,"", TTTC_BUYPRICE );
-	}
-	else if(AttRange==0)
-	{
-		sprintf(line,CHATMGR->GetChatMsg(2464),CHATMGR->GetChatMsg(2465));//Self
-		pMugong->AddToolTipLine( line, TTTC_BUYPRICE );
-	}
-	else if(TargetKind == false)
-	{
-		sprintf(line,CHATMGR->GetChatMsg(2464),CHATMGR->GetChatMsg(2667));//Single target
-		pMugong->AddToolTipLine( line, TTTC_BUYPRICE );
-	}
-	
-
-
-
-
-/*-------------------------------------------------------------------
-Skill rate
----------------------------------------------------------------------*/
-	
-
-	float SkillDmg=pCommSkill->GetDamageRate(mLevel);
-	float SkillAtt=pCommSkill->GetAttackRate(mLevel);
-	float Stun=pCommSkill->GetStunRate(mLevel);
-	float Critical=pCommSkill->GetCriticalRate(mLevel);
-	WORD LifeRecovery=pCommSkill->GetContinueRecoverLife(mLevel);
-
-	if( SkillDmg||SkillAtt||Stun||Critical||LifeRecovery )
-	{
-		pMugong->AddToolTipLine( "" );
-	}
-
-
-	if( SkillDmg/*!=0*/ )
-	{
-		sprintf(line,CHATMGR->GetChatMsg(2469),(int)SkillDmg);
-		pMugong->AddToolTipLine( line, RGB_HALF(255,255,200) );
-	}	
-	
-	if( SkillAtt/*!=0*/ )
-	{
-		sprintf(line,CHATMGR->GetChatMsg(2469),(int)SkillAtt);
-		pMugong->AddToolTipLine( line, RGB_HALF(255,255,200) );
-	}	
-	
-	if( Stun/*!=0*/ )
-	{
-		sprintf(line,CHATMGR->GetChatMsg(2468),Stun*100);
-		pMugong->AddToolTipLine( line, RGB_HALF(255,255,200) );
-	}
-	
-	if( Critical /*!= 0*/ )
-	{
-		sprintf(line,CHATMGR->GetChatMsg(2467),Critical*100);
-		pMugong->AddToolTipLine( line, RGB_HALF(255,255,200) );
-	}	
-	
-	if( LifeRecovery /*!= 0*/ )
-	{
-		sprintf(line,CHATMGR->GetChatMsg(1409),LifeRecovery);
-		pMugong->AddToolTipLine( line, RGB_HALF(255,255,200) );
-	}
-	
-
-
-/*-------------------------------------------------------------------
-Skill Option / Meta Stone
----------------------------------------------------------------------*/
-	SKILLOPTION* pOption = SKILLMGR->GetSkillOption(pMugong->GetOption());
-	if(pOption)
-	{
-		pMugong->AddToolTipLine( "" );
-		if(pOption->Range > 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1316), pOption->Range);
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->Range < 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1320), -pOption->Range);
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->ReduceNaeRyuk > 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1317), (int)(pOption->ReduceNaeRyuk * 100 + 0.5));
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->ReduceNaeRyuk < 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1321), (int)(-pOption->ReduceNaeRyuk * 100 + 0.5));
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->PhyAtk > 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1318), (int)(pOption->PhyAtk * 100 + 0.5));
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->PhyAtk < 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1322), (int)(-pOption->PhyAtk * 100 + 0.5));
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->BaseAtk)
-		{
-			char ToolTipText[32];			
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1740), (int)(pOption->BaseAtk * 100));
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->AttAtk > 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1319), (int)(pOption->AttAtk * 100 + 0.5));
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->AttAtk < 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1323), (int)(-pOption->AttAtk * 100 + 0.5));
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->Life > 0)	
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1340), pOption->Life);
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->Life < 0)	
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1341), -pOption->Life);
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->NaeRyuk > 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1342), pOption->NaeRyuk);
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->NaeRyuk < 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1343), -pOption->NaeRyuk);
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->Shield > 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1344), pOption->Shield);
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->Shield < 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1345), -pOption->Shield);
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->PhyDef > 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1348), (int)(pOption->PhyDef * 100 + 0.5));
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->PhyDef < 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1349), (int)(-pOption->PhyDef * 100 + 0.5));
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->AttDef > 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1324), (int)(pOption->AttDef * 100 + 0.5));
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->AttDef < 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1325), (int)(-pOption->AttDef * 100 + 0.5));
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->Duration > 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1346), pOption->Duration);
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-		if(pOption->Duration < 0)
-		{
-			char ToolTipText[32];
-			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1347), -pOption->Duration);
-			pMugong->AddToolTipLine( ToolTipText, TTTC_TRANSMUGONGOPTION );
-		}
-	}
-
-
-/*-------------------------------------------------------------------
-Grey line next level information
----------------------------------------------------------------------*/
-	if( mLevel+1 > 0 && mLevel != 12 )
-	{
-		pMugong->AddToolTipLine( "" );
-		wsprintf( line, CHATMGR->GetChatMsg(2460) );
-		pMugong->AddToolTipLine( line, ICONTEXT_DISABLE_BYZEROSUNG );
-		wsprintf( line, CHATMGR->GetChatMsg(472), pCommSkill->GetNeedNaeRyuk(mLevel+1) );
-		pMugong->AddToolTipLine( line, ICONTEXT_DISABLE_BYZEROSUNG );
-		float Stun=pCommSkill->GetStunRate(mLevel+1);
-		if(Stun!=0)
-		{
-			sprintf(line,CHATMGR->GetChatMsg(2468),Stun*100);
-			pMugong->AddToolTipLine( line, ICONTEXT_DISABLE_BYZEROSUNG );
-		}
-		float Critical=pCommSkill->GetCriticalRate(mLevel+1);
-		if( Critical != 0)
-		{
-			sprintf(line,CHATMGR->GetChatMsg(2467),Critical*100);
-			pMugong->AddToolTipLine( line, ICONTEXT_DISABLE_BYZEROSUNG );
-		}
-	}
-	if(pMugong->GetLastSecond())
+	if (pMugong->GetLastSecond())
 	{
 		char ToolTipText[32];
-		wsprintf(ToolTipText, CHATMGR->GetChatMsg(582), pMugong->GetLastSecond() );
-		pMugong->AddToolTipLine( ToolTipText, TTTC_QUESTITEM );
+		wsprintf(ToolTipText, CHATMGR->GetChatMsg(582), pMugong->GetLastSecond());
+		pMugong->AddToolTipLine(ToolTipText, TTTC_QUESTITEM);
 	}
-	if(pCommSkill->GetSpecialState())
+
+	if (pCommSkill->GetSpecialState())
 	{
-		pMugong->AddToolTipLine( CHATMGR->GetChatMsg(1359), TTTC_MUGONGNEEDMANA );
+		pMugong->AddToolTipLine(CHATMGR->GetChatMsg(1359), TTTC_MUGONGNEEDMANA);
+
 		SPECIAL_STATE_INFO* pInfo = SKILLMGR->GetSpecialStateInfo(pCommSkill->GetSpecialState());
-		if(pInfo)
+		if (pInfo)
 		{
 			char ToolTipText[32];
 			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1360), pInfo->NaeRyuk);
-			pMugong->AddToolTipLine( ToolTipText, TTTC_MUGONGNEEDMANA );
+			pMugong->AddToolTipLine(ToolTipText, TTTC_MUGONGNEEDMANA);
 		}
 	}
+
+	SKILLOPTION* pOption = SKILLMGR->GetSkillOption(pMugong->GetOption());
+
+	if (pOption)
+	{
+		pMugong->AddToolTipLine("");
+
+		if (pOption->Range > 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1316), pOption->Range);
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+		if (pOption->Range < 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1320), -pOption->Range);
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+
+		if (pOption->ReduceNaeRyuk > 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1317), (int)(pOption->ReduceNaeRyuk * 100 + 0.5));
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+		if (pOption->ReduceNaeRyuk < 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1321), (int)(-pOption->ReduceNaeRyuk * 100 + 0.5));
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+
+		if (pOption->PhyAtk > 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1318), (int)(pOption->PhyAtk * 100 + 0.5));
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+		if (pOption->PhyAtk < 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1322), (int)(-pOption->PhyAtk * 100 + 0.5));
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+
+		if (pOption->BaseAtk)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1740), (int)(pOption->BaseAtk * 100));
+			//wsprintf(ToolTipText, "老馆 傍拜仿 %d%% %s", (int)(pOption->BaseAtk * 100), CheckMugongOption(pOption->BaseAtk));
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+
+		if (pOption->AttAtk > 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1319), (int)(pOption->AttAtk * 100 + 0.5));
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+		if (pOption->AttAtk < 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1323), (int)(-pOption->AttAtk * 100 + 0.5));
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+
+		if (pOption->Life > 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1340), pOption->Life);
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+
+		}
+		if (pOption->Life < 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1341), -pOption->Life);
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+
+		if (pOption->NaeRyuk > 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1342), pOption->NaeRyuk);
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+		if (pOption->NaeRyuk < 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1343), -pOption->NaeRyuk);
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+
+		if (pOption->Shield > 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1344), pOption->Shield);
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+		if (pOption->Shield < 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1345), -pOption->Shield);
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+
+		if (pOption->PhyDef > 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1348), (int)(pOption->PhyDef * 100 + 0.5));
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+		if (pOption->PhyDef < 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1349), (int)(-pOption->PhyDef * 100 + 0.5));
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+
+		if (pOption->AttDef > 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1324), (int)(pOption->AttDef * 100 + 0.5));
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+		if (pOption->AttDef < 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1325), (int)(-pOption->AttDef * 100 + 0.5));
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+
+		if (pOption->Duration > 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1346), pOption->Duration);
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+		if (pOption->Duration < 0)
+		{
+			char ToolTipText[32];
+			wsprintf(ToolTipText, CHATMGR->GetChatMsg(1347), -pOption->Duration);
+			pMugong->AddToolTipLine(ToolTipText, TTTC_TRANSMUGONGOPTION);
+		}
+	}
+
 	ITEMMGR->AddItemDescriptionToolTip( pMugong, pCommSkill->GetSkillInfo()->SkillTooltipIdx );
 	pMugong->AddToolTipLine( "" );
 	//pMugong->AddToolTipLine( "" );

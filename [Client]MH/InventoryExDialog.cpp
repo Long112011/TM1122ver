@@ -85,7 +85,7 @@
 #include "ItemQualityDlg.h"
 #include "ItemQualityChangeDlg.h"
 #include "GradeChangeDlg.h"//ÎäÆ÷Éý½×Öµ×ªÒÆ¾í
-extern  int  m_PetPos;
+extern  int  m_PetIdx;
 extern BOOL IsMultiPet;
 CInventoryExDialog::CInventoryExDialog()
 {
@@ -1627,7 +1627,7 @@ void CInventoryExDialog::UseItem(CItem* pItem, BYTE ActionType)
 					return;
 				}
 				MOVEMGR->HeroMoveStop();
-				m_PetPos = pItem->GetPosition();
+				m_PetIdx = pItem->GetItemIdx();
 			}
 			MSG_SHOPITEM_USE_SYN msg;
 			msg.Category = MP_ITEM;

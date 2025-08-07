@@ -120,7 +120,7 @@ class CCharacterDialog  : public cDialog
 {
 	CHARSTATICCTRL		m_ppStatic;			// 蔼捞 免仿瞪 函荐甸
 	cButton *			m_pPointBtn[MAX_BTN_POINT];
-
+	cStatic* m_MoveSpeed;	//移动速度增加
 	cButton*			m_pPointMinusBtn[MAX_BTN_POINT];
 	int					m_nocoriPoint;
 
@@ -151,6 +151,7 @@ public:
 
 	void SetLevel(LEVELTYPE level);
 	void SetLife(DWORD life);
+	void UpdateMoveSpeedDisplay();
 	void SetShield(DWORD Shield);
 	void SetNaeRyuk(DWORD naeryuk);
 	void SetGenGol();

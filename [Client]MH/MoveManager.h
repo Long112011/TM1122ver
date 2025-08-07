@@ -31,6 +31,7 @@ public:
 	void GetPetPath(MOVE_INFO* pHeroMoveInfo, WORD wPosCount);
 	BOOL GetPetLastPos(VECTOR3* pSrcPos, VECTOR3* pFromPos, VECTOR3* pToPos);
 	void SendPetMoveMsg();
+	void SetHeroPetTarget(CObject* object1, CObject* object2, VECTOR3* pPos);
 	void SetHeroPetTarget();
 	void SetHeroPetTarget(VECTOR3* pPos);
 	void SetHeroActionMove(CActionTarget* pTarget,CAction* pAction);

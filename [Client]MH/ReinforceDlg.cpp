@@ -160,12 +160,12 @@ BOOL CReinforceDlg::FakeMoveIcon(LONG x, LONG y, cIcon * pOrigIcon)
 	ITEM_INFO* pBaseItemInfo = ITEMMGR->GetItemInfo( pOrigItem->GetItemIdx() );
 	if( !pBaseItemInfo )			return FALSE;
 
-	// 06.09.25 RaMa - 이벤트아이템을 강화, 레어를 못 만들도록
-	if( pBaseItemInfo->WeaponType > WP_KEY )
-	{
-		CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(1455) );
-		return FALSE;
-	}
+	//// 06.09.25 RaMa - 이벤트아이템을 강화, 레어를 못 만들도록
+	//if( pBaseItemInfo->WeaponType > WP_KEY )
+	//{
+	//	CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(1455) );
+	//	return FALSE;
+	//} 
 
 	// 인벤토리이외에 아이템 FALSE
 	if(!ITEMMGR->IsEqualTableIdxForPos(eItemTable_Inventory, pOrigItem->GetPosition()))

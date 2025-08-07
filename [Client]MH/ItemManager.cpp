@@ -2353,6 +2353,8 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 					case WP_CHANG: sprintf(line2, CHATMGR->GetChatMsg(409));break;
 					case WP_GUNG: sprintf(line2, CHATMGR->GetChatMsg(410));break;
 					case WP_AMGI: sprintf(line2, CHATMGR->GetChatMsg(411));break;
+					case WP_AXE: sprintf(line2, CHATMGR->GetChatMsg(2836)); break;
+					case WP_DAGGER: sprintf(line2, CHATMGR->GetChatMsg(2837)); break;
 						case 7: sprintf(line2, CHATMGR->GetChatMsg(406));break;
 				}
 				if( pInfo->ItemIdx==EVENT_ITEM_GLOVE )
@@ -2586,7 +2588,7 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 	if (pOptionInfo && pOptionInfo->dwOptionIdx)
 	{
 		pIcon->AddToolTipLine("");   // 强化
-		sprintf(line, "< %s >", CHATMGR->GetChatMsg(2273));
+		sprintf(line, "< %s >", CHATMGR->GetChatMsg(2838));
 		pIcon->AddToolTipLine(line, RGB_HALF(255, 214, 150));
 		if (pOptionInfo && pOptionInfo->GenGol != 0)
 		{
@@ -2663,7 +2665,7 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 	if (pRareOptionInfo && pRareOptionInfo->dwRareOptionIdx)
 	{
 		pIcon->AddToolTipLine("");   // 添一空行
-		sprintf(line, "< %s >", CHATMGR->GetChatMsg(2274));
+		sprintf(line, "< %s >", CHATMGR->GetChatMsg(2839));
 		pIcon->AddToolTipLine(line, RGB_HALF(255, 214, 150));
 		DWORD RareState;
 		if (pRareOptionInfo && pRareOptionInfo->GenGol)
@@ -3218,7 +3220,18 @@ void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPT
 		pIcon->AddToolTipLine(line, RGBA_MERGE(RGB_HALF(180, 0, 255), 255));
 	}
 	break;
-		
+	case WP_DAGGER:
+	{
+		pIcon->AddToolTipLine("");   // 添一空行
+		sprintf(line, "< 武器特殊加成>");
+		pIcon->AddToolTipLine(line, RGB_HALF(255, 0, 0));
+		sprintf(line, "- 每3点敏捷加攻击力1%%");
+		pIcon->AddToolTipLine(line, RGBA_MERGE(RGB_HALF(180, 0, 255), 255));
+		sprintf(line, "- 每5点敏捷加移动速度1点");
+		pIcon->AddToolTipLine(line, RGBA_MERGE(RGB_HALF(180, 0, 255), 255));
+
+	}
+	break;
 	}
 	
 
@@ -6471,44 +6484,44 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 		break;
 	case MP_ITEM_UPGRADE_SUCCESS_ACK:
 	{
-		MSG_ITEM_UPGRADE_ACK* pmsg = (MSG_ITEM_UPGRADE_ACK*)pMsg;
+		//MSG_ITEM_UPGRADE_ACK* pmsg = (MSG_ITEM_UPGRADE_ACK*)pMsg;
 
-		// 输出调试信息
-		ITEM_INFO* pInfo = ITEMMGR->GetItemInfo(pmsg->wItemIdx);
-		CHATMGR->AddMsg(CTC_SYSMSG, "收到强化结果：ItemPos=%d, MaterialPos=%d, ItemIdx=%d",
-			pmsg->ItemPos, pmsg->MaterialItemPos, pmsg->wItemIdx);
-		if (pInfo)
-			CHATMGR->AddMsg(CTC_SYSMSG, "目标物品：%s", pInfo->ItemName);
+		//// 输出调试信息
+		//ITEM_INFO* pInfo = ITEMMGR->GetItemInfo(pmsg->wItemIdx);
+		//CHATMGR->AddMsg(CTC_SYSMSG, "收到强化结果：ItemPos=%d, MaterialPos=%d, ItemIdx=%d",
+		//	pmsg->ItemPos, pmsg->MaterialItemPos, pmsg->wItemIdx);
+		//if (pInfo)
+		//	CHATMGR->AddMsg(CTC_SYSMSG, "目标物品：%s", pInfo->ItemName);
 
-		CItem* itemOut;
-		CItem* MaterialItemOut;
-		ITEM_OPTION_INFO OptionInfo;
-		DeleteItem(pmsg->ItemPos, &itemOut, &OptionInfo);
-		DeleteItem(pmsg->MaterialItemPos, &MaterialItemOut);
+		//CItem* itemOut;
+		//CItem* MaterialItemOut;
+		//ITEM_OPTION_INFO OptionInfo;
+		//DeleteItem(pmsg->ItemPos, &itemOut, &OptionInfo);
+		//DeleteItem(pmsg->MaterialItemPos, &MaterialItemOut);
 
-		int grade = pmsg->wItemIdx - itemOut->GetItemIdx();
-		if (grade > 0)
-			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(176), grade);
-		else if (grade == 0)
-			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(177));
-		else
-			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(178), grade);
+		//int grade = pmsg->wItemIdx - itemOut->GetItemIdx();
+		//if (grade > 0)
+		//	CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(176), grade);
+		//else if (grade == 0)
+		//	CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(177));
+		//else
+		//	CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(178), grade);
 
-		if (OptionInfo.dwOptionIdx != 0)
-			AddItemOption(&OptionInfo);
+		//if (OptionInfo.dwOptionIdx != 0)
+		//	AddItemOption(&OptionInfo);
 
-		ITEMBASE NewItem;
-		NewItem = *(itemOut->GetItemBaseInfo());
-		NewItem.Position = pmsg->ItemPos;
-		NewItem.wIconIdx = pmsg->wItemIdx;
-		NewItem.QuickPosition = 0;
+		//ITEMBASE NewItem;
+		//NewItem = *(itemOut->GetItemBaseInfo());
+		//NewItem.Position = pmsg->ItemPos;
+		//NewItem.wIconIdx = pmsg->wItemIdx;
+		//NewItem.QuickPosition = 0;
 
-		GAMEIN->GetInventoryDialog()->AddItem(&NewItem);
-		GAMEIN->GetUpgradeDialog()->Release();
+		//GAMEIN->GetInventoryDialog()->AddItem(&NewItem);
+		//GAMEIN->GetUpgradeDialog()->Release();
 
-		CItem* pResultItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->ItemPos);
-		GAMEIN->GetUpgradeDialog()->AddVirtualItemWrap(eRESULTITEM_POS, pResultItem);
-		pResultItem->SetLock(TRUE);
+		//CItem* pResultItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->ItemPos);
+		//GAMEIN->GetUpgradeDialog()->AddVirtualItemWrap(eRESULTITEM_POS, pResultItem);
+		//pResultItem->SetLock(TRUE);
 	}
 	break;
 
@@ -7218,7 +7231,7 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 				if( bits & eSHOP_ITEM )
 				{
 					ITEM_INFO* pInfo = GetItemInfo( item->GetItemBaseInfo()->wIconIdx );
-					if( bits != eSHOP_ITEM_MAKEUP && bits != eSHOP_ITEM_DECORATION && bits != eSHOP_ITEM_PET && bits != eSHOP_ITEM_IMAGENAME)//图片称号增加
+					if( bits != eSHOP_ITEM_MAKEUP && bits != eSHOP_ITEM_DECORATION && bits != eSHOP_ITEM_PET )//图片称号增加
 					{
 						if( item->GetDurability() > 1)
 						{
@@ -7477,10 +7490,10 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 			{
 				int MotionIdx = -1;
 				WORD Weapontype = pPlayer->GetWeaponEquipType();
-				if( Weapontype==WP_GUM || Weapontype==WP_GWUN || Weapontype==WP_GUNG || Weapontype==WP_AMGI ||
+				if( Weapontype==WP_GUM || Weapontype==WP_GWUN || Weapontype==WP_GUNG || Weapontype==WP_AMGI || Weapontype == WP_DAGGER ||
 					Weapontype==WP_EVENT || Weapontype == WP_EVENT_HAMMER )
 					MotionIdx = eMotion_Item_ChangeHair_1;
-				else if( Weapontype==WP_DO )
+				else if( Weapontype==WP_DO || Weapontype == WP_AXE)
 					MotionIdx = eMotion_Item_ChangeHair_2;
 				else if( Weapontype==WP_CHANG )
 					MotionIdx = eMotion_Item_ChangeHair_3;
@@ -8397,6 +8410,7 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 			    GAMEIN->GetCharacterDialog()->SetSimMek();
 			    GAMEIN->GetCharacterDialog()->SetCritical();
 			    GAMEIN->GetCharacterDialog()->UpdateData();
+				GAMEIN->GetCharacterDialog()->UpdateMoveSpeedDisplay();
 				APPEARANCEMGR->InitAppearance( HERO );
 				CHATMGR->AddMsg(CTC_SYSMSG,CHATMGR->GetChatMsg(2127),pmsg->dwData3);  
 				if( pTargetItem->GetDurability() != 0 && !IsDupItem(pTargetItem->GetItemIdx()) )

@@ -180,7 +180,7 @@ enum eMOTION
 	eMotion_Tactic_Start						= 330,
 	eMotion_Tactic_Ing							= 331,
 	eMotion_Tactic_Excute						= 332,
-/*
+		/*
 	eMotion_Emoticon_Bow = 150,//인사
 	eMotion_Emoticon_Thanks = 151,//감사
 	eMotion_Emoticon_Yes = 152,//긍정

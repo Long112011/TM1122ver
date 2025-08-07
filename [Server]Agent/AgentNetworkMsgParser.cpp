@@ -4721,7 +4721,7 @@ BOOL CheckCharacterMakeInfo( CHARACTERMAKEINFO* pmsg )
 		return FALSE;			
 	if( pmsg->WearedItemIdx[eWearedItem_Weapon] == 11000 || pmsg->WearedItemIdx[eWearedItem_Weapon] == 13000 ||
 		pmsg->WearedItemIdx[eWearedItem_Weapon] == 15000 || pmsg->WearedItemIdx[eWearedItem_Weapon] == 17000 ||
-		pmsg->WearedItemIdx[eWearedItem_Weapon] == 19000 || pmsg->WearedItemIdx[eWearedItem_Weapon] == 21000 )
+		pmsg->WearedItemIdx[eWearedItem_Weapon] == 19000 || pmsg->WearedItemIdx[eWearedItem_Weapon] == 21000|| pmsg->WearedItemIdx[eWearedItem_Weapon] == 12930 || pmsg->WearedItemIdx[eWearedItem_Weapon] == 22250)
 	{
 	}
 	else

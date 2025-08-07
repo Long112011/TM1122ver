@@ -64,11 +64,18 @@ BOOL CRareCreateDialog::FakeMoveIcon(LONG x, LONG y, cIcon* pOrigIcon)
 		return FALSE;
 
 	// 06.09.25 RaMa - 이벤트아이템을 강화, 레어를 못 만들도록
-	if (pBaseItemInfo->WeaponType > WP_KEY)
+	WORD wType = pBaseItemInfo->WeaponType;
+
+	if (!(
+		(wType >= WP_GUM && wType <= WP_KEY) ||
+		wType == WP_AXE ||
+		wType == WP_DAGGER
+		))
 	{
 		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1455));
 		return FALSE;
 	}
+
 
 	//HK080529	//itemidex 가 이미 조합관련 %10의 룰을 깼다.
 	// 조합된건지 체크

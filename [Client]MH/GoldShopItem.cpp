@@ -179,7 +179,7 @@ void CShopItem::Render()
 		CFONT_OBJ->RenderFont(0, Pricing, strlen(Pricing), &rect, RGBA_MERGE(0xffffff, m_alpha * m_dwOptionAlpha / 100 ));
 		if(m_OfferPrice>0)
 		{
-			strcpy(BuyPriceCanceled, "         ");
+			strcpy(BuyPriceCanceled, "---------");
 			RECT rect2 = {(LONG)m_absPos.x+GARISX, (LONG)m_absPos.y+GARISY, 25, 5};
 			CFONT_OBJ->RenderFont(FONTOFFER, BuyPriceCanceled, strlen(Pricing), &rect2, RGBA_MERGE(0xFF0000, 255));
 			strcpy(OfferPrice, AddComma(m_OfferPrice));

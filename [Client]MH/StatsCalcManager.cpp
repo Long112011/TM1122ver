@@ -188,6 +188,13 @@ void CStatsCalcManager::CalcItemStats(PLAYERTYPE* pPlayer)
 			item_stats->RangeAttackPowerMin += HERO->GetCheRyuk() / 10;
 			item_stats->RangeAttackPowerMax += HERO->GetCheRyuk() / 10;
 		}
+		if (pItemInfo->WeaponType == 11)
+		{//佩戴武器为刺客时，每3点敏捷增加一点攻击
+			item_stats->MeleeAttackPowerMin += HERO->GetMinChub() / 3;
+			item_stats->MeleeAttackPowerMax += HERO->GetMinChub() / 3;
+			item_stats->RangeAttackPowerMin += HERO->GetMinChub() / 3;
+			item_stats->RangeAttackPowerMax += HERO->GetMinChub() / 3;
+		}
 		item_stats->PhysicalDefense += (WORD)(CalStatusGradeInt(pItemInfo->PhyDef, pTargetItemBase->Grade30) * ApplyRate);//天墨技术修改 2023 - 12 - 29 修复65535 极限
 		item_stats->GenGol += (WORD)(CalStatusGradeInt(pItemInfo->GenGol, pTargetItemBase->Grade30) * ApplyRate);
 		item_stats->MinChub += (WORD)(CalStatusGradeInt(pItemInfo->MinChub, pTargetItemBase->Grade30) * ApplyRate);

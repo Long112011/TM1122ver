@@ -304,6 +304,11 @@ double CAttackCalc::getPlayerPhysicalAttackPower(CPlayer * pPlayer,float PhyAtta
 
 	physicalAttackPower = physicalAttackPower*PhyAttackRate;
 
+	if (bCritical)
+	{
+		//physicalAttackPower = physicalAttackPower*1.5f;			// critical attack
+		physicalAttackPower *= gEventRate[eEvent_MugongPhyCritical];//±©ª˜…À∫¶±∂¬ …Ë÷√
+	}
 /*#ifndef _JAPAN_LOCAL_//kiv
 	if(bCritical)
 	{

@@ -62,7 +62,7 @@ void CAttackManager::sendDieMsg(CObject * pAttacker,CObject* pTarget)
 
 	PACKEDDATA_OBJ->QuickSend(pTarget,&m2c,sizeof(m2c));
 }
-///新的pvp
+///新的pvp//物理伤害计算
 DWORD CAttackManager::GetComboPhyDamage(CObject* pAttacker, CObject* pTargetObject, float PhyAttackRate, float fCriticalRate,
 	RESULTINFO* pDamageInfo, DWORD AmplifiedPower, float fDecreaseDamageRate)
 {
@@ -73,7 +73,8 @@ DWORD CAttackManager::GetComboPhyDamage(CObject* pAttacker, CObject* pTargetObje
 // 暴击判定处理
 	if (pDamageInfo->bCritical)
 	{
-		attackPhyDamage *= 1.5f;
+		//attackPhyDamage *= 1.5f;
+		attackPhyDamage *= gEventRate[eEvent_MugongPhyCritical];//暴击伤害倍率设置 
 
 		// 玩家攻击者：附加品质暴击伤害、特效伤害
 		if (pAttacker->GetObjectKind() == eObjectKind_Player)
@@ -111,6 +112,8 @@ DWORD CAttackManager::GetComboPhyDamage(CObject* pAttacker, CObject* pTargetObje
 	attackPhyDamage += AmplifiedPower;
 	attackPhyDamage *= fDecreaseDamageRate;
 
+	if (pAttacker->GetObjectKind() == eObjectKind_Player && pTargetObject->GetObjectKind() == eObjectKind_Player)
+		attackPhyDamage *= gEventRate[eEvent_MugongPhy];//在此处配置bin配置物理 伤害
 	// ===== PvP 加成（新增）=====
 	if (pAttacker->GetObjectKind() == eObjectKind_Player &&
 		pTargetObject->GetObjectKind() == eObjectKind_Player)
@@ -119,6 +122,20 @@ DWORD CAttackManager::GetComboPhyDamage(CObject* pAttacker, CObject* pTargetObje
 		attackPhyDamage *= (1.0f + ((CPlayer*)pAttacker)->GetAvatarOption()->PVPAttack);
 	}
 	// ===========================
+	// === 刺客武器额外物理伤害倍率（从 bin 配置表读取）===
+	if (pAttacker->GetObjectKind() == eObjectKind_Player)
+	{
+		const ITEMBASE* pItemBase = ITEMMGR->GetItemInfoAbsIn((CPlayer*)pAttacker, 81); // 右手武器
+		if (pItemBase)
+		{
+			ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(pItemBase->wIconIdx);
+			if (pItemInfo && pItemInfo->WeaponType == 11) // 刺客武器类型
+			{
+				// 举例：gEventRate[eEvent_AssassinPhyDmg] = 1.50f（表示+50%伤害）
+				attackPhyDamage *= gEventRate[eEvent_AssassinPhyDmg];
+			}
+		}
+	}
 
 #ifdef _JAPAN_LOCAL_
 	DWORD ShieldDamage = pTargetObject->CalcShieldDamage((DWORD)(attackPhyDamage * SHIELD_COMBO_DAMAGE));
@@ -162,7 +179,9 @@ DWORD CAttackManager::GetComboPhyDamage(CObject* pAttacker, CObject* pTargetObje
 				goto CalcEnd;
 
 			fdam = (((CPlayer*)pAttacker)->GetAvatarOption()->TargetPhyDefDown * 0.01f) + (((CPlayer*)pAttacker)->GetSetItemQualityStats()->TargetPhyDefDown * 0.01f);
-			attackPhyDamage *= (fdam + 1.0f);
+			//attackPhyDamage *= (fdam+1.0f);
+			attackPhyDamage *= (fdam + 1.0f) * gEventRate[eEvent_MugongKillMonster];//PVE伤害倍率
+
 		}
 		if (pTargetObject->GetObjectKind() == eObjectKind_Player)
 		{//PVP破甲
@@ -481,8 +500,8 @@ DWORD CAttackManager::GetMugongPhyDamage(CObject* pAttacker, CObject* pTargetObj
 
 	if (pDamageInfo->bCritical)
 	{
-		// 默认暴击倍率
-		attackPhyDamage *= 1.5f;
+		//attackPhyDamage *= 1.5f;
+		attackPhyDamage *= gEventRate[eEvent_MugongPhyCritical];//战士暴击伤害倍率设置 
 
 		// ① 玩家佩戴武器 + 装备暴击伤害加成
 		if (pAttacker->GetObjectKind() == eObjectKind_Player)
@@ -522,6 +541,8 @@ DWORD CAttackManager::GetMugongPhyDamage(CObject* pAttacker, CObject* pTargetObj
 
 	attackPhyDamage += AmplifiedPower;
 	attackPhyDamage *= fDecreaseDamageRate;
+	if (pAttacker->GetObjectKind() == eObjectKind_Player && pTargetObject->GetObjectKind() == eObjectKind_Player)
+		attackPhyDamage *= gEventRate[eEvent_MugongPhy];//在此处配置bin配置武功物理伤害
 
 	//  新增 PvP 攻击加成（无 gEventRateFile）
 	if (pAttacker->GetObjectKind() == eObjectKind_Player &&
@@ -588,7 +609,7 @@ DWORD CAttackManager::GetMugongPhyDamage(CObject* pAttacker, CObject* pTargetObj
 				fdam += 0.15f;
 			//无视对方15%防御
 			fdam += fdam * (((CPlayer*)pAttacker)->GetSetItemQualityStats()->TargetPhyDefDown * 0.01f);
-
+			attackPhyDamage *= (fdam + 1.0f) * gEventRate[eEvent_MugongKillMonster];//PVE伤害倍率
 
 		}
 		if (pTargetObject->GetObjectKind() == eObjectKind_Player)
@@ -656,7 +677,9 @@ DWORD CAttackManager::GetMugongAttrDamage(CObject* pAttacker, CObject* pTargetOb
 
 	if (pDamageInfo->bDecisive)//武功属性攻击暴击伤害
 	{
-		attackAttrDamage += attackAttrDamage * 0.6f;
+		//attackAttrDamage *= 2.25f;
+		attackAttrDamage *= gEventRate[eEvent_MugongAttrCritical];//法师暴击伤害倍率设置 
+
 		if (pAttacker->GetObjectKind() == eObjectKind_Player)
 		{//特殊属性
 			const ITEMBASE* pTargetItemBase = ITEMMGR->GetItemInfoAbsIn((CPlayer*)pAttacker, 81);
@@ -683,6 +706,11 @@ DWORD CAttackManager::GetMugongAttrDamage(CObject* pAttacker, CObject* pTargetOb
 	DWORD ShieldDamage = pTargetObject->CalcShieldDamage((DWORD)(attackAttrDamage * SHIELD_IN_MUGONG_DAMAGE));
 	attackAttrDamage -= ShieldDamage;
 #else
+	if (pAttacker->GetObjectKind() == eObjectKind_Player && pTargetObject->GetObjectKind() == eObjectKind_Player)
+	{
+		//attackAttrDamage *= 0.5f;
+		attackAttrDamage *= gEventRate[eEvent_MugongAttr];//在此处配置bin配置属性伤害//法师打人伤害计算		
+	}
 	DWORD ShieldDamage = 0;
 	DWORD ReduceDamage = pTargetObject->CalcShieldDamage((DWORD)(attackAttrDamage * SHIELD_IN_MUGONG_DAMAGE), ShieldDamage);
 	attackAttrDamage -= ReduceDamage;
@@ -758,7 +786,8 @@ DWORD CAttackManager::GetMugongAttrDamage(CObject* pAttacker, CObject* pTargetOb
 				fdam += 0.15f;
 			//无视对方15%防御
 			fdam += fdam * (((CPlayer*)pAttacker)->GetSetItemQualityStats()->TargetPhyDefDown * 0.01f);
-
+			//resAttrDamage = (resAttrDamage*(fdam+1.0f));
+			resAttrDamage *= (fdam + 1.0f) * gEventRate[eEvent_MugongKillMonster];//PVE伤害倍率
 
 		}
 		if (pTargetObject->GetObjectKind() == eObjectKind_Player)

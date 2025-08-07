@@ -300,6 +300,12 @@ void CQuickItem::SetMugongIconToolTip( DWORD dwRemainTime )
 			case WP_AMGI:	
 				AddToolTipLine( CHATMGR->GetChatMsg(470), TTTC_LIMIT );
 				break;
+			case WP_AXE:
+				AddToolTipLine(CHATMGR->GetChatMsg(2834), TTTC_LIMIT);
+				break;
+			case WP_DAGGER:
+				AddToolTipLine(CHATMGR->GetChatMsg(2835), TTTC_LIMIT);
+				break;
 			}
 		}
 		if( wCommSkillKind == SKILLKIND_TITAN )

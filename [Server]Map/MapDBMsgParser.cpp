@@ -1050,10 +1050,10 @@ void ItemUpdateToDB(DWORD CharacterIdx, DWORD dwDBIdx, WORD wItemIdx, DURTYPE Du
 
 		RareIdx = 0;
 	}
-	if ((ITEMMGR->GetItemInfo(wItemIdx))->ItemGrade == 999 && ItemEntry3 == 0)
-	{
-		ItemEntry3 = 1;
-	}
+	//if ((ITEMMGR->GetItemInfo(wItemIdx))->ItemGrade == 999 && ItemEntry3 == 0)
+	//{
+	//	ItemEntry3 = 1;
+	//}
 	sprintf(txt, "EXEC %s %d, %d, %d, %d, %d, %d, %d ,%d, %d, %d, %d ,%d", STORED_ITEM_UPDATE,
 		CharacterIdx, dwDBIdx, wItemIdx, Durability, bPosition, qPosition, RareIdx, bStatic, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
 	g_DB.Query(eQueryType_FreeQuery, eItemUpdate, 0, txt);
@@ -1100,10 +1100,10 @@ void ItemMovePetInvenUpdateToDB( DWORD CharacterIDX, DWORD dwfromDBIdx, POSTYPE 
 */
 void ItemInsertToDB(DWORD CharacterIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, DWORD dwKey, WORD bSeal,WORD bStatic,DWORD dwGrow, WORD ItemQuality, WORD ItemEntry1, WORD ItemEntry2, WORD ItemEntry3) // 2014-12-01  默认为0普通购买 成长
 {
-	if ((ITEMMGR->GetItemInfo(wItemIdx))->ItemGrade == 999 && ItemEntry3 == 0)
-	{
-		ItemEntry3 = 1;
-	}
+	//if ((ITEMMGR->GetItemInfo(wItemIdx))->ItemGrade == 999 && ItemEntry3 == 0)
+	//{
+	//	ItemEntry3 = 1;
+	//}
 	// 2014-12-01 插入时
 	//	char txt[128];//加了四个参数 ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3
 	sprintf(txt, "EXEC %s %d, %d, %d, %d, %d,%d,%d,%d,%d,%d,%d", STORED_ITEM_INSERT_INVEN, CharacterIdx, wItemIdx, Durability, bPosition, bSeal,bStatic,dwGrow, ItemQuality, ItemEntry1, ItemEntry2, ItemEntry3);
@@ -9081,178 +9081,79 @@ void LoadTidyItemInfo(DWORD CharacterIDX, DWORD Protocol)
 void RLoadTidyItemInfo(LPQUERY pData, LPDBMESSAGE pMessage)
 {
 	CPlayer* pPlayer;
-
-
 	DWORD count = pMessage->dwResult;
-	ITEM_TOTALINFO Iteminfo;
-	int overlapcount = 0;
-	const int maxoverlap = MAX_YOUNGYAKITEM_DUPNUM;///100
-	ITEMBASE OverLapItem[maxoverlap];
-	memset(&OverLapItem, 0, sizeof(ITEMBASE)*maxoverlap);
-	memset(&Iteminfo, 0, sizeof(ITEM_TOTALINFO));
+	if (count == 0) return;
 
-	if((count == 1) && (atoi((char*)pData->Data[0]) == 0))
+	// 取得角色指针
+	DWORD characterIdx = (DWORD)atoi((char*)pData[0].Data[eCI_ObjectID]);
+	pPlayer = (CPlayer*)g_pUserTable->FindUser(characterIdx);
+	if (pPlayer == NULL)
+		return;
+
+	ITEM_TOTALINFO Iteminfo = {};
+	ITEMBASE OverlapItem[MAX_YOUNGYAKITEM_DUPNUM] = {};
+	int overlapCount = 0;
+
+	for (DWORD i = 0; i < count; ++i)
 	{
+		POSTYPE ItemPos = (POSTYPE)atoi((char*)pData[i].Data[eCI_Position]);
+		ITEMBASE* pItemBase = NULL;
 
-		pPlayer = (CPlayer *)g_pUserTable->FindUser(atoi((char*)pData->Data[1]));
-		if(pPlayer == NULL)
-			return;
-		//pPlayer->SetItemTotalInfo(OverLapItem);
-		pPlayer->InitItemTotalInfo(&Iteminfo);
-
-
-	//	pPlayer = (CPlayer *)g_pUserTable->FindUser(atoi((char*)pData->Data[1]));
-	//	if(pPlayer == NULL)
-	//		return;
-	//	ITEM_TOTALINFO Iteminfo;
-	//	memset(&Iteminfo, 0, sizeof(ITEM_TOTALINFO));
-	//	pPlayer->InitItemTotalInfo(&Iteminfo);
-	//	ShopItemInvenInfo( pPlayer->GetID() );
-	}
-	else
-	{
-		pPlayer = (CPlayer *)g_pUserTable->FindUser((DWORD)atoi((char*)pData[0].Data[eCI_ObjectID]));
-		if(pPlayer == NULL)
-			return;
-		
-		for(DWORD  i = 0; i < count; i++)
+		// 判斷放入 Inventory 還是 WearedItem
+		if (ItemPos >= TP_INVENTORY_START && ItemPos < TP_INVENTORY_END)
 		{
-			POSTYPE ItemPos = atoi((char*)pData[i].Data[eCI_Position]);
-			ITEMBASE* pItemBase = NULL;
-			if(ItemPos >= TP_INVENTORY_START && ItemPos < TP_INVENTORY_END)
-			{
-				ItemPos -= TP_INVENTORY_START;
-				pItemBase = &Iteminfo.Inventory[ItemPos];
-			}
-			else if(ItemPos >= TP_WEAR_START && ItemPos < TP_WEAR_END)
-			{	
-				POSTYPE ItemGrid = ItemPos - TP_WEAR_START;
-				pItemBase = &Iteminfo.WearedItem[ItemGrid];
-				if( pItemBase )
-				{
-					pItemBase->ItemParam = atoi((char*)pData[i].Data[eCI_Param]);
-					if( pItemBase->ItemParam & ITEM_PARAM_SEAL )
-					{
-						ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo( pItemBase->wIconIdx );
-						if( pItemInfo )
-						{
-							if( pItemInfo->ItemKind & eSHOP_ITEM )
-							{
-								pItemBase->dwDBIdx = atoi((char*)pData[i].Data[eCI_DBIDX]);
-								ItemMoveUpdateToDB( pPlayer->GetID(), 0, 0, pItemBase->dwDBIdx, 240 );
-								continue;
-							}
-							else
-							{
-								pItemBase->ItemParam &= ~ITEM_PARAM_SEAL;
-							}
-						}
-					}
-				}
-			}
-			if(pItemBase == NULL)
-			{
-				ASSERT(0);
-				continue;
-			}
-			if(pItemBase->dwDBIdx != 0 && overlapcount < maxoverlap)
-			{
-				pItemBase = &OverLapItem[overlapcount];
-				++overlapcount;
-			}
-			pItemBase->dwDBIdx = atoi((char*)pData[i].Data[eCI_DBIDX]);
-			pItemBase->wIconIdx = atoi((char*)pData[i].Data[eCI_IDX]);
-			pItemBase->Position = atoi((char*)pData[i].Data[eCI_Position]);
-			pItemBase->Durability = atoi((char*)pData[i].Data[eCI_Durability]);
-			pItemBase->RareIdx = atoi((char*)pData[i].Data[eCI_RareIdx]);
-			pItemBase->QuickPosition = atoi((char*)pData[i].Data[eCI_QPosition]);
-			pItemBase->ItemParam = atoi((char*)pData[i].Data[eCI_Param]);
-			pItemBase->ItemStatic = atoi((char*)pData[i].Data[eCI_Static]);///
-			pItemBase->ItemGrow  = atoi((char*)pData[i].Data[eCI_Grow]);
-			strcpy(pItemBase->PowerUp,(char*)pData[i].Data[eCI_PowerUp]);
-			strcpy(pItemBase->Green,(char*)pData[i].Data[eCI_Green]);
-			pItemBase->ItemQuality = atoi((char*)pData[i].Data[eCI_Quality]); //附加物品品质
-			pItemBase->ItemEntry1 = atoi((char*)pData[i].Data[eCI_Entry1]);
-			pItemBase->ItemEntry2 = atoi((char*)pData[i].Data[eCI_Entry2]);
-			pItemBase->ItemEntry3 = atoi((char*)pData[i].Data[eCI_Entry3]);
-
-			//strcpy
-			ITEM_INFO* pInfo = ITEMMGR->GetItemInfo(pItemBase->wIconIdx);
-			if( pInfo && pInfo->ItemKind & eTITAN_EQUIPITEM )
-			{
-				TITAN_ENDURANCE_ITEMINFO* pEndurance = pPlayer->GetTitanManager()->GetTitanItemEnduranceInfo(pItemBase->dwDBIdx);
-				if( !pEndurance )
-				{
-					pPlayer->GetTitanManager()->MakeNewEnduranceInfo(pPlayer, pItemBase, eExceptionInven);				
-				}
-			}
-
-			//pPlayer->SetItemTotalInfo(OverLapItem);
-			pPlayer->InitItemTotalInfo(&Iteminfo);
+			ItemPos -= TP_INVENTORY_START;
+			pItemBase = &Iteminfo.Inventory[ItemPos];
 		}
-		for(int n=0;n<overlapcount;++n)
+		else if (ItemPos >= TP_WEAR_START && ItemPos < TP_WEAR_END)
 		{
-			int m;
-			for(m=TP_INVENTORY_START;m<TP_INVENTORY_END;++m)
-			{
-				if(Iteminfo.Inventory[m].dwDBIdx == 0)
-				{
-					Iteminfo.Inventory[m] = OverLapItem[n];
-					Iteminfo.Inventory[m].Position = m;
-					break;
-				}
-			}
-			if(m==TP_INVENTORY_END)
-				break;
+			POSTYPE wearSlot = ItemPos - TP_WEAR_START;
+			pItemBase = &Iteminfo.WearedItem[wearSlot];
 		}
-		//pPlayer->SetItemTotalInfo(OverLapItem);
-		pPlayer->InitItemTotalInfo(&Iteminfo);
-		pPlayer->SendItemTidyInfo();
+
+		if (!pItemBase)
+		{
+			ASSERT(0);
+			continue;
+		}
+
+
+		// 基本数据赋值
+		pItemBase->dwDBIdx = atoi((char*)pData[i].Data[eCI_DBIDX]);
+		pItemBase->wIconIdx = atoi((char*)pData[i].Data[eCI_IDX]);
+		pItemBase->Position = atoi((char*)pData[i].Data[eCI_Position]);
+		pItemBase->Durability = atoi((char*)pData[i].Data[eCI_Durability]);
+		pItemBase->RareIdx = atoi((char*)pData[i].Data[eCI_RareIdx]);
+		pItemBase->QuickPosition = atoi((char*)pData[i].Data[eCI_QPosition]);
+		pItemBase->ItemParam = atoi((char*)pData[i].Data[eCI_Param]);
+		pItemBase->ItemStatic = atoi((char*)pData[i].Data[eCI_Static]);
+		pItemBase->ItemGrow = atoi((char*)pData[i].Data[eCI_Grow]);
+		pItemBase->Grade30 = atoi((char*)pData[i].Data[eCI_Grade30]);
+		pItemBase->ItemQuality = atoi((char*)pData[i].Data[eCI_Quality]);
+		pItemBase->ItemEntry1 = atoi((char*)pData[i].Data[eCI_Entry1]);
+		pItemBase->ItemEntry2 = atoi((char*)pData[i].Data[eCI_Entry2]);
+		pItemBase->ItemEntry3 = atoi((char*)pData[i].Data[eCI_Entry3]);
+		strcpy(pItemBase->PowerUp, (char*)pData[i].Data[eCI_PowerUp]);
+		strcpy(pItemBase->Green, (char*)pData[i].Data[eCI_Green]);
+
+
+
+		// Titan 装备检测
+		ITEM_INFO* pInfo = ITEMMGR->GetItemInfo(pItemBase->wIconIdx);
+		if (pInfo && (pInfo->ItemKind & eTITAN_EQUIPITEM))
+		{
+			if (!pPlayer->GetTitanManager()->GetTitanItemEnduranceInfo(pItemBase->dwDBIdx))
+			{
+				pPlayer->GetTitanManager()->MakeNewEnduranceInfo(pPlayer, pItemBase, eExceptionInven);
+			}
+		}
 	}
 
-
-	/*CPlayer* pPlayer;
-	DWORD count = pMessage->dwResult;
-	ITEMBASE OverLapItem[80];
-	memset(&OverLapItem, 0, sizeof(ITEMBASE)*80);
-	if((count == 1) && (atoi((char*)pData->Data[0]) == 0))
-	{
-		pPlayer = (CPlayer *)g_pUserTable->FindUser(atoi((char*)pData->Data[1]));
-		if(pPlayer == NULL)
-			return;
-		pPlayer->SetItemTotalInfo(OverLapItem);
-	}
-	else
-	{
-		pPlayer = (CPlayer *)g_pUserTable->FindUser((DWORD)atoi((char*)pData[0].Data[eCI_ObjectID]));
-		if(pPlayer == NULL)
-			return;
-		for(DWORD  i = 0; i < count; i++)
-		{
-			OverLapItem[i].dwDBIdx			= atoi((char*)pData[i].Data[eCI_DBIDX]);
-			OverLapItem[i].wIconIdx			= atoi((char*)pData[i].Data[eCI_IDX]);
-			OverLapItem[i].Position			= atoi((char*)pData[i].Data[eCI_Position]);
-			OverLapItem[i].Durability		= atoi((char*)pData[i].Data[eCI_Durability]);
-			OverLapItem[i].RareIdx			= atoi((char*)pData[i].Data[eCI_RareIdx]);
-			OverLapItem[i].QuickPosition	= atoi((char*)pData[i].Data[eCI_QPosition]);
-			OverLapItem[i].ItemParam		= atoi((char*)pData[i].Data[eCI_Param]);
-			OverLapItem[i].StoneIdx			= atoi((char*)pData[i].Data[eCI_StoneIdx]);
-			OverLapItem[i].ItemStatic		= atoi((char*)pData[i].Data[eCI_Static]);
-			OverLapItem[i].ItemGrow			= atoi((char*)pData[i].Data[eCI_Grow]);
-			strcpy(OverLapItem[i].PowerUp,(char*)pData[i].Data[eCI_PowerUp]);
-			strcpy(OverLapItem[i].Green,(char*)pData[i].Data[eCI_Green]);
-		}
-		pPlayer->SetItemTotalInfo(OverLapItem);
-		MSG_TIDY_ITEM msg;
-		//msg.dwObjectID=GetID();
-		msg.Category=MP_ITEMEXT;
-		msg.Protocol=MP_ITEMEXT_TIDY_ACK;
-		//memcpy(&msg.Inventory, &OverLapItem,sizeof(msg.Inventory));
-		memcpy(&msg.Inventory,OverLapItem,SLOT_INVENTORY_NUM * sizeof(ITEMBASE));
-		pPlayer->SendMsg(&msg,sizeof(msg));
-		//pPlayer->SendItemTidyInfo();
-	}*/
+	// 最后一次性写入所有数据
+	pPlayer->InitItemTotalInfo(&Iteminfo);
+	pPlayer->SendItemTidyInfo();
 }
+
 void CharacterHeroRebornUpdate(CPlayer* pPlayer)
 {
 	if( !pPlayer->GetInited() )	return;

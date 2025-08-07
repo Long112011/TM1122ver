@@ -273,6 +273,8 @@ void CPlayer::SetBaseMotion()
 				m_StandardMotion = eMotion_Peace_Standard_Do;
 			else if(WeaponEquipType == WP_CHANG)
 				m_StandardMotion = eMotion_Peace_Standard_Change;
+			else if (WeaponEquipType == WP_AXE)
+				m_StandardMotion = eMotion_Peace_Standard_Change;
 			else
 				m_StandardMotion = eMotion_Peace_Standard;
 		}
@@ -287,7 +289,11 @@ void CPlayer::SetBaseMotion()
 			else if( WeaponEquipType == WP_EVENT_HAMMER )
 				WeaponEquipType = WP_GUM;
 			//////////////////////////////////////////////////////////////////////////
-			
+			else if (WeaponEquipType == WP_AXE)
+				m_StandardMotion = eMotion_Battle_Chang_Standard;
+			else if (WeaponEquipType == WP_DAGGER)
+				m_StandardMotion = eMotion_Battle_Amgi_Standard;
+			else
 			m_StandardMotion = eMotion_Battle_Gum_Standard + WeaponEquipType -1;			
 		}
 		return;
@@ -299,6 +305,11 @@ void CPlayer::SetBaseMotion()
 			m_StandardMotion = eMotion_Peace_Standard_Do;
 		else if(WeaponEquipType == WP_CHANG)
 			m_StandardMotion = eMotion_Peace_Standard_Change;
+		else if (WeaponEquipType == WP_AXE)
+			m_StandardMotion = eMotion_Peace_Standard_Change;
+		else if (WeaponEquipType == WP_DAGGER)
+			m_StandardMotion = eMotion_Peace_Standard;
+
 		else
 			m_StandardMotion = eMotion_Peace_Standard;
 
@@ -308,6 +319,10 @@ void CPlayer::SetBaseMotion()
 				m_Move_Start_Motion = eMotion_Peace_Walk_Do;
 			else if(WeaponEquipType == WP_CHANG)
 				m_Move_Start_Motion = eMotion_Peace_Walk_Change;
+			else if (WeaponEquipType == WP_AXE)
+				m_Move_Start_Motion = eMotion_Peace_Walk_Change;
+			else if (WeaponEquipType == WP_DAGGER)
+				m_Move_Start_Motion = eMotion_Peace_Walk;
 			else
 				m_Move_Start_Motion = eMotion_Peace_Walk;
 			m_Move_Ing_Motion = m_Move_Start_Motion;
@@ -319,29 +334,70 @@ void CPlayer::SetBaseMotion()
 				m_Move_Start_Motion = eMotion_Peace_Run_Do;
 			else if(WeaponEquipType == WP_CHANG)
 				m_Move_Start_Motion = eMotion_Peace_Run_Change;
+			else if (WeaponEquipType == WP_AXE)
+				m_Move_Start_Motion = eMotion_Peace_Run_Change;
+			else if (WeaponEquipType == WP_DAGGER)
+				m_Move_Start_Motion = eMotion_Peace_Run;
+
 			else
 				m_Move_Start_Motion = eMotion_Peace_Run;
 			m_Move_Ing_Motion = m_Move_Start_Motion;
 			m_Move_End_Motion = -1;
 		}
 	}
+
 	else
-	{	// 傈捧葛靛
-		m_StandardMotion = eMotion_Battle_Gum_Standard + WeaponEquipType -1;
-		
-		if(m_MoveInfo.MoveMode == eMoveMode_Walk)
-		{	// 叭扁
-			m_Move_Start_Motion = eMotion_Battle_Gum_Walk + WeaponEquipType -1;
-			m_Move_Ing_Motion = eMotion_Battle_Gum_Walk + WeaponEquipType -1;
+	{
+		// 判断自定义武器类型
+		if (WeaponEquipType == WP_AXE)
+			m_StandardMotion = eMotion_Battle_Chang_Standard;  // 假设900是斧头的标准待机动作
+		else if (WeaponEquipType == WP_DAGGER)
+			m_StandardMotion = eMotion_Battle_Amgi_Standard;  // 假设910是刺客双刀的标准待机动作
+		else
+			m_StandardMotion = eMotion_Battle_Gum_Standard + WeaponEquipType - 1;
+
+		// 步行状态
+		if (m_MoveInfo.MoveMode == eMoveMode_Walk)
+		{
+			if (WeaponEquipType == WP_AXE)
+			{
+				m_Move_Start_Motion = eMotion_Battle_Chang_Walk; // 斧头步行动作
+				m_Move_Ing_Motion = eMotion_Battle_Chang_Walk;
+			}
+			else if (WeaponEquipType == WP_DAGGER)
+			{
+				m_Move_Start_Motion = eMotion_Battle_Amgi_Walk; // 匕首步行动作
+				m_Move_Ing_Motion = eMotion_Battle_Amgi_Walk;
+			}
+			else
+			{
+				m_Move_Start_Motion = eMotion_Battle_Gum_Walk + WeaponEquipType - 1;
+				m_Move_Ing_Motion = eMotion_Battle_Gum_Walk + WeaponEquipType - 1;
+			}
 			m_Move_End_Motion = -1;
 		}
+		// 跑步状态
 		else
-		{	// 顿扁	
-			m_Move_Start_Motion = eMotion_Battle_Gum_Run + WeaponEquipType -1;
-			m_Move_Ing_Motion = eMotion_Battle_Gum_Run + WeaponEquipType -1;
+		{
+			if (WeaponEquipType == WP_AXE)
+			{
+				m_Move_Start_Motion = eMotion_Battle_Chang_Run; // 斧头跑动
+				m_Move_Ing_Motion = eMotion_Battle_Chang_Run;
+			}
+			else if (WeaponEquipType == WP_DAGGER)
+			{
+				m_Move_Start_Motion = eMotion_Battle_Amgi_Run; // 匕首跑动
+				m_Move_Ing_Motion = eMotion_Battle_Amgi_Run;
+			}
+			else
+			{
+				m_Move_Start_Motion = eMotion_Battle_Gum_Run + WeaponEquipType - 1;
+				m_Move_Ing_Motion = eMotion_Battle_Gum_Run + WeaponEquipType - 1;
+			}
 			m_Move_End_Motion = -1;
 		}
 	}
+
 }
 
 BOOL CPlayer::StartSocietyAct( int nStartMotion, int nIngMotion, int nEndMotion, BOOL bHideWeapon )
@@ -1071,40 +1127,50 @@ float CPlayer::DoGetMoveSpeed()
 
 	else
 	{
-		if(m_MoveInfo.KyungGongIdx)
-		{
-			if( this == HERO )
+			if(m_MoveInfo.KyungGongIdx)
 			{
-				Speed = MOVEMGR->GetKyungGongSpeed(m_MoveInfo.KyungGongIdx) 
-					+ GetAbilityStats()->Kyunggong;
+				if( this == HERO )
+				{
+					Speed = MOVEMGR->GetKyungGongSpeed(m_MoveInfo.KyungGongIdx) 
+						+ GetAbilityStats()->Kyunggong;
+				}
+				else
+				{
+					Speed = MOVEMGR->GetKyungGongSpeed(m_MoveInfo.KyungGongIdx) 
+						+ ABILITYMGR->GetAbilityKyungGongSpeed( m_MoveInfo.AbilityKyungGongLevel );
+				}
+
+				// 酒官鸥 酒捞袍 版傍 胶乔靛 
+				Speed += GetAvatarOption()->KyunggongSpeed;
+
+				// 刺客（WeaponType == 11）敏捷逻辑：每3点MinChub加1点移动速度
+				WORD weaponType = GetWeaponEquipType();
+
+				if (weaponType == 11) // 仅当刺客武器时生效
+				{
+					int minChub = HERO->GetMinChub();  // 获取穿刺（敏捷）值
+					Speed += (float)(minChub / 3);     // 每3点加1点速度
+				}
+
+		
+
+				if( WEATHERMGR->GetWeatherState() == eWS_Snow )
+				{
+					if( (GetShopItemStats()->Avatar[eAvatar_Dress] ==  SHOPITEM_COS_CAT_DRESS) ||
+						(GetShopItemStats()->Avatar[eAvatar_Dress] ==  SHOPITEM_COS_WEDDING_MAN) ||
+						(GetShopItemStats()->Avatar[eAvatar_Dress] ==  SHOPITEM_COS_WEDDING_WOMAN) )
+						Speed += 50;
+				}
+				// 何利 版傍 档 惑铰
+				Speed += GetShopItemStats()->KyungGongSpeed;
 			}
 			else
 			{
-				Speed = MOVEMGR->GetKyungGongSpeed(m_MoveInfo.KyungGongIdx) 
-					+ ABILITYMGR->GetAbilityKyungGongSpeed( m_MoveInfo.AbilityKyungGongLevel );
+				if(m_MoveInfo.MoveMode == eMoveMode_Run)
+					Speed = RUNSPEED;
+				else
+					Speed = WALKSPEED;
 			}
-
-			// 酒官鸥 酒捞袍 版傍 胶乔靛 
-			Speed += GetAvatarOption()->KyunggongSpeed;
-
-
-			if( WEATHERMGR->GetWeatherState() == eWS_Snow )
-			{
-				if( (GetShopItemStats()->Avatar[eAvatar_Dress] ==  SHOPITEM_COS_CAT_DRESS) ||
-					(GetShopItemStats()->Avatar[eAvatar_Dress] ==  SHOPITEM_COS_WEDDING_MAN) ||
-					(GetShopItemStats()->Avatar[eAvatar_Dress] ==  SHOPITEM_COS_WEDDING_WOMAN) )
-					Speed += 50;
-			}
-			// 何利 版傍 档 惑铰
-			Speed += GetShopItemStats()->KyungGongSpeed;
-		}
-		else
-		{
-			if(m_MoveInfo.MoveMode == eMoveMode_Run)
-				Speed = RUNSPEED;
-			else
-				Speed = WALKSPEED;
-		}
 	}
 	return Speed;
 }

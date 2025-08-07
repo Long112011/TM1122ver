@@ -180,6 +180,7 @@ void CMussangManager::SetMussangMode( BOOL bVal, DWORD time )
 	GAMEIN->GetCharacterDialog()->SetSimMek();
 	GAMEIN->GetCharacterDialog()->SetCritical();
 	GAMEIN->GetCharacterDialog()->UpdateData();
+	GAMEIN->GetCharacterDialog()->UpdateMoveSpeedDisplay();
 
 	if( bVal )
 	{

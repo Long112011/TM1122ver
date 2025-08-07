@@ -2488,63 +2488,87 @@ BOOL LoadEventRate(char* strFileName)
 	{
 		file.GetString(Token);
 
-		if(strcmp(Token,"#EXP") == 0)	
-		{			
+		if (strcmp(Token, "#EXP") == 0)//经验		
+		{
 			//gExpRate = file.GetFloat();
 			gEventRateFile[eEvent_ExpRate] = file.GetFloat();
 		}
-		else if(strcmp(Token, "#ABIL") == 0)
+		else if (strcmp(Token, "#ABIL") == 0)//技能点
 		{
 			//gAbilRate = file.GetFloat();
 			gEventRateFile[eEvent_AbilRate] = file.GetFloat();
 		}
-		else if(strcmp(Token,"#ITEM") == 0)
+		else if (strcmp(Token, "#ITEM") == 0)//物品
 		{
 			//gItemRate = file.GetFloat();
 			gEventRateFile[eEvent_ItemRate] = file.GetFloat();
 		}
-		else if(strcmp(Token,"#MONEY") == 0)
+		else if (strcmp(Token, "#MONEY") == 0)//钱
 		{
 			//gMoneyRate = file.GetFloat();
 			gEventRateFile[eEvent_MoneyRate] = file.GetFloat();
 		}
-		else if(strcmp(Token,"#GETMONEY") == 0)
+		else if (strcmp(Token, "#GETMONEY") == 0)//钱倍率
 		{
 			//gGetMoney = file.GetFloat();
 			gEventRateFile[eEvent_GetMoney] = file.GetFloat();
 		}
-		else if(strcmp(Token,"#DAMAGERECIVE") == 0)
+		else if (strcmp(Token, "#DAMAGERECIVE") == 0)//怪物攻击
 		{
 			//gDamageReciveRate = file.GetFloat();
 			gEventRateFile[eEvent_DamageReciveRate] = file.GetFloat();
 		}
-		else if(strcmp(Token,"#DAMAGERATE") == 0)
+		else if (strcmp(Token, "#DAMAGERATE") == 0)//人物的攻击力
 		{
 			//gDamageRate = file.GetFloat();
 			gEventRateFile[eEvent_DamageRate] = file.GetFloat();
 		}
-		else if(strcmp(Token,"#NAERYUKSPEND") == 0)
+		else if (strcmp(Token, "#NAERYUKSPEND") == 0)//消耗内力
 		{
 			//gNaeRuykRate = file.GetFloat();
 			gEventRateFile[eEvent_NaeRuykRate] = file.GetFloat();
 		}
-		else if(strcmp(Token,"#UNGISPEED") == 0)
+		else if (strcmp(Token, "#UNGISPEED") == 0)//打坐回复
 		{
 			//gUngiSpeed = file.GetFloat();
 			gEventRateFile[eEvent_UngiSpeed] = file.GetFloat();
 		}
-		else if(strcmp(Token,"#PARTYEXP") == 0)
+		else if (strcmp(Token, "#PARTYEXP") == 0)//组队经验
 		{
 			//gPartyExpRate = file.GetFloat();
 			gEventRateFile[eEvent_PartyExpRate] = file.GetFloat();
 		}
-		else if(strcmp(Token,"#MUGONGEXPRATE") == 0)
+		else if (strcmp(Token, "#MUGONGEXPRATE") == 0)//武功技能熟练倍率
 		{
 			gEventRateFile[eEvent_MugongExp] = file.GetFloat();
 		}
 		else if (strcmp(Token, "#DAMAGEPLAYERRATE") == 0)
 		{
 			gEventRateFile[eEvent_DamagePlayerToPlayerRate] = file.GetFloat();
+		}
+		else if (strcmp(Token, "#MUGONGPHY") == 0)//PVP物理攻击
+		{
+			gEventRateFile[eEvent_MugongPhy] = file.GetFloat();
+		}
+		else if (strcmp(Token, "#MUGONGATTR") == 0)//PVP属性攻击
+		{
+			gEventRateFile[eEvent_MugongAttr] = file.GetFloat();
+		}
+		else if (strcmp(Token, "#MUGONGKILLMR") == 0)//PVE伤害倍率 战士法师共用
+		{
+			gEventRateFile[eEvent_MugongKillMonster] = file.GetFloat();
+		}
+		else if (strcmp(Token, "#MUGONGPHYCRI") == 0)//PVP/PVE暴击倍率  战士
+		{
+			gEventRateFile[eEvent_MugongPhyCritical] = file.GetFloat();
+		}
+		else if (strcmp(Token, "#MUGONGATTCRI") == 0)//PVP/PVE暴击倍率  法师
+		{
+			gEventRateFile[eEvent_MugongAttrCritical] = file.GetFloat();
+		}
+		else if (strcmp(Token, "#AssassinPhyDmg") == 0)//刺客的物理伤害添加率
+		{
+			gEventRateFile[eEvent_AssassinPhyDmg] = file.GetFloat();
 		}
 	}
 

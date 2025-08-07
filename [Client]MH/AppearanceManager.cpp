@@ -161,14 +161,14 @@ BYTE CAppearanceManager::GetGenderFromMap(CPlayer* pPlayer)
 }
 BOOL CAppearanceManager::SetCharacterAppearanceToEngineObject(CPlayer* pPlayer,CEngineObject* pEngineObject)
 {
-	WORD AvatarItemIdx[eAvatar_Max] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};	
+	WORD AvatarItemIdx[eAvatar_Max] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1 };
 	if( pPlayer->m_CharacterInfo.bNoAvatarView == FALSE)
 	{
 		memcpy( AvatarItemIdx, pPlayer->GetShopItemStats()->Avatar, sizeof(WORD)*eAvatar_Max );	
 	}
 	else
 	{
-		for(int i = eAvatar_Weared_Gum ; i <= eAvatar_Weared_Amgi ; i++)
+		for(int i = eAvatar_Weared_Gum ; i <= eAvatar_Weared_DAGGER; i++)
 		{
 			AvatarItemIdx[i] = pPlayer->GetShopItemStats()->Avatar[i];
 		}		
@@ -388,10 +388,13 @@ void CAppearanceManager::SetCharacterWearedAppearance(CPlayer* pPlayer, CEngineO
 					PartType = pInfo->Part3DType;
 					PartModelNum = pInfo->Part3DModelNum;
 				}
+
+				// Ä¬ÈÏ¹ÒÔØ£¨ÓÒÊÖ£©
 				pEngineObject->ChangePart(
 					PartType
 					,pDataInfo->pModList->ModFile[PartModelNum]);
 			}
+
 			else if(PartType != 5) 
 			{
 				if( pDataInfo->AvatarItemIdx[eAvatar_Dress] > 0 )					
@@ -406,7 +409,7 @@ void CAppearanceManager::SetCharacterWearedAppearance(CPlayer* pPlayer, CEngineO
 						if( PartType == 3 )
 						{
 							WORD weapon = pPlayer->GetWeaponEquipType();
-							for(int i=eAvatar_Weared_Gum; i<=eAvatar_Weared_Amgi; ++i)
+							for(int i=eAvatar_Weared_Gum; i<= eAvatar_Weared_DAGGER; ++i)
 							{
 								if( pAvatarItem->Item[i] == 0 && weapon == i-(eAvatar_Weared_Gum-1) )
 								{
@@ -498,33 +501,34 @@ void CAppearanceManager::SetCharacterSkinAppearance(CPlayer* pPlayer, CEngineObj
 		pPart->Init(pDataInfo->pModList->ModFile[PartModelNum], NULL, eEngineObjectType_Effect);
 		pEngineObject->AttachDress(pPart, "Bip01 Spine2");
 	}
-	wItemIndex = wSkinItem[eSkinItem_Sticker];
-	if ((wItemIndex != 0))
-	{
-		if ((pDataInfo->AvatarItemIdx[eAvatar_Back] == 0))
-		{
-			ITEM_INFO* pInfo = ITEMMGR->GetItemInfo(wItemIndex);
-			if (!pInfo)
-				return;
+	//wItemIndex = wSkinItem[eSkinItem_Sticker];
+	//if ((wItemIndex != 0))
+	//{
+	//	if ((pDataInfo->AvatarItemIdx[eAvatar_Back] == 0))
+	//	{
+	//		ITEM_INFO* pInfo = ITEMMGR->GetItemInfo(wItemIndex);
+	//		if (!pInfo)
+	//			return;
 
-			pPlayer->SetImageNameBalloon(pInfo->wSetItemKind);
-			/*PartType = pInfo->Part3DType;
-			PartModelNum = pInfo->Part3DModelNum;
-			CEngineObject* pPart = new CEngineObject;
-			pPart->Init(pDataInfo->pModList->ModFile[PartModelNum], NULL, eEngineObjectType_Effect);
-			pEngineObject->AttachDress(pPart, "Bip01 Spine2");*/
-		}
-	}
-	else
-	{
-		pPlayer->SetImageNameBalloon(0);
-	}
+	//		pPlayer->SetImageNameBalloon(pInfo->wSetItemKind);
+	//		/*PartType = pInfo->Part3DType;
+	//		PartModelNum = pInfo->Part3DModelNum;
+	//		CEngineObject* pPart = new CEngineObject;
+	//		pPart->Init(pDataInfo->pModList->ModFile[PartModelNum], NULL, eEngineObjectType_Effect);
+	//		pEngineObject->AttachDress(pPart, "Bip01 Spine2");*/
+	//	}
+	//}
+	//else
+	//{
+	//	pPlayer->SetImageNameBalloon(0);
+	//}
+
 	wItemIndex = wSkinItem[eSkinItem_Weapon];
 	if ((pDataInfo->AvatarItemIdx[eAvatar_Weared_Gum] == 0)||
 		(pDataInfo->AvatarItemIdx[eAvatar_Weared_Gwun] == 0) ||
 		(pDataInfo->AvatarItemIdx[eAvatar_Weared_Do] == 0) ||
 		(pDataInfo->AvatarItemIdx[eAvatar_Weared_Chang] == 0) ||
-		(pDataInfo->AvatarItemIdx[eAvatar_Weared_Gung] == 0) ||
+		(pDataInfo->AvatarItemIdx[eAvatar_Weared_Gung] == 0) || (pDataInfo->AvatarItemIdx[eAvatar_Weared_AXE] == 0) || (pDataInfo->AvatarItemIdx[eAvatar_Weared_DAGGER] == 0) ||
 		(pDataInfo->AvatarItemIdx[eAvatar_Weared_Amgi] == 0) /*&& (pDataInfo->AvatarItemIdx[eAvatar_Glasses] == 0)*/ && (wItemIndex != 0))
 	{
 		SetPlusItemEffect(pPlayer, pEngineObject, wItemIndex, "Bip01 R Forearm");
@@ -829,6 +833,220 @@ void CAppearanceManager::SetCharacterSkinAppearance(CPlayer* pPlayer, CEngineObj
 	}
 }
 
+//void CAppearanceManager::SetCharacterAvatarAppearance(CPlayer* pPlayer, CEngineObject* pEngineObject, APPEARANCEDATA_INFO* pDataInfo)
+//{
+//	int PartType,PartModelNum;
+//	WORD* wSkinItem = pPlayer->GetShopItemStats()->wSkinItem;
+//	AVATARITEM_EXCEPTION* pAvetarItemException = GetAvatarItemExcetion(pDataInfo->WearedItemIdx[eWearedItem_Hat]);	
+//	BOOL bAllowHair=FALSE;
+//
+//	
+//
+//	if( pAvetarItemException != NULL)
+//	{
+//		BOOL bFlag = TRUE;
+//		if( (pAvetarItemException->Kind == 0) || (pAvetarItemException->Kind == 1) )
+//			bFlag = FALSE;
+//		if(pDataInfo->AvatarItemIdx[eAvatar_Dress] != 0)
+//		{
+//			AVATARITEM* pAvatarItem = GAMERESRCMNGR->m_AvatarEquipTable.GetData( pDataInfo->AvatarItemIdx[eAvatar_Dress] );
+//			if(pAvatarItem != NULL)
+//			{
+//				if( pAvatarItem->Item[eAvatar_Hat] == 0 )
+//					bFlag = TRUE;
+//			}			
+//		}
+//		if ((pDataInfo->AvatarItemIdx[eAvatar_Mask] > 0) || (pDataInfo->AvatarItemIdx[eAvatar_Weared_Hair] == 0)
+//			|| (pDataInfo->AvatarItemIdx[eAvatar_Hat] > 0) || (pDataInfo->AvatarItemIdx[eAvatar_Glasses] > 0))
+//		{
+//			bFlag = TRUE;
+//		}
+//		if (wSkinItem[eSkinItem_Hat] != 0 || wSkinItem[eSkinItem_Mask] != 0 /*|| wSkinItem[eSkinItem_Dress] != 0 || wSkinItem[eSkinItem_Shoes] != 0*/)
+//		{
+//			bFlag = TRUE;
+//		}
+//		if(TRUE == bFlag)
+//		{
+//			pEngineObject->ChangePart(eAppearPart_Hair,pDataInfo->pHairList->ModFile[pDataInfo->hair]);
+//		}
+//		else
+//		{
+//			if (pDataInfo->gender == 0)
+//			{
+//				pEngineObject->ChangePart(eAppearPart_Hair, "NULLHAIR_M.MOD");
+//			}
+//			else
+//			{
+//				pEngineObject->ChangePart(eAppearPart_Hair, "NULLHAIR_W.MOD");
+//			}
+//		}		
+//	}
+//	else if (pDataInfo->AvatarItemIdx[eAvatar_Weared_Hair])
+//	{
+//		pEngineObject->ChangePart(eAppearPart_Hair, pDataInfo->pHairList->ModFile[pDataInfo->hair]);
+//	}
+//	for(int i=0; i<=eAvatar_Effect; i++)
+//	{
+//		
+//		if( pDataInfo->AvatarItemIdx[i] )
+//		{
+//			ITEM_INFO* pInfo = ITEMMGR->GetItemInfo(pDataInfo->AvatarItemIdx[i]);
+//			if(!pInfo)
+//				continue;
+//			PartType = pInfo->Part3DType;
+//			PartModelNum = pInfo->Part3DModelNum;
+//			AVATARITEM* pAvatarItem = GAMERESRCMNGR->m_AvatarEquipTable.GetData( pDataInfo->AvatarItemIdx[i] );
+//			if( i>=eAvatar_Hat && i<=eAvatar_Mustache )
+//			{
+//				if( i==eAvatar_Hat || i==eAvatar_Hair )
+//				{
+//					if( pAvatarItem && pAvatarItem->Item[eAvatar_Weared_Hair]==0 )
+//					{
+//						if(pDataInfo->gender == 0)
+//							pEngineObject->ChangePart(eAppearPart_Hair,"NULLHAIR_M.MOD");
+//						else
+//							pEngineObject->ChangePart(eAppearPart_Hair,"NULLHAIR_W.MOD");
+//					}
+//					else if( pAvatarItem && pAvatarItem->Item[eAvatar_Weared_Hair] )
+//						pEngineObject->ChangePart( eAppearPart_Hair, pDataInfo->pHairList->ModFile[pDataInfo->hair] );
+//				}
+//				if (i == eAvatar_Hat && !pAvatarItem->Item[eAvatar_Hat])
+//				{
+//					continue;
+//				}
+//
+//				if( pPlayer->GetFullMoonEventIndex() != eFULLMOONEVENT_NONE )
+//				{
+//					if(pDataInfo->gender == 0)
+//						pEngineObject->ChangePart(eAppearPart_Hair,"NULLHAIR_M.MOD");
+//					else
+//						pEngineObject->ChangePart(eAppearPart_Hair,"NULLHAIR_W.MOD");
+//				}
+//				else
+//				{
+//					if (ITEMMGR->IsCostumeHairSet(pDataInfo->AvatarItemIdx[eAvatar_Dress]))
+//					{
+//						pEngineObject->ChangePart(eAppearPart_Hair, pDataInfo->pModList->ModFile[PartModelNum + 1]);
+//					}
+//					else
+//					{
+//						CEngineObject* pPart = new CEngineObject;
+//						pPart->Init(pDataInfo->pModList->ModFile[PartModelNum], NULL, eEngineObjectType_Weapon);
+//						pEngineObject->AttachDress(pPart, "Bip01 Head");
+//					}
+//				}
+//			}
+//			else if( i==eAvatar_Shoulder )//jack
+//			{				
+//				if (bDockDebug)
+//				{
+//					CEngineObject* pWing = new CEngineObject;
+//					pWing->Init(pDataInfo->pModList->ModFile[PartModelNum], NULL, eEngineObjectType_Effect);
+//					pEngineObject->AttachDress(pWing, "Bip01 Spine2");
+//				}
+//			}
+//
+//			else if( i==eAvatar_Back )      
+//			{
+//				continue;
+//			}
+//			else
+//			{
+//				pEngineObject->ChangePart( PartType, pDataInfo->pModList->ModFile[PartModelNum] );
+//			}
+//			if(  i == eAvatar_Dress )
+//			{
+//				if( pAvatarItem->Item[eAvatar_Hand] == 0 )
+//					pEngineObject->ChangePart(eAppearPart_Hand, "NULL.MOD");
+//				if( pAvatarItem->Item[eAvatar_Shoes] == 0 )
+//					pEngineObject->ChangePart(eAppearPart_Foot, "NULL.MOD");				
+//			}
+//			else if (i == eAvatar_Effect)
+//			{
+//			}
+//			else
+//			{
+//				/*				char temp[256] = {0,};
+//								if( pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_SNOWMAN1_HK || pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_SNOWMAN2_HK || pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_SNOWMAN3_HK )
+//								{
+//									strcpy( temp, "m_snow.mod" );
+//									pEngineObject->ChangePart( PartType, temp );
+//								}
+//								else if( pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_RUDOLP1_HK || pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_RUDOLP2_HK || pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_RUDOLP3_HK )
+//								{
+//									strcpy( temp, "m_dolph.mod" );
+//									pEngineObject->ChangePart( PartType, temp );
+//								}
+//								else
+//								*/
+//
+//				pEngineObject->ChangePart(PartType, pDataInfo->pModList->ModFile[PartModelNum]);
+//			}
+//		}
+//	}
+//	if( pDataInfo->AvatarItemIdx[eAvatar_Hat] == 55576 || pDataInfo->AvatarItemIdx[eAvatar_Dress] == 55577 )
+//	{
+//		CEngineObject* pPart = new CEngineObject;
+//		pPart->Init( "gm_mona.MOD", NULL, eEngineObjectType_Effect );
+//		pEngineObject->AttachDress( pPart, "Bip01 Head" );
+//	}
+//
+//	
+//
+//	
+//	ITEM_INFO*pItem = ITEMMGR->IsCostumeHairSet(pDataInfo->AvatarItemIdx[eAvatar_Dress]);
+//	if (pItem)
+//	{
+//		WORD kepala = pItem->wSetItemKind;
+//		WORD muka = pItem->AllPlus_Kind;
+//		if (kepala != 0)
+//		{
+//			/*CEngineObject* pKepala = new CEngineObject;
+//			pKepala->Init(pDataInfo->pModList->ModFile[kepala], NULL, eEngineObjectType_Effect);
+//			pEngineObject->AttachDress(pKepala, "Bip01 Head");*/
+//
+//
+//			pEngineObject->ChangePart(eAppearPart_Hair, pDataInfo->pModList->ModFile[kepala]);
+//		}
+//		if (muka != 0)
+//		{
+//			/*CEngineObject* pMuka = new CEngineObject;
+//			pMuka->Init(pDataInfo->pModList->ModFile[muka], NULL, eEngineObjectType_Effect);
+//			pEngineObject->AttachDress(pMuka, "Bip01 Face");*/
+//
+//			//original
+//			pEngineObject->ChangePart(eAppearPart_Face, pDataInfo->pModList->ModFile[muka]);
+//
+//			//test
+//			/*CEngineObject* pFace = new CEngineObject;
+//			ASSERT(pDataInfo->pFaceList->MaxModFile > pDataInfo->face);
+//			if (pDataInfo->pFaceList->MaxModFile <= pDataInfo->face)
+//			pDataInfo->face = 0;
+//			pFace->Init(pDataInfo->pFaceList->ModFile[pDataInfo->face], NULL, eEngineObjectType_Weapon);
+//			pEngineObject->AttachDress(pFace, "Bip01 Head");*/
+//		}
+//
+//
+//		//pEngineObject->ChangePart(eAppearPart_Face, "NULL.MOD");
+//
+//		//if (i == eAvatar_Shoulder)//jack
+//		//{
+//		//	if (bDockDebug)
+//		//	{
+//		//		CEngineObject* pWing = new CEngineObject;
+//		//		pWing->Init(pDataInfo->pModList->ModFile[PartModelNum], NULL, eEngineObjectType_Effect);
+//		//		pEngineObject->AttachDress(pWing, "Bip01 Spine2");
+//		//	}
+//		//}
+//	}
+//  
+//							
+//																							
+//	  
+//																							
+//  
+//}
+
 void CAppearanceManager::SetCharacterAvatarAppearance(CPlayer* pPlayer, CEngineObject* pEngineObject, APPEARANCEDATA_INFO* pDataInfo)
 {
 	int PartType,PartModelNum;
@@ -956,27 +1174,6 @@ void CAppearanceManager::SetCharacterAvatarAppearance(CPlayer* pPlayer, CEngineO
 				if( pAvatarItem->Item[eAvatar_Shoes] == 0 )
 					pEngineObject->ChangePart(eAppearPart_Foot, "NULL.MOD");				
 			}
-			else if (i == eAvatar_Effect)
-			{
-			}
-			else
-			{
-				/*				char temp[256] = {0,};
-								if( pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_SNOWMAN1_HK || pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_SNOWMAN2_HK || pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_SNOWMAN3_HK )
-								{
-									strcpy( temp, "m_snow.mod" );
-									pEngineObject->ChangePart( PartType, temp );
-								}
-								else if( pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_RUDOLP1_HK || pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_RUDOLP2_HK || pDataInfo->AvatarItemIdx[i] == EVENT_SHOPITEM_RUDOLP3_HK )
-								{
-									strcpy( temp, "m_dolph.mod" );
-									pEngineObject->ChangePart( PartType, temp );
-								}
-								else
-								*/
-
-				pEngineObject->ChangePart(PartType, pDataInfo->pModList->ModFile[PartModelNum]);
-			}
 		}
 	}
 	if( pDataInfo->AvatarItemIdx[eAvatar_Hat] == 55576 || pDataInfo->AvatarItemIdx[eAvatar_Dress] == 55577 )
@@ -1041,6 +1238,7 @@ void CAppearanceManager::SetCharacterAvatarAppearance(CPlayer* pPlayer, CEngineO
 																							
   
 }
+
 BOOL CAppearanceManager::SetTitanAppearanceToEngineObject( CPlayer* pPlayer, CEngineObject* pEngineObject )
 {
 	int PartType, PartModelNum;
@@ -1444,6 +1642,20 @@ void CAppearanceManager::ShowWeapon(CPlayer* pPlayer,CEngineObject* pEngineObjec
 				pWeapon1->Init(pModList->ModFile[PartModelNum],NULL,eEngineObjectType_Titan);
 				pEngineObject->AttachWeapon(pWeapon1,"Bip01 R Forearm");
 			}
+			else if (EquipType == WP_DAGGER)
+			{
+				pWeapon1 = new CEngineObject;
+				pWeapon1->Init(pModList->ModFile[PartModelNum], NULL, eEngineObjectType_Weapon);
+				pEngineObject->AttachWeapon(pWeapon1, "Bip01 R Hand");
+				SetPlusItemEffect(pPlayer, pEngineObject, WeaponIdx, "Bip01 R Hand");
+
+				// ×óÊÖ¸±ÎäÆ÷
+				pWeapon2 = new CEngineObject;
+				pWeapon2->Init(pModList->ModFile[PartModelNum], NULL, eEngineObjectType_Weapon);
+				pEngineObject->AttachWeapon(pWeapon2, "Bip01 L Hand");
+				SetPlusItemEffect(pPlayer, pEngineObject, WeaponIdx, "Bip01 L Hand");
+			}
+
 			else if( EquipType == WP_GWUN )
 			{
 				pWeapon1 = new CEngineObject;
@@ -1548,6 +1760,16 @@ void CAppearanceManager::ShowWeapon(CPlayer* pPlayer,CEngineObject* pEngineObjec
 				wAvartarCheck = pPlayer->GetShopItemStats()->Avatar[eAvatar_Weared_Gum];
 			}
 			break;
+		case WP_AXE:
+		{
+			wAvartarCheck = pPlayer->GetShopItemStats()->Avatar[eAvatar_Weared_AXE];
+		}
+		break;
+		case WP_DAGGER:
+		{
+			wAvartarCheck = pPlayer->GetShopItemStats()->Avatar[eAvatar_Weared_DAGGER];
+		}
+		break;
 		}
 		if( PartType != -1 && PartType != 3 )
 		{
@@ -1622,6 +1844,19 @@ void CAppearanceManager::ShowWeapon(CPlayer* pPlayer,CEngineObject* pEngineObjec
 					//SetExtraItemEffect(pPlayer, pEngineObject, WeaponIdx, "Bip01 L Forearm");
 					//SetPairItemEffect(pPlayer, pEngineObject, WeaponIdx, "Bip01 L Forearm");														 
 				}
+			}
+			else if (EquipType == WP_DAGGER)
+			{
+				pWeapon1 = new CEngineObject;
+				pWeapon1->Init(pModList->ModFile[PartModelNum], NULL, eEngineObjectType_Weapon);
+				pEngineObject->AttachWeapon(pWeapon1, "Bip01 R Hand");
+				SetPlusItemEffect(pPlayer, pEngineObject, WeaponIdx, "Bip01 R Hand");
+
+				// ×óÊÖ¸±ÎäÆ÷
+				pWeapon2 = new CEngineObject;
+				pWeapon2->Init(pModList->ModFile[PartModelNum], NULL, eEngineObjectType_Weapon);
+				pEngineObject->AttachWeapon(pWeapon2, "Bip01 L Hand");
+				SetPlusItemEffect(pPlayer, pEngineObject, WeaponIdx, "Bip01 L Hand");
 			}
 			else if( EquipType == WP_GUNG )
 			{				
@@ -1761,7 +1996,7 @@ void CAppearanceManager::SetPlusItemEffect(CPlayer* pPlayer, CEngineObject* pEng
 	SetPairItemEffect(pPlayer,pEngineObject,dwItemIdx,pObjectName);
 
 
-	for(int i = eAvatar_Weared_Gum ; i <= eAvatar_Weared_Amgi ; i++)
+	for(int i = eAvatar_Weared_Gum ; i <= eAvatar_Weared_DAGGER; i++)
 	{
 		if(pPlayer->GetShopItemStats()->Avatar[i] > 1)
 			return;
@@ -2188,7 +2423,7 @@ void PostProcessAddPlayer(CPlayer* pPlayer, SEND_CHARACTER_TOTALINFO* pmsg)
 			}
 		}
 	}
-	if( bVimu )
+	if( bVimu )//Õ½¶·
 	{
 		if( pmsg->BaseObjectInfo.BattleTeam == eBattleTeam1 )
 		{
@@ -2333,7 +2568,7 @@ void CAppearanceManager::SetExtraItemEffect(CPlayer* pPlayer, CEngineObject* pEn
 	//ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(dwItemIdx);
 	//if(pItemInfo == NULL)
 	//	return;
-	for(int i = eAvatar_Weared_Gum ; i <= eAvatar_Weared_Amgi ; i++)
+	for(int i = eAvatar_Weared_Gum ; i <= eAvatar_Weared_DAGGER; i++)
 	{
 		if(pPlayer->GetShopItemStats()->Avatar[i] > 1)
 		{
@@ -2379,7 +2614,7 @@ void CAppearanceManager::SetPairItemEffect(CPlayer* pPlayer, CEngineObject* pEng
 	//ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(dwItemIdx);
 	//if(pItemInfo == NULL)
 	//	return;
-	for(int i = eAvatar_Weared_Gum ; i <= eAvatar_Weared_Amgi ; i++)
+	for(int i = eAvatar_Weared_Gum ; i <= eAvatar_Weared_DAGGER; i++)
 	{
 		if(pPlayer->GetShopItemStats()->Avatar[i] > 1)
 		{

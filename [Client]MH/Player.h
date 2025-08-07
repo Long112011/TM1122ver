@@ -169,7 +169,7 @@ public:
 	// 2014-08-12 获取魔法值 为属性!
 	virtual DWORD GetNaeRyuk(){return m_CharacterInfo.naeryuk;}
 	virtual float DoGetMoveSpeed();
-
+	WORD GetKyungGongLevel() const { return m_MoveInfo.AbilityKyungGongLevel; }
 	BYTE GetLifePercent();
 	BYTE GetShieldPercent();
 	

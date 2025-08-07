@@ -134,42 +134,43 @@ void CGuildWarManager::NetworkMsgParse(WORD Protocol,void* pMsg)
 		}
 		break;
 	case  MP_GUILDWAR_MOVE_MAP_NACK:
+	{
+		MSG_DWORD2* pmsg = (MSG_DWORD2*)pMsg;
+		switch (pmsg->dwData1)
 		{
-			MSG_DWORD2* pmsg = (MSG_DWORD2*)pMsg;
-			switch(pmsg->dwData1)
-			{
-			case 1:
-				{
-					CHATMGR->AddMsg(CTC_SYSMSG,CHATMGR->GetChatMsg(1103));
-				}
-				break;
-			case 2:
-				{
-					CHATMGR->AddMsg(CTC_SYSMSG,CHATMGR->GetChatMsg(2625),pmsg->dwData2);
-				}
-				break;
-			case 3:
-				{
-					CHATMGR->AddMsg(CTC_SYSMSG,CHATMGR->GetChatMsg(2626),pmsg->dwData2);
-				}
-				break;
-			case 4:
-				{
-					CHATMGR->AddMsg(CTC_SYSMSG,CHATMGR->GetChatMsg(2627));
-				}
-				break;
-			case 5:
-				{
-					CHATMGR->AddMsg(CTC_SYSMSG,CHATMGR->GetChatMsg(2628));
-				}
-				break;
-			}
-
-			if( HERO->GetState() == eObjectState_Deal )
-				OBJECTSTATEMGR->EndObjectState(HERO, eObjectState_Deal);
-			g_UserInput.SetInputFocus(TRUE);
+		case 1:
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1103)); // 没有同盟
+			break;
+		case 2:
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2625), pmsg->dwData2);
+			break;
+		case 3:
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2626), pmsg->dwData2);
+			break;
+		case 4:
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2627));
+			break;
+		case 5:
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2628));
+			break;
 		}
-		break;
+
+		// 【新增】关闭确认框
+		cDialog* pDlg = WINDOWMGR->GetWindowForID(MBI_GUILDWAR_MOVE_YESNO);
+		if (pDlg) pDlg->SetActive(FALSE);
+
+		// 【新增】解除传送状态
+		if (HERO->GetState() != eObjectState_None)
+		{
+			OBJECTSTATEMGR->EndObjectState(HERO, HERO->GetState());
+		}
+
+		// 恢复输入焦点
+		g_UserInput.SetInputFocus(TRUE);
+	}
+	break;
+
+
 	}
 }
 

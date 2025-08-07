@@ -7,23 +7,26 @@
 #include "./interface/cScriptManager.h"
 #include "./interface/cFont.h"
 #include "FortWarManager.h"
+DWORD  g_NameColor[24] = { 0x1C19FF,0x1BBA66,0xFF00FF,0xFF0000,0xCCCC00,0xC14BE1,0x525244,0xEF8C29,0x7B68EE,
+						 0x1BBA66,0x24C2C2,0xFF4500,0x7ACC00,0xCB371,0x1E90FF,0x800080,0x808080,0xD2691E,
+						 0xB30000,0xCC9900,0x669900,0x9933FF,0x990033,0xFF66FF };
 
 DWORD COLORALPHA = 0xffffff;// 0x00ffffff
 #define COLOR_LENSIEGE 3
-static const DWORD changeTime = 320;
-#define COLOR_LEN 8
+static const DWORD changeTime = 500; //300     ±ä»»Ê±¼ä
+#define COLOR_LEN 10
 static const DWORD ImagechangeTime = 80;  //Í¼Æ¬³ÆºÅ
 DWORD VipLink[10] = { 1,11,21,31,41,51,61,71,81,91 };
-DWORD g_NameColor[COLOR_LEN] = {
-	0xFFD700,
-	0xFF3030,
-	0x00CD00,
-	0xDA70D6,
-	0x1E90FF,
-	0xCD9B9B,
-	0x1C1C1C,
-	0x00FFFF,
-};
+//DWORD g_NameColor[COLOR_LEN] = {
+//	0xFFD700,
+//	0xFF3030,
+//	0x00CD00,
+//	0xDA70D6,
+//	0x1E90FF,
+//	0xCD9B9B,
+//	0x1C1C1C,
+//	0x00FFFF,
+//};
 GLOBALTON(COBalloonName)
 COBalloonName::COBalloonName()
 {

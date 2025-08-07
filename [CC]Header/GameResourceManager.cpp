@@ -1909,7 +1909,9 @@ BOOL CGameResourceManager::LoadAvatarEquipList()
 		pAvatar->Item[eAvatar_Weared_Do] = file.GetWord();			
 		pAvatar->Item[eAvatar_Weared_Chang] = file.GetWord();		
 		pAvatar->Item[eAvatar_Weared_Gung] = file.GetWord();		
-		pAvatar->Item[eAvatar_Weared_Amgi] = file.GetWord();		
+		pAvatar->Item[eAvatar_Weared_Amgi] = file.GetWord();
+		pAvatar->Item[eAvatar_Weared_AXE] = file.GetWord();
+		pAvatar->Item[eAvatar_Weared_DAGGER] = file.GetWord();
 		m_AvatarEquipTable.Add( pAvatar, ItemIdx );
 	}	
 	return TRUE;

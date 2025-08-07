@@ -277,7 +277,7 @@ private:
 
 	//SW051129 Pet
 	CPetManager			m_PetManager;
-	//CPet*				m_pCurPet;		//º“»Ø∆Í
+//	CPet*				m_pCurPet;		//JACK
 
 	//SW070127 ≈∏¿Ã≈∫
 	CTitanManager		m_TitanManager;
@@ -1013,8 +1013,10 @@ public:
 
 	//SW051129 Pet
 	CPetManager* GetPetManager()			{	return &m_PetManager;	}
-	//void SetCurPet(CPet* pPet)			{	m_pCurPet = pPet;	}
-	//	CPet*	GetCurPet()					{	return m_pCurPet;	}
+
+//	void SetCurPet(CPet* pPet)				{	m_pCurPet = pPet;	}  // JACK
+//	CPet*	GetCurPet()						{	return m_pCurPet;	}  // JACK
+
 	CPet*	GetCurPet()					{	return m_PetManager.GetCurSummonPet();	}
 	
 	BOOL GetKyungGongIdx()				{	return m_MoveInfo.KyungGongIdx;	}

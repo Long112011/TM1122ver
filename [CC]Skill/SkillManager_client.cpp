@@ -457,6 +457,12 @@ WORD CSkillManager::GetComboSkillIdx(CHero* pHero)
 	case WP_EVENT_HAMMER:
 		SkillNum = COMBO_EVENT_HAMMER;
 		break;
+	case WP_AXE:
+		SkillNum = COMBO_AXE_MIN + CurComboNum;
+		break;
+	case WP_DAGGER:
+		SkillNum = COMBO_DAGGER_MIN + CurComboNum;
+		break;
 	}
 	if (pHero->InTitan())
 		SkillNum += 10000;
@@ -837,6 +843,11 @@ DWORD GetComboDelayTime(WORD WeaponKind)
 	yCASE(WP_CHANG)	time = 150;
 	yCASE(WP_GUNG)	time = 50;
 	yCASE(WP_AMGI)	time = 80;
+	// 新增职业：斧头战士
+	yCASE(WP_AXE)		time = 150;	// 攻速慢、重击
+
+	// 新增职业：刺客
+	yCASE(WP_DAGGER)	time = 50;	// 极限攻速，一秒可以3~4连
 	yENDSWITCH
 		return time;
 }

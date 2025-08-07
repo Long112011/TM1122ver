@@ -31,17 +31,16 @@ enum ePetRevivalDlgGrade{ePRDG_Default, ePRDG_Grade1, ePRDG_Grade2, ePRDG_Grade3
 
 enum ePetBuffKind
 {ePB_None,
-ePB_Demage_Percent=1,		//老沥 犬伏肺 单固瘤 刘啊
-ePB_Dodge=2,				//老沥 犬伏肺 雀乔
-ePB_MasterAllStatUp=3,		//林牢某腐磐 胶湃 氢惑
+ePB_Demage_Percent = 1,		//增加攻击力
+ePB_Dodge = 2,				//闪避
+ePB_MasterAllStatUp = 3,		//所有属性增加
 
-ePB_Item_DoubleChance=4,	//老沥 犬伏肺 酒捞袍 裙垫 2硅
-ePB_NoForeAtkMonster=5,		//急傍各俊霸 厚急傍 瓤苞 //老馆各
-ePB_ReduceCriticalDmg=6,	//罐绰老拜单固瘤皑家
-ePB_MasterAllStatRound=7,	//林牢某腐磐 胶湃 馆棵覆
-
-ePB_Item_RareProbUp=8,		//饭绢裙垫犬伏 刘啊
-ePB_MussangTimeIncrease=9,	//公街惯悼矫埃 刘啊
+ePB_Item_DoubleChance = 4,	//获得物品机率提升
+ePB_NoForeAtkMonster = 5,		//安抚主动怪物
+ePB_ReduceCriticalDmg = 6,	//减少受到奋力一击伤害
+ePB_MasterAllStatRound = 7,	//属性调整
+ePB_Item_RareProbUp = 8,		//获得祝福装备机率增加
+ePB_MussangTimeIncrease = 9,	//无双模式维持时间增加
 ePB_Kind_Max};
 
 enum {ePetRestBtn,ePetUseBtn};

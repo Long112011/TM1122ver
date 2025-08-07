@@ -23,7 +23,7 @@
 #include "SkillManager_Client.h"
 #include "CheatMsgParser.h"
 #include "StatsCalcManager.h"
-
+#include "AbilityManager.h"
 
 #include "GameIn.h"
 #include "MainBarDialog.h"
@@ -89,7 +89,7 @@ void CCharacterDialog::Linking()
 	m_ppStatic.life = (cStatic *)GetWindowForID(CI_CHARLIFE);
 	m_ppStatic.Shield = (cStatic *)GetWindowForID(CI_HOSINDEFENSE);
 	m_ppStatic.naeryuk = (cStatic *)GetWindowForID(CI_CHARNAERYUK);
-	
+	m_MoveSpeed = (cStatic*)GetWindowForID(CI_MOVESPEED);	//移动速度
 	m_ppStatic.critical = (cStatic *)GetWindowForID(CI_CRITICAL);	
 	m_ppStatic.attackdistance = (cStatic *)GetWindowForID(CI_DISTANCE);	
 
@@ -172,7 +172,7 @@ void CCharacterDialog::UpdateData()//更新属性列表功能
 	SetAttackRange();
 	SetAttackRate();
 	SetDefenseRate();
-
+	UpdateMoveSpeedDisplay();
 	if( IsActive() == TRUE )
 		RefreshPointInfo();
 
@@ -216,6 +216,7 @@ void CCharacterDialog::SetLife(DWORD life)
 	if(life > HERO->GetMaxLife())
 		life = HERO->GetMaxLife();
 
+
 #ifdef _DEBUG
 	char buf1[66];
 	wsprintf(buf1, "%d/%d", life, HERO->GetMaxLife());
@@ -226,6 +227,28 @@ void CCharacterDialog::SetLife(DWORD life)
 	m_ppStatic.life->SetStaticValue(life);
 #endif 
 	
+
+
+
+
+
+
+}
+void CCharacterDialog::UpdateMoveSpeedDisplay()
+{
+	DWORD minv = HERO->GetAvatarOption()->KyunggongSpeed;
+	DWORD maxv = HERO->GetShopItemStats()->KyungGongSpeed;
+	DWORD dexBonus = 0;
+	float abilitySpeed = ABILITYMGR->GetAbilityKyungGongSpeed(HERO->GetKyungGongLevel());
+
+	if (HERO->GetWeaponEquipType() == 11)
+		dexBonus = HERO->GetMinChub() / 5;
+
+	int moveSpeed = (int)(minv + maxv + dexBonus + abilitySpeed);
+
+	static char buf[32];
+	sprintf(buf, "%d", moveSpeed);
+	m_MoveSpeed->SetStaticText(buf);  // 这个控件必须是纯文本，不是进度条类型！
 }
 void CCharacterDialog::SetShield(DWORD Shield)
 
@@ -604,6 +627,7 @@ void CCharacterDialog::RefreshInfo()
 
 	STATSMGR->CalcCharStats(HERO);
 	SetDefenseRate();
+	UpdateMoveSpeedDisplay();
 	SetCritical();
 	SetReSet();   // refresh reset idx 2014-05-06
 	SetIdx();

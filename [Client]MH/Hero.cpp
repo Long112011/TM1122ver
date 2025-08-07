@@ -1034,6 +1034,7 @@ void CHero::SetMinChub(WORD val)
 	GAMEIN->GetCharacterDialog()->SetMinChub();
 	GAMEIN->GetCharacterDialog()->SetAttackRate();
 	GAMEIN->GetCharacterDialog()->UpdateData();
+	GAMEIN->GetCharacterDialog()->UpdateMoveSpeedDisplay();
 }
 void CHero::SetCheRyuk(WORD val)
 {
@@ -1319,7 +1320,7 @@ void CHero::Die(CObject* pAttacker,BOOL bFatalDamage,BOOL bCritical, BOOL bDecis
 	GAMEIN->GetCharacterDialog()->SetAttackRate();
 	GAMEIN->GetCharacterDialog()->SetDefenseRate();
 	GAMEIN->GetCharacterDialog()->UpdateData();
-
+	GAMEIN->GetCharacterDialog()->UpdateMoveSpeedDisplay();
 	if (pAttacker)
 	{
 		if( HEROID != pAttacker->GetID() )
@@ -1421,7 +1422,8 @@ void CHero::OnHitTarget(CObject* pMainTarget)
 	case WP_GUNG:	WeaponMinDistance = 100;	break;
 	case WP_AMGI:	WeaponMinDistance = 100;	break;	
 	case WP_EVENT_HAMMER:WeaponMinDistance = 0.f;break;
-
+	case WP_AXE:	WeaponMinDistance = 100;	break;
+	case WP_DAGGER:	WeaponMinDistance =  10;	break;
 	//case WP_GUM:	WeaponMinDistance = 120;	break;//150
 	//case WP_GWUN:	WeaponMinDistance = 150;	break;//100
 	//case WP_DO:		WeaponMinDistance = 150;	break;
@@ -1535,6 +1537,7 @@ void CHero::HeroStatusReload()
 	GAMEIN->GetCharacterDialog()->SetAttackRate();
 	GAMEIN->GetCharacterDialog()->SetDefenseRate();
 	GAMEIN->GetCharacterDialog()->UpdateData();
+	GAMEIN->GetCharacterDialog()->UpdateMoveSpeedDisplay();
 }
 void CHero::AddStatus(CStatus* pStatus)
 {
@@ -1549,6 +1552,7 @@ void CHero::AddStatus(CStatus* pStatus)
 	GAMEIN->GetCharacterDialog()->SetAttackRate();
 	GAMEIN->GetCharacterDialog()->SetDefenseRate();
 	GAMEIN->GetCharacterDialog()->UpdateData();
+	GAMEIN->GetCharacterDialog()->UpdateMoveSpeedDisplay();
 }
 void CHero::RemoveStatus(CStatus* pStatus)
 {
@@ -1566,6 +1570,7 @@ void CHero::RemoveStatus(CStatus* pStatus)
 	GAMEIN->GetCharacterDialog()->SetAttackRate();
 	GAMEIN->GetCharacterDialog()->SetDefenseRate();
 	GAMEIN->GetCharacterDialog()->UpdateData();
+	GAMEIN->GetCharacterDialog()->UpdateMoveSpeedDisplay();
 }
 
 DWORD CHero::DoGetPhyAttackPowerMin()//¼ÆËãÎäÆ÷¹¥»÷½ü¾àÀë»òÔ¶¾àÀë
@@ -1840,6 +1845,7 @@ void CHero::CalcShopItemOption( WORD wIdx, BOOL bAdd, DWORD Param )
 			STATSMGR->CalcItemStats(HERO);
 			GAMEIN->GetCharacterDialog()->SetMinChub();
 			GAMEIN->GetCharacterDialog()->SetAttackRate();
+			GAMEIN->GetCharacterDialog()->UpdateMoveSpeedDisplay();
 		}
 		if( pItemInfo->CheRyuk>0 )
 		{		
@@ -1920,7 +1926,7 @@ void CHero::CalcShopItemOption( WORD wIdx, BOOL bAdd, DWORD Param )
 			m_ShopItemOption.RegistAttr += (pItemInfo->LimitMinChub*calc);
 			if(m_ShopItemOption.RegistAttr < 0)
 				m_ShopItemOption.RegistAttr = 0;
-
+			GAMEIN->GetCharacterDialog()->UpdateMoveSpeedDisplay();
 			GAMEIN->GetCharacterDialog()->UpdateData();
 		}
 		// ?‚æ?æ¨¡è?é¦¬æ¨¡
@@ -3250,7 +3256,8 @@ void CHero::Move(int nKeyMoveDir)
 
 		//if (MAP->CollisionCheck_OneLine_New(&HERO->m_MoveInfo.CurPosition, &stPos) == TRUE)
 		{
-			Move_Simple(&stPos);
+		//	Move_Simple(&stPos);
+			MOVEMGR->SetHeroTarget(&stPos, true);//·ÀÖ¹Ó¢ĞÛÅ×³öµØÍ¼£¬awsd
 		//	return;
 		}
 		/*else

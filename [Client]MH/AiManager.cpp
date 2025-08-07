@@ -60,7 +60,7 @@
 //DWORD WINAPI threadProc2(LPVOID p_Param);
 #define ADDMSG(a) CHATMGR->AddMsg(CTC_SYSMSG, a);
 extern HWND _g_hWnd;
-extern int  m_PetPos;
+extern int  m_PetIdx;
 DWORD dwCheckBitNoAuto = eNoAuto;
 DWORD dwCheckBit = eEventMap | eTournament | eQuestRoom | eSurvivalMap | eNoAuto;
 BOOL bagimakan;
@@ -2659,13 +2659,15 @@ void CPlayerAI::AutoCallPet()
 {
 	if (AISETMGR->GetGameAI()->sPage8.isAutoCallPet)
 	{
-		if (m_PetPos == -1)
+		if (m_PetIdx == -1)
 		{
 			return;
 		}
-		CItem * ItemPet = GAMEIN->GetInventoryDialog()->GetItemForPos(m_PetPos);
+		//CItem * ItemPet = GAMEIN->GetInventoryDialog()->GetItemForPos(m_PetPos); // OLD CODE
+		CItem* ItemPet = GAMEIN->GetInventoryDialog()->GetItemLike(m_PetIdx); // JACK
 		if (ItemPet)
 		{
+			CHATMGR->AddMsg(CTC_SYSMSG, "%d", m_PetIdx);
 			if (ItemPet->GetItemKind() == eSHOP_ITEM_PET || ItemPet->GetItemKind() == eQUEST_ITEM_PET)
 			{
 				if (HERO)

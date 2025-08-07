@@ -2813,8 +2813,15 @@ int CItemManager::ReinforceItemWithShopItem(CPlayer* pPlayer, WORD wTargetItemId
 	if (!pBaseItemInfo)			return 2;
 	if (pBaseItemInfo->LimitLevel < pShopItem->GenGol || pBaseItemInfo->LimitLevel > pShopItem->MinChub)
 		return 4;
-	if (pBaseItemInfo->WeaponType > WP_KEY)
+
+	WORD wType = pBaseItemInfo->WeaponType;
+	if (!(
+		(wType >= WP_GUM && wType <= WP_KEY) ||
+		wType == WP_AXE ||
+		wType == WP_DAGGER
+		))
 		return 12;
+
 	int eOptKind = eIOK_Normal;
 	if (IsRareOptionItem(pTargetItemBase->wIconIdx, pTargetItemBase->RareIdx))
 	{
@@ -9061,8 +9068,15 @@ int CItemManager::UpGradeOfficial_Func(CPlayer* pPlayer, MSG_OFFICIAL_ITEM_SYN* 
 }
 DWORD CItemManager::GetItemQuality()
 {
-	return rand() % 5;
+	int rate = rand() % 100;  // ·¶Î§ 0~99
+
+	if (rate < 40)      return 0; // 40%
+	else if (rate < 70) return 1; // 30%
+	else if (rate < 85) return 2; // 15%
+	else if (rate < 95) return 3; // 10%
+	else                return 4; // 5%
 }
+
 DWORD CItemManager::GetItemEntry1()
 {
 	return (rand() % 11 + 1);

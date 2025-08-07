@@ -796,6 +796,14 @@ void CQuickDialog::SetToolTipIcon(CQuickItem * item)
 			case WP_AMGI:
 				item->AddToolTipLine(CHATMGR->GetChatMsg(470), TTTC_LIMIT);
 				break;
+			case WP_AXE:
+				item->AddToolTipLine(CHATMGR->GetChatMsg(2834), TTTC_LIMIT);
+				break;
+			
+			case WP_DAGGER:
+				item->AddToolTipLine(CHATMGR->GetChatMsg(2835), TTTC_LIMIT);
+				break;
+			
 			}
 		}
 		if (wCommSkillKind == SKILLKIND_TITAN)

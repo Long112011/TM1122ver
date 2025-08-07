@@ -3408,32 +3408,39 @@ float CPlayer::DoGetMoveSpeed()
 	else
 	{
 
-		if(m_MoveInfo.KyungGongIdx)
+		if (m_MoveInfo.KyungGongIdx)
 		{
 			CKyungGongInfo* pKGInfo = KYUNGGONGMGR->GetKyungGongInfo(m_MoveInfo.KyungGongIdx);
 			ASSERT(pKGInfo);
-			if(pKGInfo == NULL)
+			if (pKGInfo == NULL)
 				return 0;
 
-			speed = pKGInfo->GetSpeed()+GetAbilityStats()->Kyunggong;
+			float speed = pKGInfo->GetSpeed() + GetAbilityStats()->Kyunggong;
 
 			// 酒官鸥酒捞袍 版傍加档 惑铰
 			speed += m_AvatarOption.KyunggongSpeed;
 			// 何利荤侩 版傍加档 惑铰
-			speed += m_ShopItemOption.KyungGongSpeed;			
+			speed += m_ShopItemOption.KyungGongSpeed;
+
+			// ====== 刺客（WeaponType == 11）敏捷加速逻辑 ======
+			WORD weaponType = GetWeaponEquipType();
+			if (weaponType == 11)
+			{
+				int minChub = GetMinChub(); // 从自身获取敏捷（穿刺）值
+				speed += (float)(minChub / 3); // 每 3 点加 1 速度
+			}
+			// =========================================
+
 			return speed;
 		}
 		else
 		{
-			if(m_MoveInfo.MoveMode == eMoveMode_Run)
-			{
+			if (m_MoveInfo.MoveMode == eMoveMode_Run)
 				return RUNSPEED;
-			}				
 			else
-			{
 				return WALKSPEED;
-			}
 		}
+
 	}
 
 	return speed;

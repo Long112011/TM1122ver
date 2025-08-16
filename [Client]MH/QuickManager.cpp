@@ -920,7 +920,7 @@ BOOL CQuickManager::CanEquip(cIcon * pIcon)
 		{
 			if(bits==eSHOP_ITEM_CHARM || bits==eSHOP_ITEM_HERB ||
 				bits==eSHOP_ITEM_INCANTATION || bits==eSHOP_ITEM_SUNDRIES ||
-				bits==eSHOP_ITEM_PET)
+				bits==eSHOP_ITEM_PET || bits == eSHOP_ITEM_FLGNAME)
 				return TRUE;
 		}
 		else if(bits & eQUEST_ITEM_PET)

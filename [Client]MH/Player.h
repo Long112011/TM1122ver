@@ -328,14 +328,16 @@ public:
 	void    SetShiFuName(char* pName);
 	void    ClearShiFu(DWORD ShiFuId);
 	char    * GetShiFuName();
-	bool    IsFlashNameFlag(){return  m_CharacterInfo.FlashNameFlag!=0;}
-	void    SetFlashNameFlag(int Flag);//void    SetFlashNameFlag(WORD Flag){ m_CharacterInfo.FlashNameFlag=Flag;}
-	WORD    GetFlashNameFlag(){return m_CharacterInfo.FlashNameFlag;}
 
 	bool	IsImageName(){return m_CharacterInfo.ImageName!=0;}
 	void	SetImageName(WORD val){m_CharacterInfo.ImageName = val;}
 	WORD	GetImageName(){return m_CharacterInfo.ImageName;}
 
+	//VIP图标
+
+	void	SetVipLevel(WORD VipLevel);
+	BOOL	IsVip() { return m_CharacterInfo.VipLevel != 0; }
+	WORD	GetVipLevel() { return m_CharacterInfo.VipLevel; }
 
 	virtual void SetFame(FAMETYPE val);
 	FAMETYPE GetFame()			{ return m_CharacterInfo.Fame;	}
@@ -350,10 +352,14 @@ public:
 	//DWORD   GetNameItem(){return m_NameImg;}
 
 
-	BOOL    IsFlashName();
-	void    SetFlashName(char * FlashName);
-	char *  GetFlashName(){return m_CharacterInfo.FlashName;}
-
+	//闪名称号函数定义
+	bool	IsFlgName() { return m_CharacterInfo.FlgName != 0; }
+	void	SetFlgName(WORD val) { m_CharacterInfo.FlgName = val; }
+	WORD	GetFlgName() { return m_CharacterInfo.FlgName; }
+	//自定义称号
+	void SetCustomizingName(char* pName);
+	char* GetCustomizingName() { return m_CharacterInfo.CustomizingName; }
+	bool   IsCustomizing() { return strcmp(GetCustomizingName(), "0") != 0; }
 
 	BOOL    IsTurnOne(){return  m_CharacterInfo.TurnStageOne!=0;}
 	void    SetTurnOne(int Flag){m_CharacterInfo.TurnStageOne=Flag;}
@@ -366,6 +372,8 @@ public:
 	BOOL    IsTurnThree(){return  m_CharacterInfo.TurnStageThree!=0;}
 	void    SetTurnThree(int Flag){m_CharacterInfo.TurnStageThree=Flag;}
 	WORD    GetTurnThree(){return m_CharacterInfo.TurnStageThree;}
+
+
 
 	virtual void SetKillCount(DWORD val);
 	DWORD GetKillCount()			{ return m_CharacterInfo.dwKillPlayerTimes; }

@@ -39,15 +39,21 @@ public:
 	void SetMarryName(char* MarryName);
 	void SetShiTuName(char* name);
 	void SetMasterName(char* MasterName);
-	void SetFlashNameFlag(WORD Flag);
+
 	void SetImageName(WORD ImageNum);
 	void SetFame(char* Fame);
 	void SetStageLogo(char* Fame);
 	void SetTopListFlg(WORD val);
 	void InitTopListFlg();
 	void SetFameRank(char* fame);
-	void SetFlashName(char * FlashName);
+
 	void SetKillCount(char * kill);
+	//VIP图标
+	void SetObjectBalloonVIPImage(int val);
+	//闪名
+	void SetObjectBalloonFlgName(WORD Flag);
+	//自定义称号
+	void SetCustomizingName(char* CustomizingName);
 protected:
 	CObject *				m_pObject;
 	COBalloonName *			m_pName;

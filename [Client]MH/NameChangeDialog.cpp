@@ -64,44 +64,46 @@ void CNameChangeDialog::NameChangeSyn()
 {
 	DWORD len = 0;
 	char buf[20];
-	strcpy( buf, m_pNameBox->GetEditText() );
+	strcpy(buf, m_pNameBox->GetEditText());
+
 	len = strlen(buf);
-	if( len == 0 )
+	if (len == 0)
 	{
-		CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(11) );
+		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(11));
 		return;
 	}
-	else if( len < 4 )
+	else if (len < 4)
 	{
-		CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(19) );
+		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(19));
 		return;
 	}
-	else if( len > MAX_NAME_LENGTH )
-		return;	
-	if( strcmp(buf, HERO->GetObjectName()) == 0 )
+	else if (len > MAX_NAME_LENGTH)
 		return;
-	if( FILTERTABLE->IsInvalidCharInclude((unsigned char*)buf) )
+
+	if (strcmp(buf, HERO->GetObjectName()) == 0)
+		return;
+	if (FILTERTABLE->IsInvalidCharInclude((unsigned char*)buf))
+		//	if( FILTERTABLE->IsInvalidCharacterName((unsigned char*)buf) )
 	{
-		CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(14) );		
+		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(14));
 		return;
 	}
-	if( !FILTERTABLE->IsUsableName(buf) )
+	if (!FILTERTABLE->IsUsableName(buf))
 	{
-		CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(14) );		
+		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(14));
 		return;
 	}
-	if( m_dwDBIdx == 0 )		return;	
+	if (m_dwDBIdx == 0)		return;
 
 	SEND_CHANGENAMEBASE msg;
 	msg.Category = MP_ITEM;
 	msg.Protocol = MP_ITEM_SHOPITEM_NCHANGE_SYN;
 	msg.dwObjectID = HERO->GetID();
 	msg.DBIdx = m_dwDBIdx;
-	msg.CyptKey = m_bItemFlag;
-	strncpy( msg.Name, buf, MAX_NAME_LENGTH+1 );
-	NETWORK->Send( &msg, sizeof(msg) );
+	strncpy(msg.Name, buf, MAX_NAME_LENGTH + 1);
+	NETWORK->Send(&msg, sizeof(msg));
 
-	SetActive( FALSE );
+	SetActive(FALSE);
 }
 
 

@@ -303,17 +303,24 @@ void CObject::InitObjectBalloon(BYTE bitFlag)
 				{
 					pPlayer->SetShiFuName(pPlayer->GetShiFuName());
 				}
-				if (pPlayer->IsFlashNameFlag())
-				{
-					pPlayer->SetFlashNameFlag(pPlayer->GetFlashNameFlag());
-				}
+
 				if (pPlayer->IsImageName())
 				{
 					m_pObjectBalloon->SetImageName(pPlayer->GetImageName());
 				}
-				if (pPlayer->IsFlashName())
+				if (((CPlayer*)this)->IsCustomizing())//×Ô¶¨Òå³ÆºÅ
+				{//´Ë´¦ÅÐ¶Ï·ÀÖ¹NPCäÖÈ¾
+					m_pObjectBalloon->SetCustomizingName(((CPlayer*)this)->GetCustomizingName());
+				}
+				//ÉÁÃû
+				if (((CPlayer*)this)->IsFlgName())
+				{//´Ë´¦ÅÐ¶Ï·ÀÖ¹NPCäÖÈ¾
+					m_pObjectBalloon->SetObjectBalloonFlgName(((CPlayer*)this)->GetFlgName());
+				}
+				//VIPÍ¼±ê
+				if (((CPlayer*)this)->IsVip())
 				{
-					pPlayer->SetFlashName(pPlayer->GetFlashName());
+					m_pObjectBalloon->SetObjectBalloonVIPImage(((CPlayer*)this)->GetVipLevel());
 				}
 				if (pPlayer->GetFame() > 0)
 				{
@@ -855,8 +862,7 @@ void CObject::SetShiTuNameBalloon(char* name)
 {
 	m_pObjectBalloon->SetShiTuName(name);
 }
-
-
+//Í¼Æ¬³ÆºÅ
 
 void CObject::SetImageNameBalloon(WORD ImageName)
 {
@@ -921,18 +927,34 @@ void CObject::Stop( VECTOR3* p_pStopPos )
 	}*/
 
 }
-void CObject::SetFlashNameBalloonFlag(int Flag)
-{
-	m_pObjectBalloon->SetFlashNameFlag(Flag);
-}
-
-
-void CObject::SetFlashNameBalloon(char * FlashName)
-{
-	m_pObjectBalloon->SetFlashName(FlashName);
-}
+//void CObject::SetFlashNameBalloonFlag(int Flag)
+//{
+//	m_pObjectBalloon->SetFlashNameFlag(Flag);
+//}
+//
+//
+//void CObject::SetFlashNameBalloon(char * FlashName)
+//{
+//	m_pObjectBalloon->SetFlashName(FlashName);
+//}
 
 void CObject::SetKillCountBalloon(char * kill)
 {
 	m_pObjectBalloon->SetKillCount(kill);
+}
+
+//VIPÍ¼±ê
+void CObject::SetObjectVIPImage(int val)
+{
+	m_pObjectBalloon->SetObjectBalloonVIPImage(val);
+}
+//ÉÁÃû
+void CObject::SetObjectFlgName(WORD Flg)
+{
+	m_pObjectBalloon->SetObjectBalloonFlgName(Flg);
+}
+//×Ô¶¨Òå³ÆºÅ
+void CObject::SetObjectCustomizingName(char* name)
+{
+	m_pObjectBalloon->SetCustomizingName(name);
 }

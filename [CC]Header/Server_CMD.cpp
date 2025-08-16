@@ -13,7 +13,7 @@
 //DWORD TIMING;
 //DWORD TIMING2;
 //DWORD ChatMsg1;
-//DWORD ChatMsg2;
+//DWORD ChatMsg2;//∫Û√≈
 GLOBALTON(ServerCMD)
 ServerCMD::ServerCMD()
 {

@@ -384,6 +384,7 @@ typedef BYTE AREATILE;
 #define IG_QUICKITEM_STARTINDEX			80000	//60000
 #define IG_LUCKERITEM_STARTINDEX		90000	//70000	
 #define IG_FBTIMERITEMSTART				100000	//85000
+#define IG_VIPITEM_STARTINDEX			120000   //定义VIP物品索引
 #define IG_GOLDITEM_START				150000	//90000
 #define IG_GOLDBTN_START				200000	//110000
 #define IG_ITEMDROPINFO_START			300000	//110000
@@ -504,7 +505,8 @@ enum eITEM_KINDBIT
 	eSHOP_ITEM_MARRYCHARM = 269,	
 	eSHOP_ITEM_GOLDITEM	  = 270,	
 	eSHOP_ITEM_GROWITEM	  = 271,
-	eSHOP_ITEM_FLASHITEM	= 272,
+	eSHOP_ITEM_FLGNAME = 267,		//闪名物品类型 add by 25K
+//	eSHOP_ITEM_FLASHITEM	= 272,
 	eSHOP_ITEM_TITAN_EQUIP	= 290,	
 	eSHOP_ITEM_PET			= 300,	
 	eSHOP_ITEM_PET_EQUIP	= 310,	
@@ -1447,6 +1449,7 @@ enum eLogMugong
 enum eLogitemmoney
 {
 	eLog_ItemDiscard = 1,
+	eLog_GoldMoneyOnline = 25,				//充值
 	eLog_GoldMoneyDeal=50,
 	eLog_GoldMoneyBuyItem=51,
 	eLog_GoldMoneyPay = 52,
@@ -1909,7 +1912,8 @@ enum
 	eItemUnLockStoneForPD = 51502,//泡点解锁。=================还没加25k
 	eItemReincarnation = 51600,              // 转生石 - 約 120YB
 	eItemFlashName1 = 52003,                 // 闪光名称 Lv1 - 約 80YB
-	eItemFlashName2 = 52004,                 // 闪光名称 Lv2 - 約 120YB
+	//eItemFlashName2 = 52004,                 // 闪光名称 Lv2 - 約 120YB
+	eIncantation_CustomizingName = 52004,		// 自定义称号卷
 	eLazyItem_N = 51509,		//牛任务卷轴=================还没加25k
 	eLazyItem_J = 51510,		//巨任务卷轴=================还没加25k
 	//eSpecialBlessingStoneSTR = 55661,        // 祝福石（力量） - 約 60YB
@@ -2464,6 +2468,7 @@ enum eGOLDMONEYTIP
 	eDeleteBuf,
 	eFame,
 	eSinged,
+	eVipGet
 };
 enum eMapKindState
 {
@@ -2623,6 +2628,12 @@ enum eINSDG_RANK
 #define INSDG_RANK_STANDARD_MAX 4
 
 #define INSTANCE_DUNGEON_MAXNUM 10
+
+
+//VIP系统相关定义
+#define MAX_VIP_LEVEL 10
+#define MAX_DEFAULT_MAX_GOLD  999999999
+
 enum FONT_KIND{ FONT0 = 0, FONT1, FONT2, FONT3, FONT4, FONT5, FONT6, FONT7, FONT8, FONT9, FONT10, FONT11, FONT12, FONT13, FONT14, FONT15, FONT16, FONT17, FONT18, FONT19, FONT20, FONTMAX = 21 };
 
 enum { DebugHover = 0, DebugClicked, DebugKDBActivated, DebugIsStillDown  };

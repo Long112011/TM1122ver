@@ -40,7 +40,7 @@ enum ePATH_FILE_TYPE
 	PFT_MINIMAPPATH ,
 	PFT_JACKPOTPATH,
 	PFT_IMAGENAME,  //Õº∆¨≥∆∫≈
-	PFT_VIPIMGPATH,
+	PFT_VIPIMGPATH,//vipÕº∆¨≥∆∫≈
 	PFT_JACKPATH, //BY JACK
 	PFT_EMOJIPATH, //BY JACK
 };
@@ -91,6 +91,7 @@ public:
 	//////////////////////////////////////////
 	//	//Õº∆¨≥∆∫≈
 	IMAGENAMEINFO* GetImageNameInfo(int idx) { return m_ImageNameInfo.GetData(idx); }
+	//vipÕº∆¨≥∆∫≈
 	VIPIMGINFO* GetVipImgInfo(int idx) { return m_ImageVipInfo.GetData(idx); }
 	////////////////////////////////////////////////////////////////////////////
 	// 2007. 11. 1. CBH - IMAGEPATH ÊäõÊçûÂñ?ÁöãËëõÂ∫?Áß¶Âäõ Á™ÉËçê
@@ -120,7 +121,9 @@ protected:
 	//Õº∆¨≥∆∫≈
 	CYHHashTable<sIMAGHARDPATH> m_ImageNamePath;
 	CYHHashTable<IMAGENAMEINFO> m_ImageNameInfo;
+	//vipÕº∆¨≥∆∫≈
 	CYHHashTable<sIMAGHARDPATH> m_ImageVipPath;
+	//vipÕº∆¨≥∆∫≈
 	CYHHashTable<VIPIMGINFO> m_ImageVipInfo;
 
 	CYHHashTable<sIMAGHARDPATH> m_ImageJackPath; //BY JACK

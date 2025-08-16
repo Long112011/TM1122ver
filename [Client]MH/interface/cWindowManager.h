@@ -417,6 +417,8 @@ public:
 	void CreateItemQualityChangeDlg();      //装备品质转换窗口
 	void CreateGradeChangeDlg();			//武器升阶值转移卷
 
+	void CreateVipDialog();                //VIP系统
+	void CreatCustomizingDlg();           //自定义称号
 	//++++ Common dialog +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	// dynamic create and auto release
 //	cWindow * CreateMoneyDlg();

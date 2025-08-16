@@ -160,11 +160,11 @@ BOOL CMixDialog::FakeMoveIcon(LONG x, LONG y, cIcon * pOrigIcon)
 		return FALSE;
 	}
 	// 检查物品是否有 grade
-	if (pOrigItem->GetGrade() > 0) // 假设 GetGrade() 方法返回物品的等级
-	{
-		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2745)); // 设置一个新的提示ID，比如“物品有等级，无法进行此操作”
-		return FALSE;
-	}
+	//if (pOrigItem->GetGrade() > 0) // 假设 GetGrade() 方法返回物品的等级
+	//{
+	//	CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2745)); // 设置一个新的提示ID，比如“物品有等级，无法进行此操作”
+	//	return FALSE;
+	//}
 	if(ITEMMGR->IsOptionItem(pOrigItem->GetItemIdx(), pOrigItem->GetDurability()))
 	{
 		CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(202) );

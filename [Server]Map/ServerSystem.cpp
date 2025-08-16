@@ -140,7 +140,7 @@
 #include "InsDungeonMapManager.h"
 #include "InsDungeonRegenDataManager.h"
 #include "InsDungeon.h"
-
+#include "VipManager.h"         //VIP头文件引用
 #include "..\[CC]Header\Server_CMD.h"
 
 void __stdcall ProcessDBMessage(DWORD dwEventIndex);
@@ -522,6 +522,7 @@ void CServerSystem::Start(WORD ServerNum)
 			//{"ReloadTest",ReloadTest}
 		};
 		GAMERESRCMNGR->LoadMapKindInfo();
+
 		char TitleText[128];
 		DWORD Pid = GetCurrentProcessId();
 		sprintf(TitleText, "MAP%d(%s) [PID_%d]", ServerNum, GetMap()->GetMapName(), Pid);
@@ -654,6 +655,7 @@ void CServerSystem::Start(WORD ServerNum)
 	INSDUNGEONREGENDATAMGR->LoadInsDungeonRegenList();
 	INSDUNGEONMGR->Init();
     GAMERESRCMNGR->LoadDataUpGrade();
+	VIPMGR->LoadVipInfo();        //读取VIP设置信息
 	//SetWindowText(g_hWnd, TitleText);
 
 	int i=0 ;
@@ -2101,7 +2103,7 @@ void CServerSystem::ReloadResourceData()
 	GAMERESRCMNGR->LoadCostumeSkinList();
 	
 	GAMERESRCMNGR->LoadRebornSetting();
-
+	VIPMGR->ReLoadVipInfo();   //读取VIP设置信息
 	ITEMDROP_OBJ->Init();
 
 	MAPITEMDROP_OBJ->Init();

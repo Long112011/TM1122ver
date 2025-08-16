@@ -255,26 +255,39 @@ void CObjectBalloon::Render()
 					DWORD NameItemIdx = strlen(((CPlayer*)m_pObject)->GetMarryName()) * 2;
 					LONG nposx = m_pName->GetNickPosX() >= m_pName->GetPosX() ? m_pName->GetPosX() : m_pName->GetNickPosX();
 					if (((CPlayer*)m_pObject)->GetGuildMarkName() != 0)
-					{
+					{//帮会图标位置渲染
 						if (m_pGuildMark)
 						{
 							VECTOR2 pos2;
-							pos2.x = m_absPos.x + nposx - (20.0f + NameItemIdx);
-							pos2.y = m_absPos.y + m_pName->GetTall() - 2.0f;
+							pos2.x = m_absPos.x + nposx - 18.0f;//- 40.0f;
+							//						pos2.x = m_absPos.x + m_pName->GetPosX() - 18.0f;//- 40.0f;
+							// 
+							if (((CPlayer*)m_pObject)->GetVipLevel() > 0)
+								pos2.x -= 20.f;
+
+							pos2.y = m_absPos.y + m_pName->GetTall() - 22.0f;//- 2.0f;
+							//						pos2.y = m_absPos.y + m_pName->GetTall() - 2.0f;//- 5.0f;
+
 							m_pGuildMark->Render(&pos2);
 						}
 					}
 					DWORD dwGuildUnionIdx = ((CPlayer*)m_pObject)->GetGuildUnionIdx();
 					DWORD dwGuildUnionMarkIdx = ((CPlayer*)m_pObject)->GetGuildUnionMarkIdx();
 					if (dwGuildUnionIdx != 0 && dwGuildUnionMarkIdx != 0)
-					{
+					{//同盟图标位置渲染
 						CGuildUnionMark* pMark = GUILDUNIONMARKMGR->GetGuildUnionMark(g_nServerSetNum, dwGuildUnionIdx, dwGuildUnionMarkIdx);
 						if (pMark)
 						{
-							VECTOR2 pos2;
-							pos2.x = m_absPos.x + nposx - (20.0f + NameItemIdx);
-							pos2.y = m_absPos.y + m_pName->GetTall() - 18.0f;
-							pMark->Render(&pos2);
+						VECTOR2 pos2;
+						pos2.x = m_absPos.x + nposx - 18.0f;
+
+						if (((CPlayer*)m_pObject)->GetVipLevel() > 0)
+							pos2.x -= 20.f;
+
+//						pos2.x = m_absPos.x + m_pName->GetPosX() - 18.0f;
+						pos2.y = m_absPos.y + m_pName->GetTall() - 38.0f;	
+//						pos2.y = m_absPos.y + m_pName->GetTall() - 18.0f;	
+						pMark->Render( &pos2 );
 						}
 					}
 				}
@@ -381,13 +394,6 @@ void CObjectBalloon::SetShiTuName(char* name)
 	if( m_pName )
 		m_pName->SetShiTuName(name);
 }
-void CObjectBalloon::SetFlashNameFlag(WORD Flag)
-{
-    if(m_pName)
-	{
-		m_pName->SetFlashNameFlag(Flag);
-	}
-}
 
 
 
@@ -423,16 +429,20 @@ void CObjectBalloon::SetFameRank(char* fame)
 	if(m_pName)
 		m_pName->SetFameRank(fame);
 }
-
-
-
-void CObjectBalloon::SetFlashName(char * FlashName)
+//闪名
+void CObjectBalloon::SetObjectBalloonFlgName(WORD Flag)
 {
-	if(m_pName)
-	{
-	   m_pName->SetFlashName(FlashName);
-	}
+	if (m_pName)
+		m_pName->SetOBalloonFlgName(Flag);
 }
+
+//自定义称号
+void CObjectBalloon::SetCustomizingName(char* CustomizingName)
+{
+	if (m_pName)
+		m_pName->SetCustomizingName(CustomizingName);
+}
+
 void CObjectBalloon::SetKillCount(char * kill)
 {
 	if (m_pName)
@@ -440,3 +450,10 @@ void CObjectBalloon::SetKillCount(char * kill)
 		m_pName->SetKillCount(kill);
 	}
 }
+//VIP图标
+void CObjectBalloon::SetObjectBalloonVIPImage(int val)
+{
+	if (m_pName)
+		m_pName->SetOBalloonVIPImage(val);
+}
+	

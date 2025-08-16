@@ -85,6 +85,7 @@
 #include "ItemQualityDlg.h"
 #include "ItemQualityChangeDlg.h"
 #include "GradeChangeDlg.h"//武器升阶值转移卷
+#include "CustomizingNameDlg.h"//	自定义名字对话框
 extern  int  m_PetIdx;
 extern BOOL IsMultiPet;
 CInventoryExDialog::CInventoryExDialog()
@@ -928,18 +929,18 @@ void CInventoryExDialog::UseItem(CItem* pItem, BYTE ActionType)
 			NETWORK->Send(&msg, sizeof(msg));
 			return;
 		}
-		if (pInfo->ItemKind == eSHOP_ITEM_FLASHITEM)
-		{
-			MSGFLASHNAME msg;
-			msg.Category = MP_ITEMEXT;
-			msg.Protocol = MP_ITEMEXT_FLASHNAME1_SYN;
-			msg.dwObjectID = HERO->GetID();
-			msg.dwItemIdx = pInfo->ItemIdx;
-			msg.dwItemDBidx = pItem->GetDBIdx();
-			msg.dwNameFlag = pInfo->SellPrice;
-			NETWORK->Send(&msg, sizeof(msg));
-			return;
-		}
+		//if (pInfo->ItemKind == eSHOP_ITEM_FLASHITEM)
+		//{
+		//	MSGFLASHNAME msg;
+		//	msg.Category = MP_ITEMEXT;
+		//	msg.Protocol = MP_ITEMEXT_FLASHNAME1_SYN;
+		//	msg.dwObjectID = HERO->GetID();
+		//	msg.dwItemIdx = pInfo->ItemIdx;
+		//	msg.dwItemDBidx = pItem->GetDBIdx();
+		//	msg.dwNameFlag = pInfo->SellPrice;
+		//	NETWORK->Send(&msg, sizeof(msg));
+		//	return;
+		//}
 		if (pInfo->NaeRyukRecoverRate > HERO->GetLevel())
 		{
 			char temp[256] = { 0, };
@@ -1387,6 +1388,13 @@ void CInventoryExDialog::UseItem(CItem* pItem, BYTE ActionType)
 			GAMEIN->GetNameChangeNotifyDlg()->SetActive(TRUE);
 			GAMEIN->GetInventoryDialog()->SetDisable(TRUE);
 		}
+		else if (pInfo->ItemIdx == eIncantation_CustomizingName)
+		{//自定义称号				
+			if (HERO->IsPKMode() || VIMUMGR->IsVimuing() || PKMGR->IsPKLooted() || (HERO->GetState() != eObjectState_None && HERO->GetState() != eObjectState_Immortal))
+				return;
+			GAMEIN->GetCustomizingDlg()->SetActive(TRUE);
+			GAMEIN->GetInventoryDialog()->SetDisable(TRUE);
+		}
 		else if (pInfo->ItemIdx == 59707)
 		{
 			if (HERO->IsPKMode() || VIMUMGR->IsVimuing() || PKMGR->IsPKLooted() || (HERO->GetState() != eObjectState_None && HERO->GetState() != eObjectState_Immortal))
@@ -1565,7 +1573,8 @@ void CInventoryExDialog::UseItem(CItem* pItem, BYTE ActionType)
 			}
 		else
 		{
-			if (pInfo->ItemKind == eSHOP_ITEM_CHARM && pInfo->EquipKind)
+			if ((pInfo->ItemKind == eSHOP_ITEM_CHARM ||//25闪名
+				pInfo->ItemKind == eSHOP_ITEM_FLGNAME) && pInfo->EquipKind)
 			{
 				if (HERO->GetMaxLevel() < pInfo->EquipKind)
 				{

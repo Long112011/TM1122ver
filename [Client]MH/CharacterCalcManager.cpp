@@ -34,7 +34,7 @@
 #include "FameManager.h"
 #include "AIManager.h"
 #include "RankButtonDialog.h"
-
+#include "VipDialog.h"    //VIP头文件
 #include "TopDungeon.h"
 extern bool b_WaitFirstEvent;
 GLOBALTON(CCharacterCalcManager)
@@ -971,5 +971,61 @@ void CCharacterCalcManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 			}
 		}
 		break;
+		//vip
+	case  MP_CHAR_VIP_GOLD_ACK:   //过图客户端设置VIP信息
+	{
+		MSG_VIP_INFO* pmsg = (MSG_VIP_INFO*)pMsg;
+
+		VipDialog* pDlg = (VipDialog*)GAMEIN->GetVipDialog();
+		if (pDlg)
+		{
+			pDlg->SetVipInfo(pmsg->TotalGold, pmsg->VipLevel, pmsg->VipValue);
+		}
+	}
+	break;
+	case MP_CHAR_VIP_GET_ACK:   //VIP奖励信息获取返回
+	{
+		MSG_DWORD2* pmsg = (MSG_DWORD2*)pMsg;
+
+		VipDialog* pDlg = (VipDialog*)GAMEIN->GetVipDialog();
+
+		if (pDlg)
+		{
+			pDlg->SetVipInfoByLevel(pmsg->dwData1, pmsg->dwData2); //设置获取奖励物品返回标志
+		}
+	}
+	break;
+	case MP_CHAR_VIP_GET_NACK:  //VIP奖励信息获取返回错误
+	{
+		MSG_DWORD* pmsg = (MSG_DWORD*)pMsg;
+
+		VipDialog* pDlg = (VipDialog*)GAMEIN->GetVipDialog();
+
+		if (pDlg)
+		{
+			if (pmsg->dwData == -1)
+			{
+				CHATMGR->AddMsg(CTC_SYSMSG, "会员级别未达到奖励条件,无法领取");
+			}
+			if (pmsg->dwData == -2)
+			{
+				CHATMGR->AddMsg(CTC_SYSMSG, "会员奖励已领取,无法重复领取该奖励");
+			}
+		}
+	}
+	break;
+	case MP_CHAR_VIPLEVEL_ACK:   // vip等级
+	{
+		MSG_DWORD* pmsg = (MSG_DWORD*)pMsg;
+
+		if (pmsg->dwObjectID == HEROID)
+		{
+			CPlayer* pPlayer = (CPlayer*)OBJECTMGR->GetObject(pmsg->dwObjectID);
+			HERO->SetVipLevel(pmsg->dwData);//设置Vip等级
+			//pPlayer->SetVIPImage(pmsg->dwData);
+			//pPlayer->SetObjectVIPImage(pmsg->dwData);//设置VIP图标
+		}
+	}
+	break;
 	}
 }

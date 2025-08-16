@@ -758,7 +758,8 @@ BOOL CStreetBuyStall::OnSellBtn()
 		pItem->GetItemKind() == eSHOP_ITEM_HERB ||
 		pItem->GetItemKind() == eSHOP_ITEM_CHARM ||
 		pItem->GetItemKind()== eSHOP_ITEM_MARRYCHARM||
-		pItem->GetItemKind() == eSHOP_ITEM_SUNDRIES )
+		pItem->GetItemKind() == eSHOP_ITEM_SUNDRIES ||
+		pItem->GetItemKind() == eSHOP_ITEM_FLGNAME)
 	{
 		if( QUICKMGR->CheckQPosForItemIdx(pItem->GetItemIdx()) == FALSE )
 		{

@@ -4870,7 +4870,44 @@ void MP_ITEMUserMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 
 void MP_ITEMUserMsgParserExt(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 {
-	TransToMapServerMsgParser( dwConnectionIndex, pMsg, dwLength );
+	MSGROOT* pTempMsg = (MSGROOT*)pMsg;
+	switch (pTempMsg->Protocol)
+	{
+	case MP_ITEMEXT_SHOPITEM_CUSTOMIZING_SYN:
+	{//×Ô¶¨Òå³ÆºÅ
+		SEND_CHANGENAMEBASE* pmsg = (SEND_CHANGENAMEBASE*)pMsg;
+		USERINFO* pUser = g_pUserTableForObjectID->FindUser(pmsg->dwObjectID);
+		if (!pUser)		return;
+
+		MSG_DWORD2CHAR msg;
+		msg.Category = MP_ITEMEXT;
+		msg.Protocol = MP_ITEMEXT_SHOPITEM_CUSTOMIZING_NACK;
+
+		DWORD len = strlen(pmsg->Name);
+		if (len < 4 || len > MAX_NAME_LENGTH)
+		{
+			msg.dwData1 = 6;
+			g_Network.Send2User(pUser->dwConnectionIndex, (char*)&msg, sizeof(msg));
+			return;
+		}
+
+		if (FILTERTABLE->IsUsableName(pmsg->Name) &&
+			!FILTERTABLE->IsInvalidCharInclude((unsigned char*)pmsg->Name))
+			//				!FILTERTABLE->IsInvalidCharacterName( (unsigned char*)pmsg->Name ) )
+		{
+			TransToMapServerMsgParser(dwConnectionIndex, pMsg, dwLength);
+		}
+		else
+		{
+			msg.dwData1 = 6;
+			g_Network.Send2User(pUser->dwConnectionIndex, (char*)&msg, sizeof(msg));
+			return;
+		}
+	}
+	break;
+	default:
+		TransToMapServerMsgParser(dwConnectionIndex, pMsg, dwLength);
+	}
 }
 
 

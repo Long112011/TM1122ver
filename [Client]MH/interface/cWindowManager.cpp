@@ -229,6 +229,7 @@
 #include "ItemQualityDlg.h"
 #include "ItemQualityChangeDlg.h"
 #include "GradeChangeDlg.h"			//武器升阶值转移卷
+#include "VipDialog.h"   
 extern HWND _g_hWnd;
 extern BOOL m_SafeIconShow;
 #define FONTPATH ".\\Image\\InterfaceScript\\gamefont.ttc"
@@ -436,6 +437,8 @@ void cWindowManager::CreateGameIn()
 	CreateItemQualityDlg();          //创建装备觉醒窗口
 	CreateItemQualityChangeDlg();     //创建装备转换窗口
 	CreateGradeChangeDlg();			//武器升阶值转移卷
+	CreateVipDialog();             //VIP窗口
+	CreatCustomizingDlg();//创建角色外观自定义窗口
 
 #ifdef	_DEBUGTICK
 	DWORD	dwEndTick = GetTickCount();
@@ -3919,4 +3922,48 @@ void cWindowManager::CreateGradeChangeDlg()	//武器升阶值转移卷
 	CGradeChangeDlg* pDlg = (CGradeChangeDlg*)window;
 	GAMEIN->SetGradeChangeDlg(pDlg);
 	pDlg->Linking();
+}
+// 创建VIP窗口
+void cWindowManager::CreateVipDialog()
+{
+	cWindow* window = NULL;
+#ifdef _FILE_BIN_
+	//window = GetDlgInfoFromFile("./image/InterfaceScript/VipDialog.bin","rb");
+	window = GetDlgInfoFromFile("./image/InterfaceScript/VipDialog.bin", "rb");
+#else
+	window = GetDlgInfoFromFile("./image/InterfaceScript/VipDialog.txt");
+#endif
+	ASSERT(window);
+
+
+	// VIP窗口分辨率处理
+	VECTOR2 Pos1;
+	Pos1.x = GAMERESRCMNGR->m_GameDesc.dispInfo.dwWidth / 2 - window->GetWidth() / 2;
+	Pos1.y = GAMERESRCMNGR->m_GameDesc.dispInfo.dwHeight / 2 - window->GetHeight() / 2;
+	window->SetAbsXY(Pos1.x, Pos1.y);
+
+	AddWindow(window);
+	VipDialog* pDlg = (VipDialog*)window;
+	GAMEIN->SetVipDialog(pDlg);
+	pDlg->Linking();
+	pDlg->LoadVipInfo();   // ถมศกvipษ่ึระลฯข
+	//pDlg->SetVipItem();    //  ษ่ึรvipฮ๏ฦทะลฯข
+}
+#include "CustomizingNameDlg.h"
+void cWindowManager::CreatCustomizingDlg()
+{
+	cWindow* window = NULL;
+#ifdef _FILE_BIN_
+	window = GetDlgInfoFromFile("./image/InterfaceScript/CustomizingDlg.bin", "rb");
+#else
+	window = GetDlgInfoFromFile("./image/InterfaceScript/CustomizingDlg.txt");
+#endif
+	AddWindow(window);
+	VECTOR2 Pos1;
+	Pos1.x = ((float)GAMERESRCMNGR->m_GameDesc.dispInfo.dwWidth / 2 - window->GetWidth() / 2);
+	Pos1.y = ((float)GAMERESRCMNGR->m_GameDesc.dispInfo.dwHeight / 2 - window->GetHeight() / 2);
+	window->SetAbsXY(Pos1.x, Pos1.y);
+
+	GAMEIN->SetCustomizingDlg((CCustomizingNameDialog*)window);
+	GAMEIN->GetCustomizingDlg()->Linking();
 }

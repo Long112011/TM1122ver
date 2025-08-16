@@ -263,7 +263,7 @@ void CRareCreateDialog::ItemRareCreateAck()//祝福成功之后，删除道具栏的物品
 				SetRareInfo(pRareItemInfo, pItem->GetItemIdx());
 			}
 			WORD vale = 0;
-			if (pItem->GetQuality() == 4)
+			if (pItem->GetQuality() == 4)//神话
 				vale = 3;
 			else if (pItem->GetQuality() == 3)
 				vale = 2;

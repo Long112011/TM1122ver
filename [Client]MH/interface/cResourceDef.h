@@ -93,7 +93,8 @@
 #define FILE_CHATTIP_MSG		"./image/ChatTipMsg.txt"
 
 #endif
-						
+#define FILE_IMAGE_VIP_PATH	"./image/image_vip.bin"
+#define FILE_IMAGE_VIP_INFO	"./image/image_vip_info.bin"					
 //#endif //_JAPAN_LOCAL_
 
 #endif //_cRESOURCEHEADER_H_

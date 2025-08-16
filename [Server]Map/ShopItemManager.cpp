@@ -241,7 +241,8 @@ void CShopItemManager::CheckEndTime(BOOL IsCheck)
 				 DungeonMGR->GetFubenKey(m_pPlayer->GetMapChangePoint()) == 1
 				 ))
 		{
-			if (pItemInfo->ItemKind == eSHOP_ITEM_CHARM && pItemInfo->MeleeAttackMin)
+			if ((pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+				pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME )&& pItemInfo->MeleeAttackMin)
 			{
 				if (pShopItem->ShopItem.Remaintime && gEventRate[pItemInfo->MeleeAttackMin] != gEventRateFile[pItemInfo->MeleeAttackMin])
 				{
@@ -348,7 +349,8 @@ void CShopItemManager::UpdateLogoutToDB()
 		if (!pItemInfo)		continue;
 		if (pItemInfo->SellPrice == eShopItemUseParam_Playtime)
 		{
-			if (pItemInfo->ItemKind == eSHOP_ITEM_CHARM && pItemInfo->MeleeAttackMin)
+			if ((pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+				pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME )&& pItemInfo->MeleeAttackMin)
 			{
 				if (pShopItem->ShopItem.Remaintime && gEventRate[pItemInfo->MeleeAttackMin] != gEventRateFile[pItemInfo->MeleeAttackMin])
 				{
@@ -512,7 +514,8 @@ BOOL CShopItemManager::CalcShopItemOption(DWORD wIdx, BOOL bAdd, DWORD Param)
 
 
 	}
-	else if (pItemInfo->ItemKind == eSHOP_ITEM_CHARM)
+	else if (pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+		pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 	{
 		if (pItemInfo->GenGol>0)
 		{
@@ -1177,7 +1180,8 @@ void CShopItemManager::CalcPlusTime(DWORD dwEventIdx, DWORD dwType)
 	{
 		pItem = ITEMMGR->GetItemInfo(pShopItem->ShopItem.ItemBase.wIconIdx);
 		if (!pItem)		continue;
-		if (pItem->ItemKind == eSHOP_ITEM_CHARM)
+		if (pItem->ItemKind == eSHOP_ITEM_CHARM ||
+			pItem->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			switch (dwType)
 			{
@@ -1799,7 +1803,8 @@ int CShopItemManager::UseShopItem(ITEMBASE* pItemBase, SHOPITEMUSEBASE UseBaseIn
 	{
 		if (pItemInfo->SellPrice && pItemInfo->ItemType == 10)
 		{
-			if (pItemInfo->ItemKind == eSHOP_ITEM_CHARM && pItemInfo->MeleeAttackMin)
+			if ((pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+				pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME) && pItemInfo->MeleeAttackMin)
 			{
 				if (pUsingShopItem->ShopItem.Remaintime)
 					return eItemUseErr_AlreadyUse;
@@ -2045,9 +2050,9 @@ int CShopItemManager::UseShopItem(ITEMBASE* pItemBase, SHOPITEMUSEBASE UseBaseIn
 		}
 	}
 	else if (pItemInfo->ItemKind == eSHOP_ITEM_CHARM || pItemInfo->ItemKind == eSHOP_ITEM_PREMIUM ||
-			 pItemInfo->ItemKind == eSHOP_ITEM_SUNDRIES || pItemInfo->ItemKind == eSHOP_ITEM_GETIN_ITEM)
+			 pItemInfo->ItemKind == eSHOP_ITEM_SUNDRIES || pItemInfo->ItemKind == eSHOP_ITEM_GETIN_ITEM || pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 	{
-		if (pItemInfo->ItemKind == eSHOP_ITEM_CHARM && pItemInfo->EquipKind)
+		if( (pItemInfo->ItemKind == eSHOP_ITEM_CHARM || pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME) && pItemInfo->EquipKind)
 		{
 			if (m_pPlayer->GetMaxLevel() < pItemInfo->EquipKind)
 				return eItemUseErr_Err;
@@ -2220,10 +2225,15 @@ BOOL CShopItemManager::UsedShopItem(ITEMBASE* pItemBase, DWORD Param, stTIME Beg
 	}
 	else
 	{
-		if (pItemInfo && pItemInfo->ItemKind == eSHOP_ITEM_CHARM && pItemInfo->MeleeAttackMin && RemainTime == 0)
+		if ((pItemInfo && pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME) && pItemInfo->MeleeAttackMin && RemainTime == 0)
 			return TRUE;
 		else
 			CalcShopItemOption(pItemBase->wIconIdx, TRUE, ShopItem.ShopItem.Remaintime);
+	}
+	if (pItemInfo && pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
+	{//ÉÁÃûÉèÖÃ
+		m_pPlayer->SetFlgName(1);
 	}
 	if (pItemInfo && pItemInfo->ItemKind == eSHOP_ITEM_IMAGENAME&&Param == 10)
 	{

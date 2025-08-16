@@ -331,6 +331,8 @@ class COfficialUpGradeDlg;
 class CItemQualityDlg;          //觉醒装备
 class CItemQualityChangeDlg;     //装备品质转换
 class CGradeChangeDlg;		//武器升阶值转移卷
+class VipDialog;               //VIP系统类引用
+class CCustomizingNameDialog;   //自定义称号
 #define GAMEIN USINGTON(CGameIn)
 
 class CGameIn : public CGameState  
@@ -697,6 +699,9 @@ private:
 	CItemQualityDlg* m_QualityDlg;                //装备觉醒
 	CItemQualityChangeDlg* m_QualityChangeDlg;     //装备转换
 	CGradeChangeDlg* m_GGDDlg;				//武器升阶值转移卷
+
+	VipDialog* m_VipDialog;          //VIP窗口定义
+	CCustomizingNameDialog* m_pCustomizingDlg;    //自定义称号
 	BOOL	m_bInitForGame;
 	int		m_GameInInitKind;	
 	DWORD	m_MovePoint;
@@ -1537,6 +1542,13 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	COfficialUpGradeDlg* GetOfficialUpGradeDlg() { return m_OfficialUpGradeDlg; }
 	void SetOfficialUpGradeDlg(COfficialUpGradeDlg* dlg) { m_OfficialUpGradeDlg = dlg; }
+	//创建VIP窗口
+	VipDialog* GetVipDialog() { return m_VipDialog; }
+	void SetVipDialog(VipDialog* dlg) { m_VipDialog = dlg; }
+
+	//自定义称号
+	CCustomizingNameDialog* GetCustomizingDlg() { return m_pCustomizingDlg; }
+	void SetCustomizingDlg(CCustomizingNameDialog* dlg) { m_pCustomizingDlg = dlg; }
 
 	SYSTEMTIME	GameinServerTime;			//辑滚俊辑 罐酒柯 某腐磐 肺弊牢 矫埃
 	DWORD				m_Clientdate;		//努扼捞攫飘俊辑 罐酒柯 某腐磐 肺弊牢 朝楼

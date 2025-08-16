@@ -1713,22 +1713,18 @@ void CPlayer::ClearShiFu(DWORD ShiFuId)
 void CPlayer::SetFame(FAMETYPE val)
 {
 	m_CharacterInfo.Fame = val;
-	if(CPlayer::GetFame()!=0)
+	if (CPlayer::GetFame() != 0)
 	{
 		CHAR balloon[MAX_MASTERNAME_LENGTH + 1];
-		sprintf(balloon, "%d", CPlayer::GetFame());	
+		sprintf(balloon, "%d", CPlayer::GetFame());
 		SetFameBalloon(balloon);
 
-
-		CHAR famerank[MAX_MASTERNAME_LENGTH + 1];
-		ZeroMemory(&famerank, sizeof(famerank));
-		sprintf(famerank,"%s",FAMEMGR->GetFameNameString(CPlayer::GetFame()));
-		if(strcmp(famerank,FAMEMGR->GetFameNameStrTrainee().c_str())!=0)
-		{
-			SetFameRankBalloon(famerank);
-		}
+		// 关键改动：无条件设置称号，不再屏蔽“江湖小虾”
+		const char* title = FAMEMGR->GetFameNameString(CPlayer::GetFame());
+		SetFameRankBalloon(const_cast<char*>(title));
 	}
 }
+
 void CPlayer::SetKillCount(DWORD val)
 {
 	m_CharacterInfo.dwKillPlayerTimes = val;
@@ -1763,31 +1759,18 @@ char* CPlayer::TestFameLogoChangeNo(FAMETYPE pFame)
 
 	SetFameRankBalloon(famerank);
 }*/
-void CPlayer::SetFlashNameFlag(int Flag)
+void CPlayer::SetCustomizingName(char* pName)
 {
-	m_CharacterInfo.FlashNameFlag=Flag;
-	SetFlashNameBalloonFlag(Flag);
-}
-
-
-
-
-BOOL CPlayer::IsFlashName()
-{
-   if(strcmp(m_CharacterInfo.FlashName,"0")==0)
-   {
-	   return FALSE;
-   }
-   return TRUE;
-}
-
-void CPlayer::SetFlashName(char * FlashName)
-{
-	if (FlashName == NULL)
-	{
+	if (pName == NULL)
 		return;
-	}
-	SafeStrCpy( m_CharacterInfo.FlashName, FlashName, MAX_NAME_LENGTH + 1 );
 
-	SetFlashNameBalloon(FlashName);
+	SafeStrCpy(m_CharacterInfo.CustomizingName, pName, MAX_NAME_LENGTH + 1);
+	SetObjectCustomizingName(pName);
+}
+
+void CPlayer::SetVipLevel(WORD VipLevel)
+{
+	m_CharacterInfo.VipLevel = VipLevel;
+
+	SetObjectVIPImage(VipLevel);
 }

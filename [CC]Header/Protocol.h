@@ -418,6 +418,17 @@ enum MP_PROTOCOL_CHAR
 	MP_CHAR_BADFAME_GOLD_ACK,
 	MP_CHAR_BADFAME_GOLD_NACK,
 	MP_CHAR_LOGIN_EVENT_ACK,
+
+	//查看角色VIP充值元宝累计协议
+		MP_CHAR_VIP_GOLD_SYN,
+		MP_CHAR_VIP_GOLD_ACK,
+		MP_CHAR_VIP_GOLD_NACK,
+
+		MP_CHAR_VIP_GET_SYN,    	//获取角色VIP奖励协议
+		MP_CHAR_VIP_GET_ACK,
+		MP_CHAR_VIP_GET_NACK,
+
+		MP_CHAR_VIPLEVEL_ACK,  //Vip等级返回
 };
 enum MP_PROTOCOL_USERCONN
 {
@@ -983,6 +994,12 @@ enum MP_PROTOCOL_ITEMEXT
 	MP_ITEMEXT_SKINITEM_SELECT_ACK,
 	MP_ITEMEXT_SKINITEM_SELECT_NACK,
 	MP_ITEMEXT_SKINITEM_DISCARD_ACK,
+
+	//在线充值元宝刷新
+	MP_ITEMEXT_GOLD_MONEY_SYN,
+	MP_ITEMEXT_GOLD_MONEY_ACK,
+	MP_ITEMEXT_GOLD_MONEY_NACK,
+
 	MP_ITEMEXT_SELECT_SYN,
 	MP_ITEMEXT_SELECT_ACK,
 	MP_ITEMEXT_SELECT_NACK,
@@ -998,9 +1015,9 @@ enum MP_PROTOCOL_ITEMEXT
 	MP_ITEMEXT_FLASHNAME1_SYN,
 	MP_ITEMEXT_FLASHNAME1_ACK,
 	MP_ITEMEXT_FLASHNAME1_NACK,
-	MP_ITEMEXT_FLASHNAME2_SYN,
-	MP_ITEMEXT_FLASHNAME2_ACK,
-	MP_ITEMEXT_FLASHNAME2_NACK,
+	//MP_ITEMEXT_FLASHNAME2_SYN,
+	//MP_ITEMEXT_FLASHNAME2_ACK,
+	//MP_ITEMEXT_FLASHNAME2_NACK,
 
 
 	MP_ITEMEXT_KILLMAP_SYN,
@@ -1018,6 +1035,10 @@ enum MP_PROTOCOL_ITEMEXT
 	//装备觉醒协议
 	MP_ITEMEXT_QUALITY_SYN,
 	MP_ITEMEXT_QUALITY_NACK,
+	//自定义称号
+	MP_ITEMEXT_SHOPITEM_CUSTOMIZING_SYN,
+	MP_ITEMEXT_SHOPITEM_CUSTOMIZING_ACK,
+	MP_ITEMEXT_SHOPITEM_CUSTOMIZING_NACK,
 
 	MP_ITEMEXT_QUALITY_SUCCESS_ACK,
 	MP_ITEMEXT_QUALITY_ACK,
@@ -2892,4 +2913,38 @@ enum MP_PROTOCOL_MALLLIST
 	MP_MALLLIST_ACK,
 	MP_MALLLIST_NACK,
 };
+inline void MakeSafeStrforSQL(char* string, DWORD size)//GB18030 and big5. string end with null. size is the max size
+{
+	unsigned char* pSrcData = (unsigned char*)string;
+
+	if (size < 1)return;
+	string[size - 1] = 0;
+	for (DWORD i = 0; i < size;)
+	{
+		if (pSrcData[i] <= 0x80)
+		{
+			if (pSrcData[i] == '\'' || pSrcData[i] == '\"' || pSrcData[i] == 0x7e)pSrcData[i] = '_';
+			else if (pSrcData[i] < 0x20)pSrcData[i] = 0;
+			++i;
+		}
+		else if (pSrcData[i] >= 0x81 && pSrcData[i] < 0xff)
+		{
+			if (i + 3 >= size) { pSrcData[i] = 0; break; }
+			if (pSrcData[i + 1] >= 0x30 && pSrcData[i + 1] <= 0x39)//four bytes
+			{
+				if (i + 5 >= size) { pSrcData[i] = 0; break; }
+				i += 4;
+			}
+			else//two bytes
+			{
+				i += 2;
+			}
+		}
+		else
+		{
+			pSrcData[i] = '_';
+			++i;
+		}
+	}
+}
 #endif 

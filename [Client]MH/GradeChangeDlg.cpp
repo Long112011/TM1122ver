@@ -89,7 +89,7 @@ void CGradeChangeDlg::OnActionEvent(LONG lId, void* p, DWORD we)
     {
         if (!m_FORM_VITEM.GetLinkItem() || !m_TO_VITEM.GetLinkItem())
         {
-            CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2636));
+            CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2840));
             return;
         }
         CItem* pFromItem = ITEMMGR->GetItem(m_FORM_VITEM.GetLinkItem()->GetDBIdx());
@@ -151,7 +151,7 @@ BOOL CGradeChangeDlg::FakeMoveIcon(LONG x, LONG y, cIcon* pOrigIcon)
             // 等级检查：小于 5 的物品不能放入
             if (pItem->GetGrade() < 5)
             {
-                CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2642));  // 等级不足提示
+                CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2846));  // 等级不足提示
                 return FALSE;
             }
 
@@ -184,7 +184,7 @@ BOOL CGradeChangeDlg::FakeMoveIcon(LONG x, LONG y, cIcon* pOrigIcon)
         }
         else
         {
-            CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2638));  // 非装备物品提示
+            CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2842));  // 非装备物品提示
         }
     }
 
@@ -209,7 +209,7 @@ BOOL CGradeChangeDlg::FakeMoveIcon(LONG x, LONG y, cIcon* pOrigIcon)
             // 等级检查：大于等于 1 的物品不能放入
             if (pItem->GetGrade() >= 1)
             {
-                CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2644));  // 等级大于等于 1 提示
+                CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2847));  // 等级大于等于 1 提示
                 return FALSE;
             }
 
@@ -250,7 +250,7 @@ BOOL CGradeChangeDlg::FakeMoveIcon(LONG x, LONG y, cIcon* pOrigIcon)
         }
         else
         {
-            CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2638));  // 非装备物品提示
+            CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2842));  // 非装备物品提示
         }
     }
 

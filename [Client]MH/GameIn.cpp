@@ -233,6 +233,7 @@
 #include "FPSDialog.h"
 #include "GradeChangeDlg.h"		//武器升阶值转移卷
 #include "TopDungeon.h"
+#include "CustomizingNameDlg.h"
 #ifdef _TESTCLIENT_
 #include "AppearanceManager.h"
 
@@ -488,6 +489,8 @@ CGameIn::CGameIn()
 	m_wInsDungeonMapNum = 0;
 
 	m_pFadeDlg = NULL;
+	m_VipDialog = NULL;               //创建VIP窗口
+	m_pCustomizingDlg = NULL;
 }
 
 CGameIn::~CGameIn()
@@ -994,6 +997,9 @@ void CGameIn::ReleaseForGame()
 	m_QualityDlg = NULL;
 	m_QualityChangeDlg = NULL;//觉醒
 	m_GGDDlg = NULL;				//武器升阶值转移卷
+
+	m_VipDialog = NULL;               //创建VIP窗口
+	m_pCustomizingDlg = NULL;
 }
 
 void CGameIn::Release(CGameState* pNextGameState)

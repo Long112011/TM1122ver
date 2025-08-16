@@ -51,6 +51,7 @@
 #include "ChannelSystem.h"
 
 #include "shlwapi.h"
+#include "VipManager.h"        //VIP头文件定义
 #pragma comment(lib,"shlwapi.lib")
 
 
@@ -446,8 +447,8 @@ DBMsgFunc g_DBMsgFunc[MaxQuery] =
 	NULL,//clearfort
 
 
-	RItemFlashNameSet,
-	RItemFlashNameSet2,
+	//	NULL, //RItemFlashNameSet,
+		//NULL, //RItemFlashNameSet2,
 
 	RUpdateUserCredit,
 
@@ -468,6 +469,10 @@ DBMsgFunc g_DBMsgFunc[MaxQuery] =
     RUpdateGradeItem,
 	/*252*/	RItemQualityUpdate,
 		/*253*/	RItemQualityChangeUpdate,
+		/*285*/	RLoadVipGoldInfo,       //VIP信息回调函数定义
+		/*286*/	RLoadVipGoldGetItem,    //VIP获取物品回调函数定义
+		/*287*/	RCharacterCustomizingName,//角色自定义名称回调函数定义
+
 };
 
 
@@ -2259,7 +2264,7 @@ void CharacterHeroInfoUpdate(CPlayer* pPlayer)
 	pPlayer->GetHeroTotalInfo(&heroinfo);
 
 //	char txt[512];   add the mallmoney and goldmoney database write! 2014-05-05
-	sprintf(txt, "EXEC  %s %d, %d, %d, %d, %d, %d, %d, %d, %I64d, %d, %u, %d, %u, %d, %d, %d,%d,%d,%d,%d,%d,%d,%d,%d",
+	sprintf(txt, "EXEC  %s %d, %d, %d, %d, %d, %d, %d, %d, %I64d, %d, %u, %d, %u, %d, %d, %d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
 		STORED_CHARACTER_HEROINFOUPDATE,
 		baseinfo.dwObjectID, 
 		heroinfo.wGenGol, 
@@ -2284,7 +2289,8 @@ void CharacterHeroInfoUpdate(CPlayer* pPlayer)
 		pPlayer->GetPaoDianTime(),
 		pPlayer->GetEventLastMapTime(),
 		pPlayer->GetEventIDFlag(),
-		heroinfo.dwKillPlayerTimes
+		heroinfo.dwKillPlayerTimes,
+		heroinfo.VipLevel
 		);
 	g_DB.Query(eQueryType_FreeQuery, eHeroInfoUpdate, 0, txt);
 }
@@ -3061,6 +3067,9 @@ void RCharacterNumSendAndCharacterInfo(LPQUERY pData, LPDBMESSAGE pMessage)
 
 	Heroinfo.dwKillPlayerTimes = atoi((char*)pData->Data[eCS_KillPlayerTimes]);
 
+	Heroinfo.VipLevel = atoi((char*)pData->Data[eCS_VipLevel]);//Vip等级
+	Totalinfo.VipLevel = atoi((char*)pData->Data[eCS_VipLevel]);//Vip等级
+	SafeStrCpy(Totalinfo.CustomizingName, (char*)pData->Data[eCS_CustomizingName], MAX_GUILD_NICKNAME + 1);
 	if(Heroinfo.MaxLevel < Totalinfo.Level)
 		Heroinfo.MaxLevel = Totalinfo.Level;
 
@@ -3285,7 +3294,11 @@ void RCharacterInfoQueryToEventMap(LPQUERY pData, LPDBMESSAGE pMessage)
 	Heroinfo.MaxLevel = atoi((char*)pData->Data[eCS_MaxLevel]);
 	Totalinfo.MarkName	= atoi((char*)pData->Data[eCS_MarkName]);
 	SafeStrCpy(Heroinfo.MunpaCanEntryDate, (char*)pData->Data[eCS_MunpaCanEntryDate], 11);
-		
+	Heroinfo.VipLevel = atoi((char*)pData->Data[eCS_VipLevel]);//Vip等级
+	Totalinfo.VipLevel = atoi((char*)pData->Data[eCS_VipLevel]);//Vip等级
+
+	SafeStrCpy(Totalinfo.CustomizingName, (char*)pData->Data[eCS_CustomizingName], MAX_GUILD_NICKNAME + 1);
+
 	if(Heroinfo.MaxLevel < Totalinfo.Level)
 		Heroinfo.MaxLevel = Totalinfo.Level;
 
@@ -6708,7 +6721,7 @@ void RCharacterChangeName( LPQUERY pData, LPDBMESSAGE pMessage )
 			ITEMBASE* pItemBase = NULL;
 
 			// Item Position 犬牢
-			int i=0; 
+			int i = 0;
 			for(i=0; i<(SLOT_SHOPINVEN_NUM+TABCELL_SHOPINVEN_PLUS_NUM); i++)//for(i=0; i<SLOT_SHOPINVEN_NUM/*/2*/; i++)
 			{
 				pItemBase = (ITEMBASE*)ITEMMGR->GetItemInfoAbsIn( pPlayer, i+TP_SHOPINVEN_START );
@@ -9471,124 +9484,7 @@ void ClearFortWarData()
 	g_DB.Query(eQueryType_FreeQuery, eClearFort, 0, txt);
 }
 
-void ItemFlashNameSet(DWORD dwCharacterIdx,DWORD NameFlag)
-{
-	sprintf(txt, "EXEC %s %d,%d", STORED_ITEM_FLASH1_UPDATE, dwCharacterIdx,NameFlag);
-	g_DB.Query(eQueryType_FreeQuery,eItemFlashUpdate1,0, txt);
-}
 
-void RItemFlashNameSet(LPQUERY pData, LPDBMESSAGE pMessage)
-{
-	if(pMessage->dwResult)
-	{
-	 	CPlayer * pPlayer = (CPlayer *)g_pUserTable->FindUser(atoi((char*)pData->Data[0]));
-
-		if(!pPlayer)
-		{
-			return;
-		}
-
-		//pPlayer->SetFlashNameFlag(atoi((char*)pData->Data[2]));
-
-		/*MSG_DWORD2 msg;
-		msg.Category=MP_ITEMEXT;
-		msg.Protocol=MP_ITEMEXT_FLASHNAME1_ACK;
-		msg.dwObjectID=pPlayer->GetID();
-		msg.dwData1=atoi((char*)pData->Data[1]);
-		msg.dwData2=atoi((char*)pData->Data[2]);*/
-
-		/*MSGFLASHNAME msg;
-		msg.Category=MP_ITEMEXT;
-		msg.Protocol=MP_ITEMEXT_FLASHNAME1_ACK;
-		msg.dwObjectID=pPlayer->GetID();
-		msg.dwNameFlag=atoi((char*)pData->Data[1]);
-		msg.dwData2=atoi((char*)pData->Data[2]);
-
-		pPlayer->SendMsg(&msg, sizeof(msg));*/
-	}
-}
-
-void ItemFlashNameSet2(DWORD dwCharacterIdx,DWORD ItemPos,char * pName)
-{
-	if( !isValidQueryString(pName))
-	{
-	   return;
-	}
-
-	if( CheckString(pName))
-	{
-		return;
-	}
-
-	sprintf(txt, "EXEC %s %d,%d,\'%s\'", STORED_ITEM_FLASH2_UPDATE, dwCharacterIdx,ItemPos,pName);
-	g_DB.Query(eQueryType_FreeQuery,eItemFlashUpdate2,0, txt);
-}
-
-void RItemFlashNameSet2(LPQUERY pData, LPDBMESSAGE pMessage)
-{
-	DWORD DBIdx = 0;
-	if(pMessage->dwResult)
-	{
-	 	CPlayer * pPlayer = (CPlayer *)g_pUserTable->FindUser(atoi((char*)pData->Data[0]));
-
-		if(!pPlayer)
-		{
-			return;
-		}
-
-		//pPlayer->SetFlashName((char*)pData->Data[2]);
-		DBIdx = (DWORD)atoi((char*)pData->Data[1]);
-//-------------------------------------------------------------------
-		ITEMBASE* pItemBase = NULL;
-
-		// Item Position 犬牢
-		int i=0; 
-		for(i=0; i<(SLOT_SHOPINVEN_NUM+TABCELL_SHOPINVEN_PLUS_NUM)/*/2*/; i++)
-		{
-			pItemBase = (ITEMBASE*)ITEMMGR->GetItemInfoAbsIn( pPlayer, i+TP_SHOPINVEN_START );
-			if( !pItemBase )	continue;
-			
-			if( pItemBase->dwDBIdx == DBIdx )
-			{
-				MSG_FLASH_SET msg;
-				msg.Category=MP_ITEMEXT;
-				msg.Protocol=MP_ITEMEXT_FLASHNAME2_ACK;
-				msg.dwObjectID=pPlayer->GetID();
-				msg.ItemPos=pItemBase->Position;//atoi((char*)pData->Data[1]);
-				msg.ItemIdx=0;
-				memcpy(msg.pName,(char*)pData->Data[2],MAX_NAME_LENGTH+1);
-				pPlayer->SendMsg(&msg, sizeof(msg));
-				if( EI_TRUE != ITEMMGR->DiscardItem( pPlayer, i+TP_SHOPINVEN_START, pItemBase->wIconIdx, 1 ) )
-				{
-				//	char buf[64];
-				//	sprintf(buf, "ChangeName OK, DiscardItem Fail : %d", pMessage->dwID);
-				//	ASSERTMSG(0, buf);
-				}
-
-				break;
-			}
-		}
-		
-		if( i >= (SLOT_SHOPINVEN_NUM+TABCELL_SHOPINVEN_PLUS_NUM)/*/2*/ )
-		{
-		//	char buf[64];
-		//	sprintf(buf, "ChangeName OK, DeleteItem Fail: %d", pMessage->dwID);
-		//	ASSERTMSG(0, buf);
-		}
-
-	//	QSTATETYPE time = GetCurTime();
-	//	UsingShopItemUpdateToDB( 0, pPlayer->GetID(), pItemBase->wIconIdx, pItemBase->dwDBIdx, 0, time, 0 );
-		pPlayer->GetShopItemManager()->DeleteUsingShopItem( pItemBase->wIconIdx );
-
-	//	SHOPITEMBASE ShopItemBase;
-	//	ShopItemBase.BeginTime.value = time;
-	//	ShopItemBase.Param = 0;
-	//	memcpy( &ShopItemBase.ItemBase, pItemBase, sizeof(ITEMBASE) );
-	//	pPlayer->GetShopItemManager()->AddShopItemUse( &ShopItemBase );
-//-------------------------------------------------------------------
-		
-	}
-}
 
 
 
@@ -9783,30 +9679,64 @@ void MallBuyItemUpdate(DWORD dwPlayerIndex, DWORD wDungeonMapNum, DWORD wTotalVi
 		"EXEC dbo.MP_MALLSHOPLIMITUPDATE %d, %d, %d, %d, %d", dwPlayerIndex, wDungeonMapNum, wTotalVisit, wDailyVisit, byDoRollBack);
 }
 
-void RUpdateUserCredit(LPQUERY pData, LPDBMESSAGE pMessage)  //在线充值元宝刷新数据库回调处理函数定义	by:胡汉三	QQ:112582793
+//在线充值元宝刷新数据库回调处理函数定义
+void RUpdateUserCredit(LPQUERY pData, LPDBMESSAGE pMessage)
 {
 	if (pMessage->dwResult == 0)
 	{
 		return;
 	}
-	CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser( pMessage->dwID );
-	if( !pPlayer )
-	{		
+	CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pMessage->dwID);
+	if (!pPlayer)
+	{
 		return;
 	}
-	DWORD CurGoldMoney = pPlayer->GetGoldMoney();
-	DWORD DBGoldMoney = atoi((char*)pData->Data[0]);
 
-	if(DBGoldMoney>CurGoldMoney)
+	DWORD CurGoldMoney = pPlayer->GetGoldMoney();
+	DWORD DBGoldMoney = atoi((char*)pData->Data[0]);//角色元宝数量
+	DWORD PrChangeValue = atoi((char*)pData->Data[1]);
+	WORD  wType = atoi((char*)pData->Data[2]);
+	DWORD PayMoney = atoi((char*)pData->Data[3]);
+		
+	int Level = VIPMGR->GetVIpLevel(PayMoney);//用实际充值元宝数显示vip等级
+	pPlayer->SetVipLevel(Level);//设置VIP等级
+
+	if (CurGoldMoney == DBGoldMoney) return;
+	if (DBGoldMoney > CurGoldMoney)
 	{
-		DWORD ChangeMoney = DBGoldMoney-CurGoldMoney;
-		pPlayer->UpdateGoldMoney(DBGoldMoney,ChangeMoney);
+		DWORD ChangeMoney = DBGoldMoney - CurGoldMoney;
+		if (wType == 4 || wType == 10 || wType == 11)
+			ChangeMoney -= PrChangeValue;
+		else
+			ChangeMoney += PrChangeValue;
+
+		pPlayer->UpdateGoldMoney(DBGoldMoney, ChangeMoney, TRUE);
+
+		//ItemShopUseLog(eLog_GoldMoneyOnline, pPlayer->GetID(), pPlayer->GetObjectName(), 0, "元宝充值", 0,
+		//	0, 0, 0, pPlayer->GetGoldMoney() - ChangeMoney, ChangeMoney, pPlayer->GetGoldMoney(), 0, 0, 0);
+
+		//if (ChangeMoney != 0)
+		//{
+		//	//MSG_TIP msg;
+		//	//msg.Category = MP_CLIENT;
+		//	//msg.Protocol = MP_CLIENT_MSG_AGENT;
+		//	//msg.Flag = ePayForGold;
+		//	//msg.KillTime = ChangeMoney / 100;
+		//	//SafeStrCpy(msg.Name1, pPlayer->GetObjectName(), MAX_NAME_LENGTH + 1);
+		//	//pPlayer->SendMsgToAllAgent(&msg, sizeof(msg));
+
+		//	UpdateVipExp(pPlayer->GetID(), ChangeMoney);
+		//}
 	}
+	else
+		pPlayer->UpdateGoldMoney(DBGoldMoney, 0);
 }
-void CharacterHeroGoldInfoUpdate(DWORD ID,DWORD GoldMoney)
+
+//元宝更新数据库
+void CharacterHeroGoldInfoUpdate(DWORD ID, DWORD dwChangeValue, WORD type)
 {
-	sprintf(txt,"EXEC %s %d,%d","MP_CHARACTER_HeroGoldMoneyInfoUPdate",ID,GoldMoney);//在线充值元宝刷新更新数据库	by:胡汉三	QQ:112582793
-	g_DB.Query(eQueryType_FreeQuery, eHeroInfoUpdate, 0, txt);
+	sprintf(txt, "EXEC %s %d,%d,%d", "MP_CHARACTER_HeroGoldMoneyInfoUPdate", ID, dwChangeValue, type);
+	g_DB.Query(eQueryType_FreeQuery, eGetDBGoldMoney, 0, txt);
 }
 void LogGoldMoney(WORD LogType,WORD FromChrID,DWORD FromTotalGold,WORD ToChrID,DWORD ToChrTotalGold,DWORD ChangeGold,DWORD BuyItemIdx,DWORD Durability)
 {
@@ -10189,6 +10119,94 @@ void RUpdateGradeItem(LPQUERY pData, LPDBMESSAGE pMessage)
 	//	msg.ItemIdx, msg.Pos, msg.Grade);
 
 }
+void CharacterCustomizingName(DWORD CharacterIdx, char* Name, DWORD DBIdx)
+{
+	if (!isValidQueryString(Name))
+	{
+		return;
+	}
+
+	if (CheckString(Name))
+	{
+		return;
+	}
+	MakeSafeStrforSQL(Name, MAX_NAME_LENGTH + 1);
+
+	sprintf(txt, "EXEC %s %d, \'%s\',%d", "dbo.MP_CreatCustomizingName", CharacterIdx, Name, DBIdx);
+	g_DB.Query(eQueryType_FreeQuery, eCharacterCustomizingName, CharacterIdx, txt);
+}
+
+void RCharacterCustomizingName(LPQUERY pData, LPDBMESSAGE pMessage)
+{
+	CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pMessage->dwID);
+	if (!pPlayer)		return;
+
+	DWORD Result = (DWORD)atoi((char*)pData->Data[0]);
+	DWORD DBIdx = 0;
+	char	CustomizingName[MAX_NAME_LENGTH + 1];//自定义称号
+	MSG_DWORD2CHAR msg;
+	msg.Category = MP_ITEMEXT;
+
+	switch (Result)
+	{
+	case 0:		// 己傍
+	{
+		DBIdx = (DWORD)atoi((char*)pData->Data[1]);
+		SafeStrCpy(CustomizingName, (char*)pData->Data[2], MAX_NAME_LENGTH + 1);
+		ITEMBASE* pItemBase = NULL;
+
+		// Item Position 犬牢
+		int i = 0;
+		for (i = 0; i < (SLOT_SHOPINVEN_NUM + TABCELL_SHOPINVEN_PLUS_NUM); i++)//for(i=0; i<SLOT_SHOPINVEN_NUM/*/2*/; i++)
+		{
+			pItemBase = (ITEMBASE*)ITEMMGR->GetItemInfoAbsIn(pPlayer, i + TP_SHOPINVEN_START);
+			if (!pItemBase)	continue;
+
+			if (pItemBase->dwDBIdx == DBIdx)
+			{
+				if (EI_TRUE != ITEMMGR->DiscardItem(pPlayer, i + TP_SHOPINVEN_START, pItemBase->wIconIdx, 1))
+				{
+					//	char buf[64];
+					//	sprintf(buf, "ChangeName OK, DiscardItem Fail : %d", pMessage->dwID);
+					//	ASSERTMSG(0, buf);
+				}
+
+				break;
+			}
+		}
+
+		if (i >= (SLOT_SHOPINVEN_NUM + TABCELL_SHOPINVEN_PLUS_NUM))//if( i >= SLOT_SHOPINVEN_NUM/*/2*/ )
+		{
+			//	char buf[64];
+			//	sprintf(buf, "ChangeName OK, DeleteItem Fail: %d", pMessage->dwID);
+			//	ASSERTMSG(0, buf);
+		}
+
+		DWORD time = GetCurTime();
+		UsingShopItemUpdateToDB(0, pPlayer->GetID(), pItemBase->wIconIdx, pItemBase->dwDBIdx, 0, time, 0);
+		pPlayer->GetShopItemManager()->DeleteUsingShopItem(pItemBase->wIconIdx);
+
+		SHOPITEMBASE ShopItemBase;
+		ShopItemBase.BeginTime.value = time;
+		ShopItemBase.Param = 0;
+		memcpy(&ShopItemBase.ItemBase, pItemBase, sizeof(ITEMBASE));
+		pPlayer->GetShopItemManager()->AddShopItemUse(&ShopItemBase);
+
+		msg.Protocol = MP_ITEMEXT_SHOPITEM_CUSTOMIZING_ACK;
+		msg.dwData1 = Result;
+		msg.dwObjectID = pPlayer->GetID();
+		SafeStrCpy(msg.Maker, CustomizingName, MAX_NAME_LENGTH + 1);
+		//pPlayer->SetCustomizingName(CustomizingName);
+	}
+	break;
+	default:
+		msg.Protocol = MP_ITEMEXT_SHOPITEM_CUSTOMIZING_NACK;
+		msg.dwData1 = Result;
+		break;
+	}
+	pPlayer->SendMsg(&msg, sizeof(msg));
+}
+
 void ItemQualityUpdateToDB(DWORD CharacterIdx, DWORD dwDBIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, WORD qPosition, DWORD RareIdx/*=0*/, WORD bStatic /*= 0*/,WORD Grade, WORD ItemQuality/*=0*/, WORD ItemEntry1/*=0*/, WORD ItemEntry2/*=0*/, WORD ItemEntry3/*=0*/)
 {
 	sprintf(txt, "EXEC %s %d, %d, %d, %d, %d, %d, %d ,%d, %d, %d, %d,%d  ,%d", "MP_ITEM_QUALITY_Update",
@@ -10348,6 +10366,7 @@ void ItemShopUseLog(WORD Type, DWORD dwChrID, char* CharName, WORD wItemIdx, cha
 
 	g_DB.LogQuery(eQueryType_FreeQuery, eLogItemMoney, 0, txt);
 }
+
 //牛巨任务
 void UpdateQuestN(DWORD characterIdx)
 {
@@ -10358,4 +10377,106 @@ void UpdateQuestJ(DWORD characterIdx)
 {
 	sprintf(txt, "EXEC MP_InsertJQuest %d", characterIdx);
 	g_DB.Query(eQueryType_FreeQuery, eNull, 0, txt);
+}
+void UpdateVipExp(DWORD dwCharacterIdx, DWORD changeGold)
+{
+	sprintf(txt, "EXEC %s %d,%d", "MP_CHARACTER_UpdateVipExp", dwCharacterIdx, changeGold);
+	////g_Console.LOG(4, "[VIP] UpdateVipExp: CharIdx=%u ChangeGold=%u SQL=%s",//输出
+	//	dwCharacterIdx, changeGold, txt);
+	g_DB.Query(eQueryType_FreeQuery, eGetDBGoldMoney, 0, txt);
+}
+
+//VIP数据库函数实现
+void LoadVipGoldInfo(DWORD dwCharacterIdx, int* VipMaxValue)
+{
+	sprintf(txt, "EXEC %s %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
+		STORED_VIP_GOLD_SELECT,
+		dwCharacterIdx,
+		VipMaxValue[0], VipMaxValue[1], VipMaxValue[2], VipMaxValue[3], VipMaxValue[4],
+		VipMaxValue[5], VipMaxValue[6], VipMaxValue[7], VipMaxValue[8], VipMaxValue[9]);
+
+	//g_Console.LOG(4, "[VIP] LoadVipGoldInfo: CharIdx=%u "
+	//	"Max=[%d,%d,%d,%d,%d,%d,%d,%d,%d,%d] SQL=%s",
+	//	dwCharacterIdx,
+	//	VipMaxValue[0], VipMaxValue[1], VipMaxValue[2], VipMaxValue[3], VipMaxValue[4],
+	//	VipMaxValue[5], VipMaxValue[6], VipMaxValue[7], VipMaxValue[8], VipMaxValue[9],
+	//	txt);
+
+	g_DB.Query(eQueryType_FreeQuery, eVipGoldSelect, 0, txt);
+}
+
+//// 安全取列的小工具（不改逻辑，只用于打印）
+//static inline const char* QSTR(LPQUERY q, int idx) {
+//	if (!q) return "(null-q)";
+//	if (idx < 0) return "(bad-idx)";
+//	// 按你的封装，q->Data[idx] 是 char*（可能为 nullptr）
+//	const char* s = (const char*)q->Data[idx];
+//	return s ? s : "(null)";
+//}
+
+void RLoadVipGoldInfo(LPQUERY pData, LPDBMESSAGE pMessage)
+{
+	if (pMessage->dwResult)
+	{
+		DWORD  CharIdx = atoi((char*)pData->Data[0]);
+
+		DWORD  TotalGold = atoi((char*)pData->Data[1]);
+		WORD   VipLevel = VIPMGR->GetVIpLevel(TotalGold);
+
+		int   VipValue[MAX_VIP_LEVEL];
+		//memset(VipValue,0,sizeof(VipValue));
+
+		for (int i = 0; i < MAX_VIP_LEVEL; i++)
+		{
+			VipValue[i] = atoi((char*)pData->Data[2 + i]);
+		}
+
+		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(CharIdx);
+
+		if (!pPlayer) return;
+		//pPlayer->SetVipLevel(VipLevel);
+
+		MSG_VIP_INFO msg;
+		msg.Category = MP_CHAR;
+		msg.Protocol = MP_CHAR_VIP_GOLD_ACK;
+		msg.dwObjectID = pPlayer->GetID();
+		msg.TotalGold = TotalGold;
+		msg.VipLevel = VipLevel;
+		memcpy(msg.VipValue, VipValue, sizeof(VipValue));
+		pPlayer->SendMsg(&msg, sizeof(msg));
+		return;
+	}
+	else
+	{
+		ASSERT(0);
+	}
+}
+
+void LoadVipGoldGetItem(DWORD dwCharacterIdx, WORD VipLevel)
+{
+	sprintf(txt, "EXEC %s %d,%d", STORED_VIP_GOLD_GETITEM, dwCharacterIdx, VipLevel);
+	g_DB.Query(eQueryType_FreeQuery, eVipGoldGetItem, 0, txt);
+}
+void RLoadVipGoldGetItem(LPQUERY pData, LPDBMESSAGE pMessage)
+{
+	if (pMessage->dwResult)
+	{
+		DWORD  CharIdx = atoi((char*)pData->Data[0]);
+
+		WORD    VipLevel = atoi((char*)pData->Data[1]);
+
+		int     Val = atoi((char*)pData->Data[2]);
+
+		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(CharIdx);
+
+		if (!pPlayer) return;
+
+		VIPMGR->DoVipGetItemRet(pPlayer, VipLevel, Val);
+
+		return;
+	}
+	else
+	{
+		ASSERT(0);
+	}
 }

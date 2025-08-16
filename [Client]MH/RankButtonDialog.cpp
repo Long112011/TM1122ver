@@ -10,6 +10,7 @@
 #include "LuckerDialog.h"
 #include "FameGoldDialog.h"
 #include "chatmanager.h"
+#include "VipDialog.h"
 
 CRankButtonDialog::CRankButtonDialog()
 {
@@ -17,7 +18,7 @@ CRankButtonDialog::CRankButtonDialog()
 	pHeroBtn=NULL;
 	pMunpBtn=NULL;
 	pMapInfo=NULL;
-
+	pVipDlgBtn = NULL;//vip dialog button
 	SCRIPTMGR->GetImage( 45, &m_TooltipImage, PFT_JACKPATH );
 
 	MapExp=1.f;
@@ -58,6 +59,7 @@ CRankButtonDialog::~CRankButtonDialog()
 	pHeroBtn=NULL;
 	pMunpBtn=NULL;
 	pMapInfo=NULL;
+	pVipDlgBtn = NULL;//vip dialog button
 
 	MapExp=1.f;
 	MapSkillPoint=1.f;
@@ -67,10 +69,16 @@ CRankButtonDialog::~CRankButtonDialog()
 }
 void CRankButtonDialog::Linking()
 {
+	cImage imgToolTip;
+	SCRIPTMGR->GetImage(63, &imgToolTip, PFT_HARDPATH);
+
 	pDlg = WINDOWMGR->GetWindowForID(RANKBUTTON_DIALOG);
 	pMunpBtn =(cButton *)GetWindowForID(TOP_MUNP_BTN);
 	pHeroBtn =(cButton *)GetWindowForID(TOP_HERO_BTN);
 	pMapInfo =(cStatic *)GetWindowForID(TOP_MAP_INFO);
+
+	pVipDlgBtn = (cButton*)GetWindowForID(CONTROL_VIPBTNONLINE);
+//	pVipDlgBtn->SetToolTip("VIP系统", RGBA_MAKE(255, 255, 255, 255), &imgToolTip, TTCLR_ITEM_CANEQUIP);
 
 	NotifyIcon[HRANK] = new cStatic;
 	if( NotifyIcon[HRANK] )
@@ -90,6 +98,8 @@ void CRankButtonDialog::Linking()
 		Add( NotifyIcon[GRANK] );
 	}
 
+
+//	pVipDlgBtn->SetToolTip("VIPϵͳ", RGBA_MAKE(255, 255, 255, 255), &imgToolTip, TTCLR_ITEM_CANEQUIP);
 
 	//SetFlicker(true);
 
@@ -272,6 +282,40 @@ void CRankButtonDialog::OnActionEvent(LONG lId, void * p, DWORD we)
 				}
 			}
 			break;
+
+		case CONTROL_VIPBTNONLINE:
+		{
+			VipDialog* pHandler = (VipDialog*)GAMEIN->GetVipDialog();
+
+			if (!pHandler)
+			{
+				//OutputDebugStringA("[VIP Button] Failed to open: VipDialog handler not found.\n");
+				//CHATMGR->AddMsg(CTC_SYSMSG, "VIP open failed");
+				return;
+			}
+
+			if (pHandler->IsActive())
+			{
+				pHandler->SetActive(FALSE);
+//				OutputDebugStringA("[VIP Button] VIP dialog closed.\n");
+	//			CHATMGR->AddMsg(CTC_SYSMSG, "VIP dialog closed");
+			}
+			else
+			{
+				pHandler->SetActive(TRUE);
+				GAMEIN->UpdataGoldMoney();   // 在线充值刷新元宝
+				pHandler->SetVipItem();      // 设置 VIP 物品信息
+
+		//		OutputDebugStringA("[VIP Button] VIP dialog opened successfully.\n");
+			//	CHATMGR->AddMsg(CTC_SYSMSG, "VIP dialog opened");
+			}
+
+			//this->SetActive(FALSE);
+		}
+		break;
+
+
+		
 		case TOP_WANT_BTN:
 			{
 				CFameGoldDialog * pHandler = (CFameGoldDialog*)GAMEIN->GetFameGoldDialog();

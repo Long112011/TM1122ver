@@ -393,8 +393,8 @@ public:
 	void ClearUniqueItemOption()	{	ZeroMemory(&m_UniqueItemStats, sizeof(m_UniqueItemStats));	}
 
 
-	int   GetFlashNameFlag(){return m_CharacterInfo.FlashNameFlag;}
-	void  SetFlashNameFlag(int Flag);
+	//int   GetFlashNameFlag(){return m_CharacterInfo.FlashNameFlag;}
+	//void  SetFlashNameFlag(int Flag);
 
 	BOOL IsImageName(){return m_HeroTotalInfo.ImageName>0;}
 	void SetImageName(WORD ImageName);
@@ -405,8 +405,8 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 
 
-	char* GetFlashName(){return m_CharacterInfo.FlashName;}
-	void  SetFlashName(char * pName);
+	//char* GetFlashName(){return m_CharacterInfo.FlashName;}
+	//void  SetFlashName(char * pName);
 
 
 	BOOL    IsTurnOne(){return  m_CharacterInfo.TurnStageOne!=0;}
@@ -496,5 +496,7 @@ public:
 	void AddSetitemQualityOption(SET_ITEMQUALITY_OPTION* pSetItemQualityOption);
 	void ClearSetitemQualityOption();
 
+	void SetVipLevel(WORD level);//设置Vip等级
+	WORD GetVipLevel() { return m_HeroTotalInfo.VipLevel; }//获取Vip等级信息
 
 };

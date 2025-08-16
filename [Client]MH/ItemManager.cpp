@@ -82,6 +82,7 @@
 #include "OfficialUpGradeDlg.h"
 #include "ItemQualityDlg.h"
 #include "ItemQualityChangeDlg.h"
+#include "CustomizingNameDlg.h"	// 角色自定义名称对话框
 #include "ItemLockManager.h"         
 #include "ItemUnLockManager.h"       
 #include "ItemGambleManager.h"       
@@ -2293,7 +2294,7 @@ DWORD CalStatusGradeInt(DWORD Status, WORD Grade)
 	return CalGrade;
 }
 void CItemManager::SetEquipItemToolTip( cIcon* pIcon, ITEM_INFO* pInfo, ITEM_OPTION_INFO * pOptionInfo, ITEM_RARE_OPTION_INFO* pRareOptionInfo,ITEM_STONE_OPTION_INFO * pStoneOptionInfo,BOOL bIsQuey, DWORD Grade30)
-{
+{	
 	CExchangeItem* pExcItem = NULL;
 	CItem* pcItem = NULL;
 
@@ -7166,6 +7167,10 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 			if( !pInfo )		return;
 			SHOPITEMBASE* pShopItemBase = m_UsedItemList.GetData((WORD)pmsg->dwData);
 			if( !pShopItemBase )		return;
+			if (pInfo->ItemKind == eSHOP_ITEM_FLGNAME)
+			{//闪名物品使用结束清除闪名状态	
+				HERO->SetObjectFlgName(0);
+			}
 			if(pInfo->ItemType ==eSHOP_ITEM_IMAGENAME)
 			{
 				HERO->SetImageName(0);
@@ -7239,7 +7244,7 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 						}
 						else
 						{					//化名卷使用				
-							if( pInfo && pInfo->ItemType == 10 && pInfo->ItemIdx != eIncantation_ChangeName &&
+							if( pInfo && pInfo->ItemType == 10 && pInfo->ItemIdx != eIncantation_ChangeName && pInfo->ItemIdx != eIncantation_CustomizingName &&
 								pInfo->ItemIdx != eIncantation_ChangeName_Dntrade )
 							{
 								CItem* pOutItem = NULL;
@@ -7254,6 +7259,10 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 					}
 					if( pInfo->ItemType == 10 && pmsg->ShopItemBase.Param )
 						AddUsedItemInfo(&pmsg->ShopItemBase);
+					if (pInfo->ItemKind == eSHOP_ITEM_FLGNAME)//pInfo->ItemKind ==eSHOP_ITEM_FLGNAME 有小BUG	
+					{
+						HERO->SetObjectFlgName(1);
+					}
 					HERO->CalcShopItemOption(pmsg->ShopItemIdx, TRUE);
 				}
 				QUICKMGR->RefreshQickItem();
@@ -7915,7 +7924,7 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 		}
 
 		// 添加系统消息
-		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2639)); // 显示系统消息ID 2639 的内容
+		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2843)); // 显示系统消息ID 2639 的内容
 
 		break;
 	}
@@ -7925,15 +7934,15 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 		MSG_DWORD* pmsg = (MSG_DWORD*)pMsg;
 		if (pmsg->dwData == 5) // 转换物品类型错误
 		{
-			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2640));
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2844));
 		}
 		else if (pmsg->dwData == 7) // 等级不足错误
 		{
-			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2642)); // 新增错误消息编号 2642
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2846)); // 新增错误消息编号 2642
 		}
 		else // 其他错误
 		{
-			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2641));
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2845));
 		}
 	}
 	break;
@@ -8952,47 +8961,47 @@ void CItemManager::NetworkMsgParseExt(BYTE Protocol,void* pMsg)
 
 	}
 	break;
-	case MP_ITEMEXT_FLASHNAME1_ACK:
-		{
-			MSGFLASHNAME * pmsg = (MSGFLASHNAME *)pMsg;
-			if( pmsg->dwObjectID == HEROID )
-			{
-				HERO->SetFlashNameFlag(pmsg->dwNameFlag);
-			}
-			else
-			{
-				CPlayer* pPlayer = (CPlayer*)OBJECTMGR->GetObject( pmsg->dwObjectID );
-				if( !pPlayer )	return;
-				pPlayer->SetFlashNameFlag(pmsg->dwNameFlag);
-			}
-		}
-		break;
-	case MP_ITEMEXT_FLASHNAME2_ACK:
-		{
-			MSG_FLASH_SET * pmsg = (MSG_FLASH_SET *)pMsg;
-			HERO->SetFlashName(pmsg->pName);
+	//case MP_ITEMEXT_FLASHNAME1_ACK:
+	//	{
+	//		MSGFLASHNAME * pmsg = (MSGFLASHNAME *)pMsg;
+	//		if( pmsg->dwObjectID == HEROID )
+	//		{
+	//			HERO->SetFlashNameFlag(pmsg->dwNameFlag);
+	//		}
+	//		else
+	//		{
+	//			CPlayer* pPlayer = (CPlayer*)OBJECTMGR->GetObject( pmsg->dwObjectID );
+	//			if( !pPlayer )	return;
+	//			pPlayer->SetFlashNameFlag(pmsg->dwNameFlag);
+	//		}
+	//	}
+	//	break;
+	//case MP_ITEMEXT_FLASHNAME2_ACK:
+	//	{
+	//		MSG_FLASH_SET * pmsg = (MSG_FLASH_SET *)pMsg;
+	//		HERO->SetFlashName(pmsg->pName);
 
 
-			CItem * FromItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->ItemPos);
-			if (FromItem)
-			{
-				if (FromItem->GetQuickPosition() != 0)
-				{
-					QUICKMGR->RemQuickItem(FromItem->GetQuickPosition());
-				}
-				GAMEIN->GetInventoryDialog()->DeleteItem(pmsg->ItemPos, &FromItem);
-				if (FromItem)
-				{
-					ITEMMGR->ItemDelete(FromItem);
+	//		CItem * FromItem = GAMEIN->GetInventoryDialog()->GetItemForPos(pmsg->ItemPos);
+	//		if (FromItem)
+	//		{
+	//			if (FromItem->GetQuickPosition() != 0)
+	//			{
+	//				QUICKMGR->RemQuickItem(FromItem->GetQuickPosition());
+	//			}
+	//			GAMEIN->GetInventoryDialog()->DeleteItem(pmsg->ItemPos, &FromItem);
+	//			if (FromItem)
+	//			{
+	//				ITEMMGR->ItemDelete(FromItem);
 
-					ITEMMGR->FakeDeleteItem(FromItem);
+	//				ITEMMGR->FakeDeleteItem(FromItem);
 
-					ITEMMGR->SendDeleteItem();
-					FromItem = NULL;
-				}
-			}
-		}
-		break;
+	//				ITEMMGR->SendDeleteItem();
+	//				FromItem = NULL;
+	//			}
+	//		}
+	//	}
+	//	break;
 	case MP_OFFICIAL_UPGRADE_ACK:
 	{
 		MSG_OFFICIAL_ITEM_SYN* pmsg = (MSG_OFFICIAL_ITEM_SYN*)pMsg;
@@ -9291,6 +9300,44 @@ void CItemManager::NetworkMsgParseExt(BYTE Protocol,void* pMsg)
 		case 9:
 			CHATMGR->AddMsg(CTC_SYSMSG, "品质高于传说无法再觉醒");
 			//GAMEIN->GetItemQualityChangeDlg()->Release();
+			break;
+		}
+	}
+	break;
+
+	case MP_ITEMEXT_SHOPITEM_CUSTOMIZING_ACK:
+	{
+		MSG_DWORD2CHAR* pmsg = (MSG_DWORD2CHAR*)pMsg;
+		CPlayer* pPlayer = (CPlayer*)OBJECTMGR->GetObject(pmsg->dwObjectID);
+		pPlayer->SetCustomizingName(pmsg->Maker);
+		CHATMGR->AddMsg(CTC_SYSMSG, "自定义闪名称号创建成功");
+		// Item Position 犬牢
+		for (int i = 0; i < (SLOT_SHOPINVEN_NUM + TABCELL_SHOPINVEN_PLUS_NUM)/*/2*/; i++)
+		{
+			ITEMBASE* pItemBase = (ITEMBASE*)GetItemInfoAbsIn(HERO, i + TP_SHOPINVEN_START);
+			if (!pItemBase)	continue;
+			if (pItemBase->dwDBIdx == GAMEIN->GetNameChangeDlg()->GetItemDBIdx())
+			{
+				CItem* pItem = NULL;
+				DeleteItem(i + TP_SHOPINVEN_START, &pItem);
+				break;
+			}
+		}
+
+	}
+	break;
+
+	case MP_ITEMEXT_SHOPITEM_CUSTOMIZING_NACK:
+	{
+		MSG_DWORD2CHAR* pmsg = (MSG_DWORD2CHAR*)pMsg;
+
+		switch (pmsg->dwData1)
+		{
+		case 6:
+			CHATMGR->AddMsg(CTC_SYSMSG, "自定义称号创建失败");
+			break;
+		case 5:
+			CHATMGR->AddMsg(CTC_SYSMSG, "此称号已被使用，请重新尝试创建");
 			break;
 		}
 	}
@@ -10176,6 +10223,7 @@ BOOL CItemManager::IsDupItem( WORD wItemIdx )
 				return FALSE;
 		}
 		return TRUE;
+	case eSHOP_ITEM_FLGNAME: //闪名
 	case eSHOP_ITEM_NOMALCLOTHES_SKIN:
 	case eSHOP_ITEM_COSTUME_SKIN:	
 		{
@@ -10474,7 +10522,8 @@ void CItemManager::AddUsedItemInfo(SHOPITEMBASE* pInfo)
 	pShopItemBase = m_UsedItemList.GetData(pInfo->ItemBase.wIconIdx );
 	if( pShopItemBase )
 	{
-		if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM && pItemInfo->MeleeAttackMin )
+		if((pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME) && pItemInfo->MeleeAttackMin )
 		{
 			SAFE_DELETE( pShopItemBase );
 			m_UsedItemList.Remove( pItemInfo->ItemIdx );
@@ -10485,7 +10534,8 @@ void CItemManager::AddUsedItemInfo(SHOPITEMBASE* pInfo)
 	pShopItemBase = new SHOPITEMBASE;
 	memcpy(pShopItemBase, pInfo, sizeof(SHOPITEMBASE));
 	m_UsedItemList.Add(pShopItemBase, pShopItemBase->ItemBase.wIconIdx);
-	if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM && pItemInfo->MeleeAttackMin )
+	if( (pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+		pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME) && pItemInfo->MeleeAttackMin )
 	{
 		if( pShopItemBase->Remaintime == 0 )
 			return;
@@ -10508,6 +10558,10 @@ void CItemManager::AddUsedItemInfo(SHOPITEMBASE* pInfo)
 	else if( pItemInfo->ItemKind == eSHOP_ITEM_EQUIP )
 	{
 		AddUsedShopEquipItemToolTip( pInfo );
+	}
+	if (pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
+	{//闪名卷使用后
+		HERO->SetObjectFlgName(1);
 	}
 	else if( pItemInfo->ItemType == 11 )
 	{
@@ -10824,10 +10878,11 @@ void CItemManager::Process()
 		pInfo = GetItemInfo( pShopItem->ItemBase.wIconIdx );
 		//if( pInfo && pInfo->SellPrice == eShopItemUseParam_Playtime)
 		if( pInfo &&( pInfo->SellPrice == eShopItemUseParam_Playtime) ||(MAP->IsMapKind(eInsDungeon)&&pInfo->SellPrice == eShopItemuseParam_FBItem))
-		{
+		{//增加副本卷物品计时更新
 			if( NOTIFYMGR->IsEventNotifyUse() )
-			{
-				if( pInfo->ItemKind == eSHOP_ITEM_CHARM && pInfo->MeleeAttackMin && pShopItem->Remaintime )
+			{//闪名卷轴
+				if((pInfo->ItemKind == eSHOP_ITEM_CHARM ||
+					pInfo->ItemKind == eSHOP_ITEM_FLGNAME) && pInfo->MeleeAttackMin && pShopItem->Remaintime )
 				{
 					if( NOTIFYMGR->IsApplyEvent( pInfo->MeleeAttackMin ) )
 						continue;												
@@ -11189,7 +11244,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
 		}
 		if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM || pItemInfo->ItemKind == eSHOP_ITEM_DECORATION ||
-			pItemInfo->ItemKind == eSHOP_ITEM_IMAGENAME)
+			pItemInfo->ItemKind == eSHOP_ITEM_IMAGENAME ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1437), pItemInfo->GenGol);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11214,7 +11270,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
 		}
 		if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM || pItemInfo->ItemKind == eSHOP_ITEM_DECORATION ||
-			pItemInfo->ItemKind == eSHOP_ITEM_IMAGENAME)
+			pItemInfo->ItemKind == eSHOP_ITEM_IMAGENAME ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1438), pItemInfo->MinChub);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11234,7 +11291,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
 		}
 		if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM || pItemInfo->ItemKind == eSHOP_ITEM_DECORATION ||
-			pItemInfo->ItemKind == eSHOP_ITEM_IMAGENAME)
+			pItemInfo->ItemKind == eSHOP_ITEM_IMAGENAME ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1441), pItemInfo->CheRyuk);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11268,7 +11326,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
 		}
 		if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM || pItemInfo->ItemKind == eSHOP_ITEM_DECORATION ||
-			pItemInfo->ItemKind == eSHOP_ITEM_IMAGENAME)
+			pItemInfo->ItemKind == eSHOP_ITEM_IMAGENAME ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME	)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1439), pItemInfo->SimMek);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11282,13 +11341,14 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->Life != 0 )
 	{
-		if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+		if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1397), pItemInfo->Life);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
 		}
 		if( pItemInfo->ItemKind == eSHOP_ITEM_HERB || pItemInfo->ItemKind == eSHOP_ITEM_DECORATION ||
-			pItemInfo->ItemKind == eSHOP_ITEM_IMAGENAME)
+			pItemInfo->ItemKind == eSHOP_ITEM_IMAGENAME )
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1419), pItemInfo->Life);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11302,7 +11362,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->Shield != 0 )
 	{
-		if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+		if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1416), pItemInfo->Shield);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11317,7 +11378,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->NaeRyuk != 0 )
 	{
-		if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+		if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1428), pItemInfo->NaeRyuk);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11332,7 +11394,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->LimitJob != 0 )
 	{
-		if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+		if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1422), pItemInfo->LimitJob);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11352,7 +11415,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->LimitGender != 0 )
 	{
-		if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+		if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1423), pItemInfo->LimitGender);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11367,7 +11431,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->LimitLevel != 0 )
 	{
-		if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+		if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1424), pItemInfo->LimitLevel);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11382,7 +11447,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->LimitGenGol != 0 )
 	{
-        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1406), pItemInfo->LimitGenGol);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11402,7 +11468,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->LimitMinChub != 0 )
 	{
-        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1410), pItemInfo->LimitMinChub);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11423,7 +11490,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	if( pItemInfo->LimitCheRyuk != 0 )
 	{
         if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM || eSHOP_ITEM_DECORATION ||
-			pItemInfo->ItemKind == eSHOP_ITEM_IMAGENAME)
+			pItemInfo->ItemKind == eSHOP_ITEM_IMAGENAME ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1400), pItemInfo->LimitCheRyuk);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11437,7 +11505,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->LimitSimMek != 0 )
 	{
-        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1395), pItemInfo->LimitSimMek);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11457,7 +11526,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->ItemGrade != 0 )
 	{
-        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1429), pItemInfo->ItemGrade);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11477,7 +11547,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->RangeType != 0 )
 	{
-        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1452), pItemInfo->RangeType);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11498,7 +11569,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	if( pItemInfo->EquipKind != 0 )
 	{
 		if( pItemInfo->ItemKind == eSHOP_ITEM_DECORATION  ||
-			pItemInfo->ItemKind == eSHOP_ITEM_IMAGENAME)
+			pItemInfo->ItemKind == eSHOP_ITEM_IMAGENAME ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1393), pItemInfo->RangeType);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11517,7 +11589,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->RangeAttackMin != 0 )
 	{
-        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1392));
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11532,7 +11605,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->RangeAttackMax != 0 )
 	{
-        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1394), pItemInfo->RangeAttackMax);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11547,7 +11621,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->CriticalPercent != 0 )
 	{
-        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1390), pItemInfo->CriticalPercent);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11562,7 +11637,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->PhyDef != 0 )
 	{
-        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1415), pItemInfo->PhyDef);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11571,7 +11647,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->Plus_MugongIdx != 0 )
 	{
-        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1419), pItemInfo->Plus_MugongIdx);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11586,7 +11663,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->Plus_Value != 0 )
 	{
-        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1420), pItemInfo->Plus_Value);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11601,7 +11679,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 	}
 	if( pItemInfo->AllPlus_Kind != 0 )
 	{
-        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+        if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1418), pItemInfo->AllPlus_Kind);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );
@@ -11620,7 +11699,8 @@ void CItemManager::AddShopItemToolTip( cIcon* pIcon, ITEM_INFO* pItemInfo )
 			pItemInfo->ItemKind == eSHOP_ITEM_INCANTATION || pItemInfo->ItemKind == eSHOP_ITEM_MAKEUP ||
 			pItemInfo->ItemKind == eSHOP_ITEM_MAKEUP || pItemInfo->ItemKind == eSHOP_ITEM_DECORATION ||
 			pItemInfo->ItemKind == eSHOP_ITEM_EQUIP || pItemInfo->ItemKind == eSHOP_ITEM_PET_EQUIP ||
-			pItemInfo->ItemKind == eSHOP_ITEM_IMAGENAME)
+			pItemInfo->ItemKind == eSHOP_ITEM_IMAGENAME ||
+			pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME)
 		{
 			sprintf(line, CHATMGR->GetChatMsg(1682), pItemInfo->NaeRyukRecover);
 			pIcon->AddToolTipLine( line, TTTC_EXTRAATTR );

@@ -208,6 +208,7 @@ struct HERO_TOTALINFO
 	WORD	ReSet;
 	WORD	ImageName;
 	DWORD   dwKillPlayerTimes;
+	WORD    VipLevel;                     //扩展信息定义VIP等级
 };
 struct PET_TOTALINFO
 {
@@ -1129,12 +1130,7 @@ struct IMAGENAMEINFO//称号
 	VECTOR2 Scaling;
 	INT LeftPosition;
 };
-struct VIPIMGINFO//vip称号
-{
-	WORD  idx;
-	BOOL IsTrends;
-	WORD ImageCount;
-};
+
 struct CHARACTER_TOTALINFO
 {
 	DWORD	Life;						
@@ -1217,6 +1213,9 @@ struct CHARACTER_TOTALINFO
 	{
 		bVisible = TRUE;
 	}
+	WORD    VipLevel;                     //扩展信息定义VIP等级
+	int     FlgName;//25k的称号标志位
+	char	CustomizingName[MAX_NAME_LENGTH + 1];//自定义称号
 };
 struct SHOPITEMOPTION
 {
@@ -6043,12 +6042,12 @@ struct MSGFLASHNAME :public MSGBASE
 	DWORD dwItemIdx;
 	DWORD dwNameFlag;
 };
-struct MSG_FLASH_SET : public MSGBASE
-{
-	DWORD ItemPos;
-	DWORD ItemIdx;
-	char       pName[MAX_NAME_LENGTH+1];
-};
+//struct MSG_FLASH_SET : public MSGBASE
+//{
+//	DWORD ItemPos;
+//	DWORD ItemIdx;
+//	char       pName[MAX_NAME_LENGTH+1];
+//};
 #define MAX_MALLLIST_NUM	100
 struct MALLINFO 
 {
@@ -6274,6 +6273,13 @@ struct MSG_OFFICIAL_ITEM_SYN : public MSGBASE
 		return sizeof(MSG_OFFICIAL_ITEM_SYN) - (MAX_MIX_MATERIAL - wMaterialNum) * sizeof(MATERIAL_ARRAY_FFT);
 	}
 };
+struct MSG_DWORD2CHAR :public MSGBASE
+{//耐久，制造者附加 /暂时未引用
+	DWORD dwData1;
+	DWORD dwData2;
+	BYTE  bType;
+	char  Maker[MAX_NAME_LENGTH + 1];
+};
 struct MSG_OFFICIAL_ITEM_ACK : public MSG_OFFICIAL_ITEM_SYN
 {
 
@@ -6341,5 +6347,50 @@ struct MSGNJQUESTITEMUSE :public MSGBASE
 	BYTE  bType;
 	BOOL  bRepeat;
 };
+//VIP设置信息结构体
+struct VIP_INFO
+{
+	WORD  VipLevel;
+	DWORD VipMaxGold;
+	DWORD VipImgIdx;
+	DWORD VipMallMoney;
+	DWORD VipGoldMoney;
+	DWORD VipItemCount;
+	DWORD VipItemIdx[5]; // 达到级别发放物品最多限制5个
+
+	VIP_INFO()
+	{
+		VipLevel = 0;
+		VipMaxGold = 0;
+		VipImgIdx = 0;
+		VipMallMoney = 0;
+		VipGoldMoney = 0;
+		VipItemCount = 0;
+		for (int i = 0; i < 5; i++)
+		{
+			VipItemIdx[i] = 0;
+		}
+	}
+};
+//Vip查询服务端信息结构体
+struct  MSG_VIP_INFO : public MSGBASE
+{
+	DWORD TotalGold;
+	WORD   VipLevel;
+	int          VipValue[MAX_VIP_LEVEL];
+	MSG_VIP_INFO()
+	{
+		TotalGold = 0;
+		VipLevel = 0;
+		memset(VipValue, 0, sizeof(VipValue));
+	}
+};
+struct VIPIMGINFO
+{
+	WORD  idx;
+	BOOL IsTrends;
+	WORD ImageCount;
+};
+///////////////////vip图片信息结构体
 #pragma pack(pop)
 #endif 

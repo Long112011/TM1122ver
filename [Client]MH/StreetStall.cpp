@@ -422,6 +422,7 @@ BOOL CStreetStall::FakeMoveIcon(LONG x, LONG y, cIcon * icon)
 		((CItem*)icon)->GetItemKind() == eSHOP_ITEM_INCANTATION ||
 		((CItem*)icon)->GetItemKind() == eSHOP_ITEM_HERB ||
 		((CItem*)icon)->GetItemKind() == eSHOP_ITEM_CHARM ||
+		((CItem*)icon)->GetItemKind() == eSHOP_ITEM_FLGNAME ||//闪名
 		((CItem*)icon)->GetItemKind() == eSHOP_ITEM_SUNDRIES )
 	{
 		if( QUICKMGR->CheckQPosForItemIdx(((CItem*)icon)->GetItemIdx()) == FALSE )

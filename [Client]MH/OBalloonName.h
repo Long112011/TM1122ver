@@ -45,8 +45,8 @@ public:
 	void SetPetMasterName(char* petname);
 	void SetMarryName(char* marryname);
 	void SetShiTuName(char* name);
-	void SetFlashNameFlag(WORD Flag){m_FlashNameFlag=Flag;}
-	void SetFlashName(char * FlashName);
+
+
 	void SetKillCount(char * kill);
 	BOOL IsActive()						{ return m_bActive;	}
 	BOOL IsShow()						{ return m_bShow;	}
@@ -63,8 +63,8 @@ public:
 	void SetNickNamePosX(LONG	nickpos)			{ m_lNickPosX = nickpos;	}
 	void SetMarryNamePosX(LONG pos)					{ m_lMarryPosX = pos; }
 	void SetShiTuNamePosX(LONG pos)					{ m_lShiTuPosX = pos;}
-	void SetFlashNameTall(LONG pos)					{m_lFlashNameTall = pos; }
-	void SetFlashNamePosX(LONG pos)				{m_lFlashNamePosX = pos;}
+	void SetCustomizingNameTall(LONG	CustomizingTall) { m_lCustomizingTall = CustomizingTall; }
+	void SetCustomizingNamePosX(LONG pos) { m_lCustomizingPosX = pos; }
 
 	void SetKillCountTall(LONG pos)					{ m_lKillCountTall = pos; }
 	void SetKillCountPosX(LONG pos)				{ m_lKillCountPosX = pos; }
@@ -95,6 +95,9 @@ public:
 
 	void SetFameRank(char* fame);
 	void SetFameRankPosX(LONG pos)					{ m_lFameRankPosX = pos; }
+	//闪名
+	void SetOBalloonFlgName(WORD val);
+	void SetCustomizingName(char* CustomizingName);
 protected:
 	BOOL m_bActive;			
 	BOOL m_bShow;			
@@ -112,6 +115,10 @@ protected:
     LONG m_lShiTuTall;
 	LONG m_lMasterTall;
 	LONG m_lMasterPosX;
+
+	LONG m_lCustomizingPosX;
+	LONG m_lCustomizingTall;
+
 	char m_szObjectName[MAX_MONSTER_NAME_LENGTH +1];
 	char m_szObjectFortName[MAX_MONSTER_NAME_LENGTH + 1];
 	BOOL m_wFontIdx;
@@ -122,10 +129,13 @@ protected:
 	char m_szPetMasterName[MAX_MASTERNAME_LENGTH+1];
 	char m_szMarryName[MAX_MASTERNAME_LENGTH+1];
 	char m_szShiTuName[MAX_MASTERNAME_LENGTH+1];
-	WORD m_FlashNameFlag;  
+
+	//闪名
 	DWORD m_NameTime;
 	int m_nameIndex;
 	BYTE m_ChangeMode;
+	WORD m_FlgName;
+
 	BOOL m_bSiegeMap;
 	cMultiLineText* m_pSiegeName;
 	//VIP图标//称号
@@ -136,11 +146,15 @@ protected:
 	BOOL  Ischange;
 	IMAGENAMEINFO* ImageNameInfo;
 
-
+	//VIP图标
+	int VIPImageVal;
 	VIPIMGINFO* VipImgInfo;
 	DWORD m_VipImgTime;
 	BOOL  IsVipImgchange;
 	int   VipImgCount;
+
+
+
 
 	LONG m_lFamePosX;
 	LONG m_lFameTall;
@@ -163,14 +177,17 @@ protected:
 	LONG m_lTopRankPosX;
 	LONG m_lTopRankTall;
 
-	LONG m_lFlashNameTall;
-	LONG m_lFlashNamePosX;
-	char m_FlashName[MAX_NAME_LENGTH+1];
+	//LONG m_lFlashNameTall;
+	//LONG m_lFlashNamePosX;
+	//char m_FlashName[MAX_NAME_LENGTH+1];
 	//char m_szTopRank[MAX_MASTERNAME_LENGTH+1];
 
 	LONG m_lKillCountTall;
 	LONG m_lKillCountPosX;
 	char m_KillCount[MAX_NAME_LENGTH + 1];
+
+	char m_szCustomizingName[MAX_MONSTER_NAME_LENGTH + 1];
+
 };
 EXTERNGLOBALTON(COBalloonName)
 #endif 

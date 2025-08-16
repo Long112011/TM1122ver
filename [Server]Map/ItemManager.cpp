@@ -43,6 +43,7 @@
 #include "FortWarManager.h"
 #include "ShopItemLimitManager.h"
 #include "InsDungeonManager.h"
+#include "VipManager.h"
 //#include "MixManager.h"
 #ifdef _TL_LOCAL_
 #include "PartyWarMgr.h"
@@ -270,6 +271,8 @@ BOOL CItemManager::IsDupItem(WORD wItemIdx)
 								   if (pItem->LimitLevel && pItem->SellPrice)
 									   return FALSE;
 	}
+		return TRUE;
+	case eSHOP_ITEM_FLGNAME: //闪名
 		return TRUE;
 	case eSHOP_ITEM_NOMALCLOTHES_SKIN:
 	case eSHOP_ITEM_COSTUME_SKIN:
@@ -820,7 +823,7 @@ int CItemManager::DiscardItem(CPlayer* pPlayer, POSTYPE whatPos, WORD whatItemId
 				{
 					if (pItemInfo->ItemKind == eSHOP_ITEM_MAKEUP || pItemInfo->ItemKind == eSHOP_ITEM_DECORATION)
 						pPlayer->GetShopItemManager()->DiscardAvatarItem(whatItemIdx, whatPos);
-					if (pItemInfo->ItemKind == eSHOP_ITEM_GOLDITEM || pItemInfo->ItemKind == eSHOP_ITEM_FLASHITEM)
+					if (pItemInfo->ItemKind == eSHOP_ITEM_GOLDITEM )
 						pPlayer->GetShopItemManager()->SendMsgDwordToPlayer(MP_ITEM_SHOPITEM_USEEND, pItemBase->wIconIdx);
 				}
 			}
@@ -5170,37 +5173,38 @@ void CItemManager::NetworkMsgParse(DWORD dwConnectionIndex, BYTE Protocol, void*
 		break;
 	case MP_ITEM_SHOPITEM_NCHANGE_SYN:
 	{
-										 SEND_CHANGENAMEBASE* pmsg = (SEND_CHANGENAMEBASE*)pMsg;
-										 CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pmsg->dwObjectID);
-										 if (!pPlayer)			return;
-										 const ITEMBASE* pItemBase = NULL;
-										 int i = 0;
-										 for (i = 0; i<(SLOT_SHOPINVEN_NUM + TABCELL_SHOPINVEN_PLUS_NUM); i++)
-										 {
-											 pItemBase = GetItemInfoAbsIn(pPlayer, i + TP_SHOPINVEN_START);
-											 if (!pItemBase)	continue;
-											 if (pItemBase->dwDBIdx == pmsg->DBIdx)
-												 break;
-										 }
-										 if (i >= (SLOT_SHOPINVEN_NUM + TABCELL_SHOPINVEN_PLUS_NUM))
-										 {
-											 MSG_DWORD msg;
-											 msg.Category = MP_ITEM;
-											 msg.Protocol = MP_ITEM_SHOPITEM_NCHANGE_NACK;
-											 msg.dwData = 6;
-											 pPlayer->SendMsg(&msg, sizeof(msg));
-											 return;
-										 }
-										 if (pmsg->CyptKey == 0)
-										 {
-											 CharacterChangeName(pmsg->dwObjectID, pmsg->Name, pmsg->DBIdx);
-										 }
-										 if (pmsg->CyptKey == 1)
-										 {
-											 ItemFlashNameSet2(pmsg->dwObjectID, pmsg->DBIdx, pmsg->Name);
-										 }
+		SEND_CHANGENAMEBASE* pmsg = (SEND_CHANGENAMEBASE*)pMsg;
+
+		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pmsg->dwObjectID);
+		if (!pPlayer)			return;
+
+		const ITEMBASE* pItemBase = NULL;
+		int i = 0;
+		for (i = 0; i < (SLOT_SHOPINVEN_NUM + TABCELL_SHOPINVEN_PLUS_NUM); i++)
+		{
+			pItemBase = GetItemInfoAbsIn(pPlayer, i + TP_SHOPINVEN_START);
+			if (!pItemBase)	continue;
+
+			if (pItemBase->dwDBIdx == pmsg->DBIdx)
+				break;
+		}
+
+		if (i >= (SLOT_SHOPINVEN_NUM + TABCELL_SHOPINVEN_PLUS_NUM))
+		{
+			MSG_DWORD msg;
+			msg.Category = MP_ITEM;
+			msg.Protocol = MP_ITEM_SHOPITEM_NCHANGE_NACK;
+			msg.dwData = 6;
+			pPlayer->SendMsg(&msg, sizeof(msg));
+			return;
+		}
+		//if (pmsg->CyptKey == 0)
+		//{
+		//	CharacterChangeName(pmsg->dwObjectID, pmsg->Name, pmsg->DBIdx);
+		//}
+		CharacterChangeName(pmsg->dwObjectID, pmsg->Name, pmsg->DBIdx);
 	}
-		break;
+	break;
 	case MP_ITEM_SHOPITEM_CHARCHANGE_SYN:
 	{
 											SEND_CHARACTERCHANGE_INFO* pmsg = (SEND_CHARACTERCHANGE_INFO*)pMsg;
@@ -6422,6 +6426,21 @@ void CItemManager::NetworkMsgParseExt(DWORD dwConnectionIndex, BYTE Protocol, vo
 											  PACKEDDATA_OBJ->QuickSendExceptObjectSelf(pPlayer, &msg, sizeof(msg));
 	}
 		break;
+	case MP_ITEMEXT_GOLD_MONEY_SYN:
+	{//在线充值元宝刷新
+		MSG_DWORD4* pmsg = (MSG_DWORD4*)pMsg;
+		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pmsg->dwObjectID);
+
+		if (!pPlayer)
+		{
+			return;
+		}
+		pPlayer->GetDBGoldMoney();
+		
+		VIPMGR->LoadVipInfoFromDB(pPlayer->GetID());  //过图载入VIP设置信息
+
+	}
+	break;
 	case MP_ITEMEXT_SELECT_SYN:
 	{
 								  MSG_DWORD* pmsg = (MSG_DWORD*)pMsg;
@@ -6520,225 +6539,214 @@ void CItemManager::NetworkMsgParseExt(DWORD dwConnectionIndex, BYTE Protocol, vo
 									 }
 									 pPlayer->SetItemShopTidy();
 	}
-		break;
-	case MP_ITEMEXT_FLASHNAME1_SYN:
+	case MP_ITEMEXT_FLASHNAME1_SYN://改成
 	{
-									  MSGFLASHNAME * pmsg = (MSGFLASHNAME*)pMsg;
-									  CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pmsg->dwObjectID);
-									  if (!pPlayer)
-									  {
-										  return;
-									  }
-									  MSGFLASHNAME msg;
-									  msg.Category = MP_ITEMEXT;
-									  msg.dwItemIdx = pmsg->dwItemIdx;
-									  msg.dwItemDBidx = pmsg->dwItemDBidx;
-									  msg.dwNameFlag = pmsg->dwNameFlag;
-									  ITEM_INFO * pInfo = NULL;
-									  m_ItemInfoList.SetPositionHead();
-									  pInfo = m_ItemInfoList.GetData(pmsg->dwItemIdx);
-									  if (!pInfo) return;
-									  if (pInfo->SellPrice != pmsg->dwNameFlag)
-									  {
-										  msg.Protocol = MP_ITEMEXT_FLASHNAME1_NACK;
-										  pPlayer->SendMsg(&msg, sizeof(msg));
-										  return;
-									  }
-									  const ITEMBASE* pItemBase = NULL;
-									  for (int i = 0; i<(SLOT_SHOPINVEN_NUM + TABCELL_SHOPINVEN_PLUS_NUM); i++)
-									  {
-										  pItemBase = GetItemInfoAbsIn(pPlayer, i + TP_SHOPINVEN_START);
-										  if (!pItemBase)	continue;
-										  if (pItemBase->dwDBIdx == pmsg->dwItemDBidx)
-										  {
-											  switch (pmsg->dwNameFlag)
-											  {
-											  case 555:
-												  Quest_DeleteQuest_New(pPlayer->GetID(), 283);
-												  Quest_DeleteQuest_New(pPlayer->GetID(), 286);
-												  Quest_DeleteQuest_New(pPlayer->GetID(), 23);
-												  Quest_DeleteQuest_New(pPlayer->GetID(), 153);
-												  Quest_DeleteQuest_New(pPlayer->GetID(), 511);
-												  Quest_DeleteQuest_New(pPlayer->GetID(), 512);
-												  if (EI_TRUE != ITEMMGR->DiscardItem(pPlayer, i + TP_SHOPINVEN_START, pItemBase->wIconIdx, 1))
-												  {
-													  msg.Protocol = MP_ITEMEXT_FLASHNAME1_NACK;
-												  }
-												  pPlayer->GetShopItemManager()->DeleteUsingShopItem(pItemBase->wIconIdx);
-												  break;
-											  case 685:
-												  Quest_DeleteQuest_New(pPlayer->GetID(), 511);
-												  Quest_DeleteQuest_New(pPlayer->GetID(), 512);
-												  QuestMainQuestInsert(pmsg->dwObjectID, 511, -33554432, 0);
-												  QuestSubQuestInsert(pmsg->dwObjectID, 511, 7, 0, 0);
-												  QuestSubQuestInsert(pmsg->dwObjectID, 511, 8, 0, 0);
-												  QuestMainQuestInsert(pmsg->dwObjectID, 512, -33554432, 0);
-												  QuestSubQuestInsert(pmsg->dwObjectID, 512, 7, 0, 0);
-												  QuestSubQuestInsert(pmsg->dwObjectID, 512, 8, 0, 0);
-												  QuestItemInsert(pmsg->dwObjectID, 512, 942, 1);
-												  if (EI_TRUE != ITEMMGR->DiscardItem(pPlayer, i + TP_SHOPINVEN_START, pItemBase->wIconIdx, 1))
-												  {
-													  msg.Protocol = MP_ITEMEXT_FLASHNAME1_NACK;
-												  }
-												  pPlayer->GetShopItemManager()->DeleteUsingShopItem(pItemBase->wIconIdx);
-												  break;
-											  case 777:
-												  if (GAMERESRCMNGR->GetRebornSet(REBIRTH_ONOFF) == 0)
-												  {
-													  pPlayer->SetReSetN(0, eTurnOnOff);
-													  return;
-												  }
-												  if (pPlayer->GetReSet() >= GAMERESRCMNGR->GetRebornSet(REBIRTH_MAX))
-												  {
-													  pPlayer->SetReSetN(GAMERESRCMNGR->GetRebornSet(REBIRTH_MAX), eTurnMax);
-													  return;
-												  }
-												  if (pPlayer->GetMoney()<GAMERESRCMNGR->GetRebornSet(REBIRTH_COST))
-												  {
-													  pPlayer->SetReSetN(GAMERESRCMNGR->GetRebornSet(REBIRTH_COST), eTurnMoneyError);
-													  return;
-												  }
-												  HERO_TOTALINFO	heroinfo;
-												  if (pPlayer->GetLevel() >= GAMERESRCMNGR->GetRebornSet(STAGE_ONE_LevelStart) && pPlayer->GetLevel()<GAMERESRCMNGR->GetRebornSet(STAGE_ONE_LevelEnd))
-												  {
-													  if (GAMERESRCMNGR->GetRebornSet(STAGE_ONE_EQTAKEOFF) != 0)
-													  {
-														  for (int i = 0; i< 10; i++)
-														  {
-															  if (pPlayer->GetWearedItemIdx(i))
-															  {
-																  pPlayer->SetReSetN(GAMERESRCMNGR->GetRebornSet(REBIRTH_MAX), eTurnEQTakeOff);
-																  return;
-															  }
-														  }
-													  }
-													  if (GAMERESRCMNGR->GetRebornSet(STAGE_ONE_REWARD) != 0)
-													  {
-														  ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(GAMERESRCMNGR->GetRebornSet(STAGE_ONE_REWARD));
+		MSGFLASHNAME* pmsg = (MSGFLASHNAME*)pMsg;
+		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pmsg->dwObjectID);
+		if (!pPlayer)
+		{
+			return;
+		}
+		MSGFLASHNAME msg;
+		msg.Category = MP_ITEMEXT;
+		msg.dwItemIdx = pmsg->dwItemIdx;
+		msg.dwItemDBidx = pmsg->dwItemDBidx;
+		msg.dwNameFlag = pmsg->dwNameFlag;
+		ITEM_INFO* pInfo = NULL;
+		m_ItemInfoList.SetPositionHead();
+		pInfo = m_ItemInfoList.GetData(pmsg->dwItemIdx);
+		if (!pInfo) return;
+		if (pInfo->SellPrice != pmsg->dwNameFlag)
+		{
+			msg.Protocol = MP_ITEMEXT_FLASHNAME1_NACK;
+			pPlayer->SendMsg(&msg, sizeof(msg));
+			return;
+		}
+		const ITEMBASE* pItemBase = NULL;
+		for (int i = 0; i < (SLOT_SHOPINVEN_NUM + TABCELL_SHOPINVEN_PLUS_NUM); i++)
+		{
+			pItemBase = GetItemInfoAbsIn(pPlayer, i + TP_SHOPINVEN_START);
+			if (!pItemBase)	continue;
+			if (pItemBase->dwDBIdx == pmsg->dwItemDBidx)
+			{
+				switch (pmsg->dwNameFlag)
+				{
+				case 555:
+					Quest_DeleteQuest_New(pPlayer->GetID(), 283);
+					Quest_DeleteQuest_New(pPlayer->GetID(), 286);
+					Quest_DeleteQuest_New(pPlayer->GetID(), 23);
+					Quest_DeleteQuest_New(pPlayer->GetID(), 153);
+					Quest_DeleteQuest_New(pPlayer->GetID(), 511);
+					Quest_DeleteQuest_New(pPlayer->GetID(), 512);
+					if (EI_TRUE != ITEMMGR->DiscardItem(pPlayer, i + TP_SHOPINVEN_START, pItemBase->wIconIdx, 1))
+					{
+						msg.Protocol = MP_ITEMEXT_FLASHNAME1_NACK;
+					}
+					pPlayer->GetShopItemManager()->DeleteUsingShopItem(pItemBase->wIconIdx);
+					break;
+				case 685:
+					Quest_DeleteQuest_New(pPlayer->GetID(), 511);
+					Quest_DeleteQuest_New(pPlayer->GetID(), 512);
+					QuestMainQuestInsert(pmsg->dwObjectID, 511, -33554432, 0);
+					QuestSubQuestInsert(pmsg->dwObjectID, 511, 7, 0, 0);
+					QuestSubQuestInsert(pmsg->dwObjectID, 511, 8, 0, 0);
+					QuestMainQuestInsert(pmsg->dwObjectID, 512, -33554432, 0);
+					QuestSubQuestInsert(pmsg->dwObjectID, 512, 7, 0, 0);
+					QuestSubQuestInsert(pmsg->dwObjectID, 512, 8, 0, 0);
+					QuestItemInsert(pmsg->dwObjectID, 512, 942, 1);
+					if (EI_TRUE != ITEMMGR->DiscardItem(pPlayer, i + TP_SHOPINVEN_START, pItemBase->wIconIdx, 1))
+					{
+						msg.Protocol = MP_ITEMEXT_FLASHNAME1_NACK;
+					}
+					pPlayer->GetShopItemManager()->DeleteUsingShopItem(pItemBase->wIconIdx);
+					break;
+				case 777:
+					if (GAMERESRCMNGR->GetRebornSet(REBIRTH_ONOFF) == 0)
+					{
+						pPlayer->SetReSetN(0, eTurnOnOff);
+						return;
+					}
+					if (pPlayer->GetReSet() >= GAMERESRCMNGR->GetRebornSet(REBIRTH_MAX))
+					{
+						pPlayer->SetReSetN(GAMERESRCMNGR->GetRebornSet(REBIRTH_MAX), eTurnMax);
+						return;
+					}
+					if (pPlayer->GetMoney() < GAMERESRCMNGR->GetRebornSet(REBIRTH_COST))
+					{
+						pPlayer->SetReSetN(GAMERESRCMNGR->GetRebornSet(REBIRTH_COST), eTurnMoneyError);
+						return;
+					}
+					HERO_TOTALINFO	heroinfo;
+					if (pPlayer->GetLevel() >= GAMERESRCMNGR->GetRebornSet(STAGE_ONE_LevelStart) && pPlayer->GetLevel() < GAMERESRCMNGR->GetRebornSet(STAGE_ONE_LevelEnd))
+					{
+						if (GAMERESRCMNGR->GetRebornSet(STAGE_ONE_EQTAKEOFF) != 0)
+						{
+							for (int i = 0; i < 10; i++)
+							{
+								if (pPlayer->GetWearedItemIdx(i))
+								{
+									pPlayer->SetReSetN(GAMERESRCMNGR->GetRebornSet(REBIRTH_MAX), eTurnEQTakeOff);
+									return;
+								}
+							}
+						}
+						if (GAMERESRCMNGR->GetRebornSet(STAGE_ONE_REWARD) != 0)
+						{
+							ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(GAMERESRCMNGR->GetRebornSet(STAGE_ONE_REWARD));
 
-														  if (!pItemInfo)		return;
+							if (!pItemInfo)		return;
 
-														  if (pItemInfo->ItemKind & eSHOP_ITEM)
-														  {
-															  ITEMMGR->CheatObtainShopItem(pPlayer, GAMERESRCMNGR->GetRebornSet(STAGE_ONE_REWARD), 1);
-														  }
-														  else
-														  {
-															  ITEMMGR->CheatObtainItem(pPlayer, GAMERESRCMNGR->GetRebornSet(STAGE_ONE_REWARD), 1);
-														  }
-													  }
-													  pPlayer->SetTurnOne(pPlayer->GetTurnOne() + 1);
-												  }
-												  else if (pPlayer->GetLevel() >= GAMERESRCMNGR->GetRebornSet(STAGE_TWO_LevelStart) && pPlayer->GetLevel()<GAMERESRCMNGR->GetRebornSet(STAGE_TWO_LevelEnd))
-												  {
-													  if (GAMERESRCMNGR->GetRebornSet(STAGE_TWO_EQTAKEOFF) != 0)
-													  {
-														  for (int i = 0; i< 10; i++)
-														  {
-															  if (pPlayer->GetWearedItemIdx(i))
-															  {
-																  pPlayer->SetReSetN(GAMERESRCMNGR->GetRebornSet(REBIRTH_MAX), eTurnEQTakeOff);
-																  return;
-															  }
-														  }
-													  }
-													  if (GAMERESRCMNGR->GetRebornSet(STAGE_TWO_REWARD) != 0)
-													  {
-														  ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(GAMERESRCMNGR->GetRebornSet(STAGE_TWO_REWARD));
+							if (pItemInfo->ItemKind & eSHOP_ITEM)
+							{
+								ITEMMGR->CheatObtainShopItem(pPlayer, GAMERESRCMNGR->GetRebornSet(STAGE_ONE_REWARD), 1);
+							}
+							else
+							{
+								ITEMMGR->CheatObtainItem(pPlayer, GAMERESRCMNGR->GetRebornSet(STAGE_ONE_REWARD), 1);
+							}
+						}
+						pPlayer->SetTurnOne(pPlayer->GetTurnOne() + 1);
+					}
+					else if (pPlayer->GetLevel() >= GAMERESRCMNGR->GetRebornSet(STAGE_TWO_LevelStart) && pPlayer->GetLevel() < GAMERESRCMNGR->GetRebornSet(STAGE_TWO_LevelEnd))
+					{
+						if (GAMERESRCMNGR->GetRebornSet(STAGE_TWO_EQTAKEOFF) != 0)
+						{
+							for (int i = 0; i < 10; i++)
+							{
+								if (pPlayer->GetWearedItemIdx(i))
+								{
+									pPlayer->SetReSetN(GAMERESRCMNGR->GetRebornSet(REBIRTH_MAX), eTurnEQTakeOff);
+									return;
+								}
+							}
+						}
+						if (GAMERESRCMNGR->GetRebornSet(STAGE_TWO_REWARD) != 0)
+						{
+							ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(GAMERESRCMNGR->GetRebornSet(STAGE_TWO_REWARD));
 
-														  if (!pItemInfo)		return;
+							if (!pItemInfo)		return;
 
-														  if (pItemInfo->ItemKind & eSHOP_ITEM)
-														  {
-															  ITEMMGR->CheatObtainShopItem(pPlayer, GAMERESRCMNGR->GetRebornSet(STAGE_TWO_REWARD), 1);
-														  }
-														  else
-														  {
-															  ITEMMGR->CheatObtainItem(pPlayer, GAMERESRCMNGR->GetRebornSet(STAGE_TWO_REWARD), 1);
-														  }
-													  }
-													  pPlayer->SetTurnTwo(pPlayer->GetTurnTwo() + 1);
-												  }
-												  else if (pPlayer->GetLevel() >= GAMERESRCMNGR->GetRebornSet(STAGE_THREE_LevelStart) && pPlayer->GetLevel()<GAMERESRCMNGR->GetRebornSet(STAGE_THREE_LevelEnd))
-												  {
-													  if (GAMERESRCMNGR->GetRebornSet(STAGE_THREE_EQTAKEOFF) != 0)
-													  {
-														  for (int i = 0; i< 10; i++)
-														  {
-															  if (pPlayer->GetWearedItemIdx(i))
-															  {
-																  pPlayer->SetReSetN(GAMERESRCMNGR->GetRebornSet(REBIRTH_MAX), eTurnEQTakeOff);
-																  return;
-															  }
-														  }
-													  }
-													  if (GAMERESRCMNGR->GetRebornSet(STAGETHREEREWARD) != 0)
-													  {
-														  ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(GAMERESRCMNGR->GetRebornSet(STAGETHREEREWARD));
+							if (pItemInfo->ItemKind & eSHOP_ITEM)
+							{
+								ITEMMGR->CheatObtainShopItem(pPlayer, GAMERESRCMNGR->GetRebornSet(STAGE_TWO_REWARD), 1);
+							}
+							else
+							{
+								ITEMMGR->CheatObtainItem(pPlayer, GAMERESRCMNGR->GetRebornSet(STAGE_TWO_REWARD), 1);
+							}
+						}
+						pPlayer->SetTurnTwo(pPlayer->GetTurnTwo() + 1);
+					}
+					else if (pPlayer->GetLevel() >= GAMERESRCMNGR->GetRebornSet(STAGE_THREE_LevelStart) && pPlayer->GetLevel() < GAMERESRCMNGR->GetRebornSet(STAGE_THREE_LevelEnd))
+					{
+						if (GAMERESRCMNGR->GetRebornSet(STAGE_THREE_EQTAKEOFF) != 0)
+						{
+							for (int i = 0; i < 10; i++)
+							{
+								if (pPlayer->GetWearedItemIdx(i))
+								{
+									pPlayer->SetReSetN(GAMERESRCMNGR->GetRebornSet(REBIRTH_MAX), eTurnEQTakeOff);
+									return;
+								}
+							}
+						}
+						if (GAMERESRCMNGR->GetRebornSet(STAGETHREEREWARD) != 0)
+						{
+							ITEM_INFO* pItemInfo = ITEMMGR->GetItemInfo(GAMERESRCMNGR->GetRebornSet(STAGETHREEREWARD));
 
-														  if (!pItemInfo)		return;
+							if (!pItemInfo)		return;
 
-														  if (pItemInfo->ItemKind & eSHOP_ITEM)
-														  {
-															  ITEMMGR->CheatObtainShopItem(pPlayer, GAMERESRCMNGR->GetRebornSet(STAGETHREEREWARD), 1);
-														  }
-														  else
-														  {
-															  ITEMMGR->CheatObtainItem(pPlayer, GAMERESRCMNGR->GetRebornSet(STAGETHREEREWARD), 1);
-														  }
-													  }
-													  pPlayer->SetTurnThree(pPlayer->GetTurnThree() + 1);
-												  }
-												  else
-												  {
-													  pPlayer->SetReSetN(0, eTurnLevelError);
-													  return;
-												  }
-												  pPlayer->GetHeroTotalInfo(&heroinfo);
-												  pPlayer->SetMoney(GAMERESRCMNGR->GetRebornSet(REBIRTH_COST), MONEY_SUBTRACTION);
-												  pPlayer->SetPlayerLevelUpPoint(0 + (pPlayer->GetTurnOne()*GAMERESRCMNGR->GetRebornSet(STAGE_ONE_ATTRI)) + (pPlayer->GetTurnTwo()*GAMERESRCMNGR->GetRebornSet(STAGE_TWO_ATTRI)) + (pPlayer->GetTurnThree()*GAMERESRCMNGR->GetRebornSet(STAGE_THREE_ATTRI)));
-												  pPlayer->SetLevel(1);
-												  pPlayer->SetMaxLevel(1);
-												  pPlayer->SetCheRyuk(12 + (pPlayer->GetReSet() + 1)*GAMERESRCMNGR->GetRebornSet(REBIRTH_CON));
-												  pPlayer->SetSimMek(12);
-												  pPlayer->SetGenGol(12);
-												  pPlayer->SetMinChub(12);
-												  pPlayer->SetPlayerExpPoint(0);
-												  pPlayer->SetReSet(pPlayer->GetReSet() + 1, eTurnSuccess);
-												  pPlayer->SetHeroFame(GAMERESRCMNGR->GetRebornSet(REBIRTH_FAME), "", "", 6);
-												  CharacterHeroRebornUpdate(pPlayer);
-												  if (EI_TRUE != ITEMMGR->DiscardItem(pPlayer, i + TP_SHOPINVEN_START, pItemBase->wIconIdx, 1))
-												  {
-													  msg.Protocol = MP_ITEMEXT_FLASHNAME1_NACK;
-												  }
-												  pPlayer->GetShopItemManager()->DeleteUsingShopItem(pItemBase->wIconIdx);
-												  break;
-											  default:
-												  if (EI_TRUE != ITEMMGR->DiscardItem(pPlayer, i + TP_SHOPINVEN_START, pItemBase->wIconIdx, 1))
-												  {
-													  msg.Protocol = MP_ITEMEXT_FLASHNAME1_NACK;
-												  }
-												  ItemFlashNameSet(pPlayer->GetID(), pmsg->dwNameFlag);
-												  msg.Protocol = MP_ITEMEXT_FLASHNAME1_ACK;
-												  pPlayer->SendMsg(&msg, sizeof(msg));
-												  pPlayer->GetShopItemManager()->DeleteUsingShopItem(pItemBase->wIconIdx);
-												  break;
-											  }
-										  }
-									  }
+							if (pItemInfo->ItemKind & eSHOP_ITEM)
+							{
+								ITEMMGR->CheatObtainShopItem(pPlayer, GAMERESRCMNGR->GetRebornSet(STAGETHREEREWARD), 1);
+							}
+							else
+							{
+								ITEMMGR->CheatObtainItem(pPlayer, GAMERESRCMNGR->GetRebornSet(STAGETHREEREWARD), 1);
+							}
+						}
+						pPlayer->SetTurnThree(pPlayer->GetTurnThree() + 1);
+					}
+					else
+					{
+						pPlayer->SetReSetN(0, eTurnLevelError);
+						return;
+					}
+					pPlayer->GetHeroTotalInfo(&heroinfo);
+					pPlayer->SetMoney(GAMERESRCMNGR->GetRebornSet(REBIRTH_COST), MONEY_SUBTRACTION);
+					pPlayer->SetPlayerLevelUpPoint(0 + (pPlayer->GetTurnOne() * GAMERESRCMNGR->GetRebornSet(STAGE_ONE_ATTRI)) + (pPlayer->GetTurnTwo() * GAMERESRCMNGR->GetRebornSet(STAGE_TWO_ATTRI)) + (pPlayer->GetTurnThree() * GAMERESRCMNGR->GetRebornSet(STAGE_THREE_ATTRI)));
+					pPlayer->SetLevel(1);
+					pPlayer->SetMaxLevel(1);
+					pPlayer->SetCheRyuk(12 + (pPlayer->GetReSet() + 1) * GAMERESRCMNGR->GetRebornSet(REBIRTH_CON));
+					pPlayer->SetSimMek(12);
+					pPlayer->SetGenGol(12);
+					pPlayer->SetMinChub(12);
+					pPlayer->SetPlayerExpPoint(0);
+					pPlayer->SetReSet(pPlayer->GetReSet() + 1, eTurnSuccess);
+					pPlayer->SetHeroFame(GAMERESRCMNGR->GetRebornSet(REBIRTH_FAME), "", "", 6);
+					CharacterHeroRebornUpdate(pPlayer);
+					if (EI_TRUE != ITEMMGR->DiscardItem(pPlayer, i + TP_SHOPINVEN_START, pItemBase->wIconIdx, 1))
+					{
+						msg.Protocol = MP_ITEMEXT_FLASHNAME1_NACK;
+					}
+					pPlayer->GetShopItemManager()->DeleteUsingShopItem(pItemBase->wIconIdx);
+					break;
+				default:
+					// 不做闪名处理：不消耗、不改名
+					msg.Protocol = MP_ITEMEXT_FLASHNAME1_NACK;
+					pPlayer->SendMsg(&msg, sizeof(msg));
+
+					// 解锁“正在使用”的商城道具状态，避免 UI 卡住
+					pPlayer->GetShopItemManager()->DeleteUsingShopItem(pItemBase->wIconIdx);
+
+					break; // 仅跳出 switch
+				}
+			}
+		}
 	}
-		break;
-	case MP_ITEMEXT_FLASHNAME2_SYN:
-	{
-									  MSG_FLASH_SET * pmsg = (MSG_FLASH_SET*)pMsg;
-									  CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pmsg->dwObjectID);
-									  if (!pPlayer)
-									  {
-										  return;
-									  }
-									  ItemFlashNameSet2(pPlayer->GetID(), pmsg->ItemPos, pmsg->pName);
-	}
-		break;
+	break;
+
+
 	case MP_OFFICIAL_UPGRADE_SYN:
 	{
 		MSG_OFFICIAL_ITEM_SYN* pmsg = (MSG_OFFICIAL_ITEM_SYN*)pMsg;
@@ -6762,6 +6770,38 @@ void CItemManager::NetworkMsgParseExt(DWORD dwConnectionIndex, BYTE Protocol, vo
 			SendAckMsg(pPlayer, &msg, msg.GetSize());
 		}
 
+	}
+	break;
+	case MP_ITEMEXT_SHOPITEM_CUSTOMIZING_SYN:
+	{//自定义闪名
+		SEND_CHANGENAMEBASE* pmsg = (SEND_CHANGENAMEBASE*)pMsg;
+
+		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pmsg->dwObjectID);
+		if (!pPlayer)			return;
+		////////////////////
+
+
+		const ITEMBASE* pItemBase = NULL;
+		int i = 0;
+		for (i = 0; i < (SLOT_SHOPINVEN_NUM + TABCELL_SHOPINVEN_PLUS_NUM); i++)
+		{
+			pItemBase = GetItemInfoAbsIn(pPlayer, i + TP_SHOPINVEN_START);
+			if (!pItemBase)	continue;
+
+			if (pItemBase->dwDBIdx == pmsg->DBIdx)
+				break;
+		}
+
+		if (i >= (SLOT_SHOPINVEN_NUM + TABCELL_SHOPINVEN_PLUS_NUM))
+		{
+			MSG_DWORD2CHAR msg;
+			msg.Category = MP_ITEMEXT;
+			msg.Protocol = MP_ITEMEXT_SHOPITEM_CUSTOMIZING_NACK;
+			msg.dwData1 = 6;
+			pPlayer->SendMsg(&msg, sizeof(msg));
+			return;
+		}
+		CharacterCustomizingName(pmsg->dwObjectID, pmsg->Name, pmsg->DBIdx);
 	}
 	break;
 

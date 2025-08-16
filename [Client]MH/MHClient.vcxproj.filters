@@ -692,6 +692,12 @@
     <Filter Include="新功能\升阶继承">
       <UniqueIdentifier>{df2de775-f9a6-4e14-bd31-f32d1364bdea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="新功能\vip系统">
+      <UniqueIdentifier>{7b282246-f6b1-447e-95df-ebf2504e066b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="新功能\自定义称号">
+      <UniqueIdentifier>{28dc4b7f-5535-4665-a5ef-1fb709eff408}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MHClient.cpp">
@@ -2725,6 +2731,15 @@
     </ClCompile>
     <ClCompile Include="MHFile.cpp">
       <Filter>aJACK</Filter>
+    </ClCompile>
+    <ClCompile Include="VipDealItem.cpp">
+      <Filter>新功能\vip系统</Filter>
+    </ClCompile>
+    <ClCompile Include="VipDialog.cpp">
+      <Filter>新功能\vip系统</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomizingNameDlg.cpp">
+      <Filter>新功能\自定义称号</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -4902,6 +4917,15 @@
     </ClInclude>
     <ClInclude Include="MHFile.h">
       <Filter>aJACK</Filter>
+    </ClInclude>
+    <ClInclude Include="VipDealItem.h">
+      <Filter>新功能\vip系统</Filter>
+    </ClInclude>
+    <ClInclude Include="VipDialog.h">
+      <Filter>新功能\vip系统</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomizingNameDlg.h">
+      <Filter>新功能\自定义称号</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

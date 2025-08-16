@@ -707,7 +707,8 @@ public:
 	MONEYTYPE GetGoldMoney(){return m_HeroInfo.GoldMoney;}
 
 	//void SetGoldMoney(MONEYTYPE ChangeValue,BYTE nFlag,DWORD ItemIdx=0);
-	void SetGoldMoney(MONEYTYPE ChangeValue,BYTE nFlag,DWORD ItemIdx=0,DWORD ItemDurability=0);
+	//void SetGoldMoney(MONEYTYPE ChangeValue,BYTE nFlag,DWORD ItemIdx=0,DWORD ItemDurability=0);
+	void SetGoldMoney(MONEYTYPE ChangeValue, BYTE nFlag, WORD ItemIdx = 0, WORD ItemDurability = 0);
 
 	MONEYTYPE GetSwMoney(){return m_HeroInfo.Fame;}
 
@@ -1253,11 +1254,10 @@ public:
 
 	void    SetPlayerLucker();
 
-	// 2015-01-22 
-
-	bool    IsFlashNameFlag(){return  m_HeroCharacterInfo.FlashNameFlag!=0;}
-	void    SetFlashNameFlag(WORD Flag){ m_HeroCharacterInfo.FlashNameFlag=Flag;}
-	WORD    GetFlashNameFlag(){return m_HeroCharacterInfo.FlashNameFlag;}
+	//闪名称号函数定义
+	bool	IsFlgName() { return m_HeroCharacterInfo.FlgName != 0; }
+	void	SetFlgName(WORD val) { m_HeroCharacterInfo.FlgName = val; }
+	WORD	GetFlgName() { return m_HeroCharacterInfo.FlgName; }	
 
 
 	//IMAGE NAME BY JACK
@@ -1273,7 +1273,10 @@ public:
 
 	void    ClearGambInfo();
 	void	GetDBGoldMoney();//在线充值元宝刷新	by:胡汉三	QQ:112582793
-	void	UpdateGoldMoney(DWORD DBGoldMoney,DWORD ChangeMoney);
+	//void	UpdateGoldMoney(DWORD DBGoldMoney,DWORD ChangeMoney);
+	void	UpdateGoldMoney(DWORD DBGoldMoney, DWORD ChangeMoney, BOOL bIsSend = FALSE);//在线充值元宝刷新
+	void SyncVipLevelFromDb();
+
 	//weiye 2017-10-23 安全锁相关函数定义 2017-10-24
 
 	void SetSafeStatic(BOOL Val);
@@ -1431,7 +1434,9 @@ public:
 
 	void AddKillTimes();
 	void ClearKillTimes();
-
+	//设置Vip等级
+	void SetVipLevel(DWORD Level);
+	WORD GetVipLevel() { return m_HeroInfo.VipLevel; }//获取Vip等级
 };
 
 #endif // !defined(AFX_PLAYER_H__D36AF2E1_0FD9_4120_B257_64B0BE21D669__INCLUDED_)

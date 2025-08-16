@@ -7030,6 +7030,7 @@ copy ..\Obj\Mapserver\MapServer___Win32_Debug_Console\MapServer.pdb ..\ServerRel
       <Optimization Condition="'$(Configuration)|$(Platform)'=='LATEST RunupMxo|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release _GhostMSO_|Win32'">MaxSpeed</Optimization>
     </ClCompile>
+    <ClCompile Include="VipManager.cpp" />
     <ClCompile Include="WearSlot.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='DEV|Win32'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug_CHINA|Win32'">Disabled</Optimization>
@@ -25305,6 +25306,7 @@ copy ..\Obj\Mapserver\MapServer___Win32_Debug_Console\MapServer.pdb ..\ServerRel
     <ClInclude Include="ShopInvenSlot.h" />
     <ClInclude Include="ShopItemManager.h" />
     <ClInclude Include="ShopItemSlot.h" />
+    <ClInclude Include="VipManager.h" />
     <ClInclude Include="WearSlot.h" />
     <ClInclude Include="Purse.h" />
     <ClInclude Include="Quest.h" />

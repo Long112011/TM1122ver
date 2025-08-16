@@ -371,8 +371,8 @@ enum   DBMESSAGEIDFUNC
 
 	eClearFort,
 
-	eItemFlashUpdate1,
-	eItemFlashUpdate2,
+	//eItemFlashUpdate1,
+	//eItemFlashUpdate2,
 
 	eGetDBGoldMoney,
 
@@ -386,6 +386,9 @@ enum   DBMESSAGEIDFUNC
     eUpDateGradeItem,
 	eItemQualityUpdate,
 	eItemQualityChangeUpdate,
+	eVipGoldSelect,     //VIP数据库回调
+	eVipGoldGetItem,    //VIP数据库回调
+		eCharacterCustomizingName,//weiye 2018-03-26 自定义角色名称回调函数定义
 	MaxQuery
 };
 #define STORED_TEST_QUERY	"UP_GAME_TEST_QUERY"
@@ -634,13 +637,16 @@ enum   DBMESSAGEIDFUNC
 #define STORED_CLEAR_GTRANK_INFO	"dbo.JACK_GTRANK_CLEAR"
 #define STORED_NPCCODE				"dbo.MP_NPCCODE"
 
-#define STORED_ITEM_FLASH1_UPDATE "dbo.MP_ITEM_FLASHNAME1_UPDATE"
-#define STORED_ITEM_FLASH2_UPDATE "dbo.MP_ITEM_FLASHNAME2_UPDATE"
+//#define STORED_ITEM_FLASH1_UPDATE "dbo.MP_ITEM_FLASHNAME1_UPDATE"
+//#define STORED_ITEM_FLASH2_UPDATE "dbo.MP_ITEM_FLASHNAME2_UPDATE"
 
 
 #define STORED_LASTMAP_UPDATE    "dbo.JACK_LASTMAP_UPDATE"
 
 #define STORED_LOGINEVENT_UPDATE		"dbo.JACK_LOGINEVENT_UPDATE"
+
+#define STORED_VIP_GOLD_SELECT       "dbo.MP_CHARACTER_GoldSelect"  
+#define STORED_VIP_GOLD_GETITEM      "dbo.MP_CHARACTER_GoldGetItem" 
 
 enum AuctionPage
 {
@@ -679,7 +685,7 @@ enum CHSelectInfo
 
 	eCS_KillPlayerTimes,
 
-	eCS_SkillSlot
+	eCS_SkillSlot, eCS_VipLevel, eCS_CustomizingName
 	//eCS_ForbidChat,
 };
 
@@ -1974,17 +1980,16 @@ void NPCCODE( DWORD CharacterIdx, char* Name, DWORD DBIdx );
 void RNPCCODE( LPQUERY pData, LPDBMESSAGE pMessage );
 
 
-void ItemFlashNameSet(DWORD dwCharacterIdx,DWORD NameFlag);
-void RItemFlashNameSet(LPQUERY pData, LPDBMESSAGE pMessage);
-
-void ItemFlashNameSet2(DWORD dwCharacterIdx,DWORD ItemPos,char * pName);
-void RItemFlashNameSet2(LPQUERY pData, LPDBMESSAGE pMessage);
+//void ItemFlashNameSet(DWORD dwCharacterIdx,DWORD NameFlag);
+//void RItemFlashNameSet(LPQUERY pData, LPDBMESSAGE pMessage);
+//
+//void ItemFlashNameSet2(DWORD dwCharacterIdx,DWORD ItemPos,char * pName);
+//void RItemFlashNameSet2(LPQUERY pData, LPDBMESSAGE pMessage);
 
 void ClearFortWarData();
 
 
-void RUpdateUserCredit(LPQUERY pData, LPDBMESSAGE pMessage);  //在线充值元宝刷新数据库回调处理函数定义	by:胡汉三	QQ:112582793
-void CharacterHeroGoldInfoUpdate(DWORD ID,DWORD GoldMoney); 
+
 
 // 牢带包访
 void DungeonEntrance(DWORD dwConnectionIndex, DWORD dwPlayerMapNum, DWORD dwPlayerIndex, DWORD dwPartyIndex, DWORD dwKeyIndex, DWORD dwItemIndex, DWORD dwItemSLot, WORD wDungeonMapNum, eDIFFICULTY difficulty,DWORD dwMode);
@@ -2000,7 +2005,9 @@ void MallListInfo(DWORD dwCharacterIdx,DWORD Type);
 void RMallListInfo(LPQUERY pData, LPDBMESSAGE pMessage );
 
 void RUpdateUserCredit(LPQUERY pData, LPDBMESSAGE pMessage);  //在线充值元宝刷新数据库回调处理函数定义	by:胡汉三	QQ:112582793
-void CharacterHeroGoldInfoUpdate(DWORD ID,DWORD GoldMoney); 
+//元宝更新数据库
+void CharacterHeroGoldInfoUpdate(DWORD ID, DWORD dwChangeValue, WORD type);
+//元宝交易日志
 void LogGoldMoney(WORD LogType,WORD FromChrID,DWORD FromTotalGold,WORD ToChrID,DWORD ToChrTotalGold,DWORD ChangeGold,DWORD BuyItemIdx,DWORD Durability=0);
 
 
@@ -2030,10 +2037,17 @@ void RItemQualityUpdate(LPQUERY pData, LPDBMESSAGE pMessage);
 void ItemQualityChangeUpdateToDB(DWORD CharacterIdx, DWORD dwDBIdx, WORD wItemIdx, DURTYPE Durability, POSTYPE bPosition, WORD qPosition, DWORD RareIdx/*=0*/, WORD bStatic /*= 0*/, WORD Grade, WORD ItemQuality/*=0*/, WORD ItemEntry1/*=0*/, WORD ItemEntry2/*=0*/, WORD ItemEntry3/*=0*/);
 void RItemQualityChangeUpdate(LPQUERY pData, LPDBMESSAGE pMessage);
 //商城使用日志
+
 void ItemShopUseLog(WORD Type, DWORD dwChrID, char* CharName, WORD wItemIdx, char* ItemName, WORD wItemNum, DWORD TotalMall, DWORD UseMall, DWORD LastMall, DWORD TotalGold, DWORD UseGold, DWORD LastGold, DWORD TotalMoney, DWORD UseMoney, DWORD LastMoney);
 //牛巨任务
 void UpdateQuestN(DWORD characterIdx);
 void UpdateQuestJ(DWORD characterIdx);
+void LoadVipGoldInfo(DWORD dwCharacterIdx, int* VipMaxValue);
+void RLoadVipGoldInfo(LPQUERY pData, LPDBMESSAGE pMessage);
+void LoadVipGoldGetItem(DWORD dwCharacterIdx, WORD VipLevel);
+void RLoadVipGoldGetItem(LPQUERY pData, LPDBMESSAGE pMessage);
+void CharacterCustomizingName(DWORD CharacterIdx, char* Name, DWORD DBIdx);
+void RCharacterCustomizingName(LPQUERY pData, LPDBMESSAGE pMessage);
 
 #endif //__MAPBMSGPARSER_H__
 

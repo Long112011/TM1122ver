@@ -485,6 +485,9 @@ extern void OfficialUpGradeDlg_Func(LONG lId, void* p, DWORD we);
 extern void ItemQuality_DlgFunc(LONG lId, void* p, DWORD we);
 extern void ItemQualityChange_DlgFunc(LONG lId, void* p, DWORD we);
 extern void GGD_Func(LONG lId, void* p, DWORD we);// 武器升阶值转移卷
+extern void VIP_BtnFunc(LONG lId, void* p, DWORD we);//VIP系统
+//自定义称号
+extern void Customizing_DlgFunc(LONG lId, void* p, DWORD we);
 #endif //_GLOBALEVENTFUNC_H_
 
 

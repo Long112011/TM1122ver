@@ -478,6 +478,8 @@ enum PARSE_TYPE
 	eItemQualityDlg,   //装备觉醒
 	eItemQualityChangeDlg,   //装备转换
 	eGradeChangeDLG,	//武器升阶值转移卷
+	eVipDialog,         //vip窗口标志
+	eCustomizingDlg,   //自定义称号
 	eMAX_PARSETYPE_NUM,
 };
 #endif 

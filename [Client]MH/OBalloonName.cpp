@@ -45,7 +45,7 @@ COBalloonName::COBalloonName()
 	m_lShiTuPosX =
 	m_lShiTuTall =
 	m_NameTime =
-	m_FlashNameFlag =
+
 	m_nameIndex =
 	m_ChangeMode =
 
@@ -59,17 +59,19 @@ COBalloonName::COBalloonName()
 	m_lFameRankTall =
 	m_lTopRankPosX =
 	m_lTopRankTall =
-	m_lFlashNameTall =
-	m_lFlashNamePosX =
+
 ////////////////////////////////
 
 
 ////////////////////////////
 	m_lKillCountTall =
+		VIPImageVal = 0;     //初始化VIP图标
+	m_FlgName = 0;       //初始化闪名
 	m_lKillCountPosX = 0;
 
 	//////////////////////////
-
+	m_lCustomizingPosX = 0;
+	m_lCustomizingTall = 0;
 
 
 	m_fgColor		= RGB_HALF(255, 255, 255);
@@ -87,9 +89,8 @@ COBalloonName::COBalloonName()
 	ZeroMemory(m_szStageLogo,		sizeof(m_szStageLogo));
 	ZeroMemory(m_szFame,			sizeof(m_szFame));
 	ZeroMemory(m_szFameRank,		sizeof(m_szFameRank));
-	ZeroMemory(m_FlashName,			sizeof(m_FlashName));
 	ZeroMemory(m_KillCount,			sizeof(m_KillCount));
-
+	ZeroMemory(m_szCustomizingName, sizeof(m_szCustomizingName));
 //	FortUsingCustomNick = FALSE;
 //	ZeroMemory(FortCharacterName, sizeof(FortCharacterName));//kiv
 	
@@ -116,7 +117,7 @@ COBalloonName::COBalloonName()
 	Ischange = FALSE;
 
 	VipImgInfo = NULL;
-	m_VipImgTime = 0;
+	m_VipImgTime = 0;//vip
 	IsVipImgchange = FALSE;
 	VipImgCount = 0;
 }
@@ -207,51 +208,168 @@ BOOL COBalloonName::Render(LONG absX, LONG absY)
 	if (!m_bActive)	return FALSE;
 	if (!m_bShow)	return FALSE;
 	LONG PosY = 0;
-	RECT rect = { (long)(absX + m_lPosX), (long)(absY + m_lTall), 1, 1 };
+	RECT rect = { (long)(absX + m_lPosX), (long)(absY + m_lTall - 20.f), 1, 1 };
+	RECT rect2 = { (long)(absX + m_lPosX - 3.5f), (long)(absY + m_lTall - 20.f), 1, 1 };
+	RECT rect3 = { (long)(absX + m_lPosX - 3.5f), (long)(absY + m_lTall - 20.f), 1, 1 };
+	RECT rect4 = { (long)(absX + m_lPosX - 3.5f), (long)(absY + m_lTall - 20.f), 1, 1 };
+	RECT rect5 = { (long)(absX + m_lPosX - 3.5f), (long)(absY + m_lTall - 20.f), 1, 1 };
+
 	if (m_bSiegeMap)
 	{
 		int nSize = strlen(m_szObjectName) + 2;
 		m_pSiegeName->SetXY(rect.left, rect.top);
 		m_pSiegeName->Render();
-		CFONT_OBJ->RenderFontWithShadow(m_wFontIdx, m_szObjectName, nSize, &rect, RGBA_MERGE(m_fgColor, 255));
+		CFONT_OBJ->RenderFont(m_wFontIdx, m_szObjectName, nSize, &rect, RGBA_MERGE(RGB_HALF(70, 70, 70), 180));
+		rect.left -= 1;
+		rect.top -= 1;
+		CFONT_OBJ->RenderFont(m_wFontIdx, m_szObjectName, nSize, &rect, RGBA_MERGE(m_fgColor, 255));
 	}
 	else if (*m_szObjectName != 0)
 	{
-		if (GetTickCount() >= m_NameTime)
+		// [VIP-1] 计算名字像素宽 → 给 rect/right 赋值，供右锚点使用
+		int nameWidth =
+#ifdef HAS_GetFontTextWidth
+			CFONT_OBJ->GetFontTextWidth(m_wFontIdx, m_szObjectName);
+#else
+			(int)strlen(m_szObjectName) * 8; // 无接口时先估算
+#endif
+		rect.right = rect.left + nameWidth;
+		rect5.right = rect5.left + nameWidth;
+
+		// [VIP-2] 先画 VIP 框（做底层），后面再画名字
+		if (VIPImageVal != 0 && VipImgInfo)
 		{
-			m_fgColor2 = g_NameColor[m_nameIndex + 1];
-			m_fgColor3 = g_NameColor[m_nameIndex];
-			m_NameTime = GetTickCount() + changeTime;
-			if (m_ChangeMode == 0)
-				++m_nameIndex;
-			if (m_nameIndex >= COLOR_LEN)
+			// 动画帧更新（你的原逻辑）
+			if (VipImgInfo->IsTrends && GetTickCount() >= m_VipImgTime)
 			{
-				m_nameIndex = 0;
+				m_VipImgTime = GetTickCount() + ImagechangeTime;
+				if (!IsVipImgchange) VipImgCount++;
+				else { VipImgCount = VipLink[VIPImageVal - 1]; IsVipImgchange = FALSE; }
+				if (VipImgCount >= VipImgInfo->ImageCount + VipLink[VIPImageVal - 1] - 1) IsVipImgchange = TRUE;
+			}
+
+			// 右徽章 + 左/中 资源
+			cImage image;      SCRIPTMGR->GetImage(VipImgCount, &image, PFT_VIPIMGPATH);
+			cImage imageLeft;  SCRIPTMGR->GetImage(223, &imageLeft, PFT_HARDPATH);
+			cImage imageMid;   SCRIPTMGR->GetImage(224, &imageMid, PFT_HARDPATH);
+
+			int leftW = imageLeft.GetImageRect()->right - imageLeft.GetImageRect()->left;
+			int midW = imageMid.GetImageRect()->right - imageMid.GetImageRect()->left;
+
+			const RECT& base = (m_FlgName != 0) ? rect5 : rect;
+			VECTOR2 v1 = { 1.f, 1.f };
+
+			// 右徽章（保持你的 -22, -7 偏移）
+			VECTOR2 posRight; posRight.x = (float)(base.right - 22); posRight.y = (float)(base.top - 7);
+			image.RenderSprite(&v1, NULL, 0, &posRight, RGBA_MERGE(0xffffff, 255));
+
+			// 左 cap（保持 -35, -2 偏移）
+			VECTOR2 posLeft; posLeft.x = (float)(base.left - 35); posLeft.y = (float)(base.top - 2);
+			imageLeft.RenderSprite(&v1, NULL, 0, &posLeft, RGBA_MERGE(0xffffff, 240));
+
+			// 中段平铺
+			float leftEdge = posLeft.x + leftW;
+			float fillWidth = posRight.x - leftEdge; if (fillWidth < 0) fillWidth = 0;
+			VECTOR2 posMid; posMid.y = (float)(base.top - 2);
+			for (float x = 0; x < fillWidth; x += midW) {
+				posMid.x = leftEdge + x;
+				imageMid.RenderSprite(&v1, NULL, 0, &posMid, RGBA_MERGE(0xffffff, 240));
 			}
 		}
-		if (HERO->IsPKMode() == TRUE)
+
+		if (HERO->IsPKMode())
 		{
 			int nSize = strlen(m_szObjectName) + 2;
-			CFONT_OBJ->RenderFontWithShadow(m_wFontIdx, m_szObjectName, nSize, &rect, RGBA_MERGE(m_fgColor, 255));
+			if (m_FlgName != 0)
+			{//设置闪名效果
+				rect5.bottom += 1;
+				rect5.right += 1;
+				rect5.left += 1;
+				CFONT_OBJ->RenderFont(10, m_szObjectName, nSize, &rect5, RGBA_MERGE(RGB_HALF(255, 0, 0), 255));
+				rect5.top += 1;
+				rect2.bottom -= 1;
+				rect2.right -= 1;
+				rect2.left -= 1;
+				CFONT_OBJ->RenderFont(10, m_szObjectName, nSize, &rect2, RGBA_MERGE(RGB_HALF(255, 0, 0), 255));
+				rect2.top += 1;
+				rect4.top -= 1;
+				CFONT_OBJ->RenderFont(10, m_szObjectName, nSize, &rect4, RGBA_MERGE(RGB_HALF(255, 0, 0), 255));
+				rect4.bottom += 2;
+				rect4.top += 2;
+				CFONT_OBJ->RenderFont(10, m_szObjectName, nSize, &rect4, RGBA_MERGE(RGB_HALF(255, 0, 0), 255));
+				CFONT_OBJ->RenderFont(10, m_szObjectName, nSize, &rect3, RGBA_MERGE(RGB_HALF(240, 240, 240), 255));
+			}
+			else
+			{
+				CFONT_OBJ->RenderFont(m_wFontIdx, m_szObjectName, nSize, &rect, RGBA_MERGE(RGB_HALF(70, 70, 70), 180));
+
+				rect.left -= 1;
+				rect.top -= 1;
+				CFONT_OBJ->RenderFont(m_wFontIdx, m_szObjectName, nSize, &rect, RGBA_MERGE(m_fgColor, 255));
+			}
 		}
 		else
 		{
 			int nSize = strlen(m_szObjectName) + 2;
 			BOOL bNormalFont = TRUE;
 			{
-				switch ((int)m_FlashNameFlag)
+				switch ((int)m_FlgName)
 				{
 				case 1:
 				{
-					RECT rectFlash = { (long)(absX + m_lPosX), (long)(absY + m_lTall), 1, 1 };
 					int nSize = strlen(m_szObjectName) + 2;
-					rectFlash.left -= 2;
-					rectFlash.top -= 1;
-					CFONT_OBJ->RenderNoticeMsg(7, m_szObjectName,
-												nSize, &rectFlash, RGBA_MERGE(RGB_HALF(255, 255, 255), 255), RGBA_MERGE(m_fgColor3, 255));
-					bNormalFont = FALSE;
+
+					if (m_FlgName != 0)
+					{
+						// 动态变色计时逻辑
+						if (GetTickCount() >= m_NameTime)
+						{
+							m_NameTime = GetTickCount() + changeTime;
+
+							if (m_ChangeMode == 0)
+								m_nameIndex++;
+							else
+								m_nameIndex--;
+
+							if (m_nameIndex >= COLOR_LEN && m_ChangeMode == 0)
+							{
+								m_ChangeMode = 1;
+								m_nameIndex = COLOR_LEN - 1;
+							}
+							else if (m_nameIndex <= 0 && m_ChangeMode == 1)
+							{
+								m_ChangeMode = 0;
+								m_nameIndex = 0;
+							}
+						}
+
+						// 多层描边渲染
+						rect5.bottom += 1;
+						rect5.right += 1;
+						rect5.left += 1;
+						CFONT_OBJ->RenderFont(10, m_szObjectName, nSize, &rect5, RGBA_MERGE(g_NameColor[m_nameIndex], 255));
+
+						rect5.top += 1;
+						rect2.bottom -= 1;
+						rect2.right -= 1;
+						rect2.left -= 1;
+						CFONT_OBJ->RenderFont(10, m_szObjectName, nSize, &rect2, RGBA_MERGE(g_NameColor[m_nameIndex], 255));
+
+						rect2.top += 1;
+						rect4.top -= 1;
+						CFONT_OBJ->RenderFont(10, m_szObjectName, nSize, &rect4, RGBA_MERGE(g_NameColor[m_nameIndex], 255));
+
+						rect4.bottom += 2;
+						rect4.top += 2;
+						CFONT_OBJ->RenderFont(10, m_szObjectName, nSize, &rect4, RGBA_MERGE(g_NameColor[m_nameIndex], 255));
+
+						CFONT_OBJ->RenderFont(10, m_szObjectName, nSize, &rect3, RGBA_MERGE(RGB_HALF(240, 240, 240), 255));
+
+						bNormalFont = FALSE;
+					}
 				}
 				break;
+
 				case 2:
 				{
 					int nSize = strlen(m_szObjectName);
@@ -277,39 +395,39 @@ BOOL COBalloonName::Render(LONG absX, LONG absY)
 				case 6: break;
 				case 7:
 				{
-					cImage  imageMid; 
-					SCRIPTMGR->GetImage(151, &imageMid, PFT_JACKPATH);
-					cImage  imageRight;
-					SCRIPTMGR->GetImage(152, &imageRight, PFT_JACKPATH);
-					cImage  imageLeft;
-					SCRIPTMGR->GetImage(150, &imageLeft, PFT_JACKPATH);
+					//cImage  imageMid; 
+					//SCRIPTMGR->GetImage(151, &imageMid, PFT_JACKPATH);
+					//cImage  imageRight;
+					//SCRIPTMGR->GetImage(152, &imageRight, PFT_JACKPATH);
+					//cImage  imageLeft;
+					//SCRIPTMGR->GetImage(150, &imageLeft, PFT_JACKPATH);
 
-					
-					VECTOR2	 curpos, vScale;
-					vScale.x = 1;
-					vScale.y = 1;
-					DOUBLE imgLeft = (DOUBLE)imageLeft.GetImageSrcRect()->right - imageLeft.GetImageRect()->left;
-					DOUBLE imgMidd = (DOUBLE)imageMid.GetImageSrcRect()->right - imageMid.GetImageRect()->left;
-					int nSize = strlen(m_szObjectName) + 2;
-					RECT rect = { (long)(absX + m_lPosX), (long)(absY + m_lTall), 1, 1 };
-					
-					{//--------------------------left
-						curpos.x = (long)(rect.left - imgLeft);
-						curpos.y = (long)(absY - m_lTall - 12);
-						imageLeft.RenderSprite(&vScale, NULL, 0, &curpos, RGBA_MERGE(COLORALPHA, 240));
-					}					
-					{//--------------------------middle
-						curpos.x = curpos.x + imgMidd;
-						for (int i = 2; i < nSize; i++)
-						{
-							curpos.x = curpos.x + imgMidd;
-							imageMid.RenderSprite(&vScale, NULL, 0, &curpos, RGBA_MERGE(COLORALPHA, 240));
-						}								
-					}					
-					{//--------------------------right
-						curpos.x = curpos.x + imgMidd;
-						imageRight.RenderSprite(&vScale, NULL, 0, &curpos, RGBA_MERGE(COLORALPHA, 240));
-					}
+					//
+					//VECTOR2	 curpos, vScale;
+					//vScale.x = 1;
+					//vScale.y = 1;
+					//DOUBLE imgLeft = (DOUBLE)imageLeft.GetImageSrcRect()->right - imageLeft.GetImageRect()->left;
+					//DOUBLE imgMidd = (DOUBLE)imageMid.GetImageSrcRect()->right - imageMid.GetImageRect()->left;
+					//int nSize = strlen(m_szObjectName) + 2;
+					//RECT rect = { (long)(absX + m_lPosX), (long)(absY + m_lTall), 1, 1 };
+					//
+					//{//--------------------------left
+					//	curpos.x = (long)(rect.left - imgLeft);
+					//	curpos.y = (long)(absY - m_lTall - 12);
+					//	imageLeft.RenderSprite(&vScale, NULL, 0, &curpos, RGBA_MERGE(COLORALPHA, 240));
+					//}					
+					//{//--------------------------middle
+					//	curpos.x = curpos.x + imgMidd;
+					//	for (int i = 2; i < nSize; i++)
+					//	{
+					//		curpos.x = curpos.x + imgMidd;
+					//		imageMid.RenderSprite(&vScale, NULL, 0, &curpos, RGBA_MERGE(COLORALPHA, 240));
+					//	}								
+					//}					
+					//{//--------------------------right
+					//	curpos.x = curpos.x + imgMidd;
+					//	imageRight.RenderSprite(&vScale, NULL, 0, &curpos, RGBA_MERGE(COLORALPHA, 240));
+					//}
 				}
 				break;
 				}
@@ -320,26 +438,93 @@ BOOL COBalloonName::Render(LONG absX, LONG absY)
 				CFONT_OBJ->RenderFontWithShadow(m_wFontIdx, m_szObjectName, nSize, &rect, RGBA_MERGE(m_fgColor, 255));
 			}
 		}
+		PosY += 40;  // 假设每个名字之间有 15 像素的间隔 
 	}	
+
+	////////帮派称号名字
+	RECT nickrect = { (long)(absX + m_lNickPosX), (long)(absY + m_lNickTall - PosY), 1, 1 };//-45.0f
 	if (*m_szObjectNickName != 0)
-	{
-		RECT nickrect = { (long)(absX + m_lNickPosX), (long)(absY + m_lNickTall - 15.0f), 1, 1 };
+	{//帮会称号
+		
 		int nSize = strlen(m_szObjectNickName) + 2;
-		CFONT_OBJ->RenderFontWithShadow(m_wFontIdx, m_szObjectNickName, nSize, &nickrect, RGBA_MERGE(m_fgColor, 255));
-		PosY = PosY + 15;
+		CFONT_OBJ->RenderFont(m_wFontIdx, m_szObjectNickName, nSize, &nickrect, RGBA_MERGE(RGB_HALF(70, 70, 70), 180));
+		nickrect.left -= 1;
+		nickrect.top -= 1;
+		CFONT_OBJ->RenderFont(m_wFontIdx, m_szObjectNickName, nSize, &nickrect, RGBA_MERGE(m_fgColor, 255));
+	PosY = PosY += 20;
 	}
 	if (*m_szObjectNickName && *m_szPetMasterName)	ASSERT(0);
-	
+	///////////////////////自定义名字
+	RECT Customizingrect1 = { (long)(absX + m_lCustomizingPosX), (long)(absY + m_lCustomizingTall - PosY), 1, 1 };//-45.0f
+	RECT Customizingrect2 = { (long)(absX + m_lCustomizingPosX), (long)(absY + m_lCustomizingTall - PosY), 1, 1 };//-45.0f
+	RECT Customizingrect3 = { (long)(absX + m_lCustomizingPosX), (long)(absY + m_lCustomizingTall - PosY), 1, 1 };//-45.0f
+	RECT Customizingrect4 = { (long)(absX + m_lCustomizingPosX), (long)(absY + m_lCustomizingTall - PosY), 1, 1 };//-45.0f
+
+	if (*m_szCustomizingName != 0)
+	{
+		
+		int nSize = strlen(m_szCustomizingName) + 2;
+		if (m_szCustomizingName != 0 /*&& GetTickCount() >= m_NameTime*/)
+		{//设置闪名效果
+			if (GetTickCount() >= m_NameTime)
+			{
+				//m_fgColor = g_NameColor[m_nameIndex];
+				m_NameTime = GetTickCount() + changeTime;
+
+				if (m_ChangeMode == 0)
+					m_nameIndex++;
+				else
+					m_nameIndex--;
+
+				if (m_nameIndex >= COLOR_LEN && m_ChangeMode == 0)
+				{
+					m_ChangeMode = 1;
+					m_nameIndex = COLOR_LEN - 1;
+				}
+				else if (m_nameIndex <= 0 && m_ChangeMode == 1)
+				{
+					m_ChangeMode = 0;
+					m_nameIndex = 0;
+				}
+			}
+			//}
+
+			Customizingrect4.bottom += 1;
+			Customizingrect4.right += 1;
+			Customizingrect4.left += 1;
+			CFONT_OBJ->RenderFont(10, m_szCustomizingName, nSize, &Customizingrect4, RGBA_MERGE(g_NameColor[m_nameIndex], 255));
+			Customizingrect4.top += 1;
+			Customizingrect1.bottom -= 1;
+			Customizingrect1.right -= 1;
+			Customizingrect1.left -= 1;
+			CFONT_OBJ->RenderFont(10, m_szCustomizingName, nSize, &Customizingrect1, RGBA_MERGE(g_NameColor[m_nameIndex], 255));
+			Customizingrect1.top += 1;
+			Customizingrect3.top -= 1;
+			CFONT_OBJ->RenderFont(10, m_szCustomizingName, nSize, &Customizingrect3, RGBA_MERGE(g_NameColor[m_nameIndex], 255));
+			Customizingrect3.bottom += 2;
+			Customizingrect3.top += 2;
+			CFONT_OBJ->RenderFont(10, m_szCustomizingName, nSize, &Customizingrect3, RGBA_MERGE(g_NameColor[m_nameIndex], 255));
+			CFONT_OBJ->RenderFont(10, m_szCustomizingName, nSize, &Customizingrect2, RGBA_MERGE(RGB_HALF(240, 240, 240), 255));
+			PosY += 20;  // 假设每个名字之间有 15 像素的间隔
+		}
+
+	}
+
+	///////////宠物
+	RECT masterrect = { (long)(absX + m_lMasterPosX), (long)(absY + m_lMasterTall -45.0f), 1, 1 };
+
 	if (*m_szPetMasterName != 0)
 	{
-		RECT masterrect = { (long)(absX + m_lMasterPosX), (long)(absY + m_lMasterTall - 15.0f), 1, 1 };
 		int nSize = strlen(m_szPetMasterName) + 2;
-		CFONT_OBJ->RenderFontWithShadow(m_wFontIdx, m_szPetMasterName, nSize, &masterrect, RGBA_MERGE(m_fgColor, 255));
+		CFONT_OBJ->RenderFont(m_wFontIdx, m_szPetMasterName, nSize, &masterrect, RGBA_MERGE(RGB_HALF(70, 70, 70), 180));
+		masterrect.left -= 1;
+		masterrect.top -= 1;
+		CFONT_OBJ->RenderFont(m_wFontIdx, m_szPetMasterName, nSize, &masterrect, RGBA_MERGE(m_fgColor, 255));
 	}
 	if (*m_szMarryName != 0)
 	{
-		PosY = PosY + 15;
-		RECT marryrect = { (long)(absX + m_lMarryPosX), (long)(absY + m_lMarryTall - PosY), 1, 1 };
+		PosY = PosY += 18;
+		RECT marryrect = { (long)(absX + m_lMarryPosX), (long)(absY + m_lMarryTall - PosY+18), 1, 1 };
 		int nSize = strlen(m_szMarryName) + 2;
 		CFONT_OBJ->RenderFontWithShadow(m_wFontIdx, m_szMarryName, nSize, &marryrect, RGBA_MERGE(m_fgColor, 255),RGBA_MERGE(RGB_HALF(255, 0, 255), 180));
 	}	
@@ -348,104 +533,82 @@ BOOL COBalloonName::Render(LONG absX, LONG absY)
 		RECT shiturect = { (long)(absX + m_lShiTuPosX), (long)(absY + m_lShiTuTall - PosY), 1, 1 };
 		int nSize = strlen(m_szShiTuName) + 2;
 		CFONT_OBJ->RenderFontWithShadow(m_wFontIdx, m_szShiTuName, nSize, &shiturect, RGBA_MERGE(m_fgColor, 255));
-		PosY = PosY + 15;
-	}
-	if (*m_FlashName != 0)
-	{
-		PosY = PosY + 15;
-		RECT FlashNameRect = { (long)(absX + m_lFlashNamePosX), (long)(absY + m_lFlashNameTall - PosY), 1, 1 };
-		int nSize = strlen(m_FlashName) + 2;
-		FlashNameRect.left -= 1;
-		FlashNameRect.top -= 1;
-		VECTOR3 position = { 0 };
-		const float fontHeight = 14.0f;
-		position.x *= GET_MAINWIN_W - 100;
-		position.y *= GET_MAINWIN_H - fontHeight;
-		CFONT_OBJ->RenderNoticeMsg(9, m_FlashName, nSize, &FlashNameRect, RGBA_MERGE(RGB_HALF(255, 255, 255), 255), RGBA_MERGE(m_fgColor2, 255));
+		PosY = PosY += 18;
 	}
 	if (*m_szStageLogo != 0)
 	{
-		PosY = PosY + 5;
 		std::string Buffer = m_szStageLogo;
-		if (Buffer.length()>0)
+		if (!Buffer.empty())
 		{
 			int FindStartPos = 0;
-			static BYTE al = 255;
 			DWORD color = RGBA_MERGE(COLORALPHA, 255);
-			while (FindStartPos >= 0 && FindStartPos< Buffer.length())
+			// 不要预加：PosY += 8; 也不要 PosY -= 5;
+
+			while (FindStartPos >= 0 && FindStartPos < (int)Buffer.length())
 			{
-				int FindPos = Buffer.find('@', FindStartPos);
-				int FindPos2 = Buffer.find('&', FindStartPos);
-				if (FindPos >= 0)
+				int pAt = Buffer.find('@', FindStartPos);
+				int pAmp = Buffer.find('&', FindStartPos);
+				int p = (pAt >= 0) ? pAt : pAmp;
+				if (p < 0) break;
+
+				int idxStart = p + 1;
+				std::string ImgStr = Buffer.substr(idxStart, 3);
+				int ImageIdx = atoi(ImgStr.c_str());
+				if (ImageIdx >= 0 && ImageIdx <= 7)
 				{
-					std::basic_string <char> ImgStr = Buffer.substr(FindPos + 1, 3);
-					std::basic_string <char> FlagStr = Buffer.substr(0, FindPos);
-					int ImageIdx = atoi(ImgStr.c_str());
-					if (ImageIdx != 0 && ImageIdx >= 0 && ImageIdx <= 7)
-					{
-						PosY = PosY - 5;
-						VECTOR2 curpos;
-						VECTOR2 Scaling;
-						Scaling.x = Scaling.y = 1.f;
-						SCRIPTMGR->GetImage(ImageIdx + 1, m_image, PFT_JACKPATH);
-						PosY = PosY + (long)((m_image->GetImageSrcRect()->bottom) - (m_image->GetImageSrcRect()->top));
-						curpos.x = (long)(absX - (float)0.5f - (m_image->GetImageSrcRect()->right - m_image->GetImageSrcRect()->left) / 2);
-						curpos.y = (long)(absY + m_lStageLogoTall - PosY);
-						m_image->RenderSprite(&Scaling, NULL, 0, &curpos, color);
-					}
-					FindStartPos = FindPos + 2;
+					// 选择资源
+					int resIdx = (p == pAt) ? (ImageIdx + 1) : (7 + (ImageIdx + 1));
+					SCRIPTMGR->GetImage(resIdx, m_image, PFT_JACKPATH);
+
+					// 计算当前位置（统一基准：m_lTall）
+					int imgW = m_image->GetImageSrcRect()->right - m_image->GetImageSrcRect()->left;
+					int imgH = m_image->GetImageSrcRect()->bottom - m_image->GetImageSrcRect()->top;
+
+					VECTOR2 curpos, scaling{ 1.f, 1.f };
+					curpos.x = (float)(absX - imgW / 2);
+					curpos.y = (float)(absY + m_lTall - PosY-20);   // 基于 m_lTall
+
+					// 渲染
+					m_image->RenderSprite(&scaling, NULL, 0, &curpos, color);
+
+					// 画完再累计（图片高度 + 你要的间距）
+					PosY += imgH + 2;
 				}
-				else if (FindPos2 >= 0)
-				{
-					std::basic_string <char> ImgStr = Buffer.substr(FindPos2 + 1, 3);
-					std::basic_string <char> FlagStr = Buffer.substr(0, FindPos2);
-					int ImageIdx = atoi(ImgStr.c_str());
-					if (ImageIdx != 0 && ImageIdx >= 0 && ImageIdx <= 7)
-					{
-						PosY = PosY - 5;
-						VECTOR2 curpos;
-						VECTOR2 Scaling;
-						Scaling.x = Scaling.y = 1.f;
-						SCRIPTMGR->GetImage(7 + (ImageIdx + 1), m_image, PFT_JACKPATH);
-						PosY = PosY + (long)((m_image->GetImageSrcRect()->bottom) - (m_image->GetImageSrcRect()->top));
-						curpos.x = (long)(absX - (float)0.5f - (m_image->GetImageSrcRect()->right - m_image->GetImageSrcRect()->left) / 2);
-						curpos.y = (long)(absY + m_lStageLogoTall - PosY);
-						m_image->RenderSprite(&Scaling, NULL, 0, &curpos, color);
-					}
-					FindStartPos = FindPos2 + 2;
-				}
+
+				FindStartPos = p + 2;
 			}
 		}
 	}
+
+	const int kLine = 13; // 统一行高
+
 	if (*m_szFame != 0)
 	{
-		if (*m_szStageLogo == 0)
-			PosY = PosY + 14;
-		else
-			PosY = PosY + 7;
+		// 不要在这里预加 PosY（删掉原来的 +20/+10）
 		DWORD color1 = RGBA_MERGE(RGB_HALF(250, 250, 250), 240);
 		DWORD color2 = RGBA_MERGE(RGB_HALF(10, 10, 10), 255);
-		RECT Famerect = { (long)(absX + m_lFamePosX), (long)(absY + m_lFameTall - PosY), 1, 1 };
-		int nSize = strlen(m_szFame) + 2;
-		Famerect.left -= 1;
-		Famerect.top -= 1;
+
+		RECT Famerect = { (long)(absX + m_lFamePosX),
+						  (long)(absY + m_lTall - PosY), 1, 1 }; // 统一用 m_lTall
+		int nSize = (int)strlen(m_szFame) + 2;
+		Famerect.left -= 4; Famerect.top -= 1;
+
 		CFONT_OBJ->RenderNoticeMsg(14, m_szFame, nSize, &Famerect, color1, color2);
+
+		PosY += kLine; // 画完再进入下一行
 	}
+
 	if (*m_szFameRank != 0)
 	{
-		if (*m_szStageLogo == 0)
-			PosY = PosY + 11;
-		else
-			PosY = PosY + 11; 
-		RECT FameRankrect = { (long)(absX + m_lFameRankPosX), (long)(absY + m_lFameRankTall - PosY - 2), 1, 1 };
-		int nSize = strlen(m_szFameRank) + 2;
-		//CFONT_OBJ->RenderFont(m_wFontIdx, m_szFameRank, nSize, &FameRankrect, RGBA_MERGE(RGB_HALF(70, 70, 70), 180));
-		//FameRankrect.left -= 1;
+		RECT FameRankrect = { (long)(absX + m_lFameRankPosX),
+							  (long)(absY + m_lTall - PosY - 2), 1, 1 };
+		int nSize = (int)strlen(m_szFameRank) + 2;
 		FameRankrect.top -= 2;
-		CFONT_OBJ->RenderFontWithShadow(m_wFontIdx, m_szFameRank, nSize, &FameRankrect, RGBA_MERGE(RGB_HALF(2, 255, 255), 180));
-		PosY = PosY + 5;
+		CFONT_OBJ->RenderFontWithShadow(m_wFontIdx, m_szFameRank, nSize, &FameRankrect,
+			RGBA_MERGE(RGB_HALF(2, 255, 255), 180));
+		PosY = PosY + 4;
 	}
-	else PosY = PosY + 2;
+	//else PosY = PosY + 2;
 	if (m_bIsShowTop)
 	{
 		PosY = PosY + 1;
@@ -490,6 +653,7 @@ BOOL COBalloonName::Render(LONG absX, LONG absY)
 			curpos.x = (long)(absX - (ForTopOneImage.GetImageSrcRect()->right - ForTopOneImage.GetImageSrcRect()->left) / 2) - 1;
 			curpos.y = (long)(absY + m_lTopTall - PosY);
 			ForTopOneImage.RenderSprite(&Scaling, NULL, 0, &curpos, RGBA_MERGE(COLORALPHA, 255));
+
 		}
 		if (bFlagFour)
 		{
@@ -500,12 +664,14 @@ BOOL COBalloonName::Render(LONG absX, LONG absY)
 			//TopRect.top -= 1;
 			CFONT_OBJ->RenderFontWithShadow(m_wFontIdx, Temp, nSize, &TopRect, RGBA_MERGE(RGB_HALF(255, 255, 255), 180));
 		}
+
 	}
+	PosY = PosY += 70;
 	if (false == FORTWARMGR->IsWarStart())
 	{
 		if (m_ImageName != 0 && !HERO->GetAvatarView())
 		{
-			PosY = PosY + 20;
+			
 			if (ImageNameInfo)
 			{
 				if (ImageNameInfo->IsTrends && GetTickCount() >= m_ImageNameTime)
@@ -526,34 +692,114 @@ BOOL COBalloonName::Render(LONG absX, LONG absY)
 						Ischange = TRUE;
 					}
 				}
+
 				cImage  image;
 				SCRIPTMGR->GetImage(ImageNameCount, &image, PFT_IMAGENAME);
-				VECTOR2 curpos;
+				VECTOR2 curpos;		
+				// 如果想让 ImageName 更贴近上一行，可把这个提拉值调为 4~12
+				const int kLift = 0;
 
 				curpos.x = (long)((absX - (image.GetImageRect()->right - image.GetImageRect()->left) / 2) + ImageNameInfo->LeftPosition);
-				curpos.y = (long)(absY - ImageNameInfo->Hight);
+				curpos.y = (float)(absY + m_lTall - PosY - kLift);
 				image.RenderSprite(&ImageNameInfo->Scaling, NULL, 0, &curpos, 0xffffffff);
 			}
 		}
 	}
 	else if (*m_KillCount != 0)//KIV
 	{
-		
+
+
+		PosY = PosY + 55;
+		RECT KillCountRect = { (long)(absX + m_lKillCountPosX), (long)(absY + m_lKillCountTall - PosY), 1, 1 };
+		int nSize = strlen(m_KillCount) + 2;
+		KillCountRect.left -= 1;
+		KillCountRect.top -= 1;
+		DWORD dwColor = TTCLR_CASTLEGUILD;
+		if (strcmp(m_szObjectName, HERO->GetObjectName()) == 0)
 		{
-			PosY = PosY + 55;
-			RECT KillCountRect = { (long)(absX + m_lKillCountPosX), (long)(absY + m_lKillCountTall - PosY), 1, 1 };
-			int nSize = strlen(m_KillCount) + 2;
-			KillCountRect.left -= 1;
-			KillCountRect.top -= 1;
-			DWORD dwColor = TTCLR_CASTLEGUILD;
-			if (strcmp(m_szObjectName, HERO->GetObjectName()) == 0)
-				dwColor = RGB_HALF(255, 0, 0);
-			else
-				dwColor = RGB_HALF(255, 255, 255);
-			CFONT_OBJ->RenderNoticeMsg(3, m_KillCount, nSize, &KillCountRect, RGBA_MERGE(dwColor, 200), RGBA_MERGE(RGB_HALF(10, 10, 10), 180));
+			dwColor = RGB_HALF(255, 0, 0);
 		}
+		else
+		{
+			dwColor = RGB_HALF(255, 255, 255);
+		}
+		CFONT_OBJ->RenderNoticeMsg(3, m_KillCount, nSize, &KillCountRect, RGBA_MERGE(dwColor, 200), RGBA_MERGE(RGB_HALF(10, 10, 10), 180));
+		
 	}
+	//if (VIPImageVal != 0)
+	//{
+	//	if (VipImgInfo)
+	//	{
+	//		// 动画帧更新
+	//		if (VipImgInfo->IsTrends && GetTickCount() >= m_VipImgTime)
+	//		{
+	//			m_VipImgTime = GetTickCount() + ImagechangeTime;
+	//			if (!IsVipImgchange)
+	//			{
+	//				VipImgCount++;
+	//			}
+	//			else
+	//			{
+	//				VipImgCount = VipLink[VIPImageVal - 1];
+	//				IsVipImgchange = FALSE;
+	//			}
+	//			if (VipImgCount >= VipImgInfo->ImageCount + VipLink[VIPImageVal - 1] - 1)
+	//			{
+	//				IsVipImgchange = TRUE;
+	//			}
+	//		}
+
+	//		// 右侧 VIP 徽章图
+	//		cImage image;
+	//		SCRIPTMGR->GetImage(VipImgCount, &image, PFT_VIPIMGPATH);
+
+	//		// 三段框资源
+	//		cImage imageLeft, imageMid;
+	//		SCRIPTMGR->GetImage(223, &imageLeft, PFT_HARDPATH); // 左
+	//		SCRIPTMGR->GetImage(224, &imageMid, PFT_HARDPATH); // 中
+
+	//		int leftW = imageLeft.GetImageRect()->right - imageLeft.GetImageRect()->left;
+	//		int midW = imageMid.GetImageRect()->right - imageMid.GetImageRect()->left;
+
+	//		VECTOR2 vScale = { 1.0f, 1.0f };
+
+	//		// 闪名用 rect5，普通用 rect
+	//		const RECT& base = (m_FlgName != 0) ? rect5 : rect;
+
+	//		// === 绘制右片（VIP 徽章）
+	//		VECTOR2 curposRight;
+	//		curposRight.x = (float)(base.right - 22);
+	//		curposRight.y = (float)(base.top - 7);
+	//		image.RenderSprite(&vScale, NULL, 0, &curposRight, RGBA_MERGE(0xffffff, 255));
+
+	//		// === 绘制左片
+	//		VECTOR2 curposLeft;
+	//		curposLeft.x = (float)(base.left - 35);
+	//		curposLeft.y = (float)(base.top - 2);
+	//		imageLeft.RenderSprite(&vScale, NULL, 0, &curposLeft, RGBA_MERGE(0xffffff, 240));
+
+	//		// === 计算中片填充区域
+	//		float leftEdge = curposLeft.x + leftW;
+	//		float fillWidth = curposRight.x - leftEdge;
+	//		if (fillWidth < 0) fillWidth = 0;
+
+	//		// === 中片绘制（平铺模式）
+	//		VECTOR2 v1 = { 1.f, 1.f };
+	//		VECTOR2 curposMid;
+	//		curposMid.y = (float)(base.top - 2);
+
+	//		for (float x = 0; x < fillWidth; x += midW)
+	//		{
+	//			curposMid.x = leftEdge + x;
+	//			imageMid.RenderSprite(&v1, NULL, 0, &curposMid, RGBA_MERGE(0xffffff, 240));
+	//		}
+	//	}
+	//}
+
+
+
 	return TRUE;
+
 }
 void COBalloonName::SetFortPosX(LONG pos)
 {
@@ -678,17 +924,29 @@ void COBalloonName::SetFameRank(char* fame)
 	SafeStrCpy(m_szFameRank, fame, MAX_MASTERNAME_LENGTH + 1);
 	SetFameRankPosX(-CFONT_OBJ->GetTextExtentEx(m_wFontIdx, m_szFameRank, strlen(m_szFameRank)) / 2);
 }
-void COBalloonName::SetFlashName(char * FlashName)
+//设置闪名
+void COBalloonName::SetOBalloonFlgName(WORD val)
 {
-	if (!FlashName)	return;
-	if (strcmp(FlashName, "") == 0 || strcmp(FlashName, "0") == 0)
+	if (val > 0)
+		m_FlgName = val;
+	else
+		m_FlgName = 0;
+}
+void COBalloonName::SetCustomizingName(char* CustomizingName)
+{//自定义称号
+	if (!CustomizingName)	return;
+
+	if (strcmp(CustomizingName, "0") == 0)
 	{
-		ZeroMemory(m_FlashName, sizeof(m_FlashName));
+		ZeroMemory(m_szCustomizingName, sizeof(m_szCustomizingName));
 		return;
 	}
-	SafeStrCpy(m_FlashName, FlashName, MAX_NAME_LENGTH + 1);
-	SetFlashNamePosX(-CFONT_OBJ->GetTextExtentEx(9, m_FlashName, strlen(m_FlashName)) / 2);
+
+	SafeStrCpy(m_szCustomizingName, CustomizingName, MAX_MONSTER_NAME_LENGTH + 1);
+
+	SetCustomizingNamePosX(-CFONT_OBJ->GetTextExtentEx(m_wFontIdx, m_szCustomizingName, strlen(m_szCustomizingName)) / 2);
 }
+
 void COBalloonName::SetKillCount(char * kill)
 {
 	if (!kill)	return;
@@ -699,4 +957,17 @@ void COBalloonName::SetKillCount(char * kill)
 	}
 	SafeStrCpy(m_KillCount, kill, MAX_NAME_LENGTH + 1);
 	SetKillCountPosX(-CFONT_OBJ->GetTextExtentEx(3, m_KillCount, strlen(m_KillCount)) / 2);
+}
+void COBalloonName::SetOBalloonVIPImage(int val)
+{
+	if (val > 0)
+	{
+		VIPImageVal = val;
+
+		VipImgCount = VipLink[VIPImageVal - 1];
+		VipImgInfo = SCRIPTMGR->GetVipImgInfo(VipImgCount);
+
+	}
+	else
+		VIPImageVal = 0;
 }

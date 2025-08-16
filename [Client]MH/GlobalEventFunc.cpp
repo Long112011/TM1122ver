@@ -261,6 +261,8 @@
 #include "CharacterPVPDialog.h"
 #include "GradeChangeDlg.h"		//武器升阶值转移卷
 #include "OfficialUpGradeDlg.h"
+#include "VipDialog.h"              //VIP头文件引用
+#include "CustomizingNameDlg.h" //自定义名字
 extern HWND _g_hWnd;
 extern BOOL jTweak;
 //extern BOOL   g_IsExit;
@@ -503,6 +505,8 @@ FUNC g_mt_func[] =
 	{ ItemQuality_DlgFunc,"ItemQuality_DlgFunc" },
 	{ ItemQualityChange_DlgFunc,"ItemQualityChange_DlgFunc" },
 	{ GGD_Func, "GGD_Func" }, //武器升阶值转移卷
+	{ VIP_BtnFunc,"VIP_BtnFunc" },                      //VIP驱动函数定义
+	{ Customizing_DlgFunc, "Customizing_DlgFunc" },//自定义名字
 	{NULL, ""},	
 };
 int FUNCSEARCH(char * funcName)
@@ -5824,4 +5828,28 @@ void ItemQualityChange_DlgFunc(LONG lId, void* p, DWORD we)
 void GGD_Func(LONG lId, void* p, DWORD we)	//武器升阶值转移卷
 {
 	GAMEIN->GetGradeChangeDlg()->OnActionEvent(lId, p, we);
+}
+//Vip系统驱动函数定义
+void VIP_BtnFunc(LONG lId, void* p, DWORD we)
+{
+	GAMEIN->GetVipDialog()->OnActionEvent(lId, p, we);
+}
+//自定义称号
+void Customizing_DlgFunc(LONG lId, void* p, DWORD we)
+{
+	switch (lId)
+	{
+	case CH_CONTOMIZINGNAME_OKBTN:
+	{
+		GAMEIN->GetInventoryDialog()->SetDisable(FALSE);
+		GAMEIN->GetCustomizingDlg()->CreatCustomizingNameSyn();
+	}
+	break;
+	case CH_CONTOMIZINGNAME_CANCELBTN:
+	{
+		GAMEIN->GetInventoryDialog()->SetDisable(FALSE);
+		GAMEIN->GetCustomizingDlg()->SetActive(FALSE);
+	}
+	break;
+	}
 }

@@ -326,6 +326,9 @@
 #include "ItemQualityDlg.h"
 #include "ItemQualityChangeDlg.h"
 #include "GradeChangeDlg.h"			//武器升阶值转移卷
+
+#include "VipDialog.h"            //vip系统
+#include "CustomizingNameDlg.h"//自定义名字
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -460,6 +463,7 @@ void cScriptManager::ReleaseImagePathTable()
 		SAFE_DELETE(pImageVip);
 	}
 	m_ImageVipInfo.RemoveAll();
+	//vip资源清理结束
 }
 
 char * cScriptManager::GetMsg( int idx )
@@ -512,6 +516,8 @@ void cScriptManager::InitScriptManager()
 
 	m_ImageJackPath.Initialize(200); //BY JACK
 	m_ImageEmojiPath.Initialize(70); //BY JACK
+	m_ImageVipPath.Initialize(100);
+	m_ImageVipInfo.Initialize(100);
 
 	CMHFile file;
 	sIMAGHARDPATH* pPath = NULL;
@@ -810,7 +816,7 @@ void cScriptManager::InitScriptManager()
 
 		file.Release();
 	}
-	/////////
+	/////////vip
 	VIPIMGINFO* pVipInfo = NULL;
 	if (file.Init(FILE_IMAGE_VIP_INFO, "rb") == TRUE)
 	{
@@ -868,7 +874,7 @@ void cScriptManager::GetImage( int hard_idx, cImage * pImage , ePATH_FILE_TYPE t
 	case PFT_BUFFPATH:	pData = m_BuffHardPath.GetData( hard_idx );	break;
 	case PFT_MINIMAPPATH:	pData = m_MiniMapHardPath.GetData( hard_idx );	break;
 	case PFT_IMAGENAME:	pData = m_ImageNamePath.GetData(hard_idx); break;  //图片称号
-	case PFT_VIPIMGPATH:	pData = m_ImageVipPath.GetData(hard_idx); break;
+	case PFT_VIPIMGPATH:	pData = m_ImageVipPath.GetData(hard_idx); break;//vip
 	case PFT_JACKPOTPATH:	pData = m_JackPotHardPath.GetData( hard_idx );	break;
 
 		case PFT_JACKPATH:	pData = m_ImageJackPath.GetData(hard_idx);break;  //BY JACK
@@ -2930,7 +2936,22 @@ cWindow * cScriptManager::GetDlgInfoFromFile(char * filePath, char* mode)
 				break;
 			}
 
-
+			case  eVipDialog:        // 创建VIP系统窗口  
+			{
+				if ((fp.GetString())[0] == '{')
+					dlg = (cDialog*)GetInfoFromFile((cWindow*)(new VipDialog), &fp);
+				else
+					__asm int 3;
+				break;
+			}
+			case  eCustomizingDlg:// 创建自定义名字
+			{
+				if ((fp.GetString())[0] == '{')
+					dlg = (cDialog*)GetInfoFromFile((cWindow*)(new CCustomizingNameDialog), &fp);
+				else
+					__asm int 3;
+				break;
+			}
 
 
 
@@ -4219,6 +4240,7 @@ cWindow * cScriptManager::GetInfoFromFile(cWindow * wnd, CMHFile * fp)
 				nDoubleClick = fp->GetBool();
 				break;
 			}
+
 		case eWindowBase:
 			{
 				nWindowBase = fp->GetByte();

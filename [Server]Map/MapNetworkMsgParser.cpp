@@ -70,7 +70,7 @@
 #include "TileManager.h"
 
 #include <time.h>
-
+#include "VipManager.h"         //VIP头文件引用
 #include "InsDungeonManager.h"
 #include "InsDungeonMapManager.h"
 
@@ -997,6 +997,17 @@ void MP_CHARMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 			}
 		}
 		break;
+	case MP_CHAR_VIP_GET_SYN:   //获取VIP物品奖励服务端处理
+	{
+		MSG_DWORD* pmsg = (MSG_DWORD*)pMsg;
+
+		CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pmsg->dwObjectID);
+
+		if (!pPlayer) return;
+		if (pmsg->dwData > pPlayer->GetVipLevel()) return; //此处验证VIP等级
+		VIPMGR->DoVipGetItem(pPlayer->GetID(), pmsg->dwData);
+	}
+	break;
 	case  MP_CHAR_BADFAME_GOLD_SYN:
 		{
             MSG_DWORD  * pmsg = (MSG_DWORD*)pMsg;
@@ -1237,7 +1248,7 @@ void MP_USERCONNMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 			QuestSubQuestLoad(pmsg->dwObjectID);
 
 			LoadInstanceDungeonRank(pmsg->dwObjectID);
-
+			VIPMGR->LoadVipInfoFromDB(pPlayer->GetID());  //过图载入VIP设置信息
 			CYHHashTable<HIDE_NPC_INFO>* pHideNpcTable = GAMERESRCMNGR->GetHideNpcTable();
 			HIDE_NPC_INFO* pInfo = NULL;
 
@@ -1339,6 +1350,7 @@ void MP_USERCONNMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 			QuestSubQuestLoad(pmsg->dwObjectID);
 
 			LoadInstanceDungeonRank(pmsg->dwObjectID);
+			VIPMGR->LoadVipInfoFromDB(pPlayer->GetID());  //过图载入VIP设置信息
 
 			CYHHashTable<HIDE_NPC_INFO>* pHideNpcTable = GAMERESRCMNGR->GetHideNpcTable();
 			HIDE_NPC_INFO* pInfo = NULL;
@@ -1750,7 +1762,7 @@ void MP_USERCONNMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 			CharacterAbilityInfo(pmsg->dwObjectID, MP_USERCONN_GAMEIN_SYN);
 
 			CharacterSkinInfo(pPlayer->GetID()); // kiv // skin
-
+			VIPMGR->LoadVipInfoFromDB(pPlayer->GetID());  //过图载入VIP设置信息
 			//SW051129 Pet
 			//CharacterPetInfo(pmsg->dwObjectID, pPlayer->GetUserID());
 

@@ -201,7 +201,6 @@ public:
 
 	void SetShiTuNameBalloon(char* name);
 
-	void SetFlashNameBalloonFlag(int Flag);
 
 	void SetImageNameBalloon(WORD ImageName);
 
@@ -213,9 +212,14 @@ public:
 
 	void SetFameRankBalloon(char* fame);
 
-	void SetFlashNameBalloon(char * FlashName);
 
 	void SetKillCountBalloon(char* kill);
+	//VIPÕº±Í
+	void SetObjectVIPImage(int val);
+	//…Ë÷√…¡√˚
+	void SetObjectFlgName(WORD Flg);
+
+	void SetObjectCustomizingName(char* name);
 
 //protected:
 	// ªÛ≈¬ «‘ºˆµÈ

@@ -8,6 +8,7 @@ class CRankButtonDialog:public cDialog
 	cButton * pHeroBtn;
 	cButton * pMunpBtn;
 	cStatic * pMapInfo;
+	cButton* pVipDlgBtn;
 	cStatic * NotifyIcon[2];
 
 	cImage m_TooltipImage;

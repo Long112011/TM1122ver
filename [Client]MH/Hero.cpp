@@ -611,7 +611,7 @@ void CHero::ApplyInterface()
 	SetMallMoney(m_HeroTotalInfo.MallMoney);
 	SetGoldMoney(m_HeroTotalInfo.GoldMoney);	
 	SetMarryName(m_CharacterInfo.MarryName);
-	SetFlashName(m_CharacterInfo.FlashName);
+	//SetFlashName(m_CharacterInfo.FlashName);
 	SetGoldMoney(m_HeroTotalInfo.GoldMoney);	
 	SetKillCount(m_HeroTotalInfo.dwKillPlayerTimes);
 	SetLevel(m_CharacterInfo.Level);
@@ -1824,7 +1824,8 @@ void CHero::CalcShopItemOption( WORD wIdx, BOOL bAdd, DWORD Param )
 			GAMEIN->GetMoveDialog()->SetExtend( bAdd );
 		}
 	}
-	else if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM )
+	else if( pItemInfo->ItemKind == eSHOP_ITEM_CHARM ||
+		pItemInfo->ItemKind == eSHOP_ITEM_FLGNAME )//ÉÁÃû25
 	{
 		if( pItemInfo->GenGol>0 )
 		{
@@ -3312,23 +3313,23 @@ void CHero::KillEngravingDlg()
 
 
 
-void CHero::SetFlashNameFlag(int Flag)
-{
-	m_CharacterInfo.FlashNameFlag=Flag;
-
-	SetFlashNameBalloonFlag(Flag);
-}
-void CHero::SetFlashName(char * pName)
-{
-   if(!pName)
-   {
-	   return;
-   }
-
-   SafeStrCpy(m_CharacterInfo.FlashName,pName,MAX_NAME_LENGTH+1);
-
-   SetFlashNameBalloon(pName);
-}
+//void CHero::SetFlashNameFlag(int Flag)
+//{
+//	m_CharacterInfo.FlashNameFlag=Flag;
+//
+//	SetFlashNameBalloonFlag(Flag);
+//}
+//void CHero::SetFlashName(char * pName)
+//{
+//   if(!pName)
+//   {
+//	   return;
+//   }
+//
+//   SafeStrCpy(m_CharacterInfo.FlashName,pName,MAX_NAME_LENGTH+1);
+//
+//   SetFlashNameBalloon(pName);
+//}
 
 void CHero::SetKillCount(DWORD val)
 {
@@ -3340,5 +3341,11 @@ void CHero::SetKillCount(DWORD val)
 	SetKillCountBalloon(c);	
 }
 
+void CHero::SetVipLevel(WORD level)
+{
+	m_HeroTotalInfo.VipLevel = level;
 
+	CPlayer::SetVipLevel(level);
+
+}
 

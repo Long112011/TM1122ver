@@ -6296,51 +6296,51 @@ void CPlayer::SetMallMoney(MONEYTYPE ChangeValue,BYTE nFlag,DWORD ItemIdx)
 	CharacterHeroInfoUpdate(this);
 }
 
-void CPlayer::SetGoldMoney(MONEYTYPE ChangeValue,BYTE nFlag,DWORD ItemIdx,DWORD ItemDurability)
-{
-	long  HeroTotalGoldMoney= m_HeroInfo.GoldMoney;
-
-	long  ChangeGoldMoney=ChangeValue;
-
-	long  LastGoldMoney=m_HeroInfo.GoldMoney;
-		
-	if(nFlag==1 || nFlag==2 || nFlag==3||nFlag==6)
-	{
-		LastGoldMoney  = HeroTotalGoldMoney-ChangeGoldMoney;
-		if(ItemIdx!=0)
-		{	//元宝交易日志	by:胡汉三	QQ:112582793
-			LogGoldMoney(eLog_GoldMoneyBuyItem,GetID(),m_HeroInfo.GoldMoney,65533,m_HeroInfo.GoldMoney-ChangeValue,ChangeValue,ItemIdx,ItemDurability);
-		}
-
-
-
-		/*if(ItemIdx!=0)
-		{	//元宝交易日志	by:胡汉三	QQ:112582793
-			LogGoldMoney(eLog_GoldMoneyBuyItem,GetID(),m_HeroInfo.GoldMoney,65533,m_HeroInfo.GoldMoney-ChangeValue,ChangeValue,ItemIdx,ItemDurability);
-		}*/
-	}
-    if(nFlag==4)
-	{       
-        LastGoldMoney  = HeroTotalGoldMoney+ChangeGoldMoney;
-	}
-	if(LastGoldMoney<0)
-	{
-		LastGoldMoney  =0;
-	}
-
-	m_HeroInfo.GoldMoney= LastGoldMoney;
-
-	MSG_MONEY msgMoney;
-	msgMoney.Category = MP_ITEM;
-	msgMoney.Protocol = MP_ITEM_GOLD_MONEY;
-	msgMoney.dwObjectID = GetID();
-	msgMoney.dwTotalMoney= ChangeValue;
-	msgMoney.dwRealMoney = m_HeroInfo.GoldMoney;
-	msgMoney.ItemIdx=ItemIdx;
-	msgMoney.bFlag = nFlag;
-	SendMsg(&msgMoney, sizeof(msgMoney));
-	CharacterHeroGoldInfoUpdate(GetID(),LastGoldMoney); //在线充值元宝刷新 by:胡汉三	QQ:112582793
-}
+//void CPlayer::SetGoldMoney(MONEYTYPE ChangeValue,BYTE nFlag,DWORD ItemIdx,DWORD ItemDurability)
+//{
+//	long  HeroTotalGoldMoney= m_HeroInfo.GoldMoney;
+//
+//	long  ChangeGoldMoney=ChangeValue;
+//
+//	long  LastGoldMoney=m_HeroInfo.GoldMoney;
+//		
+//	if(nFlag==1 || nFlag==2 || nFlag==3||nFlag==6)
+//	{
+//		LastGoldMoney  = HeroTotalGoldMoney-ChangeGoldMoney;
+//		if(ItemIdx!=0)
+//		{	//元宝交易日志	by:胡汉三	QQ:112582793
+//			LogGoldMoney(eLog_GoldMoneyBuyItem,GetID(),m_HeroInfo.GoldMoney,65533,m_HeroInfo.GoldMoney-ChangeValue,ChangeValue,ItemIdx,ItemDurability);
+//		}
+//
+//
+//
+//		/*if(ItemIdx!=0)
+//		{	//元宝交易日志	by:胡汉三	QQ:112582793
+//			LogGoldMoney(eLog_GoldMoneyBuyItem,GetID(),m_HeroInfo.GoldMoney,65533,m_HeroInfo.GoldMoney-ChangeValue,ChangeValue,ItemIdx,ItemDurability);
+//		}*/
+//	}
+//    if(nFlag==4)
+//	{       
+//        LastGoldMoney  = HeroTotalGoldMoney+ChangeGoldMoney;
+//	}
+//	if(LastGoldMoney<0)
+//	{
+//		LastGoldMoney  =0;
+//	}
+//
+//	m_HeroInfo.GoldMoney= LastGoldMoney;
+//
+//	MSG_MONEY msgMoney;
+//	msgMoney.Category = MP_ITEM;
+//	msgMoney.Protocol = MP_ITEM_GOLD_MONEY;
+//	msgMoney.dwObjectID = GetID();
+//	msgMoney.dwTotalMoney= ChangeValue;
+//	msgMoney.dwRealMoney = m_HeroInfo.GoldMoney;
+//	msgMoney.ItemIdx=ItemIdx;
+//	msgMoney.bFlag = nFlag;
+//	SendMsg(&msgMoney, sizeof(msgMoney));
+//	CharacterHeroGoldInfoUpdate(GetID(),LastGoldMoney); //在线充值元宝刷新 by:胡汉三	QQ:112582793
+//}
 
 
 void CPlayer::SetSwMoney(MONEYTYPE ChangeValue,BYTE nFlag,DWORD ItemIdx)
@@ -6838,27 +6838,27 @@ void CPlayer::SetHeroFame(int val,char * aName,char * dName,BYTE Type )
 
 	FAMEMGR->SendFame(this,m_HeroInfo.Fame);
 }
-void CPlayer::GetDBGoldMoney()  //在线充值元宝刷新	by:胡汉三	QQ:112582793
-{
-	char txt[64];
-	sprintf(txt,"EXEC %s %d", "dbo.NEW_SELECT_USER_CREDIT", GetID());
-	g_DB.Query(eQueryType_FreeQuery,eGetDBGoldMoney,GetID(),txt );
-}
+//void CPlayer::GetDBGoldMoney()  //在线充值元宝刷新	by:胡汉三	QQ:112582793
+//{
+//	char txt[64];
+//	sprintf(txt,"EXEC %s %d", "dbo.NEW_SELECT_USER_CREDIT", GetID());
+//	g_DB.Query(eQueryType_FreeQuery,eGetDBGoldMoney,GetID(),txt );
+//}
 
-void CPlayer::UpdateGoldMoney(DWORD DBGoldMoney,DWORD ChangeMoney)//在线充值元宝刷新	by:胡汉三	QQ:112582793
-{
-	m_HeroInfo.GoldMoney = DBGoldMoney;
-	MSG_MONEY msgMoney;
-	msgMoney.Category = MP_ITEM;
-	msgMoney.Protocol = MP_ITEM_GOLD_MONEY;
-	msgMoney.dwObjectID = GetID();
-	msgMoney.dwTotalMoney= ChangeMoney;
-	msgMoney.dwRealMoney = m_HeroInfo.GoldMoney;
-	msgMoney.ItemIdx=0;
-	msgMoney.bFlag = 5;
-	SendMsg(&msgMoney, sizeof(msgMoney));
-	CharacterHeroInfoUpdate(this);
-}
+//void CPlayer::UpdateGoldMoney(DWORD DBGoldMoney,DWORD ChangeMoney)//在线充值元宝刷新	by:胡汉三	QQ:112582793
+//{
+//	m_HeroInfo.GoldMoney = DBGoldMoney;
+//	MSG_MONEY msgMoney;
+//	msgMoney.Category = MP_ITEM;
+//	msgMoney.Protocol = MP_ITEM_GOLD_MONEY;
+//	msgMoney.dwObjectID = GetID();
+//	msgMoney.dwTotalMoney= ChangeMoney;
+//	msgMoney.dwRealMoney = m_HeroInfo.GoldMoney;
+//	msgMoney.ItemIdx=0;
+//	msgMoney.bFlag = 5;
+//	SendMsg(&msgMoney, sizeof(msgMoney));
+//	CharacterHeroInfoUpdate(this);
+//}
 void CPlayer::StartLoginEvent()
 {
 	/*bFirstEvent=true;
@@ -7090,3 +7090,103 @@ INSDG_RANK_INFO* CPlayer::GetInsDGRankInfo(DWORD dwInsDGIndex)
 {
 	return m_InsDGRankInfoTable.GetData(dwInsDGIndex);
 }
+
+
+//设置元宝用户接口
+void CPlayer::SetGoldMoney(MONEYTYPE ChangeValue, BYTE nFlag, WORD ItemIdx, WORD ItemDurability)
+{
+	unsigned long  HeroTotalGoldMoney = m_HeroInfo.GoldMoney;
+
+	unsigned long  ChangeGoldMoney = ChangeValue;
+
+	unsigned long  LastGoldMoney = m_HeroInfo.GoldMoney;
+
+	if (nFlag == eShopUse || nFlag == eNoneItem || nFlag == eFbUse || nFlag == eDeleteBuf || nFlag == eFame || nFlag == eSinged)
+	{
+		if (HeroTotalGoldMoney < ChangeValue)
+		{
+			g_Console.LOGANDFILE(".\\ServerSet\\重要日志\\重要日志.txt",
+				RGB(0, 0, 255), "元宝扣减数据异常 角色ID[%d] 角色名[%s] 元宝数[%d]",
+				GetID(), GetObjectName(), ChangeValue);
+
+			MSG_MONEY msgMoney;
+			msgMoney.Category = MP_ITEM;
+			msgMoney.Protocol = MP_ITEM_GOLD_MONEY;
+			msgMoney.dwObjectID = GetID();
+			msgMoney.dwTotalMoney = m_HeroInfo.GoldMoney;
+			msgMoney.dwRealMoney = 0;
+			msgMoney.ItemIdx = ItemIdx;
+			msgMoney.bFlag = eNoneItem;
+			SendMsg(&msgMoney, sizeof(msgMoney));
+
+			CharacterHeroGoldInfoUpdate(GetID(), m_HeroInfo.GoldMoney, nFlag);//在线充值元宝刷新
+			m_HeroInfo.GoldMoney = 0;
+			return;
+		}
+		else
+			LastGoldMoney = HeroTotalGoldMoney - ChangeGoldMoney;
+	}
+	if (nFlag == eGetGoldMoney || nFlag == eVipGet)
+	{
+		LastGoldMoney = HeroTotalGoldMoney + ChangeGoldMoney;
+	}
+	if (LastGoldMoney < 0)
+	{
+		LastGoldMoney = 0;
+	}
+	m_HeroInfo.GoldMoney = LastGoldMoney;
+
+	MSG_MONEY msgMoney;
+	msgMoney.Category = MP_ITEM;
+	msgMoney.Protocol = MP_ITEM_GOLD_MONEY;
+	msgMoney.dwObjectID = GetID();
+	msgMoney.dwTotalMoney = ChangeValue;
+	msgMoney.dwRealMoney = m_HeroInfo.GoldMoney;
+	msgMoney.ItemIdx = ItemIdx;
+	msgMoney.bFlag = nFlag;
+	SendMsg(&msgMoney, sizeof(msgMoney));
+	CharacterHeroGoldInfoUpdate(GetID(), ChangeValue, nFlag);//单独元宝刷新
+}
+void CPlayer::UpdateGoldMoney(DWORD DBGoldMoney, DWORD ChangeMoney, BOOL bIsSend)//在线充值元宝刷新
+{
+	m_HeroInfo.GoldMoney = DBGoldMoney;
+	if (bIsSend)
+	{
+		MSG_MONEY msgMoney;
+		msgMoney.Category = MP_ITEM;
+		msgMoney.Protocol = MP_ITEM_GOLD_MONEY;
+		msgMoney.dwObjectID = GetID();
+		msgMoney.dwTotalMoney = ChangeMoney;
+		msgMoney.dwRealMoney = m_HeroInfo.GoldMoney;
+		msgMoney.ItemIdx = 0;
+		msgMoney.bFlag = eOnlineRef;
+		SendMsg(&msgMoney, sizeof(msgMoney));
+	}
+}
+void CPlayer::GetDBGoldMoney()  //在线充值元宝刷新
+{
+	char txt[64];
+	sprintf(txt, "EXEC %s %d", "dbo.MP_CHARACTER_GetGoldMoney", GetID());
+	g_DB.Query(eQueryType_FreeQuery, eGetDBGoldMoney, GetID(), txt);
+}
+void CPlayer::SetVipLevel(DWORD Level)
+{
+	m_HeroInfo.VipLevel = Level;
+	m_HeroCharacterInfo.VipLevel = Level;
+	if (m_HeroInfo.VipLevel < 0)
+	{
+		m_HeroInfo.VipLevel = 0;
+	}
+	if (m_HeroCharacterInfo.VipLevel < 0)
+	{
+		m_HeroCharacterInfo.VipLevel = 0;
+	}
+	MSG_DWORD msg;
+	msg.Category = MP_CHAR;
+	msg.Protocol = MP_CHAR_VIPLEVEL_ACK;
+	msg.dwObjectID = GetID();
+	msg.dwData = Level;
+	SendMsg(&msg, sizeof(msg));
+	CharacterHeroInfoUpdate(this);//更新Vip等级  使用全局更新
+}
+

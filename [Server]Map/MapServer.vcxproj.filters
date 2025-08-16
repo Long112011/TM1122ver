@@ -328,6 +328,9 @@
     <Filter Include="Dungeon\InstanceDungeon">
       <UniqueIdentifier>{1025948f-2f1c-4ea6-ac8a-2b92217bd820}</UniqueIdentifier>
     </Filter>
+    <Filter Include="新功能">
+      <UniqueIdentifier>{0c8bfde1-75e6-4137-a5e3-cba98cec003b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CommonNetworkMsgParser.cpp">
@@ -1358,6 +1361,9 @@
     </ClCompile>
     <ClCompile Include="..\[CC]JACK\MHFile.cpp">
       <Filter>JACK</Filter>
+    </ClCompile>
+    <ClCompile Include="VipManager.cpp">
+      <Filter>新功能</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2536,6 +2542,9 @@
     </ClInclude>
     <ClInclude Include="..\[CC]JACK\MHFile.h">
       <Filter>JACK</Filter>
+    </ClInclude>
+    <ClInclude Include="VipManager.h">
+      <Filter>新功能</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -599,60 +599,30 @@ BOOL CGMToolManager::OnItemCommand()
 		msg.Money  		= dwMoney;
 		NETWORK->Send( &msg, sizeof(msg) );	
 	}
-	else if( SendMessage( GetDlgItem( m_hWndSub[eMenu_Item], IDC_GMITEM_BTN_PD ), BM_GETCHECK, 0, 0 ) == BST_CHECKED )
+	else if (SendMessage(GetDlgItem(m_hWndSub[eMenu_Item], IDC_GMITEM_BTN_SKILL), BM_GETCHECK, 0, 0) == BST_CHECKED)
 	{
-		BOOL rt;
-		DWORD dwMoney = GetDlgItemInt( m_hWndSub[eMenu_Item], IDC_GMITEM_PD, &rt, TRUE );
-		if( !rt )	return FALSE;
-		SetDlgItemInt( m_hWndSub[eMenu_Item], IDC_GMITEM_PD, 0, TRUE );
-		MSG_GM_GETPD  msg;
-		msg.Category	= MP_CHEAT;
-		msg.Protocol	= MP_CHEAT_ADDPD_EXT_SYN;
-		msg.dwObjectID	= HEROID;
-		msg.TargetType   = TargetType;
-		SafeStrCpy(msg.TargetName, TargetName,MAX_NAME_LENGTH+1);
-		msg.PdMoney 	= dwMoney;
-		NETWORK->Send( &msg, sizeof(msg) );	
-	}
-	else if( SendMessage( GetDlgItem( m_hWndSub[eMenu_Item], IDC_GMITEM_BTN_GOLD ), BM_GETCHECK, 0, 0 ) == BST_CHECKED )
-	{
-		BOOL rt;
-		DWORD dwMoney = GetDlgItemInt( m_hWndSub[eMenu_Item], IDC_GMITEM_GOLD, &rt, TRUE );
-		if( !rt )	return FALSE;
-		SetDlgItemInt( m_hWndSub[eMenu_Item], IDC_GMITEM_GOLD, 0, TRUE );
-		MSG_GM_GETGOLD  msg;
-		msg.Category	= MP_CHEAT;
-		msg.Protocol	= MP_CHEAT_ADDGOLD_EXT_SYN;
-		msg.dwObjectID	= HEROID;
-		msg.TargetType   = TargetType;
-		SafeStrCpy(msg.TargetName, TargetName,MAX_NAME_LENGTH+1);
-		msg.GoldMoney	=dwMoney ;
-		NETWORK->Send( &msg, sizeof(msg) );					 
-	}
-	else if( SendMessage( GetDlgItem( m_hWndSub[eMenu_Item], IDC_GMITEM_BTN_SKILL ), BM_GETCHECK, 0, 0 ) == BST_CHECKED )
-	{
-		GetDlgItemText( m_hWndSub[eMenu_Item], IDC_GMITEM_CMB_SKILL, buf, MAX_ITEMNAME_LENGTH+1 );
-		int nSel = SendDlgItemMessage( m_hWndSub[eMenu_Item], IDC_GMITEM_CMB_SKILLSUNG, CB_GETCURSEL, 0, 0 );
-		if( nSel < 0 )			nSel = 0;
-		else if( nSel > 12 )	nSel = 12;
-		ITEM_INFO* pInfo = ITEMMGR->FindItemInfoForName( buf );
-		if( pInfo == NULL ) return FALSE;
-		CMugongBase* pBase = MUGONGMGR->GetMugongByMugongIdx( pInfo->MugongNum );
-		if( pBase == NULL )
+		GetDlgItemText(m_hWndSub[eMenu_Item], IDC_GMITEM_CMB_SKILL, buf, MAX_ITEMNAME_LENGTH + 1);
+		int nSel = SendDlgItemMessage(m_hWndSub[eMenu_Item], IDC_GMITEM_CMB_SKILLSUNG, CB_GETCURSEL, 0, 0);
+		if (nSel < 0)			nSel = 0;
+		else if (nSel > 12)	nSel = 12;
+		ITEM_INFO* pInfo = ITEMMGR->FindItemInfoForName(buf);
+		if (pInfo == NULL) return FALSE;
+		CMugongBase* pBase = MUGONGMGR->GetMugongByMugongIdx(pInfo->MugongNum);
+		if (pBase == NULL)
 		{
 			MSG_WORD3 msg;
-			msg.Category	= MP_CHEAT;
-			msg.Protocol	= MP_CHEAT_ADDMUGONG_SYN;
-			msg.dwObjectID	= HEROID;
-			msg.wData1		= pInfo->MugongNum;
-			msg.wData2		= pInfo->ItemKind;
-			msg.wData3		= nSel;
-			NETWORK->Send(&msg,sizeof(msg));
-			EnableWindow( GetDlgItem( m_hWndSub[eMenu_Item], IDC_GMITEM_CMB_SKILLSUNG ), TRUE );
+			msg.Category = MP_CHEAT;
+			msg.Protocol = MP_CHEAT_ADDMUGONG_SYN;
+			msg.dwObjectID = HEROID;
+			msg.wData1 = pInfo->MugongNum;
+			msg.wData2 = pInfo->ItemKind;
+			msg.wData3 = nSel;
+			NETWORK->Send(&msg, sizeof(msg));
+			EnableWindow(GetDlgItem(m_hWndSub[eMenu_Item], IDC_GMITEM_CMB_SKILLSUNG), TRUE);
 		}
 		else
 		{
-			if( pBase->GetSung() != nSel )
+			if (pBase->GetSung() != nSel)
 			{
 				MSG_WORD2 msg;
 				msg.Category = MP_CHEAT;
@@ -660,26 +630,69 @@ BOOL CGMToolManager::OnItemCommand()
 				msg.dwObjectID = HEROID;
 				msg.wData1 = pInfo->MugongNum;
 				msg.wData2 = nSel;
-				NETWORK->Send(&msg,sizeof(msg));
+				NETWORK->Send(&msg, sizeof(msg));
 			}
 		}
 	}
-	else if( SendMessage( GetDlgItem( m_hWndSub[eMenu_Item], IDC_GMITEM_BTN_ABILITY ), BM_GETCHECK, 0, 0 ) == BST_CHECKED )
+	else if (SendMessage(GetDlgItem(m_hWndSub[eMenu_Item], IDC_GMITEM_BTN_ABILITY), BM_GETCHECK, 0, 0) == BST_CHECKED)
 	{
 		BOOL rt;
-		int nAbil = GetDlgItemInt( m_hWndSub[eMenu_Item], IDC_GMITEM_EDT_ABILITY, &rt, TRUE );
-		if( nAbil <= 0 ) return FALSE;
-		if( nAbil > 1000000000 ) nAbil = 1000000000;	
-		SetDlgItemInt( m_hWndSub[eMenu_Item], IDC_GMITEM_EDT_ABILITY, 0, TRUE );
-		MSG_GM_GETABILTY msg;  
+
+		int nAbil = GetDlgItemInt(m_hWndSub[eMenu_Item], IDC_GMITEM_EDT_ABILITY, &rt, TRUE);
+		if (nAbil <= 0) return FALSE;
+		if (nAbil > 1000000000) nAbil = 1000000000;
+		SetDlgItemInt(m_hWndSub[eMenu_Item], IDC_GMITEM_EDT_ABILITY, 0, TRUE);
+		MSG_GM_GETABILTY msg;
 		msg.Category = MP_CHEAT;
-		msg.Protocol =  MP_CHEAT_ADDABILTY_EXT_SYN;  
+		msg.Protocol = MP_CHEAT_ADDABILTY_EXT_SYN;
 		msg.dwObjectID = HEROID;
 		msg.dwData = (DWORD)nAbil;
-		msg.TargetType=TargetType;
-		SafeStrCpy(msg.TargetName, TargetName,MAX_NAME_LENGTH+1);  				 
-		NETWORK->Send(&msg,sizeof(msg));
-	}
+		msg.TargetType = TargetType;
+		SafeStrCpy(msg.TargetName, TargetName, MAX_NAME_LENGTH + 1);
+		NETWORK->Send(&msg, sizeof(msg));
+
+		}
+	else if (SendMessage(GetDlgItem(m_hWndSub[eMenu_Item], IDC_GMITEM_BTN_PD), BM_GETCHECK, 0, 0) == BST_CHECKED)
+	{
+		BOOL rt;
+		int nMallMoney = GetDlgItemInt(m_hWndSub[eMenu_Item], IDC_GMITEM_PD, &rt, TRUE); // <-- 用编辑框ID
+		if (!rt)	return FALSE;
+//		if (!rt) { CHATMGR->AddMsg(CTC_TOGM, "[GM] 泡点：输入无效或控件ID不对"); return TRUE; }
+		if (nMallMoney <= 0) return FALSE;
+		if (nMallMoney > 1000000000) nMallMoney = 1000000000;
+		SetDlgItemInt(m_hWndSub[eMenu_Item], IDC_GMITEM_PD, 0, TRUE);
+		MSG_NAME_DWORD4 msg{};                               // {} 保证清零，避免未初始化 Name
+		msg.Category = MP_CHEAT;
+		msg.Protocol = MP_CHEAT_GMGETMALL_SYN;
+		msg.dwObjectID = HEROID;
+		msg.dwData1 = (DWORD)nMallMoney;
+		if (m_GetMode == eGetToCharacter) sprintf(msg.Name, m_SelectName);
+		msg.dwData3 = m_GetMode;
+		NETWORK->Send(&msg, sizeof(msg));
+	//	CHATMGR->AddMsg(CTC_TOGM, "[GM] 发放泡点: %d", nMallMoney);
+		}
+	else if (SendMessage(GetDlgItem(m_hWndSub[eMenu_Item], IDC_GMITEM_BTN_GOLD), BM_GETCHECK, 0, 0) == BST_CHECKED)
+	{
+		BOOL rt;
+	int nGoldMoney = GetDlgItemInt(m_hWndSub[eMenu_Item], IDC_GMITEM_GOLD, &rt, TRUE); // <-- 用编辑框ID
+//		if (!rt) { CHATMGR->AddMsg(CTC_TOGM, "[GM] 元宝：输入无效或控件ID不对"); return TRUE; }
+	if (nGoldMoney <= 0) return FALSE;
+	if (nGoldMoney > 1000000000) nGoldMoney = 1000000000;
+	SetDlgItemInt(m_hWndSub[eMenu_Item], IDC_GMITEM_GOLD, 0, TRUE);
+
+		MSG_NAME_DWORD4 msg{};
+		msg.Category = MP_CHEAT;
+		msg.Protocol = MP_CHEAT_GMGETGOLD_SYN;
+		msg.dwObjectID = HEROID;
+		msg.dwData1 = (DWORD)nGoldMoney;
+		if (m_GetMode == eGetToCharacter) sprintf(msg.Name, m_SelectName);
+		msg.dwData3 = m_GetMode;
+		NETWORK->Send(&msg, sizeof(msg));
+		//CHATMGR->AddMsg(CTC_TOGM, "[GM] 发放元宝: %d", nGoldMoney);
+		}
+
+
+
 	if( nResult == 1 )
 	{
 		ITEM_INFO* pInfo = ITEMMGR->FindItemInfoForName( buf );
@@ -2765,7 +2778,7 @@ INT_PTR CALLBACK GMSubItemDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARA
 		break;
 	case WM_INITDIALOG:
 		{
-			CheckRadioButton( hWnd, IDC_GMITEM_BTN_WEAPON, IDC_GMITEM_BTN_ABILITY, IDC_GMITEM_BTN_GOLD );
+		CheckRadioButton(hWnd, IDC_GMITEM_BTN_WEAPON, IDC_GMITEM_BTN_GOLD, IDC_GMITEM_BTN_GOLD);
 		}
 		return FALSE;
 	case WM_COMMAND:
@@ -3030,6 +3043,7 @@ INT_PTR CALLBACK GMSubItemDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARA
 					break;
 				case IDC_GMITEM_BTN_PD:
 					{
+					CheckRadioButton(hWnd, IDC_GMITEM_BTN_WEAPON, IDC_GMITEM_BTN_GOLD, IDC_GMITEM_BTN_PD);
 						EnableWindow( GetDlgItem( hWnd, IDC_GMITEM_CMB_WEAPON ),	FALSE );
 						EnableWindow( GetDlgItem( hWnd, IDC_GMITEM_CMB_WEAPONGRADE ),	FALSE );
 						EnableWindow( GetDlgItem( hWnd, IDC_GMITEM_CMB_CLOTHES ),		FALSE );
@@ -3042,7 +3056,7 @@ INT_PTR CALLBACK GMSubItemDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARA
 						EnableWindow( GetDlgItem( hWnd, IDC_GMITEM_CMB_ETC ),			FALSE );
 						EnableWindow( GetDlgItem( hWnd, IDC_GMITEM_EDT_ETC ),			FALSE );
 						EnableWindow( GetDlgItem( hWnd, IDC_GMITEM_SPN_ETC ),			FALSE );
-						EnableWindow( GetDlgItem( hWnd, IDC_GMITEM_EDT_MONEY ),			FALSE );
+						EnableWindow( GetDlgItem( hWnd, IDC_GMITEM_EDT_MONEY ),			FALSE ); 
 						EnableWindow( GetDlgItem( hWnd, IDC_GMITEM_CMB_SKILL ),			FALSE );
 						EnableWindow( GetDlgItem( hWnd, IDC_GMITEM_CMB_SKILLSUNG ),		FALSE );
 						EnableWindow( GetDlgItem( hWnd, IDC_GMITEM_EDT_ABILITY ),FALSE );
@@ -3052,6 +3066,7 @@ INT_PTR CALLBACK GMSubItemDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARA
 					break;
 				case IDC_GMITEM_BTN_GOLD:
 					{
+					CheckRadioButton(hWnd, IDC_GMITEM_BTN_WEAPON, IDC_GMITEM_BTN_GOLD, IDC_GMITEM_BTN_GOLD);
 						EnableWindow( GetDlgItem( hWnd, IDC_GMITEM_CMB_WEAPON ),		FALSE );
 						EnableWindow( GetDlgItem( hWnd, IDC_GMITEM_CMB_WEAPONGRADE ),	FALSE );
 						EnableWindow( GetDlgItem( hWnd, IDC_GMITEM_CMB_CLOTHES ),		FALSE );

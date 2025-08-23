@@ -762,7 +762,7 @@ BOOL CSkillManager::OnSkillCommand(CHero* pHero, CActionTarget* pTarget, BOOL bM
 			return FALSE;
 		if (pTObj->IsDied() == TRUE)
 			return FALSE;
-		if (pHero->GetWeaponEquipType() != WP_EVENT)
+		if (pHero->GetWeaponEquipType() != WP_EVENT)//雪人手套才能打
 		{
 			if (pTObj->GetObjectKind() & eObjectKind_Monster)
 			{

@@ -19,28 +19,28 @@ enum eFncOptPetTotalInfo{ eWithNULLOBJ, eWithNULL };
 enum ePetUpgradeResult{eUpgradeSucess=0, eUpgradeFailforProb=1, eUpgradeFailforEtc=2, eUpgradeFailfor3rdUp=3, eUpgradeFailforSamePetSummoned=4,};
 enum ePetFeedResult{ePFR_Sucess=0, ePFR_Unsummoned, ePFR_StaminaFull};
 
-//¹öÇÁ
+//
 enum ePetBuffKind
 {ePB_None,
-ePB_Demage_Percent=1,		//ÀÏÁ¤ È®·ü·Î µ¥¹ÌÁö Áõ°¡
-ePB_Dodge=2,				//ÀÏÁ¤ È®·ü·Î È¸ÇÇ
-ePB_MasterAllStatUp=3,		//ÁÖÀÎÄ³¸¯ÅÍ ½ºÅÈ Çâ»ó
-ePB_Item_DoubleChance=4,	//ÀÏÁ¤ È®·ü·Î ¾ÆÀÌÅÛ È¹µæ 2¹è
-ePB_NoForeAtkMonster=5,		//¼±°ø¸÷¿¡°Ô ºñ¼±°ø È¿°ú //ÀÏ¹Ý¸÷
-ePB_ReduceCriticalDmg=6,	//¹Þ´ÂÀÏ°Ýµ¥¹ÌÁö°¨¼Ò
-ePB_MasterAllStatRound=7,	//ÁÖÀÎÄ³¸¯ÅÍ ½ºÅÈ ¹Ý¿Ã¸²
-ePB_Item_RareProbUp=8,		//·¹¾îÈ¹µæÈ®·ü Áõ°¡
-ePB_MussangTimeIncrease=9,	//¹«½Ö¹ßµ¿½Ã°£ Áõ°¡
+ePB_Demage_Percent = 1,		//Ôö¼Ó¹¥»÷Á¦
+ePB_Dodge = 2,				//ÉÁ±Ü
+ePB_MasterAllStatUp = 3,		//ËùÓÐÊôÐÔÔö¼Ó
+
+ePB_Item_DoubleChance = 4,	//»ñµÃÎïÆ·»úÂÊÌáÉý
+ePB_NoForeAtkMonster = 5,		//°²¸§Ö÷¶¯¹ÖÎï
+ePB_ReduceCriticalDmg = 6,	//¼õÉÙÊÜµ½·ÜÁ¦Ò»»÷ÉËº¦
+ePB_MasterAllStatRound = 7,	//ÊôÐÔµ÷Õû
+ePB_Item_RareProbUp = 8,		//»ñµÃ×£¸£×°±¸»úÂÊÔö¼Ó
+ePB_MussangTimeIncrease = 9,	//ÎÞË«Ä£Ê½Î¬³ÖÊ±¼äÔö¼Ó
 
 ePB_ReduceCriticalRate = 10,
 ePB_ReduceDemageRate = 11,
 ePB_ReduceCriticalDmgPlayer = 12,
 
 ePB_Kind_Max};
-//Æê¼ÒÈ¯»óÅÂ
+//
 enum PetSummonning{ePSS_ReleaseSummon,ePSS_SaveSummon};
 
-//ÆêÁ¾·ù
 enum ePetKind{ePK_None, ePK_CommonPet=1, ePK_ShopItemPet=2, ePK_EventPet=4,};
 
 
@@ -68,13 +68,13 @@ struct PETEQUIP_ITEMOPTION
 		iPetStaminaRecoverateAmount(0),
 		iPetFriendshipIncrease(0),
 		fPetFriendshipProtectionRate(0){};
-	int	iPetStaminaReductionDecrease;	//Æê ½ºÅÂ¹Ì³ª ¼Òºñ °¨¼Ò·®(%)
-	int	iPetStaminaMaxIncreaseAmount;	//Æê ½ºÅÂ¹Ì³ª ÃÖ´ëÄ¡ Áõ°¡·®(val)
-	int	iPetStaminaRecoverateIncrease;	//Æê ½ºÅÂ¹Ì³ª È¸º¹ Áõ°¡·®(%)
-	int	iPetStaminaRecoverateAmount;	//Æê ½ºÅÂ¹Ì³ª È¸º¹ Ãß°¡·®(val)
-	int	iPetFriendshipIncrease;	//Æê Ä£¹Ðµµ Ãß°¡ È¹µæ·®(%)
-	//SW070531 Æê Ä£¹Ðµµ º¸È£±â´É
-	float fPetFriendshipProtectionRate;	//ÁÖÀÎ ºÎÈ° ½Ã Æê Ä£¹Ðµµ ÇÏ¶ô º¸È£·®(%)
+	int	iPetStaminaReductionDecrease;	//
+	int	iPetStaminaMaxIncreaseAmount;	//
+	int	iPetStaminaRecoverateIncrease;	//
+	int	iPetStaminaRecoverateAmount;	//
+	int	iPetFriendshipIncrease;	//
+
+	float fPetFriendshipProtectionRate;	//
 };
 
 class CPlayer;
@@ -102,18 +102,18 @@ class CPetManager
 
 	DWORD							m_dwResummonDelayTime;
 
-	//SW070531 Æê Ä£¹Ðµµ º¸È£±â´É
+	//SW070531 
 	int								m_iFriendshipReduceAmount;
 
-	//SW061211 Å©¸®½º¸¶½ºÀÌº¥Æ®
-	DWORD							m_dwEventPetSummonRemainTime;	//ºÀÀÎµÉ ½Ã°¢ ->¼ÒÈ¯½Ã°¢ + 30Min
-	DWORD							m_dwEventPetCheckTime;			//ÇÁ·Î¼¼½º Ã¼Å·
+	//SW061211 
+	DWORD							m_dwEventPetSummonRemainTime;	//
+	DWORD							m_dwEventPetCheckTime;			//
 
 	WORD							m_wPetKind;
 
 	DWORD		m_dwPetValidDistPosCheckTime;
 
-	int								m_BuffFlag;	//Æê ¹öÇÁ Á¤º¸ °ü·Ã
+	int								m_BuffFlag;	//
 	BuffData						m_BuffData[ePB_Kind_Max];
 
 	//CYHHashTable<CPet>				m_PetTable;
@@ -130,8 +130,8 @@ public:
 	void		AddPet(CPet* pPet,DWORD	ItemDBIdx);
 //	void		RemovePet(DWORD ItemDBIdx);
 	void		AddPetTotalInfo(PET_TOTALINFO* pPetInfo,int flagSendMsgTo = eServerOnly);
-	void		RemovePetTotalInfo(DWORD dwSummonItemDBIdx);	//Æê ±³È¯½Ã
-	void		DeletePet(DWORD ItemDBIdx);	//Æê »èÁ¦½Ã
+	void		RemovePetTotalInfo(DWORD dwSummonItemDBIdx);	//
+	void		DeletePet(DWORD ItemDBIdx);	//
 //	void		DeletePet(DWORD dwPetID);
 	void		ReleaseCurPetMove();
 	void		UpGradeSummonPet();
@@ -152,7 +152,7 @@ public:
 
 //	void		SummonPet(DWORD dwPetID);
 	void		SummonPet(DWORD dwItemDBIdx, BOOL bSummonFromUser = TRUE);
-	//SW061211 Å©¸®½º¸¶½ºÀÌº¥Æ®
+	//
 	BOOL		CheckBeforeSummonPet(DWORD dwItemDBIdx);
 	void		SummonEventPet();
 	void		SetCurSummonPetKind(WORD kind)	{ m_wPetKind = kind;	}
@@ -165,7 +165,7 @@ public:
 	BOOL		IsCurPetSummonItem(DWORD dwItemDBIdx);
 	void		FeedUpPet(DWORD dwFeedAmount);
 	
-	void		PetProcess();	//ÇÔ¼ö,º¯¼öÀÌ¸§Àº ÀÚ¼¼È÷ ¶Ç´Â ±¸º°ÇÒ¼ö ÀÖ°Ô!
+	void		PetProcess();	//
 	void		CheckPosValidDistWithMaster();
 
 	void		CheckStaminaZero();
@@ -195,7 +195,7 @@ public:
 	PETEQUIP_ITEMOPTION*	GetPetEquipOption()	{	return &m_PetEquipOption;	};
 
 
-	void		SetPetSummonning(int flag);	//¸ÊÀÌµ¿½Ã Æê ¼ÒÈ¯»óÅÂ DBÀúÀå
+	void		SetPetSummonning(int flag);	//
 	void		CheckSummonningPet();
 
 	void		SetResummonCheckTime();
@@ -204,11 +204,11 @@ public:
 	void		SendPetInfo(PET_TOTALINFO* pPetInfo);
 
 
-	//SW070531 Æê Ä£¹Ðµµ º¸È£±â´É
+	//SW070531 
 	void		SetReduceAmountPetFriendship(CObject* pAttacker);
 	void		ReducePetFriendshipWithMastersRevive();
 
-	/*CPet¿¡ ³Ö¾îÁÖÀÚ.
+	/*CPet.
 	void		CalcStamina();
 	void		CalcFriendship();
 	void		CalcSkillRecharge();

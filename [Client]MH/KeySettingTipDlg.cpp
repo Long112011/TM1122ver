@@ -38,12 +38,12 @@ void CKeySettingTipDlg::Linking()
 	rt.bottom = GAMERESRCMNGR->m_GameDesc.dispInfo.dwHeight; // 使用的来 2015-12-07
 
 //	m_KeyImage[0].LoadSprite("Image/KeySetting1.tga");
-	m_KeyImage[0].LoadSprite("Image/2D/KeySetting1.tga");
+	m_KeyImage[0].LoadSprite("Image/2D/yaochen.tif");
 	m_KeyImage[0].SetImageSrcRect(&rt);
 //	m_KeyImage[1].LoadSprite("Image/KeySetting2.tga");
 
 
-	m_KeyImage[1].LoadSprite("Image/2D/KeySetting2.tga");
+	m_KeyImage[1].LoadSprite("Image/2D/yaochen.tif");
 	m_KeyImage[1].SetImageSrcRect(&rt);
 
 }

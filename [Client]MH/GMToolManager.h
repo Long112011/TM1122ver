@@ -83,7 +83,9 @@ protected:
 	HWND	m_hWndLoginDlg;
 	BOOL	m_bLogin;
 	int		m_nPower;
-	
+	/////////////////////
+	eGETITEMMODE	m_GetMode;
+	char	m_SelectName[MAX_NAME_LENGTH + 1];
 //юс╫ц
 public:
 	int		m_nNullMove;

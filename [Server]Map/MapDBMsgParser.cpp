@@ -472,6 +472,7 @@ DBMsgFunc g_DBMsgFunc[MaxQuery] =
 		/*285*/	RLoadVipGoldInfo,       //VIP信息回调函数定义
 		/*286*/	RLoadVipGoldGetItem,    //VIP获取物品回调函数定义
 		/*287*/	RCharacterCustomizingName,//角色自定义名称回调函数定义
+		/*288*/	RUpdateUserMallMoney,	//泡点同步
 
 };
 
@@ -9732,12 +9733,44 @@ void RUpdateUserCredit(LPQUERY pData, LPDBMESSAGE pMessage)
 		pPlayer->UpdateGoldMoney(DBGoldMoney, 0);
 }
 
+//泡点更新数据库
+void CharacterHeroMallInfoUpdate(DWORD ID, DWORD dwChangeValue, WORD type)
+{
+	sprintf(txt, "EXEC %s %d,%d,%d", "MP_CHARACTER_HeroMallMoneyInfoUPdate", ID, dwChangeValue, type);
+	g_DB.Query(eQueryType_FreeQuery, eUpdateMallMoney, ID, txt);
+}
+//泡点同步更新
+void RUpdateUserMallMoney(LPQUERY pData, LPDBMESSAGE pMessage)
+{
+	if (pMessage->dwResult == 0)
+	{
+		return;
+	}
+	CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pMessage->dwID);
+	if (!pPlayer)
+	{
+		return;
+	}
+	DWORD CurMallMoney = pPlayer->GetMallMoney();
+	DWORD DBMallMoney = atoi((char*)pData->Data[0]);
+	DWORD PrChangeValue = atoi((char*)pData->Data[1]);
+	if (DBMallMoney > CurMallMoney)
+	{
+		DWORD ChangeMoney = DBMallMoney - CurMallMoney;
+		pPlayer->UpdateMallMoney(DBMallMoney, ChangeMoney, TRUE);
+	}
+	else
+		pPlayer->UpdateMallMoney(DBMallMoney, 0);
+}
+
 //元宝更新数据库
 void CharacterHeroGoldInfoUpdate(DWORD ID, DWORD dwChangeValue, WORD type)
 {
 	sprintf(txt, "EXEC %s %d,%d,%d", "MP_CHARACTER_HeroGoldMoneyInfoUPdate", ID, dwChangeValue, type);
 	g_DB.Query(eQueryType_FreeQuery, eGetDBGoldMoney, 0, txt);
 }
+//元宝交易日志
+
 void LogGoldMoney(WORD LogType,WORD FromChrID,DWORD FromTotalGold,WORD ToChrID,DWORD ToChrTotalGold,DWORD ChangeGold,DWORD BuyItemIdx,DWORD Durability)
 {
 	sprintf(txt, "EXEC  %s %d,%d,%d,%d,%d,%d,%d,%d", "dbo.up_GoldMoneyLog",LogType,FromChrID,FromTotalGold,ToChrID,ToChrTotalGold,ChangeGold,BuyItemIdx,Durability);

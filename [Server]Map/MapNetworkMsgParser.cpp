@@ -2393,7 +2393,51 @@ Reload_AllBin:
 		}
 		break;        	
 		///////////////////////////////////////////////////////////////////////////////////////
+	case MP_CHEAT_GMGETGOLD_SYN:
+	{//GM获取元宝
+		MSG_NAME_DWORD4* pmsg = (MSG_NAME_DWORD4*)pMsg;
+		if (pmsg->dwData3 == eGetToCharacter)
+		{
+			CPlayer* opPlayer = (CPlayer*)g_pUserTable->FindUserForName(pmsg->Name);
+			if (!opPlayer) return;
+			opPlayer->SetGoldMoney(pmsg->dwData1, eGetGoldMoney);
+			ItemShopUseLog(eLog_GoldMoneyGMGiveGold, opPlayer->GetID(), opPlayer->GetObjectName(), 0, "GM工具发放", 0,
+				0, 0, 0,
+				opPlayer->GetGoldMoney(), pmsg->dwData1, opPlayer->GetGoldMoney() + pmsg->dwData1,
+				0, 0, 0);
 
+			//LogGoldMoney(eLog_GoldMoneyGMGiveGold,opPlayer->GetID(),(opPlayer->GetGoldMoney()-pmsg->dwData1),65533,opPlayer->GetGoldMoney(),pmsg->dwData1,0);
+		}
+		else
+		{
+			CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pmsg->dwObjectID);
+			if (!pPlayer) return;
+			pPlayer->SetGoldMoney(pmsg->dwData1, eGetGoldMoney);
+			ItemShopUseLog(eLog_GoldMoneyGMGiveGold, pPlayer->GetID(), pPlayer->GetObjectName(), 0, "GM工具发放", 0,
+				0, 0, 0,
+				pPlayer->GetGoldMoney(), pmsg->dwData1, pPlayer->GetGoldMoney() + pmsg->dwData1,
+				0, 0, 0);
+			//LogGoldMoney(eLog_GoldMoneyGMGiveGold,pPlayer->GetID(),(pPlayer->GetGoldMoney()-pmsg->dwData1),65533,pPlayer->GetGoldMoney(),pmsg->dwData1,0);
+		}
+	}
+	break;
+	case MP_CHEAT_GMGETMALL_SYN:
+	{//GM获取泡点
+		MSG_NAME_DWORD4* pmsg = (MSG_NAME_DWORD4*)pMsg;
+		if (pmsg->dwData3 == eGetToCharacter)
+		{
+			CPlayer* opPlayer = (CPlayer*)g_pUserTable->FindUserForName(pmsg->Name);
+			if (!opPlayer) return;
+			opPlayer->SetMallMoney(pmsg->dwData1, 2);
+		}
+		else
+		{
+			CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pmsg->dwObjectID);
+			if (!pPlayer) return;
+			pPlayer->SetMallMoney(pmsg->dwData1, 2);
+		}
+	}
+	break;
 	case MP_CHEAT_ABILITYEXP_SYN:
 		{
 			MSG_DWORD * pmsg = (MSG_DWORD*)pMsg;
@@ -3487,7 +3531,7 @@ Reload_AllBin:
 			}
 		}
 		break;
-	case MP_CHEAT_ADDPD_SELECTNAME_SYN:  
+/*	case MP_CHEAT_ADDPD_SELECTNAME_SYN:  
 		{
 			MSG_GM_GETPD * pmsg = (MSG_GM_GETPD*)pMsg;
 			CPlayer* pPlayer = (CPlayer *)g_pUserTable->FindUserForName(pmsg->TargetName);  
@@ -3502,7 +3546,7 @@ Reload_AllBin:
 			}
 			pPlayer->SetMallMoney(pmsg->PdMoney,2);
 		}
-		break;  
+		break; */ 
 	case MP_CHEAT_ADDPD_SAMEMAP_SYN:
 		{
 			MSG_GM_GETPD  * pmsg = (MSG_GM_GETPD *)pMsg;   
@@ -3525,22 +3569,22 @@ Reload_AllBin:
 			}
 		}
 		break;
-	case MP_CHEAT_ADDGOLD_SELECTNAME_SYN:  
-		{
-			 MSG_GM_GETGOLD * pmsg = (MSG_GM_GETGOLD*)pMsg;
-			 CPlayer* pPlayer = (CPlayer *)g_pUserTable->FindUserForName(pmsg->TargetName);  
-			if(!pPlayer) return;
-			if(pmsg->GoldMoney<0)
-			{
-				return;
-			}
-			if(pPlayer->GetGoldMoney()+pmsg->GoldMoney>100000000)  
-			{
-				 return;
-			}
-			pPlayer->SetGoldMoney(pmsg->GoldMoney,4);  
-		}
-		break;  
+	//case MP_CHEAT_ADDGOLD_SELECTNAME_SYN:  
+	//	{
+	//		 MSG_GM_GETGOLD * pmsg = (MSG_GM_GETGOLD*)pMsg;
+	//		 CPlayer* pPlayer = (CPlayer *)g_pUserTable->FindUserForName(pmsg->TargetName);  
+	//		if(!pPlayer) return;
+	//		if(pmsg->GoldMoney<0)
+	//		{
+	//			return;
+	//		}
+	//		if(pPlayer->GetGoldMoney()+pmsg->GoldMoney>100000000)  
+	//		{
+	//			 return;
+	//		}
+	//		pPlayer->SetGoldMoney(pmsg->GoldMoney,4);  
+	//	}
+	//	break;  
 	case MP_CHEAT_ADDGOLD_SAMEMAP_SYN:
 		{
 			MSG_GM_GETGOLD  * pmsg = (MSG_GM_GETGOLD *)pMsg;   

@@ -581,19 +581,30 @@ int CExchangeRoom::DoExchange()
 
 	}
 
-	FromNum =0;
-	for( j = 0 ; j < 2 ; ++j )
+
+	FromNum = 0;   // 元宝交易过程执行 
+	for (j = 0; j < 2; ++j)
 	{
-		if( m_ExchangeData[j].dwGold > m_ExchangeData[!j].dwGold )	// 2014-10-29 
+		if (m_ExchangeData[j].dwGold > m_ExchangeData[!j].dwGold)	// 元宝交易过程处理
 		{
 			dwGold = m_ExchangeData[j].dwGold - m_ExchangeData[!j].dwGold;
-			m_ExchangeData[j].pPlayer->SetGoldMoney( dwGold,2, 0);
+			m_ExchangeData[j].pPlayer->SetGoldMoney(dwGold, eNoneItem, 0); //2
 			FromNum = j;
+			//元宝日志
+			ItemShopUseLog(eLog_GoldMoneyDealLost, m_ExchangeData[j].pPlayer->GetID(), m_ExchangeData[j].pPlayer->GetObjectName(), 0, m_ExchangeData[!j].pPlayer->GetObjectName(), 0,
+				0, 0, 0,
+				m_ExchangeData[j].pPlayer->GetGoldMoney(), dwGold, m_ExchangeData[j].pPlayer->GetGoldMoney() - dwGold,
+				0, 0, 0);
 		}
-		else if( m_ExchangeData[j].dwGold < m_ExchangeData[!j].dwGold ) // 2014-10-29 
+		else if (m_ExchangeData[j].dwGold < m_ExchangeData[!j].dwGold) // 元宝交易过程处理
 		{
 			dwGold = m_ExchangeData[!j].dwGold - m_ExchangeData[j].dwGold;
-			m_ExchangeData[j].pPlayer->SetGoldMoney( dwGold,4, 0);
+			m_ExchangeData[j].pPlayer->SetGoldMoney(dwGold, eGetGoldMoney, 0); //4
+			//元宝日志
+			ItemShopUseLog(eLog_GoldMoneyDealGet, m_ExchangeData[j].pPlayer->GetID(), m_ExchangeData[j].pPlayer->GetObjectName(), 0, m_ExchangeData[!j].pPlayer->GetObjectName(), 0,
+				0, 0, 0,
+				m_ExchangeData[j].pPlayer->GetGoldMoney(), dwGold, m_ExchangeData[j].pPlayer->GetGoldMoney() + dwGold,
+				0, 0, 0);
 		}
 		else
 		{
@@ -601,14 +612,9 @@ int CExchangeRoom::DoExchange()
 		}
 
 	}
-
-	LogGoldMoney(eLog_GoldMoneyDeal,m_ExchangeData[FromNum].pPlayer->GetID(),m_ExchangeData[FromNum].pPlayer->GetGoldMoney(),
-		m_ExchangeData[!FromNum].pPlayer->GetID(),m_ExchangeData[!FromNum].pPlayer->GetGoldMoney(),dwGold,
-		m_ExchangeData[FromNum].ItemInfo->wIconIdx,m_ExchangeData[FromNum].ItemInfo->Durability);
-
 	LogItemMoney(m_ExchangeData[FromNum].pPlayer->GetID(), m_ExchangeData[FromNum].pPlayer->GetObjectName(),
 		m_ExchangeData[!FromNum].pPlayer->GetID(), m_ExchangeData[!FromNum].pPlayer->GetObjectName(),
-		eLog_Exchange, m_ExchangeData[FromNum].pPlayer->GetMoney(), m_ExchangeData[!FromNum].pPlayer->GetMoney(), 
+		eLog_Exchange, m_ExchangeData[FromNum].pPlayer->GetMoney(), m_ExchangeData[!FromNum].pPlayer->GetMoney(),
 		dwMoney, 0, 0, 0, 0, 0,
 		m_ExchangeData[FromNum].pPlayer->GetPlayerExpPoint());
 

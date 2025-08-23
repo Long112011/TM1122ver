@@ -6259,89 +6259,67 @@ DWORD CPlayer::GetSkinDelayTime()
 
 // 2014-05-04 MallMonery  GoldMoney Fame Vistor!
 
-void CPlayer::SetMallMoney(MONEYTYPE ChangeValue,BYTE nFlag,DWORD ItemIdx)
+//设置泡点用户接口
+void CPlayer::SetMallMoney(MONEYTYPE ChangeValue, BYTE nFlag, DWORD ItemIdx)
 {
 
-	long  HeroTotalMallMoney= m_HeroInfo.MallMoney;
+	unsigned long  HeroTotalMallMoney = m_HeroInfo.MallMoney;
 
-	long  ChangeMallMoney=ChangeValue;
+	unsigned long  ChangeMallMoney = ChangeValue;
 
-	long  LastMallMoney= m_HeroInfo.MallMoney;
+	unsigned long  LastMallMoney = m_HeroInfo.MallMoney;
 
-	if(nFlag==1)
+	if (nFlag == 1 || nFlag == 3 || nFlag == 6)//消耗泡点
 	{
-     	LastMallMoney = HeroTotalMallMoney-ChangeValue;
+		if (HeroTotalMallMoney < ChangeValue)
+		{
+			g_Console.LOGANDFILE(".\\ServerSet\\重要日志\\重要日志.txt",
+				RGB(0, 0, 255), "泡点扣减数据异常 角色ID[%d] 角色名[%s] 元宝数[%d]",
+				GetID(), GetObjectName(), ChangeValue);
+			m_HeroInfo.MallMoney = 0;
+			return;
+		}
+		else
+			LastMallMoney = HeroTotalMallMoney - ChangeValue;
 	}
-	if(nFlag==2)
+	if (nFlag == 2 || nFlag == 4 || nFlag == 5)//获得泡点
 	{
-        LastMallMoney = HeroTotalMallMoney+ChangeValue;
+		LastMallMoney = HeroTotalMallMoney + ChangeValue;
+	}
+	if (LastMallMoney < 0)
+	{
+		LastMallMoney = 0;
 	}
 
-	if( LastMallMoney<0)
-	{
-		LastMallMoney=0;
-	}
-
-	m_HeroInfo.MallMoney=LastMallMoney;
+	m_HeroInfo.MallMoney = LastMallMoney;
 
 	MSG_MONEY msgMoney;
 	msgMoney.Category = MP_ITEM;
 	msgMoney.Protocol = MP_ITEM_MALL_MONEY;
 	msgMoney.dwObjectID = GetID();
 	msgMoney.dwTotalMoney = ChangeValue;
-	msgMoney.ItemIdx=ItemIdx;
+	msgMoney.ItemIdx = ItemIdx;
 	msgMoney.bFlag = nFlag;
 	SendMsg(&msgMoney, sizeof(msgMoney));
-
-	CharacterHeroInfoUpdate(this);
+	CharacterHeroMallInfoUpdate(GetID(), ChangeValue, nFlag);
 }
 
-//void CPlayer::SetGoldMoney(MONEYTYPE ChangeValue,BYTE nFlag,DWORD ItemIdx,DWORD ItemDurability)
-//{
-//	long  HeroTotalGoldMoney= m_HeroInfo.GoldMoney;
-//
-//	long  ChangeGoldMoney=ChangeValue;
-//
-//	long  LastGoldMoney=m_HeroInfo.GoldMoney;
-//		
-//	if(nFlag==1 || nFlag==2 || nFlag==3||nFlag==6)
-//	{
-//		LastGoldMoney  = HeroTotalGoldMoney-ChangeGoldMoney;
-//		if(ItemIdx!=0)
-//		{	//元宝交易日志	by:胡汉三	QQ:112582793
-//			LogGoldMoney(eLog_GoldMoneyBuyItem,GetID(),m_HeroInfo.GoldMoney,65533,m_HeroInfo.GoldMoney-ChangeValue,ChangeValue,ItemIdx,ItemDurability);
-//		}
-//
-//
-//
-//		/*if(ItemIdx!=0)
-//		{	//元宝交易日志	by:胡汉三	QQ:112582793
-//			LogGoldMoney(eLog_GoldMoneyBuyItem,GetID(),m_HeroInfo.GoldMoney,65533,m_HeroInfo.GoldMoney-ChangeValue,ChangeValue,ItemIdx,ItemDurability);
-//		}*/
-//	}
-//    if(nFlag==4)
-//	{       
-//        LastGoldMoney  = HeroTotalGoldMoney+ChangeGoldMoney;
-//	}
-//	if(LastGoldMoney<0)
-//	{
-//		LastGoldMoney  =0;
-//	}
-//
-//	m_HeroInfo.GoldMoney= LastGoldMoney;
-//
-//	MSG_MONEY msgMoney;
-//	msgMoney.Category = MP_ITEM;
-//	msgMoney.Protocol = MP_ITEM_GOLD_MONEY;
-//	msgMoney.dwObjectID = GetID();
-//	msgMoney.dwTotalMoney= ChangeValue;
-//	msgMoney.dwRealMoney = m_HeroInfo.GoldMoney;
-//	msgMoney.ItemIdx=ItemIdx;
-//	msgMoney.bFlag = nFlag;
-//	SendMsg(&msgMoney, sizeof(msgMoney));
-//	CharacterHeroGoldInfoUpdate(GetID(),LastGoldMoney); //在线充值元宝刷新 by:胡汉三	QQ:112582793
-//}
-
+//泡点更新
+void CPlayer::UpdateMallMoney(DWORD DBMallMoney, DWORD ChangeMoney, BOOL bIsSend)
+{
+	m_HeroInfo.MallMoney = DBMallMoney;
+	if (bIsSend)
+	{
+		MSG_MONEY msgMoney;
+		msgMoney.Category = MP_ITEM;
+		msgMoney.Protocol = MP_ITEM_MALL_MONEY;
+		msgMoney.dwObjectID = GetID();
+		msgMoney.dwTotalMoney = ChangeMoney;
+		msgMoney.ItemIdx = 0;
+		msgMoney.bFlag = 2;
+		SendMsg(&msgMoney, sizeof(msgMoney));
+	}
+}
 
 void CPlayer::SetSwMoney(MONEYTYPE ChangeValue,BYTE nFlag,DWORD ItemIdx)
 {

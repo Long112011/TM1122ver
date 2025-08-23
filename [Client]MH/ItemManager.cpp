@@ -6037,7 +6037,7 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 				else
 					CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2066), pItem->ItemName, money);
 			}
-			if(pmsg->bFlag==2) 
+			if(pmsg->bFlag==2) //获得泡点
 			{
 				if(pmsg->dwTotalMoney>0)
 				{
@@ -6053,13 +6053,18 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 					}
 				}
 			}
-			if (pmsg->bFlag==3)  
+			if (pmsg->bFlag== eFbUse)
 			{
 				ITEM_INFO * pItem=ITEMMGR->GetItemInfo(pmsg->ItemIdx);
 				if (pItem == NULL)
 					CHATMGR->AddMsg(CTC_GETITEM, "2580 Spent %s", money);
 				else
 					CHATMGR->AddMsg(CTC_GETITEM, CHATMGR->GetChatMsg(2580), pItem->ItemName, money);				
+			}
+			if (pmsg->bFlag == 5)
+			{
+				HERO->SetMallMoney(HERO->GetMallMoney() + (pmsg->dwTotalMoney));
+				CHATMGR->AddMsg(CTC_GETITEM, "VIP储值系统获得奖励%d泡点", pmsg->dwTotalMoney);
 			}
 		}
 		break;
@@ -6068,39 +6073,44 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 			MSG_MONEY* pmsg = (MSG_MONEY*)pMsg;
 			char money[16] = { 0, };
 			strcpy(money, AddComma(pmsg->dwTotalMoney));
-			if (pmsg->bFlag==1)  
+			if (pmsg->bFlag== eShopUse)
 			{
 				ITEM_INFO * pItem=ITEMMGR->GetItemInfo(pmsg->ItemIdx);
-				HERO->SetGoldMoney(HERO->GetGoldMoney()-(pmsg->dwTotalMoney));
+				HERO->SetGoldMoney(HERO->GetGoldMoney()-(pmsg->dwTotalMoney));//2067  "购买%s，花费了%s元宝"
 				CHATMGR->AddMsg( CTC_GETITEM, CHATMGR->GetChatMsg(2067),pItem->ItemName,money );
 			}
-			if(pmsg->bFlag==2)  
+			if(pmsg->bFlag== eNoneItem)
 			{
-                CHATMGR->AddMsg( CTC_GETITEM, CHATMGR->GetChatMsg(2082),money );
+                CHATMGR->AddMsg( CTC_GETITEM, CHATMGR->GetChatMsg(2082),money );//2082 "花费了%s元宝"
 				HERO->SetGoldMoney(HERO->GetGoldMoney()-(pmsg->dwTotalMoney));
 			}
-			if(pmsg->bFlag==3)  
+			if(pmsg->bFlag== eFbUse)
 			{
-                CHATMGR->AddMsg( CTC_GETITEM, CHATMGR->GetChatMsg(2096),money );
+                CHATMGR->AddMsg( CTC_GETITEM, CHATMGR->GetChatMsg(2840),money );//2840 "【副本】花费了%s元宝"
 				HERO->SetGoldMoney(HERO->GetGoldMoney()-(pmsg->dwTotalMoney));
 			}
-			if(pmsg->bFlag==4)  
+			if(pmsg->bFlag== eGetGoldMoney)
 			{
-                CHATMGR->AddMsg( CTC_GETITEM, CHATMGR->GetChatMsg(2101),money );
+                CHATMGR->AddMsg( CTC_GETITEM, CHATMGR->GetChatMsg(2101),money );//2101 "获得了%s元宝"
 				HERO->SetGoldMoney(HERO->GetGoldMoney()+(pmsg->dwTotalMoney));
 			}
-			if(pmsg->bFlag == 5)   
+			if(pmsg->bFlag == eOnlineRef)
 			{
 				HERO->SetGoldMoney(pmsg->dwRealMoney);
-				CHATMGR->AddMsg( CTC_QUEST, CHATMGR->GetChatMsg(2101),money );
+				CHATMGR->AddMsg( CTC_QUEST, CHATMGR->GetChatMsg(2101),money );//2101 "获得了%s元宝"
 				AUDIOMGR->Play(66, HERO);
 				MoneyDropEffect();
 				if( !GAMEIN->GetGoldShopDialog()->IsActive() )
 					GAMEIN->GetMainInterfaceDialog()->SetAlram( OPT_MALLNOTICEDLGICON, TRUE );
 			}
-			if(pmsg->bFlag == 6) 
+			if(pmsg->bFlag == eDeleteBuf)//删除buff 
 			{
                 CHATMGR->AddMsg( CTC_GETITEM, CHATMGR->GetChatMsg(2276),money );
+				HERO->SetGoldMoney(pmsg->dwRealMoney);
+			}
+			if (pmsg->bFlag == eVipGet) //获得元宝
+			{
+				CHATMGR->AddMsg(CTC_GETITEM, "VIP储值系统获得奖励%d元宝", pmsg->dwTotalMoney);
 				HERO->SetGoldMoney(pmsg->dwRealMoney);
 			}
 		}
@@ -6695,7 +6705,7 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 			case 207:
 			case 208:
 			case 209:
-				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2725), pmsg->ECode - 200);
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2725), pmsg->ECode - 200);//2725 "该道具仅限 VIP %d 及以上使用//2726 "该道具仅限 VIP %d 使用。"
 				break;
 			case 210:
 				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2726), pmsg->ECode - 200);

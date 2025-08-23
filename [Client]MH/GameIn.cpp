@@ -314,7 +314,7 @@ CGameIn::CGameIn()
 
 	m_pMiniMapDlg		= NULL;
 	m_pBigMapDlg		= NULL;
-
+	m_pKeySettingTipDlg = NULL;
 	m_pPyogukDialog		= NULL;
 	m_pNoteDialog		= NULL;
 	m_pFriendDialog		= NULL;
@@ -868,7 +868,7 @@ void CGameIn::ReleaseForGame()
 
 	m_pMiniMapDlg			= NULL;
 	m_pBigMapDlg			= NULL;
-
+	m_pKeySettingTipDlg = NULL;
 	m_pPyogukDialog			= NULL;
 	m_pNoteDialog			= NULL;
 

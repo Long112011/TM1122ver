@@ -464,6 +464,7 @@ BOOL CExchangeDialog::FakeMoveIcon( LONG x, LONG y, cIcon* icon )
 	//  
 	if( (((CItem*)icon)->GetItemBaseInfo()->ItemStatic == ITEM_STATIC_PD)||(((CItem*)icon)->GetItemBaseInfo()->ItemStatic == ITEM_STATIC_NEWBIE))
 	{
+		//泡点购买物品无法交易
 		CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(2126) );
 
 		return FALSE;
@@ -472,7 +473,7 @@ BOOL CExchangeDialog::FakeMoveIcon( LONG x, LONG y, cIcon* icon )
 	// 2014-12-07 
 
 	if( (((CItem*)icon)->GetItemBaseInfo()->ItemStatic == ITEM_STATIC_LUCK))
-	{
+	{//锁定物品无法交易
 		CHATMGR->AddMsg( CTC_SYSMSG, CHATMGR->GetChatMsg(2124) );
 
 		return FALSE;

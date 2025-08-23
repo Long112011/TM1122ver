@@ -1449,19 +1449,19 @@ enum eLogMugong
 enum eLogitemmoney
 {
 	eLog_ItemDiscard = 1,
-	eLog_GoldMoneyOnline = 25,				//充值
-	eLog_GoldMoneyDeal=50,
-	eLog_GoldMoneyBuyItem=51,
-	eLog_GoldMoneyPay = 52,
-	eLog_GoldMoneyFB  =53,
-	eLog_GoldMoneyStreetBuy = 54,
-	eLog_GoldMoneyFame =55,
-	eLog_GoldMoneyShiTu=56,
-	eLog_GoldMoneyMarryGold=57,
-	eLog_GoldMoneyGMGiveGold=58,
-	eLog_GoldMoneyDeleteBuf = 59,
-	eLog_Singed = 60,	
-	eLog_SiegeWarGet = 61,	
+	//eLog_GoldMoneyOnline = 25,				//充值
+	//eLog_GoldMoneyDeal=50,
+	//eLog_GoldMoneyBuyItem=51,
+	//eLog_GoldMoneyPay = 52,
+	//eLog_GoldMoneyFB  =53,
+	//eLog_GoldMoneyStreetBuy = 54,
+	//eLog_GoldMoneyFame =55,
+	//eLog_GoldMoneyShiTu=56,
+	//eLog_GoldMoneyMarryGold=57,
+	//eLog_GoldMoneyGMGiveGold=58,
+	//eLog_GoldMoneyDeleteBuf = 59,
+	//eLog_Singed = 60,	
+	//eLog_SiegeWarGet = 61,	
 	eLog_ItemMoveInvenToPyoguk = 100,
 	eLog_ItemMovePyogukToInven,
 	eLog_ItemMoveInvenToGuild,
@@ -1509,7 +1509,7 @@ enum eLogitemmoney
 	eLog_ItemDestroyDeleteQuest,
 	eLog_ItemDestroybyChangeItem,
 	eLog_ItemDestroyReinforceWithShopItem,
-	eLog_ItemDestroyLuckyer,					 
+//	eLog_ItemDestroyLuckyer,					 
 	eLog_MoneyObtainPK = 1000,
 	eLog_ExpObtainPK,
 	eLog_ShopItemUse = 1500,	
@@ -1528,9 +1528,58 @@ enum eLogitemmoney
 	eLog_ItemObtainFromSeigeWarWare,
 
 	eLog_ItemObtainFromInsDungeon = 2300,
-	eLog_ChangeItemGetGoldMoney,
-	eLog_ChangeItemGetMallMoney,
+	//eLog_ChangeItemGetGoldMoney,
+	//eLog_ChangeItemGetMallMoney,
 	eLog_Max,
+};
+//发放物品类型定义
+enum eGET_ITEM_KIND
+{
+	eGetItem,
+	eGetMoney,
+	eGetGold,
+	eGetMallMoney,
+};
+//GM工具物品获取类型
+enum eGETITEMMODE
+{
+	eGetToGM = 64,
+	eGetToCharacter = 128,
+};
+//货币日志枚举
+enum eGoldMoneLog
+{
+	eLog_UseMallMoney = 1,
+	eLog_UseGoldMoney = 2,
+	eLog_UseMoney = 3,
+	eLog_GetGoldMoney = 4,
+	eLog_GetMallMoney = 5,
+	eLog_EquipItemGrowInherit = 6,			//装备继承
+	eLog_ChangeItemGetGoldMoney = 7,		//开启箱子获得元宝
+	eLog_VimuBattleGetForNoWiner = 8,		//押注比武押金退还
+	eLog_VimuBattleLost = 9,				//押注比武失去
+	eLog_VimuBattleGet = 10,				//押注比武获得
+	eLog_SiegeWarGet = 11,					//攻城战物品发放
+	eLog_Singed = 12,						//签到系统
+	eLog_GoldMoneyDeleteBuf = 13,			//buff删除消耗
+	eLog_GoldMoneyGMGiveGold = 14,			//GM工具发放]
+	eLog_GoldMoneyMarryGold = 15,			//结婚消耗
+	eLog_GoldMoneyFame = 16,				//洗恶消耗
+	eLog_ChangeItemGetMallMoney = 17,		//开启箱子获得泡点
+	eLog_GoldMoneyStreetBuy = 17,
+	eLog_GoldMoneyStreetGet = 18,			//出售物品获得
+	eLog_GoldMoneyStreetLost = 19,			//购买物品消耗
+	eLog_GoldMoneyDealGet = 20,				//交易获得
+	eLog_GoldMoneyDealLost = 21,			//交易消耗
+
+	eLog_GoldMoneyPay = 22,					//摆摊收购
+	eLog_Gold_UnionWar_Get = 23,			//盟战奖励
+	//eLog_GoldMoneyFB = 53,
+	eLog_ItemDestroyLuckyer = 24,          //抽奖
+	eLog_GoldMoneyOnline = 25,				//充值
+	eLog_GoldMoneyShiTu = 26,				//师徒系统
+
+
 };
 enum eLogExppoint
 {
@@ -2115,9 +2164,9 @@ enum
 {
 	eNpcParam_ShowpPyoguk=1,
 };
-#define ITEM_STATIC_PD		0x00000001   
-#define ITEM_STATIC_GD      0x00000002   
-#define ITEM_STATIC_LUCK	0x00000003
+#define ITEM_STATIC_PD		0x00000001  //泡点标志
+#define ITEM_STATIC_GD      0x00000002  //元宝标志
+#define ITEM_STATIC_LUCK	0x00000003  //锁定标志
 #define ITEM_STATIC_NEWBIE	0X00000006
 #define ITEM_PARAM_SEAL		0x00000001
 #define ITEM_PARAM_CHEAT	0x00000010

@@ -203,8 +203,8 @@ struct HERO_TOTALINFO
 	LEVELTYPE MaxLevel;	
 	char	MunpaCanEntryDate[11];
 	BYTE	ExpFlag;
-	DWORD   MallMoney; 
-	DWORD   GoldMoney;
+	DWORD   MallMoney;                    //扩展信息定义泡点
+	DWORD   GoldMoney;                    //扩展信息定义元宝
 	WORD	ReSet;
 	WORD	ImageName;
 	DWORD   dwKillPlayerTimes;
@@ -6085,14 +6085,14 @@ struct stTime64t : public MSGBASE
 
 struct INSDG_ENTRANCECONDITION_INFO
 {
-	MAPTYPE wMapNum;		//營驍曖 裘
-	DWORD dwNpcUniqueIDX;	//驍 NPC 檣策蝶
-	LEVELTYPE wMinLevel;	//譆模溯漣
-	LEVELTYPE wMaxLevel;	//譆渠溯漣
-	DWORD dwQuestIndex;		//蹂 蠡蝶	
-	WORD wItemIndex;		//蹂 嬴檜齪
-	DWORD dwMoney;			//蹂 蹂旎	
-	DWORD dwMsgIndex;			//檣湍 撲貲 詭撮雖 檣策蝶
+	MAPTYPE wMapNum;		//地图编号
+	DWORD dwNpcUniqueIDX;	//NPC传送编号
+	LEVELTYPE wMinLevel;	//可以进入最小等级限制
+	LEVELTYPE wMaxLevel;	//可以进入最大等级限制
+	DWORD dwQuestIndex;		//入场任务编号
+	WORD wItemIndex;		//入场物品编号
+	DWORD dwMoney;			//入场游戏币设置	
+	DWORD dwMsgIndex;		//消息提示
 };
 
 struct INSDUNGEON_INFO
@@ -6390,6 +6390,14 @@ struct VIPIMGINFO
 	WORD  idx;
 	BOOL IsTrends;
 	WORD ImageCount;
+};
+struct MSG_NAME_DWORD4 : public MSGBASE
+{
+	char	Name[MAX_NAME_LENGTH + 1];
+	DWORD	dwData1;
+	DWORD	dwData2;
+	DWORD	dwData3;
+	DWORD	dwData4;
 };
 ///////////////////vip图片信息结构体
 #pragma pack(pop)

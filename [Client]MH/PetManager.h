@@ -60,33 +60,33 @@ class CPetManager
 	CYHHashTable<PET_TOTALINFO>		m_PetInfoList;
 	CYHHashTable<cImage>			m_PetImageList;
 
-	DWORD				m_dwStateCheckTime;				//펫 스탯 체크 타임( 10초 )
-	DWORD				m_dwStaminaDecrease;			//스테미나 감소량
-	DWORD				m_dwOldFriendShipForToolTipChange;	//툴팁 친밀도 갱신을 위한 저장
+	DWORD				m_dwStateCheckTime;				
+	DWORD				m_dwStaminaDecrease;			
+	DWORD				m_dwOldFriendShipForToolTipChange;	
 
-	DWORD				m_dwDistCheckTime;					//프로세스 타임(주인-펫거리체크)
-	BOOL				m_bValidDistance;				//움직여야 될 거리인가
-	BOOL				m_bReadytoMove;					//움직여도 될 조건인가(movemgr에서 세팅)
+	DWORD				m_dwDistCheckTime;					
+	BOOL				m_bValidDistance;				
+	BOOL				m_bReadytoMove;					
 
-	DWORD				m_dwSkillRechargeCheckTime;		//스킬게이지 체크 타임(1초)
+	DWORD				m_dwSkillRechargeCheckTime;		
 	DWORD				m_dwSkillRechargeAmount;
 	BOOL				m_bSkillGuageFull;
 	BOOL				m_bReadyToSendSkillMsg;
 
-	DWORD				m_dwResummonDelayTime;			//펫 재소환 레이//봉인후 30초 카운트
+	DWORD				m_dwResummonDelayTime;			
 
 	CPet*				m_pCurSummonPet;
-	BOOL				m_bIsPetStateDlgToggle;			//토글 상태 저장
-	cDialog*			m_pCurPetStateDlg;				//현재 펫 상태창
-	CPetStateDlg*		m_pStateDlg;					//펫 상태큰창
+	BOOL				m_bIsPetStateDlgToggle;			
+	cDialog*			m_pCurPetStateDlg;			
+	CPetStateDlg*		m_pStateDlg;					
 
-	CPetStateMiniDlg*	m_pStateMiniDlg;				//펫 상태작은창
+	CPetStateMiniDlg*	m_pStateMiniDlg;		
 	CPetInventoryDlg*	m_pInvenDlg;
 
 	CPetMultiDlg*		m_pMultiDlg;
-	BOOL				m_bReadyToSendRestMsg;			//펫 휴식 상태 설정정보 서버 리턴 뒤 TRUE
+	BOOL				m_bReadyToSendRestMsg;			
 
-	WORD				m_wPetKind;						//펫종류. 일반/아이템몰/이벤트 펫
+	WORD				m_wPetKind;						
 
 public:
 	CPetManager(void);
@@ -123,22 +123,21 @@ public:
 
 	void	NetworkMsgParse(BYTE Protocol, void* pMsg);
 
-//펫 스탯
-	//스킬 게이지 충전
+
 	void	CalcSkillRecharge();
 	void	SetSkillRechargeAmount(DWORD amount);
 	BOOL	IsSkillGuageFull()	{	return m_bSkillGuageFull;	}
 	void	SetSkillGuageFull(BOOL bVal)	{m_bSkillGuageFull = bVal;}
 
-	//따라가기
+
 	void	CheckDistWithMaster();
 	BOOL	IsValidDist() {	return m_bValidDistance;	}
 	void	SetMoveReady(BOOL bVal)	{	m_bReadytoMove = bVal;	}
 
 	//UI
-	void	OpenPetStateDlg();		//현재 펫 상태창 열기
+	void	OpenPetStateDlg();		
 	void	OpenPetInvenDlg();
-	void	SetCurPetStateDlg(cDialog* pDlg) {m_pCurPetStateDlg=pDlg;}	//현재 펫 상태창 세팅
+	void	SetCurPetStateDlg(cDialog* pDlg) {m_pCurPetStateDlg=pDlg;}	
 
 	void	SetPetStateDlg(CPetStateDlg* pDlg) {m_pStateDlg=pDlg;}
 	void	SetPetStateMiniDlg(CPetStateMiniDlg* pDlg) {m_pStateMiniDlg=pDlg;}
@@ -146,7 +145,7 @@ public:
 
 	void	SetPetMultiDlg(CPetMultiDlg* pDlg) { m_pMultiDlg = pDlg; }
 	//060310 UI 저장
-	void	SetPetDlgToggle(BOOL bVal)	{	m_bIsPetStateDlgToggle = bVal;	}	//FALSE 가 큰창(기본)
+	void	SetPetDlgToggle(BOOL bVal)	{	m_bIsPetStateDlgToggle = bVal;	}	
 	BOOL	GetPetDlgToggle()	{	return m_bIsPetStateDlgToggle;	}
 	cDialog* GetCurPetStateDlg()	{	return m_pCurPetStateDlg;	}
 
@@ -161,11 +160,11 @@ public:
 	DWORD	GetPetValidInvenMaxTabNum();
 	void	SetPetValidInvenTab();
 
-//	BOOL	GetPetDlgToggle() {return m_bIsPetStateDlgToggle;}			//토글상태가져오기. 큰창/작은창
+//	BOOL	GetPetDlgToggle() {return m_bIsPetStateDlgToggle;}			
 	
 	//rest
 	void	SetCurPetRest(BOOL bRest);
-	void	SendPetRestMsg(BOOL bRest);//펫 사용/휴식 정보 보내기
+	void	SendPetRestMsg(BOOL bRest);
 	void	SetReadyToSendRestMsg(BOOL bReady) {	m_bReadyToSendRestMsg = bReady;	}
 	BOOL	IsReadyToSendRestMsg()	{	return m_bReadyToSendRestMsg;	}
 
@@ -174,14 +173,14 @@ public:
 	void	SendPetSealMsg();
 
 	//ability icon. pet skill
-	void	CheckRestNSkillUse();	//무공창 스킬버튼 기능. 휴식상태면 해제시키고 게이지풀이면 스킬 사용. 기획자에게 문의후 알게됨.
+	void	CheckRestNSkillUse();	
 
 	//skill
 	void	InitPetSkillGuage();
 	void	UseCurPetSkill();
 	void	SetReadyToSendSkillMsg(BOOL bReady) {	m_bReadyToSendSkillMsg = bReady;	}
 	BOOL	IsReadyToSendSkillMsg()	{	return m_bReadyToSendSkillMsg;	}
-	//SW060324 펫 버프 추가
+	
 	void	AddMasterStatFromPetBuff(player_calc_stats* pMasterAdditionalStat);
 	void	RefleshPetMaintainBuff();
 
@@ -199,9 +198,5 @@ public:
 };
 
 EXTERNGLOBALTON(CPetManager)
-
-//UI 정보관리
-//HERO's Pet 관리, PetObject는 하나만 있다. 모든 소유 펫들의 기본정보만 관리.
-//HERO의 펫 소환 아이템에 가지고 있는 펫 아이템의 펫 정보를 가지고 있다. 아이템 툴팁 등에 보여준다.
 
 

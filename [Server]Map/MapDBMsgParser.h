@@ -389,6 +389,7 @@ enum   DBMESSAGEIDFUNC
 	eVipGoldSelect,     //VIP数据库回调
 	eVipGoldGetItem,    //VIP数据库回调
 		eCharacterCustomizingName,//weiye 2018-03-26 自定义角色名称回调函数定义
+		eUpdateMallMoney,
 	MaxQuery
 };
 #define STORED_TEST_QUERY	"UP_GAME_TEST_QUERY"
@@ -2003,6 +2004,10 @@ void MallBuyItemUpdate(DWORD dwPlayerIndex, DWORD wDungeonMapNum, DWORD wTotalVi
 
 void MallListInfo(DWORD dwCharacterIdx,DWORD Type);
 void RMallListInfo(LPQUERY pData, LPDBMESSAGE pMessage );
+//泡点更新数据库
+void CharacterHeroMallInfoUpdate(DWORD ID, DWORD dwChangeValue, WORD type);
+//泡点同步
+void RUpdateUserMallMoney(LPQUERY pData, LPDBMESSAGE pMessage);
 
 void RUpdateUserCredit(LPQUERY pData, LPDBMESSAGE pMessage);  //在线充值元宝刷新数据库回调处理函数定义	by:胡汉三	QQ:112582793
 //元宝更新数据库

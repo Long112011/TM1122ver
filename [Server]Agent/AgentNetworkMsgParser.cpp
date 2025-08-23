@@ -3381,18 +3381,22 @@ void MP_CHEATUserMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 			g_Network.Broadcast2AgentServerExceptSelf( (char*)pmsg, dwLength );
 		}
 		break;
-
+		//只有gm还有权限使用的指令
 	case MP_CHEAT_ABILITYEXP_SYN:
 	case MP_CHEAT_ADDMUGONG_SYN:
 	case MP_CHEAT_MUGONGSUNG_SYN:
 	case MP_CHEAT_ITEM_SYN:
 	case MP_CHEAT_ITEM_OPTION_SYN:
 	case MP_CHEAT_MONEY_SYN:
-		{
-			
-			if( pUserInfo->UserLevel == eUSERLEVEL_GM )	//AI?慍 ?壡嶢?堫潽??Ao?猳?濃?Ao..
-			if( GMINFO->GetGMPower( dwConnectionIndex ) > eGM_POWER_MASTER )
+	case MP_CHEAT_GMGETGOLD_SYN:
+	case MP_CHEAT_GMGETMALL_SYN:
+	{ //刷物品等验证权限
+		if (pUserInfo->UserLevel > 4)
+			return;
+		if (pUserInfo->UserLevel == eUSERLEVEL_GM)	//AI∑C ǎA┈ Aoo┈Ao..
+			if (GMINFO->GetGMPower(dwConnectionIndex) > eGM_POWER_MASTER)
 				return;
+
 //imsi:block
 #ifdef _TW_LOCAL_
 			if( g_pServerSystem->IsTestServer() )
@@ -3911,6 +3915,13 @@ void MP_CHEATUserMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 			}
 		}
 		break;
+
+
+		//imsi:block
+/*#ifdef _HK_LOCAL_ //此处修改防止给其他玩家刷物品需要过图 added by rookie
+			if( g_pServerSystem->IsTestServer() )
+#endif*/
+
 	case MP_CHEAT_ADDPD_EXT_SYN:
 		{
 			 MSG_GM_GETPD * pmsg = (MSG_GM_GETPD*)pMsg;
@@ -3918,15 +3929,15 @@ void MP_CHEATUserMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 			if( !pSenderInfo ) return;
 			if(pmsg->TargetType==-1)
 			{
-				 MSG_GM_GETPD  msg;
-				 msg.Category=MP_CHEAT;
-				 msg.Protocol =MP_CHEAT_ADDPD_SELECTNAME_SYN;
-				 msg.dwObjectID=pmsg->dwObjectID;
-				 msg.TargetType=pmsg->TargetType;
-				 SafeStrCpy(msg.TargetName,pmsg->TargetName,MAX_NAME_LENGTH+1);
-				 msg.PdMoney= pmsg->PdMoney;
-				 g_Network.Broadcast2MapServer( (char*)&msg, sizeof(msg));
-				 return;
+				 //MSG_GM_GETPD  msg;
+				 //msg.Category=MP_CHEAT;
+				 //msg.Protocol =MP_CHEAT_ADDPD_SELECTNAME_SYN;
+				 //msg.dwObjectID=pmsg->dwObjectID;
+				 //msg.TargetType=pmsg->TargetType;
+				 //SafeStrCpy(msg.TargetName,pmsg->TargetName,MAX_NAME_LENGTH+1);
+				 //msg.PdMoney= pmsg->PdMoney;
+				 //g_Network.Broadcast2MapServer( (char*)&msg, sizeof(msg));
+				 //return;
 			}
 			if(pmsg->TargetType==0)
 			{
@@ -3957,15 +3968,15 @@ void MP_CHEATUserMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 			if( !pSenderInfo ) return;
 			if(pmsg->TargetType==-1)
 			{
-				 MSG_GM_GETGOLD  msg;
-				 msg.Category=MP_CHEAT;
-				 msg.Protocol =MP_CHEAT_ADDGOLD_SELECTNAME_SYN;
-				 msg.dwObjectID=pmsg->dwObjectID;
-				 msg.TargetType=pmsg->TargetType;
-				 SafeStrCpy(msg.TargetName,pmsg->TargetName,MAX_NAME_LENGTH+1);
-				 msg.GoldMoney= pmsg->GoldMoney;
-				 g_Network.Broadcast2MapServer( (char*)&msg, sizeof(msg));
-				 return;
+				 //MSG_GM_GETGOLD  msg;
+				 //msg.Category=MP_CHEAT;
+				 //msg.Protocol =MP_CHEAT_ADDGOLD_SELECTNAME_SYN;
+				 //msg.dwObjectID=pmsg->dwObjectID;
+				 //msg.TargetType=pmsg->TargetType;
+				 //SafeStrCpy(msg.TargetName,pmsg->TargetName,MAX_NAME_LENGTH+1);
+				 //msg.GoldMoney= pmsg->GoldMoney;
+				 //g_Network.Broadcast2MapServer( (char*)&msg, sizeof(msg));
+				 //return;
 			}
 			if(pmsg->TargetType==0)
 			{

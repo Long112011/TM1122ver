@@ -11,6 +11,7 @@
 #include "FameGoldDialog.h"
 #include "chatmanager.h"
 #include "VipDialog.h"
+#include "KeySettingTipDlg.h" // 记得在 RankButtonDialog.cpp 顶部 include
 
 CRankButtonDialog::CRankButtonDialog()
 {
@@ -19,6 +20,7 @@ CRankButtonDialog::CRankButtonDialog()
 	pMunpBtn=NULL;
 	pMapInfo=NULL;
 	pVipDlgBtn = NULL;//vip dialog button
+	pEventBtn = NULL;//event button
 	SCRIPTMGR->GetImage( 45, &m_TooltipImage, PFT_JACKPATH );
 
 	MapExp=1.f;
@@ -60,6 +62,7 @@ CRankButtonDialog::~CRankButtonDialog()
 	pMunpBtn=NULL;
 	pMapInfo=NULL;
 	pVipDlgBtn = NULL;//vip dialog button
+	pEventBtn = NULL;//event button
 
 	MapExp=1.f;
 	MapSkillPoint=1.f;
@@ -78,6 +81,7 @@ void CRankButtonDialog::Linking()
 	pMapInfo =(cStatic *)GetWindowForID(TOP_MAP_INFO);
 
 	pVipDlgBtn = (cButton*)GetWindowForID(CONTROL_VIPBTNONLINE);
+	pEventBtn = (cButton*)GetWindowForID(CONTROL_EVENT);
 //	pVipDlgBtn->SetToolTip("VIP系统", RGBA_MAKE(255, 255, 255, 255), &imgToolTip, TTCLR_ITEM_CANEQUIP);
 
 	NotifyIcon[HRANK] = new cStatic;
@@ -282,7 +286,26 @@ void CRankButtonDialog::OnActionEvent(LONG lId, void * p, DWORD we)
 				}
 			}
 			break;
+		case CONTROL_EVENT:   // ← 活动按钮
+		{
+			auto* tip = GAMEIN->GetKeySettingTipDlg();
+			if (!tip) break;
 
+			// 想“按一次开，再按一次关”→ toggle：
+			bool nextActive = !tip->IsActive();
+			tip->SetActive(nextActive);
+			if (nextActive) {
+				tip->SetMode(1);         // 0=KeySetting1.tga, 1=KeySetting2.tga
+				// 或者如果你实现了 ShowTip： tip->ShowTip(1, true);
+				// 确保不被遮挡（如需）
+				// WINDOWMGR->MoveToTop(tip);
+			//	CHATMGR->AddMsg(CTC_SYSMSG, "活动图开启"); // 可选：聊天提示
+			}
+			else {
+			//	CHATMGR->AddMsg(CTC_SYSMSG, "活动图关闭"); // 可选
+			}
+			break;
+		}
 		case CONTROL_VIPBTNONLINE:
 		{
 			VipDialog* pHandler = (VipDialog*)GAMEIN->GetVipDialog();

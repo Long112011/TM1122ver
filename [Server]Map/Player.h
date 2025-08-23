@@ -701,14 +701,16 @@ public:
 	// 2014-05-04 MallMonery  GoldMoney Fame Vistor!
 
 	MONEYTYPE GetMallMoney(){return  m_HeroInfo.MallMoney;}
-
 	void SetMallMoney(MONEYTYPE ChangeValue,BYTE nFlag,DWORD ItemIdx=0);
+	void    UpdateMallMoney(DWORD DBMallMoney, DWORD ChangeMoney, BOOL bIsSend = FALSE);
 
 	MONEYTYPE GetGoldMoney(){return m_HeroInfo.GoldMoney;}
-
-	//void SetGoldMoney(MONEYTYPE ChangeValue,BYTE nFlag,DWORD ItemIdx=0);
-	//void SetGoldMoney(MONEYTYPE ChangeValue,BYTE nFlag,DWORD ItemIdx=0,DWORD ItemDurability=0);
 	void SetGoldMoney(MONEYTYPE ChangeValue, BYTE nFlag, WORD ItemIdx = 0, WORD ItemDurability = 0);
+	void	GetDBGoldMoney();//在线充值元宝刷新	by:胡汉三	QQ:112582793
+	//void	UpdateGoldMoney(DWORD DBGoldMoney,DWORD ChangeMoney);
+	void	UpdateGoldMoney(DWORD DBGoldMoney, DWORD ChangeMoney, BOOL bIsSend = FALSE);//在线充值元宝刷新
+
+
 
 	MONEYTYPE GetSwMoney(){return m_HeroInfo.Fame;}
 
@@ -1272,9 +1274,7 @@ public:
 	GAMBLE_USER_INFO * GetGambleInfo(){return &m_GambleInfo;}
 
 	void    ClearGambInfo();
-	void	GetDBGoldMoney();//在线充值元宝刷新	by:胡汉三	QQ:112582793
-	//void	UpdateGoldMoney(DWORD DBGoldMoney,DWORD ChangeMoney);
-	void	UpdateGoldMoney(DWORD DBGoldMoney, DWORD ChangeMoney, BOOL bIsSend = FALSE);//在线充值元宝刷新
+
 	void SyncVipLevelFromDb();
 
 	//weiye 2017-10-23 安全锁相关函数定义 2017-10-24

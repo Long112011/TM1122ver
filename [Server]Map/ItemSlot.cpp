@@ -346,7 +346,7 @@ void CItemSlot::MovePack(DWORD dwID, bool& bRet)
 		
 	WORD wItemCount = GetItemCount();
 
-	std::sort(m_ItemBaseArray, m_ItemBaseArray + m_SlotNum, cmp);
+	std::sort(m_ItemBaseArray, m_ItemBaseArray + wItemCount, cmp);
 	for (int i = 0; i < wItemCount; i++)
 	{
 		if (!ITEMMGR->IsDupItem(m_ItemBaseArray[i].wIconIdx)||
@@ -377,15 +377,25 @@ void CItemSlot::MovePack(DWORD dwID, bool& bRet)
 			break;
 		}
 	}
-	std::sort(m_ItemBaseArray, m_ItemBaseArray + m_SlotNum, cmp);
+	wItemCount = GetItemCount();
+	std::sort(m_ItemBaseArray, m_ItemBaseArray + wItemCount, cmp);
+
+	for (int i = wItemCount; i < m_SlotNum; ++i)
+	{
+		ClearItemBase(m_ItemBaseArray[i]);
+		ClearSlotInfo(m_SlotInfoArray[i]);
+	}
+
 	for (int i = 0; i < m_SlotNum; i++)
 	{
 		if (m_ItemBaseArray[i].dwDBIdx == 0) break;
 		m_ItemBaseArray[i].Position = i;
 		ItemUpdateToDB(dwID, m_ItemBaseArray[i].dwDBIdx, m_ItemBaseArray[i].wIconIdx, m_ItemBaseArray[i].Durability,
-			m_ItemBaseArray[i].Position, m_ItemBaseArray[i].QuickPosition, m_ItemBaseArray[i].RareIdx/*, m_ItemBaseArray[i].ItemStatic*/);
+			m_ItemBaseArray[i].Position, m_ItemBaseArray[i].QuickPosition, m_ItemBaseArray[i].RareIdx,
+			m_ItemBaseArray[i].ItemStatic, m_ItemBaseArray[i].ItemQuality, m_ItemBaseArray[i].ItemEntry1,
+			m_ItemBaseArray[i].ItemEntry2, m_ItemBaseArray[i].ItemEntry3);
 	}
-	memset(m_SlotInfoArray, 0, sizeof(SLOTINFO)*m_SlotNum);
+
 	bRet = true;
 	bIsMovePack = bRet;
 }

@@ -290,7 +290,7 @@ void CPlayer::SetBaseMotion()
 				WeaponEquipType = WP_GUM;
 			//////////////////////////////////////////////////////////////////////////
 			else if (WeaponEquipType == WP_AXE)
-				m_StandardMotion = eMotion_Battle_Chang_Standard;
+				m_StandardMotion = eMotion_Battle_Do_Standard;
 			else if (WeaponEquipType == WP_DAGGER)
 				m_StandardMotion = eMotion_Battle_Amgi_Standard;
 			else
@@ -306,7 +306,7 @@ void CPlayer::SetBaseMotion()
 		else if(WeaponEquipType == WP_CHANG)
 			m_StandardMotion = eMotion_Peace_Standard_Change;
 		else if (WeaponEquipType == WP_AXE)
-			m_StandardMotion = eMotion_Peace_Standard_Change;
+			m_StandardMotion = eMotion_Peace_Standard_Do;
 		else if (WeaponEquipType == WP_DAGGER)
 			m_StandardMotion = eMotion_Peace_Standard;
 
@@ -350,7 +350,7 @@ void CPlayer::SetBaseMotion()
 	{
 		// 判断自定义武器类型
 		if (WeaponEquipType == WP_AXE)
-			m_StandardMotion = eMotion_Battle_Chang_Standard;  // 假设900是斧头的标准待机动作
+			m_StandardMotion = eMotion_Battle_Do_Standard;  // 假设900是斧头的标准待机动作
 		else if (WeaponEquipType == WP_DAGGER)
 			m_StandardMotion = eMotion_Battle_Amgi_Standard;  // 假设910是刺客双刀的标准待机动作
 		else

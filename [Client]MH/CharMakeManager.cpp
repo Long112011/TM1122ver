@@ -531,23 +531,10 @@ BOOL cCharMakeManager::ReplaceCharMakeInfo(int idx, WORD wValue )
 
 			if (m_pNewPlayer)
 			{
-				m_pNewPlayer->GetCharacterTotalInfo()->WearedItemIdx[eWearedItem_Weapon] = (WORD)value;
-
-				switch (wValue)
-				{
-				case WP_AXE:
-					m_pNewPlayer->ChangeMotion(eMotion_Battle_Chang_Standard, 1); // 斧头动作编号（你定义好的）
-					m_pNewPlayer->ChangeBaseMotion(eMotion_Battle_Chang_Standard);
-					break;
-				case WP_DAGGER:
-					m_pNewPlayer->ChangeMotion(eMotion_Battle_Amgi_Standard, 1); // 刺客动作编号（你定义好的）
-					m_pNewPlayer->ChangeBaseMotion(eMotion_Battle_Amgi_Standard);
-					break;
-				default:
-					m_pNewPlayer->ChangeMotion(eMotion_Battle_Gum_Standard + wValue, 1);
-					m_pNewPlayer->ChangeBaseMotion(eMotion_Battle_Gum_Standard + wValue);
-					break;
-				}
+				m_pNewPlayer->SetPeaceMode(FALSE);
+				m_pNewPlayer->SetWearedItemIdx(eWearedItem_Weapon, (WORD)value);
+				m_pNewPlayer->ChangeMotion(m_pNewPlayer->GetStandardMotion(), 1);
+				m_pNewPlayer->ChangeBaseMotion(m_pNewPlayer->GetStandardMotion());
 			}
 
 
@@ -616,8 +603,8 @@ void cCharMakeManager::CreateNewCharacter(VECTOR3* pv3Pos)
 
 	if (weapon == 10) // 斧头
 	{
-		m_pNewPlayer->ChangeMotion(eMotion_Battle_Gum_Standard, 1);
-		m_pNewPlayer->ChangeBaseMotion(eMotion_Battle_Gum_Standard);
+		m_pNewPlayer->ChangeMotion(eMotion_Battle_Do_Standard, 1);
+		m_pNewPlayer->ChangeBaseMotion(eMotion_Battle_Do_Standard);
 	}
 	else if (weapon == 11) // 刺客（双匕首）
 	{

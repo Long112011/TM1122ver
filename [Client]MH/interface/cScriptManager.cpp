@@ -548,6 +548,7 @@ void cScriptManager::InitScriptManager()
 	}
 	if( file.Init( FILE_IMAGE_ITEM_PATH, "rb" ) == TRUE )
 	{
+		char ModFileName[MAX_NAME_LENGTH + 1];	//模型名
 		while( !file.IsEOF() )
 		{
 			pPath = new sIMAGHARDPATH;
@@ -557,7 +558,7 @@ void cScriptManager::InitScriptManager()
 			pPath->top = file.GetLong();
 			pPath->right = file.GetLong();
 			pPath->bottom = file.GetLong();
-
+			SafeStrCpy(ModFileName, file.GetString(), MAX_NAME_LENGTH + 1);	//模型名称
 			if( m_ItemHardPath.GetData( index ) )
 			{
 				SAFE_DELETE(pPath);
@@ -565,7 +566,9 @@ void cScriptManager::InitScriptManager()
 			}
 
 			m_ItemHardPath.Add( pPath, index );
+
 		}
+
 
 		file.Release();
 	}

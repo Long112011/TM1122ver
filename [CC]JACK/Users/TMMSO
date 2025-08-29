@@ -5,9 +5,13 @@
 #define	ClientVersion	"\xc2\xdc\xc4\xcd\xdc"
 #define	NetServer	"OMSO*4"
 #define	NetClient	"\xd9\xdc\xda\xd1\xb9\xa2"
-#define	Encrypto	20230822
-#define	Encrypts	20230823
+#define	Encrypto	20250831
+#define	Encrypts	20250830
+
+//#define	Encrypto	20230822 //nzmso
+//#define	Encrypts	20230823 //nzmso
 #define	EncryptNumber	99
+
 #define	SQLUSER	"OMSO*4"
 #define	SQLPASS	"OMSO*4"
 

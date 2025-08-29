@@ -155,9 +155,9 @@ void CGuildWarManager::NetworkMsgParse(WORD Protocol,void* pMsg)
 			break;
 		}
 
-		// 【新增】关闭确认框
-		cDialog* pDlg = WINDOWMGR->GetWindowForID(MBI_GUILDWAR_MOVE_YESNO);
-		if (pDlg) pDlg->SetActive(FALSE);
+		//// 【新增】关闭确认框
+		//cDialog* pDlg = WINDOWMGR->GetWindowForID(MBI_GUILDWAR_MOVE_YESNO);
+		//if (pDlg) pDlg->SetActive(FALSE);
 
 		// 【新增】解除传送状态
 		if (HERO->GetState() != eObjectState_None)
@@ -167,6 +167,7 @@ void CGuildWarManager::NetworkMsgParse(WORD Protocol,void* pMsg)
 
 		// 恢复输入焦点
 		g_UserInput.SetInputFocus(TRUE);
+		g_UserInput.SetAllowMouseClick(TRUE);
 	}
 	break;
 

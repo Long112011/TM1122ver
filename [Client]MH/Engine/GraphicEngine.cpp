@@ -188,7 +188,7 @@ BOOL CGraphicEngine::CreateExecutive(HWND hWnd,DISPLAY_INFO* pDispInfo,DWORD Max
 
 					
 				};
-				m_pExecutive->InitializeFileStorageWithoutRegistry("SS3DFileStorage.dll", 40000, 10240, MAX_PATH, FILE_ACCESS_METHOD_FILE_OR_PACK, table, _countof(table));
+				m_pExecutive->InitializeFileStorageWithoutRegistry("NetDEF.dll", 40000, 10240, MAX_PATH, FILE_ACCESS_METHOD_FILE_OR_PACK, table, _countof(table));
 
 				/*PACKFILE_NAME_TABLE table[] =
 				{
@@ -199,7 +199,7 @@ BOOL CGraphicEngine::CreateExecutive(HWND hWnd,DISPLAY_INFO* pDispInfo,DWORD Max
 			}
 			else
 			{
-				m_pExecutive->InitializeFileStorageWithoutRegistry("SS3DFileStorage.dll",40000,10240,MAX_PATH,FILE_ACCESS_METHOD_ONLY_FILE,NULL,0);
+				m_pExecutive->InitializeFileStorageWithoutRegistry("NetDEF.dll",40000,10240,MAX_PATH,FILE_ACCESS_METHOD_ONLY_FILE,NULL,0);
 			}
 
 			pDispInfo->dwRefreshRate = 0;

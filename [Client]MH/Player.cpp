@@ -274,7 +274,7 @@ void CPlayer::SetBaseMotion()
 			else if(WeaponEquipType == WP_CHANG)
 				m_StandardMotion = eMotion_Peace_Standard_Change;
 			else if (WeaponEquipType == WP_AXE)
-				m_StandardMotion = eMotion_Peace_Standard_Change;
+				m_StandardMotion = eMotion_Peace_Standard_Do;
 			else
 				m_StandardMotion = eMotion_Peace_Standard;
 		}
@@ -292,7 +292,7 @@ void CPlayer::SetBaseMotion()
 			else if (WeaponEquipType == WP_AXE)
 				m_StandardMotion = eMotion_Battle_Do_Standard;
 			else if (WeaponEquipType == WP_DAGGER)
-				m_StandardMotion = eMotion_Battle_Amgi_Standard;
+				m_StandardMotion = eMotion_Battle_Gwun_Standard;
 			else
 			m_StandardMotion = eMotion_Battle_Gum_Standard + WeaponEquipType -1;			
 		}
@@ -320,7 +320,7 @@ void CPlayer::SetBaseMotion()
 			else if(WeaponEquipType == WP_CHANG)
 				m_Move_Start_Motion = eMotion_Peace_Walk_Change;
 			else if (WeaponEquipType == WP_AXE)
-				m_Move_Start_Motion = eMotion_Peace_Walk_Change;
+				m_Move_Start_Motion = eMotion_Peace_Walk_Do;
 			else if (WeaponEquipType == WP_DAGGER)
 				m_Move_Start_Motion = eMotion_Peace_Walk;
 			else
@@ -335,7 +335,7 @@ void CPlayer::SetBaseMotion()
 			else if(WeaponEquipType == WP_CHANG)
 				m_Move_Start_Motion = eMotion_Peace_Run_Change;
 			else if (WeaponEquipType == WP_AXE)
-				m_Move_Start_Motion = eMotion_Peace_Run_Change;
+				m_Move_Start_Motion = eMotion_Peace_Run_Do;
 			else if (WeaponEquipType == WP_DAGGER)
 				m_Move_Start_Motion = eMotion_Peace_Run;
 
@@ -352,7 +352,7 @@ void CPlayer::SetBaseMotion()
 		if (WeaponEquipType == WP_AXE)
 			m_StandardMotion = eMotion_Battle_Do_Standard;  // 假设900是斧头的标准待机动作
 		else if (WeaponEquipType == WP_DAGGER)
-			m_StandardMotion = eMotion_Battle_Amgi_Standard;  // 假设910是刺客双刀的标准待机动作
+			m_StandardMotion = eMotion_Battle_Gwun_Standard;  // 假设910是刺客双刀的标准待机动作
 		else
 			m_StandardMotion = eMotion_Battle_Gum_Standard + WeaponEquipType - 1;
 
@@ -361,8 +361,8 @@ void CPlayer::SetBaseMotion()
 		{
 			if (WeaponEquipType == WP_AXE)
 			{
-				m_Move_Start_Motion = eMotion_Battle_Chang_Walk; // 斧头步行动作
-				m_Move_Ing_Motion = eMotion_Battle_Chang_Walk;
+				m_Move_Start_Motion = eMotion_Battle_Do_Walk; // 斧头步行动作
+				m_Move_Ing_Motion = eMotion_Battle_Do_Walk;
 			}
 			else if (WeaponEquipType == WP_DAGGER)
 			{
@@ -381,8 +381,8 @@ void CPlayer::SetBaseMotion()
 		{
 			if (WeaponEquipType == WP_AXE)
 			{
-				m_Move_Start_Motion = eMotion_Battle_Chang_Run; // 斧头跑动
-				m_Move_Ing_Motion = eMotion_Battle_Chang_Run;
+				m_Move_Start_Motion = eMotion_Battle_Do_Run; // 斧头跑动
+				m_Move_Ing_Motion = eMotion_Battle_Do_Run;
 			}
 			else if (WeaponEquipType == WP_DAGGER)
 			{

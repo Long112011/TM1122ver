@@ -491,6 +491,8 @@ CGameIn::CGameIn()
 	m_pFadeDlg = NULL;
 	m_VipDialog = NULL;               //创建VIP窗口
 	m_pCustomizingDlg = NULL;
+	SetGuildWarehouseDlg(NULL);
+	SetItemShopDialog(NULL);
 }
 
 CGameIn::~CGameIn()
@@ -1000,6 +1002,8 @@ void CGameIn::ReleaseForGame()
 
 	m_VipDialog = NULL;               //创建VIP窗口
 	m_pCustomizingDlg = NULL;
+	SetGuildWarehouseDlg(NULL);
+	SetItemShopDialog(NULL);
 }
 
 void CGameIn::Release(CGameState* pNextGameState)
@@ -2453,6 +2457,7 @@ void CGameIn::UserConn_NetworkMsgParse(BYTE Protocol,void* pMsg)
 			}
 
 			g_UserInput.SetInputFocus(TRUE);
+			g_UserInput.SetAllowMouseClick(TRUE);
 		}
 		break;
 

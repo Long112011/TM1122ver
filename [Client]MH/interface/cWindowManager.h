@@ -419,6 +419,9 @@ public:
 
 	void CreateVipDialog();                //VIP系统
 	void CreatCustomizingDlg();           //自定义称号
+#ifdef _MUTIPET_
+	void CreatePetMixDlg();//刀哥 3pet
+#endif // _MUTIPET_
 	//++++ Common dialog +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	// dynamic create and auto release
 //	cWindow * CreateMoneyDlg();

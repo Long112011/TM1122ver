@@ -234,6 +234,10 @@
 #include "GradeChangeDlg.h"		//ÎäÆ÷Éý½×Öµ×ªÒÆ¾í
 #include "TopDungeon.h"
 #include "CustomizingNameDlg.h"
+#ifdef  _MUTIPET_
+#include "PetMixDlg.h"//µ¶¸ç  3pet
+#include "StatsCalcManager.h"//µ¶¸ç  3pet
+#endif //  _MUTIPET_
 #ifdef _TESTCLIENT_
 #include "AppearanceManager.h"
 
@@ -493,6 +497,9 @@ CGameIn::CGameIn()
 	m_pCustomizingDlg = NULL;
 	SetGuildWarehouseDlg(NULL);
 	SetItemShopDialog(NULL);
+#ifdef  _MUTIPET_
+	m_PetMixDlg = NULL;//µ¶¸ç  3pet
+#endif //  _MUTIPET_
 }
 
 CGameIn::~CGameIn()
@@ -525,7 +532,14 @@ BOOL CGameIn::InitForGame()
 
 	QUESTMGR->InitializeQuest();
 	PKMGR->Init();
+#ifdef _MUTIPET_
+
+#else
+
 	PETMGR->LoadPetImage();
+#endif // _MUTIPET_
+
+	
 
 	m_bDieInBossMap = FALSE;
 	m_nCountInBossMap = 0;
@@ -1004,6 +1018,9 @@ void CGameIn::ReleaseForGame()
 	m_pCustomizingDlg = NULL;
 	SetGuildWarehouseDlg(NULL);
 	SetItemShopDialog(NULL);
+#ifdef  _MUTIPET_
+	m_PetMixDlg = NULL;//µ¶¸ç  3pet
+#endif //  _MUTIPET_
 }
 
 void CGameIn::Release(CGameState* pNextGameState)
@@ -1598,18 +1615,61 @@ void CGameIn::UserConn_NetworkMsgParse(BYTE Protocol,void* pMsg)
 			{				
 				PETMGR->OnPetRemove((CPet*)pObject);
 			}
+#ifdef  _MUTIPET_
+			if (pObject->GetObjectKind() == eObjectKind_Player)
+			{
+				for (int i = 0; i < 3; ++i)//µ¶¸ç  3pet
+				{
+					((CPlayer*)pObject)->SetPet(i, NULL);
+				}
+				OBJECTMGR->RemoveDecoration((CPlayer*)pObject);
+			}
+#else
 			if(pObject->GetObjectKind() == eObjectKind_Player)
-			{				
+			{
 				((CPlayer*)pObject)->SetPet(NULL);
 				OBJECTMGR->RemoveDecoration((CPlayer*)pObject);
 			}
-
+#endif //  _MUTIPET_
 			APPEARANCEMGR->CancelAlphaProcess(pObject);
 			APPEARANCEMGR->CancelReservation(pObject);
 			OBJECTMGR->AddGarbageObject(pObject);
 		}
-
 		break;
+#ifdef _MUTIPET_
+	case MP_USERCONN_PET_DIE:
+	{
+		MSG_DWORD2* pmsg = (MSG_DWORD2*)pMsg;
+		CPet* pPet = (CPet*)OBJECTMGR->GetObject(pmsg->dwData2);
+		if (!pPet)	return;
+
+		if (PETMGR->IsSummonPet(pPet))//µ¶¸ç 3pet
+		{
+			DWORD SummonItemDBIdx = pPet->GetPetSommonItemDBIdx();
+			PET_TOTALINFO* pInfo = PETMGR->GetPetInfo(SummonItemDBIdx);
+			if (!pInfo)
+			{
+				ASSERT(0);
+				break;
+			}
+			pInfo->bAlive = FALSE;
+			pInfo->PetFriendly = 0;
+
+			PETMGR->SetPetGuageText(pPet,/*pInfo->PetStamina*/0, pInfo->PetFriendly);//µ¶¸ç  3pet
+			ITEMMGR->RefreshItemToolTip(SummonItemDBIdx);
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1261));
+
+			DWORD RedFilter = RGBA_MAKE(255, 10, 10, 255);
+			ITEMMGR->SetIconColorFilter(pInfo->PetSummonItemDBIdx, RedFilter);
+
+			PETMGR->ClosePetAllDlg();
+		}
+		pPet->Die();
+	}
+	break;
+#else
+
+
 	case MP_USERCONN_PET_DIE:
 		{
 			MSG_DWORD2* pmsg = (MSG_DWORD2*)pMsg;
@@ -1640,6 +1700,7 @@ void CGameIn::UserConn_NetworkMsgParse(BYTE Protocol,void* pMsg)
 			pPet->Die();
 		}
 		break;
+#endif // _MUTIPET_
 	case MP_USERCONN_MONSTER_DIE:
 		{
 			MSG_DWORD2* pmsg = (MSG_DWORD2*)pMsg;
@@ -2147,13 +2208,27 @@ void CGameIn::UserConn_NetworkMsgParse(BYTE Protocol,void* pMsg)
 			MOVEMGR->SetAngle(pPlayer, fDirDeg, 0);
 
 			EVENTMAP->AddPlayer(pPlayer);
-
+#ifdef  _MUTIPET_
+			CPet* pet[3];//µ¶¸ç  3pet
+			memset(pet, 0, sizeof(CPet*) * 3);
+			CPet* pPet = OBJECTMGR->FindPlayerOwnPet(pet, pPlayer->GetID());
+			for (int i = 0; i < 3; i++)
+			{
+				if (pet[i])
+				{
+					pPlayer->SetPet(i, pet[i]);
+					pet[i]->SetMaster(pPlayer);
+				}
+			}
+#else
 			CPet* pPet = OBJECTMGR->FindPlayerOwnPet(pPlayer->GetID());
 			if (pPet)
 			{
 				pPlayer->SetPet(pPet);
 				pPet->SetMaster(pPlayer);
 			}
+#endif //  _MUTIPET_
+
 		}
 		break;
 	case MP_USERCONN_PET_ADD:
@@ -2186,6 +2261,37 @@ void CGameIn::UserConn_NetworkMsgParse(BYTE Protocol,void* pMsg)
 
 			pPet->SetMaster(NULL);
 			CPlayer* pPlayer = (CPlayer*)OBJECTMGR->GetObject(pmsg->MasterID);
+#ifdef  _MUTIPET_
+			if (pPlayer)
+			{
+				pPlayer->SetPet(pPlayer->GetPetId(), pPet);//µ¶¸ç  3pet
+				pPet->SetMaster(pPlayer);
+
+				if (HEROID == pmsg->MasterID)
+				{
+					PETMGR->SetCurSummonPet(pPet);
+
+					//					PETMGR->SetCurSummonPetKind(pPet);
+					if (PETMGR->CheckCurSummonPetKindIs(pPet, ePK_EventPet))
+					{
+						CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1482));
+					}
+					else
+					{
+						PETMGR->OpenPetStateDlg();
+					}
+
+					//					PETMGR->SetPetStateDlgInfo(pPet);//µ¶¸ç  3pet  ÆÁ±Î
+					//					PETMGR->SetPetStateMiniDlgInfo(pPet);
+					//					PETMGR->SetPetStateDlgUseRestInfo(pPet);
+					//					PETMGR->SetCurPetRest(pmsg->TotalInfo.bRest);
+					//					PETMGR->SetPetStateDlgUseRestInfo(pPet);
+					//
+					////					PETMGR->RefleshPetMaintainBuff();
+					STATSMGR->CalcItemStats(HERO);
+				}
+			}
+#else
 			if(pPlayer)
 			{
 				pPlayer->SetPet(pPet);
@@ -2212,6 +2318,7 @@ void CGameIn::UserConn_NetworkMsgParse(BYTE Protocol,void* pMsg)
 					PETMGR->RefleshPetMaintainBuff();
 				}
 			}
+#endif //  _MUTIPET_
 			else
 			{
 				//pPet->SetMaster(NULL);

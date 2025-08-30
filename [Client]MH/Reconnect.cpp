@@ -76,8 +76,14 @@ void CReDisConnManager::Init()
 		HERO->SetCurComboNum(0);
 		HERO->SetMovingAction(NULL);
 		HERO->SetNextAction(NULL);
+#ifdef _MUTIPET_
+		for (int i = 0; i < 3; ++i)
+			if (auto pPet = PETMGR->GetCurSummonPet(i))
+				MOVEMGR->PetMoveStop(pPet);
+#else
 		if (PETMGR->GetCurSummonPet())
 			MOVEMGR->PetMoveStop();
+#endif
 		OBJECTSTATEMGR->InitObjectState(HERO);
 	}
 	if (dwHeroMapNum == 0 && !DungeonMGR->IsDungeonMap((WORD)MAP->GetMapNum()))

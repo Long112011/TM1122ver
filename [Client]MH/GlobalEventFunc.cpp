@@ -263,6 +263,9 @@
 #include "OfficialUpGradeDlg.h"
 #include "VipDialog.h"              //VIP头文件引用
 #include "CustomizingNameDlg.h" //自定义名字
+#ifdef  _MUTIPET_
+#include "PetMixDlg.h"//刀哥  3pet
+#endif //  _MUTIPET_
 extern HWND _g_hWnd;
 extern BOOL jTweak;
 //extern BOOL   g_IsExit;
@@ -507,6 +510,10 @@ FUNC g_mt_func[] =
 	{ GGD_Func, "GGD_Func" }, //武器升阶值转移卷
 	{ VIP_BtnFunc,"VIP_BtnFunc" },                      //VIP驱动函数定义
 	{ Customizing_DlgFunc, "Customizing_DlgFunc" },//自定义名字
+#ifdef _MUTIPET_
+	{ PetMerge_DlgFunc, "PetMerge_DlgFunc" },//刀哥 3pet
+#endif // _MUTIPET_
+
 	{NULL, ""},	
 };
 int FUNCSEARCH(char * funcName)
@@ -3079,6 +3086,28 @@ void MessageBox_Func( LONG lId, void * p, DWORD we )
 			}
 		}
 		break;
+#ifdef  _MUTIPET_
+	case MBI_SW_OBSERVER_SYN://刀哥  3pet
+	{
+		if (we == MBI_YES)
+		{
+			if (PETMGR->IsSummonPet())
+			{
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1279));
+				return;
+			}
+
+			MSG_DWORD2 Msg;
+			Msg.Category = MP_SIEGEWAR;
+			Msg.Protocol = MP_SIEGEWAR_MOVEIN_SYN;
+			Msg.dwObjectID = HEROID;
+			Msg.dwData1 = HERO->GetGuildIdx();
+			Msg.dwData2 = 2;
+			NETWORK->Send(&Msg, sizeof(Msg));
+		}
+	}
+	break;
+#else
 	case MBI_SW_OBSERVER_SYN:
 		{
 			if( we == MBI_YES )
@@ -3098,6 +3127,7 @@ void MessageBox_Func( LONG lId, void * p, DWORD we )
 			}
 		}
 		break;
+#endif
 	case MBI_SKILLOPTIONCLEAR_ACK:
 		{
 			if( we == MBI_YES )
@@ -4014,11 +4044,19 @@ void MP_RegistDlgFunc( LONG lId, void* p, DWORD we )
 	{
 	case MP_ROKBTN:
 		{
+#ifdef  _MUTIPET_
+		if (PETMGR->IsSummonPet())
+		{
+			CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1277));
+			return;
+		}
+#else
 			if(PETMGR->GetCurSummonPet())
 			{
 				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1252));//1277//kiv 1132 26042022
 				return;
 			}
+#endif //  _MUTIPET_
 			GAMEIN->GetMPRegistDialog()->SetDisable(TRUE);
 			GAMEIN->GetInventoryDialog()->SetDisable(TRUE);
 			GAMEIN->GetMugongSuryunDialog()->SetDisable(TRUE);
@@ -5853,3 +5891,9 @@ void Customizing_DlgFunc(LONG lId, void* p, DWORD we)
 	break;
 	}
 }
+#ifdef  _MUTIPET_
+void PetMerge_DlgFunc(LONG lId, void* p, DWORD we)//刀哥  3pet
+{
+	GAMEIN->GetPetMixDlg()->OnActionEvent(lId, p, we);
+}
+#endif //  _MUTIPET_

@@ -222,6 +222,9 @@ struct PET_TOTALINFO
 	BYTE	bAlive;
 	BYTE	bSummonning;
 	BYTE	bRest;
+
+	BYTE	Pos;//三只宠物
+
 };
 struct TITAN_TOTALINFO
 {
@@ -809,6 +812,17 @@ struct MSG_DWORD7 : public MSGBASE
 	DWORD dwData4;
 	DWORD dwData5;
 	DWORD dwData6;
+};
+struct MSG_DWORD8 : public MSGBASE
+{
+	DWORD dwData0;
+	DWORD dwData1;
+	DWORD dwData2;
+	DWORD dwData3;
+	DWORD dwData4;
+	DWORD dwData5;
+	DWORD dwData6;
+	DWORD dwData7;
 };
 struct MSG_DWORD7_SKIN : public MSGBASE
 {

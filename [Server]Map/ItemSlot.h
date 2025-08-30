@@ -60,6 +60,9 @@ public:
 	void Release();
 	
 	virtual ITEMBASE /*const*/ * GetItemInfoAbs(POSTYPE absPos);//kiv const
+#ifdef  _MUTIPET_
+	virtual ITEMBASE /*const*/* GetItemInfoDbid(DWORD DBidx);//µ¶¸ç 3pet
+#endif //  _MUTIPET_
 	virtual void SetItemInfoAbs(ITEMBASE* pItemBase, POSTYPE absPos);
 	void GetItemInfoAll(ITEMBASE * pItemBaseAll);
 	void SetItemInfoAll(ITEMBASE * pItemBaseAll);

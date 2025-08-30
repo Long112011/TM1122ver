@@ -577,6 +577,23 @@ void CSkillManager::OnSkillStartSyn(MSG_SKILL_START_SYN* pmsg)
 	pSObj->SetGridID(pOperator->GetGridID());
 	m_SkillObjectTable.Add(pSObj, pSObj->GetID());
 	g_pServerSystem->AddSkillObject(pSObj, &info.Pos);
+#ifdef _MUTIPET_
+	//SW051129 Pet
+	if (pOperator->GetObjectKind() == eObjectKind_Player)
+	{
+		CPlayer* pPlayer = (CPlayer*)pOperator;
+		for (int i = 0; i < 3; ++i)//µ¶¸ç 3pet
+		{
+			CPet* pPet = (CPet*)pPlayer->GetCurPet(i);
+			if (pPet)
+			{
+				pPet->GetRandMotionNSpeech(ePM_MASTER_SKILL);
+			}
+		}
+	}
+#else
+
+
 	if (pOperator->GetObjectKind() == eObjectKind_Player)
 	{
 		CPlayer* pPlayer = (CPlayer*)pOperator;
@@ -586,6 +603,8 @@ void CSkillManager::OnSkillStartSyn(MSG_SKILL_START_SYN* pmsg)
 			pPet->GetRandMotionNSpeech(ePM_MASTER_SKILL);
 		}
 	}
+#endif // _MUTIPET_
+
 	if (pOperator->GetObjectKind() == eObjectKind_Player)
 		((CPlayer*)pOperator)->SetActionTime();
 	if (pOperator->GetObjectKind() == eObjectKind_Player)

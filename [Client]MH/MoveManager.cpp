@@ -297,7 +297,7 @@ void CMoveManager::SetHeroTarget(VECTOR3* pPos,BOOL bMousePointDisplay)
 	CHero* pHero = OBJECTMGR->GetHero();
 	if (/*pHero->IsPKMode() &&*/ SAFEAREAMGR->CheckSafeArea(pPos))
 	{
-		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2196));
+		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2840));
 		return;
 	}
 
@@ -377,7 +377,9 @@ void CMoveManager::SetHeroTarget(VECTOR3* pPos,BOOL bMousePointDisplay)
 		NETWORK->Send(&msg, msg.GetSize());
 		/*pHero->Move_Simple(pPos);*/
 		StartMoveEx(pHero, NULL, gCurTime);
+#ifndef  _MUTIPET_
 		SetPetTarget(&pHero->m_MoveInfo, count);
+#endif
 	}
 	else
 	{
@@ -418,7 +420,7 @@ BOOL CMoveManager::SetHeroTarget(VECTOR3* pPos,float biubiubiu)
 	CHero* pHero = OBJECTMGR->GetHero();
 	if (/*pHero->IsPKMode() &&*/ SAFEAREAMGR->CheckSafeArea(pPos))
 	{
-		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2196));
+		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(2840));
 		return 0;
 	}
 	//HERO->SetSkipKyungong(true);
@@ -511,6 +513,104 @@ BOOL CMoveManager::SetHeroTarget(VECTOR3* pPos,float biubiubiu)
 
 	return FALSE;
 }
+#ifdef  _MUTIPET_
+void CMoveManager::SetPetTarget(CPet* pPet, MOVE_INFO* pHeroMoveInfo, WORD wPosCount)//독며  3pet
+{
+	//CPet* pPet = HERO->GetPet();
+
+	if (!pPet) return;
+
+	if (IsMoving(pPet))
+	{
+		CalcPositionEx(pPet, gCurTime);
+	}
+
+	VECTOR3 PetLastPos;
+	PetLastPos.x = PetLastPos.y = PetLastPos.z = 0;
+
+	VECTOR3* pHeroLastPos = pHeroMoveInfo->GetTargetPosition(wPosCount - 1);
+
+	float Indist = CalcDistanceXZ(&pPet->m_MoveInfo.CurPosition, &pHeroMoveInfo->CurPosition);
+
+	if (IsMoving(pPet))
+	{
+		float HeroToTargetDist = CalcDistanceXZ(&pHeroMoveInfo->CurPosition, pHeroLastPos);
+		float PetToTargetDist = CalcDistanceXZ(&pPet->m_MoveInfo.CurPosition, pHeroLastPos);
+		if ((HeroToTargetDist - PetToTargetDist) >= 0)
+		{
+			PetMoveStop(pPet);
+			return;
+		}
+	}
+
+	float dist = 0.f;
+	if (0 == wPosCount)	return;
+
+	if (1 == wPosCount)
+	{
+		dist = CalcDistanceXZ(&pHeroMoveInfo->CurPosition, pHeroLastPos);
+		if (DEFAULT_PET_FOLLOW_DIST < dist)
+		{
+			if (!GetPetLastPos(&PetLastPos, pHeroLastPos, &pHeroMoveInfo->CurPosition))
+				return;
+		}
+		else
+		{
+			PetLastPos = pHeroMoveInfo->CurPosition;
+		}
+	}
+	else
+	{
+		VECTOR3* pHeroLastBeforePos = pHeroMoveInfo->GetTargetPosition(wPosCount - 2);
+		dist = CalcDistanceXZ(pHeroLastPos, pHeroLastBeforePos);
+
+		if (DEFAULT_PET_FOLLOW_DIST < dist)
+
+		{
+			if (!GetPetLastPos(&PetLastPos, pHeroLastPos, pHeroLastBeforePos))
+				return;
+		}
+		else
+		{
+			PetLastPos = *pHeroLastBeforePos;
+		}
+	}
+
+	pPet->m_MoveInfo.InitTargetPosition();
+	switch (PATHMGR->GetPath(&pPet->m_MoveInfo.CurPosition, &PetLastPos, pPet->m_MoveInfo.GetTargetPositionArray(), MAX_CHARTARGETPOSBUF_SIZE, pPet->m_MoveInfo.GetMaxTargetPosIdxRef(), pPet, FALSE, 100))
+	{
+	case PATH_BLOCKFAILED:
+	case PATH_FAILED:
+		return;
+	}
+
+
+	WORD count = pPet->m_MoveInfo.GetMaxTargetPosIdx();
+	if (TargetUpdate(pPet, &pPet->m_MoveInfo, pPet->m_MoveInfo.GetTargetPosition(count - 1)) != 0)
+		return;
+
+	OBJECTSTATEMGR->EndObjectState(pPet, eObjectState_Move, (DWORD)(pPet->m_MoveInfo.Move_EstimateMoveTime * 1000));
+
+	float TargetAngle = RADTODEG(VECTORTORAD(pPet->m_MoveInfo.Move_Direction));
+	pPet->m_RotateInfo.Angle.SetTargetDeg(TargetAngle);
+	float fChangedAngle = pPet->m_RotateInfo.Angle.GetChangeAmountDeg();
+	if (fChangedAngle < 0)
+		fChangedAngle *= -1.f;
+	pPet->m_RotateInfo.EstimatedRotateTime = 0.1f + fChangedAngle * 0.2f / 180.f;
+	pPet->m_RotateInfo.Rotate_StartTime = gCurTime;
+	pPet->m_RotateInfo.bRotating = TRUE;
+
+	Indist = CalcDistanceXZ(pPet->m_MoveInfo.GetTargetPosition(count - 1), pHeroLastPos);
+	dist = CalcDistanceXZ(&pPet->m_MoveInfo.CurPosition, pHeroLastPos);
+
+	if (DEFAULT_PET_FOLLOW_DIST < Indist || DEFAULT_PET_FOLLOW_DIST < dist)
+	{
+		//PETMGR->SetMoveReady(TRUE);
+		pPet->SetMoveReady(TRUE);//독며  3pet
+	}
+
+}
+#else
 void CMoveManager::SetPetTarget( MOVE_INFO* pHeroMoveInfo, WORD wPosCount )
 {
 	CPet* pPet = HERO->GetPet();
@@ -588,9 +688,15 @@ void CMoveManager::SetPetTarget( MOVE_INFO* pHeroMoveInfo, WORD wPosCount )
  		PETMGR->SetMoveReady(TRUE);
  	}
 }
+#endif //  _MUTIPET_
+#ifdef  _MUTIPET_
+void CMoveManager::SendPetMoveMsg(CPet* pPet)//독며  3pet
+{
+#else
 void CMoveManager::SendPetMoveMsg()
 {
 	CPet* pPet = HERO->GetPet();
+#endif //  _MUTIPET_
 	if(!pPet) return;
 	WORD count = pPet->m_MoveInfo.GetMaxTargetPosIdx();
 	if( 0 == count ) return;
@@ -621,7 +727,11 @@ void CMoveManager::SendPetMoveMsg()
 		NETWORK->Send(&msg,msg.GetSize());
 	}
 	StartMoveEx(pPet,NULL,gCurTime);
+#ifdef  _MUTIPET_
+	pPet->SetMoveReady(FALSE);//독며  3pet
+#else
 	PETMGR->SetMoveReady(FALSE);
+#endif //  _MUTIPET_
 }
 BOOL CMoveManager::GetPetLastPos( VECTOR3* pSrcPos, VECTOR3* pFromPos, VECTOR3* pToPos )
 {
@@ -638,94 +748,94 @@ BOOL CMoveManager::GetPetLastPos( VECTOR3* pSrcPos, VECTOR3* pFromPos, VECTOR3* 
 	return TRUE;
 }
 
-void CMoveManager::SetHeroPetTarget()
-{
-	CHero* pHero = OBJECTMGR->GetHero();
-	CPet* pHeroPet = HERO->GetPet(); //OBJECTMGR->GetHeroPet();
-	VECTOR3 pos;
-
-	if (IsMoving(pHero))
-		CalcPositionEx(pHero, gCurTime);
-	if (IsMoving(pHeroPet))
-		CalcPositionEx(pHeroPet, gCurTime);
-
-	int ran = 0;
-	float dx = 0, dz = 0;
-	ran = rand();
-	dx = float(ran % (300)) * (ran % 2 ? 1 : -1);
-	ran = rand();
-	dz = float(ran % (300)) * (ran % 2 ? 1 : -1);
-	pos.x = pHero->m_MoveInfo.CurPosition.x + dx / 2;
-	pos.z = pHero->m_MoveInfo.CurPosition.z + dz / 2;
-
-	if (pos.x < 0)				pos.x = 0;
-	else if (pos.x > 51199)	pos.x = 51199;
-
-	if (pos.z < 0)				pos.z = 0;
-	else if (pos.z > 51199)	pos.z = 51199;
-
-	pos.x = ((DWORD)(pos.x / TILECOLLISON_DETAIL)*TILECOLLISON_DETAIL);
-	pos.z = ((DWORD)(pos.z / TILECOLLISON_DETAIL)*TILECOLLISON_DETAIL);
-
-
-	MOVE_ONETARGETPOS msg;
-	msg.Category = MP_MOVE;
-	msg.Protocol = MP_MOVE_PET_MOVE;
-	msg.dwObjectID = HEROID;
-	msg.dwMoverID = pHeroPet->GetID();
-	msg.SetStartPos(&pHeroPet->m_MoveInfo.CurPosition);
-	msg.SetTargetPos(&pos);
-
-	NETWORK->Send(&msg, msg.GetSize());
-}
-
-void CMoveManager::SetHeroPetTarget(VECTOR3* pPos)
-{
-	CPet* pHeroPet = HERO->GetPet(); //OBJECTMGR->GetHeroPet();
-
-//	if (pHeroPet->GetAbnormalStatus()->IsStun ||
-//	/	pHeroPet->GetAbnormalStatus()->IsFreezing ||
-//		pHeroPet->GetAbnormalStatus()->IsStone ||
-//		pHeroPet->GetAbnormalStatus()->IsSlip ||
-//		pHeroPet->GetAbnormalStatus()->IsParalysis)
+//void CMoveManager::SetHeroPetTarget()
+//{
+//	CHero* pHero = OBJECTMGR->GetHero();
+//	CPet* pHeroPet = HERO->GetPet(); //OBJECTMGR->GetHeroPet();
+//	VECTOR3 pos;
+//
+//	if (IsMoving(pHero))
+//		CalcPositionEx(pHero, gCurTime);
+//	if (IsMoving(pHeroPet))
+//		CalcPositionEx(pHeroPet, gCurTime);
+//
+//	int ran = 0;
+//	float dx = 0, dz = 0;
+//	ran = rand();
+//	dx = float(ran % (300)) * (ran % 2 ? 1 : -1);
+//	ran = rand();
+//	dz = float(ran % (300)) * (ran % 2 ? 1 : -1);
+//	pos.x = pHero->m_MoveInfo.CurPosition.x + dx / 2;
+//	pos.z = pHero->m_MoveInfo.CurPosition.z + dz / 2;
+//
+//	if (pos.x < 0)				pos.x = 0;
+//	else if (pos.x > 51199)	pos.x = 51199;
+//
+//	if (pos.z < 0)				pos.z = 0;
+//	else if (pos.z > 51199)	pos.z = 51199;
+//
+//	pos.x = ((DWORD)(pos.x / TILECOLLISON_DETAIL)*TILECOLLISON_DETAIL);
+//	pos.z = ((DWORD)(pos.z / TILECOLLISON_DETAIL)*TILECOLLISON_DETAIL);
+//
+//
+//	MOVE_ONETARGETPOS msg;
+//	msg.Category = MP_MOVE;
+//	msg.Protocol = MP_MOVE_PET_MOVE;
+//	msg.dwObjectID = HEROID;
+//	msg.dwMoverID = pHeroPet->GetID();
+//	msg.SetStartPos(&pHeroPet->m_MoveInfo.CurPosition);
+//	msg.SetTargetPos(&pos);
+//
+//	NETWORK->Send(&msg, msg.GetSize());
+//}
+//
+//void CMoveManager::SetHeroPetTarget(VECTOR3* pPos)
+//{
+//	CPet* pHeroPet = HERO->GetPet(); //OBJECTMGR->GetHeroPet();
+//
+////	if (pHeroPet->GetAbnormalStatus()->IsStun ||
+////	/	pHeroPet->GetAbnormalStatus()->IsFreezing ||
+////		pHeroPet->GetAbnormalStatus()->IsStone ||
+////		pHeroPet->GetAbnormalStatus()->IsSlip ||
+////		pHeroPet->GetAbnormalStatus()->IsParalysis)
+////	{
+////		return;
+////	}
+//
+//	if (pHeroPet->GetState() != eObjectState_None &&
+//		pHeroPet->GetState() != eObjectState_Move &&
+//		pHeroPet->GetState() != eObjectState_TiedUp_CanMove &&
+//		pHeroPet->GetState() != eObjectState_Immortal)
 //	{
+//		CAction act;
+//		act.InitMoveAction(pPos);
+//		//pHeroPet->SetNextAction(&act);
+//		//pHeroPet->DisableAutoAttack();
 //		return;
+//
 //	}
-
-	if (pHeroPet->GetState() != eObjectState_None &&
-		pHeroPet->GetState() != eObjectState_Move &&
-		pHeroPet->GetState() != eObjectState_TiedUp_CanMove &&
-		pHeroPet->GetState() != eObjectState_Immortal)
-	{
-		CAction act;
-		act.InitMoveAction(pPos);
-		//pHeroPet->SetNextAction(&act);
-		//pHeroPet->DisableAutoAttack();
-		return;
-
-	}
-
-	if (IsMoving(pHeroPet))
-		CalcPositionEx(pHeroPet, gCurTime);
-
-	//////////////////////////////////////////////////////////////////////////
-	pPos->x = (int(pPos->x / TILECOLLISON_DETAIL) + 0.5f) * TILECOLLISON_DETAIL;
-	pPos->y = 0;
-	pPos->z = (int(pPos->z / TILECOLLISON_DETAIL) + 0.5f) * TILECOLLISON_DETAIL;
-	//////////////////////////////////////////////////////////////////////////
-
-	MOVE_ONETARGETPOS msg;
-	msg.Category = MP_MOVE;
-	msg.Protocol = MP_MOVE_PET_MOVE;
-	msg.dwObjectID = gHeroID;
-	msg.dwMoverID = pHeroPet->GetID();
-	msg.SetStartPos(&pHeroPet->m_MoveInfo.CurPosition);
-	msg.SetTargetPos(pPos);
-
-	NETWORK->Send(&msg, msg.GetSize());
-
-	StartMoveEx(pHeroPet, gCurTime, pPos);
-}
+//
+//	if (IsMoving(pHeroPet))
+//		CalcPositionEx(pHeroPet, gCurTime);
+//
+//	//////////////////////////////////////////////////////////////////////////
+//	pPos->x = (int(pPos->x / TILECOLLISON_DETAIL) + 0.5f) * TILECOLLISON_DETAIL;
+//	pPos->y = 0;
+//	pPos->z = (int(pPos->z / TILECOLLISON_DETAIL) + 0.5f) * TILECOLLISON_DETAIL;
+//	//////////////////////////////////////////////////////////////////////////
+//
+//	MOVE_ONETARGETPOS msg;
+//	msg.Category = MP_MOVE;
+//	msg.Protocol = MP_MOVE_PET_MOVE;
+//	msg.dwObjectID = gHeroID;
+//	msg.dwMoverID = pHeroPet->GetID();
+//	msg.SetStartPos(&pHeroPet->m_MoveInfo.CurPosition);
+//	msg.SetTargetPos(pPos);
+//
+//	NETWORK->Send(&msg, msg.GetSize());
+//
+//	StartMoveEx(pHeroPet, gCurTime, pPos);
+//}
 void CMoveManager::SetLookatPos(CObject* pObject, VECTOR3* pPos,float TurnDuration, DWORD CurTime, int AddDeg)
 {
 	//pObject->m_MoveInfo.CurPosition.y = 0;
@@ -821,14 +931,30 @@ void CMoveManager::HeroMoveStop()
 	msg.dwMoverID = HEROID;
 	msg.cpos.Compress(&pHero->m_MoveInfo.CurPosition);
 	NETWORK->Send(&msg,sizeof(MOVE_POS));
+#ifdef  _MUTIPET_
+	for (int i = 0; i < 3; ++i)//독며  3pet
+	{
+		if (PETMGR->GetCurSummonPet(i))
+		{
+			PetMoveStop(PETMGR->GetCurSummonPet(i));
+		}
+	}
+#else
 	if(PETMGR->GetCurSummonPet())
 	{
 		PetMoveStop();
 	}
+#endif
+
 }
+#ifdef  _MUTIPET_
+void CMoveManager::PetMoveStop(CPet* pPet)//독며  3pet
+{
+#else
 void CMoveManager::PetMoveStop()
 {
 	CPet* pPet = HERO->GetPet();
+#endif //  _MUTIPET_
 	CalcPositionEx(pPet, gCurTime);
 	
 	MoveStop(pPet, &pPet->m_MoveInfo.CurPosition);
@@ -1308,6 +1434,17 @@ void CMoveManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 			TARGETSET set;
 			set.pTarget = pPet;
 			EFFECTMGR->StartEffectProcess(eEffect_PetWarp, pPet, &set, 0, pPet->GetID());
+#ifdef  _MUTIPET_
+			if (PETMGR->IsSummonPet(pPet) == FALSE)	return;//독며  3pet
+
+			if (IsMoving(HERO))
+			{
+				WORD count = HERO->m_MoveInfo.GetMaxTargetPosIdx();
+
+				if (count)
+					SetPetTarget(pPet, &HERO->m_MoveInfo, count);//독며  3pet
+			}
+#else
 			if (PETMGR->GetCurSummonPet() != pPet)	return;
 			if (IsMoving(HERO))
 			{
@@ -1315,6 +1452,7 @@ void CMoveManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 				if (count)
 					SetPetTarget(&HERO->m_MoveInfo, count);
 			}
+#endif
 		}
 		break;
 	case MP_MOVE_RECONN_POS_ACK:

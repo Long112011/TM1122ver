@@ -2123,10 +2123,25 @@ int CShopItemManager::UseShopItem(ITEMBASE* pItemBase, SHOPITEMUSEBASE UseBaseIn
 	}
 	else if (pItemInfo->ItemKind == eSHOP_ITEM_PET_EQUIP)
 	{
+#ifdef  _MUTIPET_
+		BOOL b = FALSE;//µ¶¸ç  3pet
+		for (int i = 0; i < 3; ++i)
+		{
+			CPet* pPet = m_pPlayer->GetPetManager()->GetCurSummonPet(i);
+			if (pPet)
+			{
+				b = TRUE;
+				break;
+			}
+
+		}
+		if (!b)
+#else
 		if (!m_pPlayer->GetPetManager()->GetCurSummonPet())
 		{
 			return eItemUseErr_Err;
 		}
+#endif //  _MUTIPET_
 		m_pPlayer->GetPetManager()->SetPetEquipOption(pItemInfo->ItemIdx, TRUE);
 	}
 	AddDupParam(pItemInfo);

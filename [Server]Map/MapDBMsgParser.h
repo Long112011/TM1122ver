@@ -842,13 +842,13 @@ enum CPetInvenItemRareOptionInfo
 enum CPetTotalInfo
 {
 	ePTI_PetDBIdx, ePTI_UserID, ePTI_PetSummonItemDBIdx, ePTI_PetKind, ePTI_PetGrade, ePTI_PetStamina, ePTI_PetFriendship, 
-	ePTI_Alive,  ePTI_Summonning, ePTI_Rest,
+	ePTI_Alive,  ePTI_Summonning, ePTI_Rest,  ePI_position,
 };
 
 enum CPetInsertInfo
 {
 	ePII_PetSummonItemIdx, ePII_PetDBIdx, ePII_MasterObjectID, ePII_UserIdx, ePII_PetSummonItemDBIdx, ePII_PetKind, ePII_PetGrade, ePII_PetStamina, ePII_PetFriendship, 
-	ePII_Alive, ePII_Summonning, ePII_Rest,
+	ePII_Alive, ePII_Summonning, ePII_Rest, ePII_position,
 };
 
 enum GuildPointInfoInit

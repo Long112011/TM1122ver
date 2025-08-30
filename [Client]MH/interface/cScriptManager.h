@@ -44,6 +44,58 @@ enum ePATH_FILE_TYPE
 	PFT_JACKPATH, //BY JACK
 	PFT_EMOJIPATH, //BY JACK
 };
+#ifdef _MUTIPET_
+
+enum ImageDigit//图片数字id 白色//宠物等级数字
+{
+	eImageDigit = 0,
+	eMax_0 = 502,
+	eMax_1 = 503,
+	eMax_2 = 504,
+	eMax_3 = 505,
+	eMax_4 = 506,
+	eMax_5 = 507,
+	eMax_6 = 508,
+	eMax_7 = 509,
+	eMax_8 = 510,
+	eMax_9 = 511,
+	eMin_0 = 512,
+	eMin_1 = 513,
+	eMin_2 = 514,
+	eMin_3 = 515,
+	eMin_4 = 516,
+	eMin_5 = 517,
+	eMin_6 = 518,
+	eMin_7 = 519,
+	eMin_8 = 520,
+	eMin_9 = 521,
+
+
+
+	eLvSe_0 = 522,
+	eLvSe_1 = 523,
+	eLvSe_2 = 524,
+	eLvSe_3 = 525,
+	eLvSe_4 = 526,
+	eLvSe_5 = 527,
+	eLvSe_6 = 528,
+	eLvSe_7 = 529,
+	eLvSe_8 = 530,
+	eLvSe_9 = 531,
+	eQingSe_0 = 532,
+	eQingSe_1 = 533,
+	eQingSe_2 = 534,
+	eQingSe_3 = 535,
+	eQingSe_4 = 536,
+	eQingSe_5 = 537,
+	eQingSe_6 = 538,
+	eQingSe_7 = 539,
+	eQingSe_8 = 540,
+	eQingSe_9 = 541,
+
+};
+
+#endif // _MUTIPET
 
 struct sIMAGHARDPATH
 {
@@ -86,6 +138,14 @@ public:
 	void ReleaseParseTypeData();	//Parse Type 鍗曟崬纾?鏄忓姏
 
 	////////////////////////////////////////////////////////////
+#ifdef _MUTIPET_
+
+
+
+	ImageDigit SelecterImageDigit(BYTE Digit, BOOL IsMax);//  3pet
+	ImageDigit SelecterImageDigitForLvSe(BYTE Digit);
+	ImageDigit SelecterImageDigitForQingSe(BYTE Digit);
+#endif // _MUTIPET_
 
 	void InitScriptManager();
 	//////////////////////////////////////////

@@ -1604,6 +1604,27 @@ BOOL CObjectManager::TargetByName(const char* name)
 	}
 	return FALSE;
 }
+#ifdef  _MUTIPET_
+CPet* CObjectManager::FindPlayerOwnPet(CPet** pet, DWORD CharacterIdx)//독며 3pet
+{
+	int i = 0;//독며 3pet
+	CObject* pObject = NULL;
+	m_ObjectTable.SetPositionHead();
+	while (pObject = m_ObjectTable.GetData())
+	{
+		if ((pObject->GetObjectKind() == eObjectKind_Pet))
+		{
+			if (((CPet*)pObject)->m_dwMasterID == CharacterIdx)
+			{
+				pet[i] = (CPet*)pObject;//독며 3pet
+				i++;
+			}
+
+		}
+	}
+	return NULL;
+}
+#else
 CPet* CObjectManager::FindPlayerOwnPet(DWORD CharacterIdx)
 {
 	CObject* pObject = NULL;
@@ -1618,6 +1639,7 @@ CPet* CObjectManager::FindPlayerOwnPet(DWORD CharacterIdx)
 	}
 	return NULL;
 }
+#endif //  _MUTIPET_
 void CObjectManager::HideNpc(WORD UniqueIdx, BOOL bOn)
 {
 	CObject* pObject = NULL;

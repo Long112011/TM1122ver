@@ -57,8 +57,11 @@ protected:
 	// 노점상 타이틀 LBS 03.10.02
 	cStreetStallTitleTip* m_pSSTitle;
 	//SW051129 Pet
+#ifdef  _MUTIPET_
+	CPet* m_pPet[3];//독며  3pet
+#else
 	CPet*				m_pPet;
-
+#endif //  _MUTIPET_
 	CTitan*				m_pTitan;
 
 	// magi82(44) - 노점상 꾸미기 업데이트
@@ -220,9 +223,16 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	
 	// Pet
+#ifdef  _MUTIPET_
+	void SetPet(BYTE ID, CPet* pet);//독며  3pet
+	CPet* GetPet(BYTE ID) { return m_pPet[ID]; }
+	BYTE GetPetId();
+	void RemovePet(CPet* pet);
+	BOOL	IsSummonPet(CPet* pPet = NULL);
+#else
 	void SetPet(CPet* pet);
 	CPet* GetPet()					{	return m_pPet;	}
-
+#endif //  _MUTIPET_
 	// stage
 	virtual void	SetStage( BYTE Stage );
 	BYTE			GetStage()		{ return m_CharacterInfo.Stage; }

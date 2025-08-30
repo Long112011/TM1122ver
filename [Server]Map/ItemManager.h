@@ -377,7 +377,9 @@ public:
 	void  SetChangeItemName(char* ItemName);
 	char* GetChangeItemName() { return m_ItemName; }
 	DWORD GetItemRand();
-
+#ifdef  _MUTIPET_
+	int PetMix(CPlayer* pPlayer, MSG_DWORD8* pmsg, DWORD* Date);//µ¶¸ç 3pet
+#endif //  _MUTIPET_
 };
 
 

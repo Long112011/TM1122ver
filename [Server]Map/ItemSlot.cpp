@@ -99,6 +99,18 @@ ITEMBASE /*const*/ * CItemSlot::GetItemInfoAbs(POSTYPE absPos)//kiv const
 
 	return  &m_ItemBaseArray[absPos];	
 }
+#ifdef  _MUTIPET_
+ITEMBASE /*const*/* CItemSlot::GetItemInfoDbid(DWORD DBidx)//µ¶¸ç 3pet
+{
+	int EndPos = m_SlotNum + m_StartAbsPos;
+	for (POSTYPE i = m_StartAbsPos; i < EndPos; ++i)
+	{
+		if (m_ItemBaseArray[i].dwDBIdx == DBidx)
+			return &m_ItemBaseArray[i];
+	}
+	return NULL;
+}
+#endif //  _MUTIPET_
 void CItemSlot::SetItemInfoAbs(ITEMBASE* pItemBase, POSTYPE absPos)
 {
 	memcpy(&m_ItemBaseArray[absPos], pItemBase, sizeof(ITEMBASE));

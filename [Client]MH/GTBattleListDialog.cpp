@@ -201,12 +201,22 @@ BOOL CGTBattleListDialog::EnterBattleonObserverSyn()
 	cRITEMEx * pRItem = (cRITEMEx *)m_pBattleListCtrl->GetRItem( m_nPreSelectedIndex );
 	if( !pRItem )			return FALSE;
 
-
-	if(PETMGR->GetCurSummonPet())
+#ifdef _MUTIPET_
+	if (PETMGR->IsSummonPet())//µ¶¸ç 3pet
 	{
 		CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1279));
 		return FALSE;
 	}
+#else // _MUTIPET
+
+if (PETMGR->GetCurSummonPet())
+{
+	CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1279));
+	return FALSE;
+}
+#endif // _MUTIPET
+
+
 /*	MSG_DWORD msg;
 	msg.Category = MP_GTOURNAMENT;
 	msg.Protocol = MP_GTOURNAMENT_OBSERVERJOIN_SYN;

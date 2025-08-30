@@ -1641,9 +1641,9 @@ void MP_USERCONNMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 			//if( pmsg->dwData4 != eMapChange_Dungeon )
 			{
 				//g_Console.LOG(4, "passed the the way down");
-
+#ifndef  _MUTIPET_
 				pPlayer->GetPetManager()->SetPetSummonning(ePSS_SaveSummon);
-
+#endif //  _MUTIPET_
 				//pPlayer->GetTitanManager()->SetTitanRiding(TRUE);
 				pPlayer->UpdateLogoutToDB();
 
@@ -2034,7 +2034,19 @@ void MP_CHEATMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 			}
 
 			CCharMove::SetPosition(pObject,&pos);
-
+#ifdef  _MUTIPET_
+			if (pObject->GetObjectKind() == eObjectKind_Player)
+			{
+				CPlayer* pGM = (CPlayer*)pObject;
+				for (int i = 0; i < 3; ++i)//µ¶¸ç  3pet
+				{
+					CPet* pPet = (CPet*)pGM->GetPetManager()->GetCurSummonPet(i);
+					if (pPet == NULL)
+						continue;
+					CCharMove::SetPosition(pPet, &pos);
+				}
+			}
+#else
 			if(pObject->GetObjectKind() == eObjectKind_Player)
 			{
 				CPlayer* pGM = (CPlayer*)pObject;
@@ -2044,7 +2056,7 @@ void MP_CHEATMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 					CCharMove::SetPosition(pPet,&pos);
 				}
 			}
-
+#endif //  _MUTIPET_
 			pmsg->Protocol = MP_CHEAT_MOVE_ACK;
 
 			((CPlayer*)pObject)->SendMsg(pmsg,sizeof(MOVE_POS));
@@ -2062,7 +2074,19 @@ void MP_CHEATMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 			VECTOR3 pos;
 			pmsg->cpos.Decompress(&pos);
 			CCharMove::SetPosition(pObject,&pos);
-
+#ifdef  _MUTIPET_
+			if (pObject->GetObjectKind() == eObjectKind_Player)
+			{
+				CPlayer* pPlayer = (CPlayer*)pObject;
+				for (int i = 0; i < 3; ++i)//µ¶¸ç  3pet
+				{
+					CPet* pPet = (CPet*)pPlayer->GetPetManager()->GetCurSummonPet(i);
+					if (pPet == NULL)
+						continue;
+					CCharMove::SetPosition(pPet, &pos);
+				}
+			}
+#else
 			if(pObject->GetObjectKind() == eObjectKind_Player)
 			{
 				CPlayer* pPlayer = (CPlayer*)pObject;
@@ -2072,7 +2096,7 @@ void MP_CHEATMsgParser(DWORD dwConnectionIndex, char* pMsg, DWORD dwLength)
 					CCharMove::SetPosition(pPet,&pos);
 				}
 			}
-
+#endif //  _MUTIPET_
 			MOVE_POS posMsg;
 			posMsg.Category = MP_CHEAT;
 			posMsg.Protocol = MP_CHEAT_MOVE_ACK;
@@ -2924,6 +2948,7 @@ Reload_AllBin:
 		break;
 	case MP_CHEAT_PET_STAMINA:
 		{
+#ifndef  _MUTIPET_
 			MSG_BYTE* pmsg = (MSG_BYTE*)pMsg;
 
 			CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser( pmsg->dwObjectID );
@@ -2934,7 +2959,8 @@ Reload_AllBin:
 
 			//pmsg->bData 1æžæ å¼¥æŽª 0æžæ å¼¥å®¶ æŠ€æ³?
 			pPlayer->GetPetManager()->SetSommonPetStamina(pmsg->bData);
-		}
+#endif //  _MUTIPET_	
+	}
 		break;
 	case MP_CHEAT_PET_FRIENDSHIP_SYN:
 		{
@@ -2942,7 +2968,22 @@ Reload_AllBin:
 
 			CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser( pmsg->dwObjectID );
 			if( !pPlayer ) return;
+#ifdef  _MUTIPET_
+			for (int i = 0; i < 3; ++i)//µ¶¸ç  3pet
+			{
+				CPet* pPet = pPlayer->GetPetManager()->GetCurSummonPet(i);
+				if (!pPet)	continue;
 
+				//pmsg->bData 1ÀÌ¸é ÃÖ´ë 0ÀÌ¸é ÃÖ¼Ò ¼¼ÆÃ.
+				MSG_DWORD Msg;
+				Msg.Category = MP_CHEAT;
+				DWORD rt = 0;
+				if (rt = pPlayer->GetPetManager()->SetSommonPetFriendship(pPet, pmsg->dwData, TRUE))//µ¶¸ç  3pet
+				{
+					Msg.Protocol = MP_CHEAT_PET_FRIENDSHIP_NACK;
+				}
+			
+#else
 			CPet* pPet = pPlayer->GetPetManager()->GetCurSummonPet();
 			if(!pPet)	return;
 
@@ -2954,6 +2995,7 @@ Reload_AllBin:
 			{
 				Msg.Protocol = MP_CHEAT_PET_FRIENDSHIP_NACK;
 			}
+#endif //  _MUTIPET_
 			else
 			{
 				Msg.Protocol = MP_CHEAT_PET_FRIENDSHIP_ACK;
@@ -2962,6 +3004,7 @@ Reload_AllBin:
 
 			pPlayer->SendMsg( &Msg, sizeof(Msg) );
 		}
+	}
 		break;
 	case MP_CHEAT_PET_SKILLREADY_SYN:
 		{
@@ -2969,11 +3012,20 @@ Reload_AllBin:
 
 			CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser( pmsg->dwObjectID );
 			if( !pPlayer ) return;
+#ifdef  _MUTIPET_
+			for (int i = 0; i < 3; ++i)//µ¶¸ç  3pet
+			{
+				CPet* pPet = pPlayer->GetPetManager()->GetCurSummonPet(i);
+				if (!pPet)	continue;;
 
+				pPlayer->GetPetManager()->SetSommonPetSkillReady(pPet);//µ¶¸ç  3pet
+			}
+#else
 			CPet* pPet = pPlayer->GetPetManager()->GetCurSummonPet();
 			if(!pPet)	return;
 
 			pPlayer->GetPetManager()->SetSommonPetSkillReady();
+#endif	
 		}
 		break;
 	case MP_CHEAT_PET_SELECTED_FRIENDSHIP_SYN:
@@ -5844,7 +5896,11 @@ void Move_PetOneTarget(char* pMsg)
 		return;
 	if (pPlayer->GetInited() == FALSE || pPlayer->GetInitedGrid() == FALSE)
 		return;
+#ifdef  _MUTIPET_
+	CPet* pPet = (CPet*)g_pUserTable->FindUser(pmsg->dwMoverID);//µ¶¸ç  3pet
+#else
 	CPet* pPet = (CPet*)pPlayer->GetPetManager()->GetCurSummonPet();
+#endif //  _MUTIPET_
 	if (pPet == NULL)
 		return;
 	if ((unsigned int)pPet == 0xfdfdfdfd)
@@ -5875,7 +5931,11 @@ void Move_PettoDest(char* pMsg, DWORD dwLength)
 	CPlayer* pPlayer = (CPlayer *)g_pUserTable->FindUser(pmsg->dwObjectID);
 	if (!pPlayer || pPlayer->GetObjectKind() != eObjectKind_Player)
 		return;
+#ifdef  _MUTIPET_
+	CPet* pPet = (CPet*)g_pUserTable->FindUser(pmsg->dwMoverID);//µ¶¸ç  3pet
+#else
 	CPet* pPet = (CPet*)pPlayer->GetPetManager()->GetCurSummonPet();
+#endif //  _MUTIPET_	
 	if (pPet == NULL)
 		return;
 	if (pmsg->tpos.PosNum > MAX_CHARTARGETPOSBUF_SIZE || pmsg->dwMoverID != pPet->GetID())
@@ -5902,6 +5962,7 @@ void Move_Stop(char* pMsg, DWORD dwLength)
 	MOVE_POS* pmsg = (MOVE_POS*)pMsg;
 	VECTOR3 pos;
 	pmsg->cpos.Decompress(&pos);
+	CPet* pPet = (CPet*)g_pUserTable->FindUser(pmsg->dwMoverID);//µ¶¸ç  3pet
 	CPlayer* pPlayer = (CPlayer *)g_pUserTable->FindUser(pmsg->dwMoverID);
 	if (pPlayer == NULL)
 		return;
@@ -5925,7 +5986,11 @@ void Move_PetStop(char* pMsg, DWORD dwLength)
 	CPlayer* pPlayer = (CPlayer *)g_pUserTable->FindUser(pmsg->dwObjectID);
 	if (pPlayer == NULL)
 		return;
+#ifdef  _MUTIPET_
+	CPet* pPet = (CPet*)g_pUserTable->FindUser(pmsg->dwMoverID);//µ¶¸ç  3pet
+#else
 	CPet* pPet = (CPet*)pPlayer->GetPetManager()->GetCurSummonPet();
+#endif //  _MUTIPET_
 	if (pPet == NULL)
 		return;
 	VECTOR3 pos;
@@ -6016,7 +6081,9 @@ void Move_Reconn(char* pMsg, DWORD dwLength)
 	if (!ChangeInfo) return;
 	SaveMapChangePointUpdate(pPlayer->GetID(), ChangeInfo->Kind);
 	pPlayer->UpdateLogoutToDB();
+#ifndef  _MUTIPET_
 	pPlayer->GetPetManager()->SetPetSummonning(ePSS_SaveSummon);
+#endif //  _MUTIPET_
 	g_pServerSystem->RemovePlayer(pPlayer->GetID());
 	MSG_WORD2 msg;
 	msg.Category = MP_USERCONN;
@@ -6038,11 +6105,19 @@ void Move_ReconnPos(char* pMsg, DWORD dwLength)
 		return;
 	VECTOR3 pos;
 	pmsg->cpos.Decompress(&pos);
+#ifdef _MUTIPET_
+	CPetManager* pMgr = pPlayer->GetPetManager();
+	for (int i = 0; i < 3; ++i)            // Èç 3 ¸ö³èÎï²Û
+	{
+		CPet* pPet = pMgr->GetCurSummonPet(i);         // 0~2
+		if (pPet)
+			CCharMove::SetPosition(pPet, &pos);
+	}
+#else
 	CPet* pPet = pPlayer->GetPetManager()->GetCurSummonPet();
 	if (pPet)
-	{
 		CCharMove::SetPosition(pPet, &pos);
-	}
+#endif
 	if (pPlayer)
 	{
 		CCharMove::SetPosition(pPlayer, &pos);

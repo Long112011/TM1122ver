@@ -354,6 +354,35 @@ void CCharacterPvpDialog::SetALLDodge()
 	value2 += HERO->GetAvatarOption()->PVPHit;
 	char buf1[66];
 	DWORD PetBuffSuccessProb = 0;
+#ifdef  _MUTIPET_
+	for (int i = 0; i < 3; ++i)//독며  3pet
+	{
+		CPet* pPet = HERO->GetPet(i);
+		if (pPet)
+			if (pPet)
+			{
+				BASE_PET_LIST* pList = GAMERESRCMNGR->GetPetListInfo(pPet->GetPetKind());
+				PET_BUFF_LIST* pBuffList = NULL;
+				for (int i = 0; i < MAX_PET_BUFF_NUM; ++i)
+				{
+					WORD BuffIdx = pList->BuffList[pPet->GetPetCurGrade() - 1][i];
+
+					if (0 == BuffIdx) continue;
+
+					pBuffList = GAMERESRCMNGR->GetPetBuffInfo(BuffIdx);
+
+					if (pBuffList && pBuffList->BuffValueData)
+					{
+						if (pBuffList->BuffKind == ePB_Dodge)
+						{
+							PetBuffSuccessProb = pBuffList->BuffSuccessProb;
+							//wsprintf(buf1, "%d / %d", pBuffList->BuffSuccessProb, 0);
+						}
+					}
+				}
+			}
+	}
+#else
 	CPet* pPet = HERO->GetPet();
 	if (pPet)
 	{
@@ -377,6 +406,7 @@ void CCharacterPvpDialog::SetALLDodge()
 			}
 		}
 	}
+#endif //  _MUTIPET_
 	value += PetBuffSuccessProb;
 
 	wsprintf(buf1, "%d% / %d%", value, value2);
@@ -433,6 +463,35 @@ void CCharacterPvpDialog::SetCriticalDamage()
 }
 void CCharacterPvpDialog::SetDodge()
 {
+
+     #ifdef  _MUTIPET_
+	char buf1[66] = {};
+	DWORD val = 0;
+	for (int i = 0; i < 3; ++i)//독며  3pet
+	{
+		CPet* pPet = HERO->GetPet(i);
+		if (pPet)
+		{
+			BASE_PET_LIST* pList = GAMERESRCMNGR->GetPetListInfo(pPet->GetPetKind());
+			PET_BUFF_LIST* pBuffList = NULL;
+			for (int i = 0; i < MAX_PET_BUFF_NUM; ++i)
+			{
+				WORD BuffIdx = pList->BuffList[pPet->GetPetCurGrade() - 1][i];
+
+				if (0 == BuffIdx) continue;
+
+				pBuffList = GAMERESRCMNGR->GetPetBuffInfo(BuffIdx);
+
+				if (pBuffList && pBuffList->BuffValueData)
+				{
+					if (pBuffList->BuffKind == ePB_Dodge)
+					{
+						val += pBuffList->BuffSuccessProb;//독며  3pet
+					}
+				}
+			}
+		}
+         #else
 	char buf1[66] = {};
 	CPet* pPet = HERO->GetPet();
 	if (pPet)
@@ -456,9 +515,12 @@ void CCharacterPvpDialog::SetDodge()
 			}
 		}
 	}
+#endif //  _MUTIPET_
+
 	else
 	{
 		wsprintf(buf1, "%d / %d", 0, 0);
+	}
 	}
 	m_ppStatic.dodge->SetStaticText(buf1);
 }

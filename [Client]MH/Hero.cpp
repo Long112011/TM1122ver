@@ -2593,9 +2593,17 @@ BOOL CHero::Move_Simple(VECTOR3* pTargetPos,BOOL bRenderTileDebug)
 	NETWORK->Send(&msg,msg.GetSize());
 
 	MOVEMGR->StartMoveEx(this, pTargetPos, gCurTime);
-	
+#ifdef  _MUTIPET_
+	for (int i = 0; i < 3; ++i)//µ¶¸ç  3³èÎï
+	{
+		if (PETMGR->GetCurSummonPet(i))
+		{
+			MOVEMGR->SetPetTarget(PETMGR->GetCurSummonPet(i), &HERO->m_MoveInfo, 1);
+		}
+	}
+#else
 	MOVEMGR->SetPetTarget(&m_MoveInfo,1);
-
+#endif //  _MUTIPET_
 	return TRUE;
 }
 BOOL CHero::NextMove()

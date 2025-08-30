@@ -36,8 +36,9 @@ void CUngijosikManager::UngijosikMode(CPlayer* pPlayer, BOOL bUngi)
 	MSGBASE msg;
 	msg.Category = MP_UNGIJOSIK;
 	msg.dwObjectID = pPlayer->GetID();
+#ifndef  _MUTIPET_
 	CPet* pPet = pPlayer->GetCurPet();
-
+#endif //  _MUTIPET_
 	if(bUngi ==  TRUE)
 	{
 		if( OBJECTSTATEMGR_OBJ->StartObjectState(pPlayer, eObjectState_Ungijosik, 0) )
@@ -46,13 +47,22 @@ void CUngijosikManager::UngijosikMode(CPlayer* pPlayer, BOOL bUngi)
 
 			msg.Protocol = MP_UNGIJOSIK_START;		
 			PACKEDDATA_OBJ->QuickSendExceptObjectSelf(pPlayer,&msg,sizeof(msg));
-
+#ifdef  _MUTIPET_
+			for (int i = 0; i < 3; ++i)//刀哥  3pet
+			{
+				CPet* pPet = pPlayer->GetCurPet(i);
+				if (pPet == NULL)
+					continue;
+				pPet->SetPetBasicState(ePBS_UNGI);
+			}
+#else
 			if(pPet)
 			{
 
 				pPet->SetPetBasicState(ePBS_UNGI);
 
 			}
+#endif //  _MUTIPET_
 		}
 		else
 
@@ -66,12 +76,20 @@ void CUngijosikManager::UngijosikMode(CPlayer* pPlayer, BOOL bUngi)
 	{
 
 		OBJECTSTATEMGR_OBJ->EndObjectState(pPlayer, eObjectState_Ungijosik, 0);
-
+#ifdef  _MUTIPET_
+		for (int i = 0; i < 3; ++i)//刀哥  3pet
+		{
+			CPet* pPet = pPlayer->GetCurPet(i);
+			if (pPet == NULL)
+				continue;
+			pPet->SetPetBasicState(ePBS_UNGI);
+		}
+#else
 		if(pPet)
 		{
 			pPet->SetPetBasicState(ePBS_NONE);
 		}
-
+#endif //  _MUTIPET_
 		msg.Protocol = MP_UNGIJOSIK_END;
 		PACKEDDATA_OBJ->QuickSendExceptObjectSelf(pPlayer,&msg,sizeof(msg));
 	}

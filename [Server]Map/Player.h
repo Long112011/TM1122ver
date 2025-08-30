@@ -1016,11 +1016,13 @@ public:
 
 	//SW051129 Pet
 	CPetManager* GetPetManager()			{	return &m_PetManager;	}
-
+#ifdef  _MUTIPET_
+	CPet* GetCurPet(BYTE i) { return m_PetManager.GetCurSummonPet(i); }//µ¶¸ç  3pet
+#endif //  _MUTIPET_
 //	void SetCurPet(CPet* pPet)				{	m_pCurPet = pPet;	}  // JACK
 //	CPet*	GetCurPet()						{	return m_pCurPet;	}  // JACK
 
-	CPet*	GetCurPet()					{	return m_PetManager.GetCurSummonPet();	}
+
 	
 	BOOL GetKyungGongIdx()				{	return m_MoveInfo.KyungGongIdx;	}
 

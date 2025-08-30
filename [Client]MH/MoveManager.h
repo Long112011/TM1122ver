@@ -4,6 +4,10 @@
 class CObject;
 class CAction;
 class CActionTarget;
+class CPet;
+#ifdef  _MUTIPET_
+class CPet;//독며  3pet
+#endif //  _MUTIPET_
 class CMoveManager  
 {
 	BOOL CalcYPosition(CObject* pObject,DWORD CurTime);
@@ -27,17 +31,29 @@ public:
 	//BOOL SetHeroTarget(VECTOR3* pPos,BOOL bMousePointDisplay = MACROMGR->IsVisibleCursor());
 	BOOL SetHeroTarget(VECTOR3* pPos,float biubiubiu); //
 	void SetHeroTarget(VECTOR3* pPos,BOOL bMousePointDisplay = MACROMGR->IsVisibleCursor()); //
+#ifdef  _MUTIPET_
+	void SetPetTarget(CPet* pPet, MOVE_INFO* pHeroMoveInfo, WORD wPosCount);//독며  3pet
+#else
 	void SetPetTarget(MOVE_INFO* pHeroMoveInfo, WORD wPosCount);
+#endif //  _MUTIPET_
 	void GetPetPath(MOVE_INFO* pHeroMoveInfo, WORD wPosCount);
 	BOOL GetPetLastPos(VECTOR3* pSrcPos, VECTOR3* pFromPos, VECTOR3* pToPos);
+#ifdef  _MUTIPET_
+	void SendPetMoveMsg(CPet* pPet);//독며  3pet
+#else
 	void SendPetMoveMsg();
+#endif //  _MUTIPET_
 	void SetHeroPetTarget(CObject* object1, CObject* object2, VECTOR3* pPos);
 	void SetHeroPetTarget();
 	void SetHeroPetTarget(VECTOR3* pPos);
 	void SetHeroActionMove(CActionTarget* pTarget,CAction* pAction);
 	void MoveStop(CObject* pObject,VECTOR3* pStopPos = NULL);
 	void HeroMoveStop();
+#ifdef  _MUTIPET_
+	void PetMoveStop(CPet* pPet);//독며  3pet
+#else
 	void PetMoveStop();
+#endif //  _MUTIPET_
 	float CalcDistance(CObject* pObject1,CObject* pObject2);
 	void ToggleHeroMoveMode();
 	void ToggleHeroKyungGongMode();

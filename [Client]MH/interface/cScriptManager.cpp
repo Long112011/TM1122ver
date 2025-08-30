@@ -329,6 +329,9 @@
 
 #include "VipDialog.h"            //vip系统
 #include "CustomizingNameDlg.h"//自定义名字
+#ifdef  _MUTIPET_
+#include "PetMixDlg.h"//刀哥  3pet
+#endif //  _MUTIPET_
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -5876,7 +5879,176 @@ PARSE_TYPE cScriptManager::GetParseType(const char* str)
 
 	return (PARSE_TYPE)pParseTypeList->nType;
 }
+
 ///////////////////////////////////////////////////////////////////////////////////////
+#ifdef _MUTIPET_
+//刀哥 3pet   下面3个
+ImageDigit cScriptManager::SelecterImageDigit(BYTE Digit, BOOL IsMax)
+{
+	switch (Digit)
+	{
+	case 0:
+	{
+		if (IsMax)
+			return eMax_0;
+		else
+			return eMin_0;
+	}
+	break;
+	case 1:
+	{
+		if (IsMax)
+			return eMax_1;
+		else
+			return eMin_1;
+	}
+	break;
+	case 2:
+	{
+		if (IsMax)
+			return eMax_2;
+		else
+			return eMin_2;
+	}
+	break;
+	case 3:
+	{
+		if (IsMax)
+			return eMax_3;
+		else
+			return eMin_3;
+	}
+	break;
+	case 4:
+	{
+		if (IsMax)
+			return eMax_4;
+		else
+			return eMin_4;
+	}
+	break;
+	case 5:
+	{
+		if (IsMax)
+			return eMax_5;
+		else
+			return eMin_5;
+	}
+	break;
+	case 6:
+	{
+		if (IsMax)
+			return eMax_6;
+		else
+			return eMin_6;
+	}
+	break;
+	case 7:
+	{
+		if (IsMax)
+			return eMax_7;
+		else
+			return eMin_7;
+	}
+	break;
+	case 8:
+	{
+		if (IsMax)
+			return eMax_8;
+		else
+			return eMin_8;
+	}
+	break;
+	case 9:
+	{
+		if (IsMax)
+			return eMax_9;
+		else
+			return eMin_9;
+	}
+	break;
+	default:
+		break;
+	}
+}
+
+ImageDigit cScriptManager::SelecterImageDigitForLvSe(BYTE Digit)
+{
+	switch (Digit)
+	{
+	case 0:
+		return eLvSe_0;
+		break;
+	case 1:
+		return eLvSe_1;
+		break;
+	case 2:
+		return eLvSe_2;
+		break;
+	case 3:
+		return eLvSe_3;
+		break;
+	case 4:
+		return eLvSe_4;
+		break;
+	case 5:
+		return eLvSe_5;
+		break;
+	case 6:
+		return eLvSe_6;
+		break;
+	case 7:
+		return eLvSe_7;
+		break;
+	case 8:
+		return eLvSe_8;
+		break;
+	case 9:
+		return eLvSe_9;
+		break;
+	default:
+		break;
+	}
+}
+ImageDigit cScriptManager::SelecterImageDigitForQingSe(BYTE Digit)
+{
+	switch (Digit)
+	{
+	case 0:
+		return eQingSe_0;
+		break;
+	case 1:
+		return eQingSe_1;
+		break;
+	case 2:
+		return eQingSe_2;
+		break;
+	case 3:
+		return eQingSe_3;
+		break;
+	case 4:
+		return eQingSe_4;
+		break;
+	case 5:
+		return eQingSe_5;
+		break;
+	case 6:
+		return eQingSe_6;
+		break;
+	case 7:
+		return eQingSe_7;
+		break;
+	case 8:
+		return eQingSe_8;
+		break;
+	case 9:
+		return eQingSe_9;
+		break;
+	default:
+		break;
+	}
+}
+#endif // _MUTIPET_
 
 
 

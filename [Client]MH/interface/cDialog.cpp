@@ -306,6 +306,24 @@ cWindow * cDialog::GetWindowForID(LONG id)
 	}
 	return NULL;
 }
+#ifdef  _MUTIPET_
+void cDialog::SetAbsXY(LONG x, LONG y)//µ¶¸ç  3pet
+{
+	cWindow::SetAbsXY(x, y);
+
+	PTRLISTPOS pos = m_pComponentList->GetHeadPosition();
+	while (pos)
+	{
+		cWindow* win = (cWindow*)m_pComponentList->GetNext(pos);
+		if (win->GetType() == WT_CHARINFODIALOG)
+		{
+			int i = 0;
+		}
+		win->SetAbsXY(x + (LONG)win->GetRelX(), y + (LONG)win->GetRelY());
+
+	}
+}
+#else
 void cDialog::SetAbsXY(LONG x, LONG y)
 {
 	cWindow::SetAbsXY(x, y);
@@ -316,6 +334,7 @@ void cDialog::SetAbsXY(LONG x, LONG y)
 		win->SetAbsXY(x + (LONG)win->GetRelX(), y + (LONG)win->GetRelY());
 	}
 }
+#endif
 void cDialog::SetDisable(BOOL val)
 {
 	m_bDisable = val;

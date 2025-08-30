@@ -70,6 +70,9 @@ class CPet :	public CObject
 	BASE_PET_LIST*	m_pSInfo;
 	DWORD			m_dwMasterID;
 	CPlayer*		m_pMaster;
+#ifdef  _MUTIPET_
+	BOOL				m_bReadytoMove;
+#endif //  _MUTIPET_
 
 	void InitPet(PET_TOTALINFO* pTotalInfo);
 public:
@@ -88,6 +91,10 @@ public:
 	DWORD	GetPetCurGrade()	{	return m_PetTotalInfo.PetGrade;	}
 	DWORD	GetPetSommonItemDBIdx()	{	return m_PetTotalInfo.PetSummonItemDBIdx;	}
 
+#ifdef  _MUTIPET_
+	void	SetMoveReady(BOOL bVal) { m_bReadytoMove = bVal; }
+	BOOL    IsReadytoMove() { return m_bReadytoMove; }
+#endif //  _MUTIPET_
 //	void	SetPetActionState(DWORD state)	{	m_PetState.stateOld=m_PetState.stateCur;m_PetState.stateCur=state;	}
 //	DWORD	GetPetCurActionState()	{	return m_PetState.stateCur;	}
 

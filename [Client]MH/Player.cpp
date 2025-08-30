@@ -80,8 +80,13 @@ void CPlayer::InitPlayer(CHARACTER_TOTALINFO* pTotalInfo)
 
 	for(int i=eAvatar_Weared_Hair; i<eAvatar_Max; i++)	
 		m_ShopItemOption.Avatar[i] = 1;
-	
+#ifdef  _MUTIPET_
+	m_pPet[0] = NULL;//독며  3pet
+	m_pPet[1] = NULL;
+	m_pPet[2] = NULL;
+#else
 	m_pPet = NULL;
+#endif //  _MUTIPET_
 	m_pTitan = NULL;
 	m_bInTitan = FALSE;
 	m_TitanMoveSpeed = 0;
@@ -1251,7 +1256,68 @@ char* CPlayer::GetGuildName()
 {
 	return m_CharacterInfo.GuildName;
 }
-
+#ifdef  _MUTIPET_
+void CPlayer::SetPet(BYTE ID, CPet* pet)//독며  3pet
+{
+	for (int i = 0; i < 3; ++i)
+	{
+		if (m_pPet[i] == pet)
+		{
+			return;
+		}
+	}
+	m_pPet[ID] = pet;
+}
+void CPlayer::RemovePet(CPet* pet)//독며  3pet
+{
+	for (int i = 0; i < 3; ++i)
+	{
+		if (m_pPet[i] == pet)
+		{
+			m_pPet[i] = NULL;
+		}
+	}
+}
+BYTE CPlayer::GetPetId()
+{
+	BYTE id = 4;
+	for (int i = 0; i < 3; ++i)
+	{
+		if (m_pPet[i])
+		{
+			continue;
+		}
+		else
+		{
+			id = i;
+			break;
+		}
+	}
+	return id;
+}
+BOOL CPlayer::IsSummonPet(CPet* pPet)
+{
+	if (pPet)
+	{
+		for (int i = 0; i < 3; ++i)
+		{
+			if (m_pPet[i] == pPet)
+			{
+				return TRUE;
+			}
+		}
+		return FALSE;
+	}
+	for (int i = 0; i < 3; ++i)
+	{
+		if (m_pPet[i])
+		{
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+#else
 void CPlayer::SetPet( CPet* pet )
 {
 	m_pPet = pet;
@@ -1259,7 +1325,7 @@ void CPlayer::SetPet( CPet* pet )
 //	if(!pet)		return;
 //	pet->SetMaster(this);
 }
-
+#endif //  _MUTIPET_
 void CPlayer::SetStage( BYTE Stage )
 {
 	m_CharacterInfo.Stage = Stage;

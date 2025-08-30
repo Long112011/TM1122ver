@@ -3994,7 +3994,7 @@ void RCharacterAbilityInfo(LPMIDDLEQUERY pData, LPDBMESSAGE pMessage)
 
 void PetInsertToDB( DWORD CharacterIdx, DWORD UserIdx, DWORD dwItemIdx, PET_TOTALINFO* pPetTotalInfo )
 {
-	sprintf(txt, "EXEC %s %d,%d,%d,%d,%d, %d,%d,%d,%d,%d, %d", "dbo.MP_PET_Insert",
+	sprintf(txt, "EXEC %s %d,%d,%d,%d,%d, %d,%d,%d,%d,%d, %d, %d", "dbo.MP_PET_Insert",
 		CharacterIdx,
 		UserIdx,
 		dwItemIdx,
@@ -4008,7 +4008,12 @@ void PetInsertToDB( DWORD CharacterIdx, DWORD UserIdx, DWORD dwItemIdx, PET_TOTA
 		pPetTotalInfo->PetSummonItemDBIdx,
 		pPetTotalInfo->bAlive,
 		pPetTotalInfo->bSummonning,
-		pPetTotalInfo->bRest
+		pPetTotalInfo->bRest,
+#ifdef  _MUTIPET_
+		pPetTotalInfo->Pos//刀哥  3pet
+#else
+		 0//刀哥  3pet
+#endif
 		);
 
 	g_DB.Query(eQueryType_FreeQuery, ePetInsert, pPetTotalInfo->PetSummonItemDBIdx, txt);
@@ -4045,6 +4050,7 @@ void RPetInsert(LPQUERY pData, LPDBMESSAGE pMessage)
 		PetInfo.bSummonning = atoi((char*)pData->Data[ePII_Summonning]);
 		PetInfo.bRest = atoi((char*)pData->Data[ePII_Rest]);
 		//dwPetObjectID = PetInfo.PetDBIdx + PET_ID_START;
+		PetInfo.Pos = atoi((char*)pData->Data[ePII_position]);//刀哥  3pet
 	}
 	else
 	{
@@ -4070,7 +4076,7 @@ void PetDeleteToDB( DWORD dwPetDBIdx )
 void PetUpdateToDB( DWORD UserIdx, const PET_TOTALINFO* pPetTotalInfo )
 {
 	//盎脚等 脐 沥焊 DB 历厘.
-	sprintf(txt, "EXEC dbo.MP_PET_Update %d, %d, %d, %d, %d,  %d, %d, %d",
+	sprintf(txt, "EXEC dbo.MP_PET_Update %d, %d, %d, %d, %d,  %d, %d, %d, %d",
 		UserIdx,
 		//dwItemDBIdx,
 		//pPetTotalInfo->PetMasterID,
@@ -4082,7 +4088,12 @@ void PetUpdateToDB( DWORD UserIdx, const PET_TOTALINFO* pPetTotalInfo )
 		//pPetTotalInfo->PetSummonItemID,
 		pPetTotalInfo->bAlive,
 		pPetTotalInfo->bSummonning,
-		pPetTotalInfo->bRest
+		pPetTotalInfo->bRest,
+#ifdef  _MUTIPET_
+		pPetTotalInfo->Pos//刀哥  3pet
+#else
+		, 0//刀哥  3pet
+#endif	
 		);
 
 	g_DB.Query(eQueryType_FreeQuery, ePetUpdate, 0, txt);
@@ -4110,6 +4121,8 @@ void RCharacterPetInfo(LPQUERY pData, LPDBMESSAGE pMessage)
 		PetInfo.bAlive				=	atoi((char*)pData[i].Data[ePTI_Alive]);
 		PetInfo.bSummonning			=	atoi((char*)pData[i].Data[ePTI_Summonning]);
 		PetInfo.bRest				=	atoi((char*)pData[i].Data[ePTI_Rest]);
+		PetInfo.Pos                 =	atoi((char*)pData[i].Data[ePI_position]);// 三只宠物
+
 
 		pPlayer->GetPetManager()->AddPetTotalInfo(&PetInfo);
 

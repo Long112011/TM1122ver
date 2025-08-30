@@ -1,7 +1,211 @@
 
+#ifdef  _MUTIPET_
 
 
 
+
+
+
+#pragma once
+
+#include "./Interface/cImage.h"
+
+
+#define PETMGR	USINGTON(CPetManager)
+
+#define PET_DIST_CHECKTIME 500
+#define PET_MAX_FRIENDSHIP		10000000
+#define PET_SKILLCHARGE_CHECKTIME	1000
+#define PET_MAX_SKILL_CHARGE	10000
+#define PET_RESUMMON_VALID_TIME	30000
+
+#define MAX_PET_BUFF_NUM	6
+
+#define CRISTMAS_EVENTPET 8
+
+
+enum ePetFeedResult { ePFR_Sucess = 0, ePFR_Unsummoned, ePFR_StaminaFull };
+
+enum ePetUpgradeDlgGrade { ePUDG_Default, ePUDG_Grade2 = 1, ePUDG_Grade3 = 2 };
+
+enum ePetRevivalDlgGrade { ePRDG_Default, ePRDG_Grade1, ePRDG_Grade2, ePRDG_Grade3, ePRDG_Grade_All };	//ePRDG_Grade_All => ShopItem 용
+
+//버프
+
+
+
+enum { ePetRestBtn, ePetUseBtn };
+
+//펫종류
+enum ePetKind { ePK_None, ePK_CommonPet = 1, ePK_ShopItemPet = 2, ePK_EventPet = 4, };
+
+class CPet;
+
+class cDialog;
+class CPetStateDlg;
+class CPetStateMiniDlg;
+class CPetInventoryDlg;
+
+class CPet;
+
+
+
+
+struct BuffData
+{
+	BuffData() :Prob(0), BuffValueData(0)/*, BuffAdditionalData(0)*/ {};
+	DWORD	Prob;
+
+	float	BuffValueData;
+	BOOL IsAdd;
+	//	DWORD	BuffAdditionalData; //맣槨첼쌓뙈첼槿섬buff鑒앴藤좆
+};
+class CPetManager
+{
+	CYHHashTable<PET_TOTALINFO>		m_PetInfoList;
+	//	CYHHashTable<cImage>			m_PetImageList;
+
+	DWORD				m_dwStateCheckTime;
+	DWORD				m_dwStaminaDecrease;
+	DWORD				m_dwOldFriendShipForToolTipChange[3];
+
+	DWORD				m_dwDistCheckTime;					//프로세스 타임(주인-펫거리체크)
+	BOOL				m_bValidDistance;				//움직여야 될 거리인가
+	//	BOOL				m_bReadytoMove;					//움직여도 될 조건인가(movemgr에서 세팅)
+
+	DWORD				m_dwSkillRechargeCheckTime;		//스킬게이지 체크 타임(1초)
+	DWORD				m_dwSkillRechargeAmount;
+	BOOL				m_bSkillGuageFull;
+	BOOL				m_bReadyToSendSkillMsg;
+
+	DWORD				m_dwResummonDelayTime;			//펫 재소환 레이//봉인후 30초 카운트
+
+	CPet* m_pCurSummonPet[3];
+	CPet* SelectPet;
+
+	CPetStateDlg* m_pStateDlg;					//펫 상태큰창
+	CPetStateMiniDlg* m_pStateMiniDlg;				//펫 상태작은창
+	CPetInventoryDlg* m_pInvenDlg;
+	BOOL				m_bReadyToSendRestMsg;			//펫 휴식 상태 설정정보 서버 리턴 뒤 TRUE
+
+	WORD				m_wPetKind[3];						//펫종류. 일반/아이템몰/이벤트 펫
+	BuffData						m_BuffData[ePB_Kind_Max];
+public:
+	CPetManager(void);
+	~CPetManager(void);
+
+	void	PetMgrInit();
+	void	PetMgrRelease();
+	void	PetMgrProcess();
+	void	AddHeroPet(CPet* pPet);
+	void	InitPetInfo(PET_TOTALINFO* pPetInfo, int num);
+	void	AddPetInfo(PET_TOTALINFO* pPetInfo);
+	void	RemovePetInfo(DWORD dwSummonItemDBIdx);
+	void	ReleasePetInfoList();
+	PET_TOTALINFO* GetPetInfo(DWORD dwItemDBIdx);
+	void	UpdateCurPetInfo(CPet* pPet);
+	void	OnPetRemove(CPet* pPet);
+	void	SetResummonCheckTime();
+	BOOL	CheckResummonAvailable();
+	DWORD	GetPetResummonRestTime();
+
+	BOOL	CheckDefaultFriendship(DWORD dwItemDBIdx);
+	DWORD	GetPetFriendship(DWORD dwItemDBIdx);
+
+	BOOL	IsCurPetSummonItem(DWORD dwItemDBIdx);
+	void	RemovePetFromTable(DWORD dwPetID);
+	void	SetCurSummonPet(CPet* pPet);
+	CPet* GetCurSummonPet(BYTE id) { return m_pCurSummonPet[id]; }
+
+	DWORD	GetHeroPetID();
+	BOOL	CheckPetSummoned();
+	BOOL	CheckPetAlive(DWORD dwSummonItemDBIdx);
+	void	ReleasePetTable();
+
+	void	NetworkMsgParse(WORD Protocol, void* pMsg);
+
+
+	void	CalcSkillRecharge();
+	void	SetSkillRechargeAmount(DWORD amount);
+	BOOL	IsSkillGuageFull() { return m_bSkillGuageFull; }
+	void	SetSkillGuageFull(BOOL bVal) { m_bSkillGuageFull = bVal; }
+
+	void	CheckDistWithMaster();
+	BOOL	IsValidDist() { return m_bValidDistance; }
+
+	void	OpenPetStateDlg();
+	void	OpenPetInvenDlg();
+
+	CPetStateDlg* GetPetStateDlg() { return m_pStateDlg; }
+	void	SetPetStateDlg(CPetStateDlg* pDlg) { m_pStateDlg = pDlg; }
+	void	SetPetStateMiniDlg(CPetStateMiniDlg* pDlg) { m_pStateMiniDlg = pDlg; }
+	void	SetPetInventoryDlg(CPetInventoryDlg* pDlg) { m_pInvenDlg = pDlg; }
+	CPetInventoryDlg* GetPetInvenDlg() { return m_pInvenDlg; }
+
+	void	TogglePetStateDlg();
+	void	SetPetStateDlgInfo(CPet* pPet);
+	void	SetPetStateMiniDlgInfo(CPet* pPet);
+	void	SetPetStateDlgInfoAll();
+	void	ClosePetAllDlg();
+
+	void	SetPetGuageText(CPet* pPet, DWORD dwStamina, DWORD dwFriendShip);
+
+	DWORD	GetPetValidInvenMaxTabNum();
+	void	SetPetValidInvenTab();
+
+	void   GetPetBuffName(BYTE BuffKind, float BuffValueData, char* BuffName, float Rate);
+
+	//	BOOL	GetPetDlgToggle() {return m_bIsPetStateDlgToggle;}			//토글상태가져오기. 큰창/작은창
+
+	//rest
+	void	SetCurPetRest(BOOL bRest);
+	void	SendPetRestMsg(BOOL bRest);//펫 사용/휴식 정보 보내기
+	void	SetReadyToSendRestMsg(BOOL bReady) { m_bReadyToSendRestMsg = bReady; }
+	BOOL	IsReadyToSendRestMsg() { return m_bReadyToSendRestMsg; }
+
+	//seal
+
+	void	SendPetSealMsg();
+
+	//ability icon. pet skill
+	void	CheckRestNSkillUse();	//무공창 스킬버튼 기능. 휴식상태면 해제시키고 게이지풀이면 스킬 사용. 기획자에게 문의후 알게됨.
+
+	//skill
+	void	InitPetSkillGuage();
+	void	UseCurPetSkill();
+	void	SetReadyToSendSkillMsg(BOOL bReady) { m_bReadyToSendSkillMsg = bReady; }
+	BOOL	IsReadyToSendSkillMsg() { return m_bReadyToSendSkillMsg; }
+	//SW060324 펫 버프 추가
+	//void	AddMasterStatFromPetBuff(player_calc_stats* pMasterAdditionalStat);
+	void	RefleshPetMaintainBuff(player_calc_stats* item_stats);
+
+	//pet equip
+	WORD	GetPetEquipItemMax(DWORD dwItemDBIdx);
+
+	//	void	LoadPetImage();혤句녘膠뗌접暠튬
+	//	cImage* GetPetImage(DWORD dwPetIdx);
+	//	void	RemovePetImage();
+
+	void	Release();
+
+	//	void	SetCurSummonPetKind(CPet* pPet);
+	BOOL	CheckCurSummonPetKindIs(CPet* pPet, int kind);
+	BOOL	IsCurPetFull();
+	BOOL	IsSummonPet(CPet* pPet = NULL);
+	void    SetSelectPet(WORD i);
+	void    SetPetBuffInfo();
+
+
+
+	void	GetPetBuffResultRt(int BuffKind, void* Data);
+};
+
+EXTERNGLOBALTON(CPetManager)
+
+
+
+
+#else // _MUTIPET_
 
 #pragma once
 
@@ -200,3 +404,4 @@ public:
 EXTERNGLOBALTON(CPetManager)
 
 
+#endif // _MUTIPET_

@@ -230,6 +230,9 @@
 #include "ItemQualityChangeDlg.h"
 #include "GradeChangeDlg.h"			//武器升阶值转移卷
 #include "VipDialog.h"   
+#ifdef _MUTIPET_
+#include "PetMixDlg.h"//刀哥  3pet
+#endif // _MUTIPET_
 extern HWND _g_hWnd;
 extern BOOL m_SafeIconShow;
 #define FONTPATH ".\\Image\\InterfaceScript\\gamefont.ttc"
@@ -371,7 +374,9 @@ void cWindowManager::CreateGameIn()
 	CreatePetInvenDlg();
 	CreatePetUpgradeDlg();
 	CreatePetRevivalDlg();
+#ifndef  _MUTIPET_
 	CreatePetMultiDlg();
+#endif //  _MUTIPET_
 	CreateTipBrowserDlgDlg();
 	CreateKeySettingTipDlg();
 	CreateGuildNoteDlg();
@@ -439,7 +444,9 @@ void cWindowManager::CreateGameIn()
 	CreateGradeChangeDlg();			//武器升阶值转移卷
 	CreateVipDialog();             //VIP窗口
 	CreatCustomizingDlg();//创建角色外观自定义窗口
-
+#ifdef  _MUTIPET_
+//	CreatePetMixDlg();//刀哥3pet
+#endif //  _MUTIPET_
 #ifdef	_DEBUGTICK
 	DWORD	dwEndTick = GetTickCount();
 	DWORD	dwFuncTick = dwEndTick - dwStartTick;
@@ -1572,7 +1579,12 @@ void cWindowManager::CreateMPGuageDlg()
 }
 void cWindowManager::CreatePetStateDlg()
 {
+#ifdef  _MUTIPET_
+	cWindow* window = GetDlgInfoFromFile("./image/InterfaceScript/PetState_muti.bin", "rb");
+
+#else
 	cWindow* window = GetDlgInfoFromFile("./image/InterfaceScript/PetState.bin", "rb");
+#endif //  _MUTIPET_
 	VECTOR2 Pos1;
 	Pos1.x = ((float)GET_MAINWIN_W - window->GetWidth()) - 150;
 	Pos1.y = window->GetAbsY();
@@ -1628,6 +1640,23 @@ void cWindowManager::CreatePetRevivalDlg()
 	GAMEIN->SetPetRevivalDialog((CPetRevivalDialog*)window);
 	GAMEIN->GetPetRevivalDialog()->Linking();
 }
+#ifdef _MUTIPET_
+void cWindowManager::CreatePetMixDlg()//刀哥 3pet
+{
+	cWindow* window = GetDlgInfoFromFile("./image/InterfaceScript/PetMix.bin", "rb");
+	ASSERT(window);
+
+
+	VECTOR2 Pos1;
+	Pos1.x = ((float)GAMERESRCMNGR->m_GameDesc.dispInfo.dwWidth / 2 - window->GetWidth() / 2);
+	Pos1.y = ((float)GAMERESRCMNGR->m_GameDesc.dispInfo.dwHeight / 2 - window->GetHeight() / 2);
+	window->SetAbsXY(Pos1.x, Pos1.y);
+	AddWindow(window);
+	PetMixDlg* pDlg = (PetMixDlg*)window;
+	GAMEIN->SetPetMixDlg(pDlg);
+	pDlg->Linking();
+}
+#else
 
 void cWindowManager::CreatePetMultiDlg()
 {
@@ -1641,7 +1670,7 @@ void cWindowManager::CreatePetMultiDlg()
 	GAMEIN->GetPetMultiDialog()->Linking();
 	PETMGR->SetPetMultiDlg((CPetMultiDlg*)window);
 }
-
+#endif // _MUTIPET_
 void cWindowManager::CreateInventoryDlg()
 {
 	cWindow * window = GetDlgInfoFromFile("./image/InterfaceScript/11.bin", "rb");

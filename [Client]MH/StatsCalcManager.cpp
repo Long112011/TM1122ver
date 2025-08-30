@@ -464,9 +464,11 @@ void CStatsCalcManager::CalcItemStats(PLAYERTYPE* pPlayer)
 		
 	}
 
-
+#ifdef  _MUTIPET_
+	PETMGR->RefleshPetMaintainBuff(item_stats);//독며  3pet
+#else
 	PETMGR->AddMasterStatFromPetBuff(item_stats);
-
+#endif //  _MUTIPET_
 
 	/////////////////// 2007. 6. 11. CBH - 세트아이탬 능력치 추가 ////////////////
 	CalcSetItemStats(); //敬陋

@@ -698,6 +698,9 @@
     <Filter Include="新功能\自定义称号">
       <UniqueIdentifier>{28dc4b7f-5535-4665-a5ef-1fb709eff408}</UniqueIdentifier>
     </Filter>
+    <Filter Include="新功能\组合3只宠物">
+      <UniqueIdentifier>{32742825-0e7e-4da5-9a0b-0cc35ce97e1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MHClient.cpp">
@@ -2740,6 +2743,9 @@
     </ClCompile>
     <ClCompile Include="CustomizingNameDlg.cpp">
       <Filter>新功能\自定义称号</Filter>
+    </ClCompile>
+    <ClCompile Include="PetMixDlg.cpp">
+      <Filter>新功能\组合3只宠物</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -4926,6 +4932,9 @@
     </ClInclude>
     <ClInclude Include="CustomizingNameDlg.h">
       <Filter>新功能\自定义称号</Filter>
+    </ClInclude>
+    <ClInclude Include="PetMixDlg.h">
+      <Filter>新功能\组合3只宠物</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

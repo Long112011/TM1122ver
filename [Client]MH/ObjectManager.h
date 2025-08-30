@@ -241,8 +241,11 @@ class CObjectManager
 
 
 	BOOL TargetByName(const char* name);
-
+#ifdef  _MUTIPET_
+	CPet* FindPlayerOwnPet(CPet** pet, DWORD CharacterIdx);//µ¶¸ç 3pet
+#else
 	CPet* FindPlayerOwnPet(DWORD CharacterIdx);
+#endif
 
 
 	void HideNpc(WORD UniqueIdx, BOOL bOn);

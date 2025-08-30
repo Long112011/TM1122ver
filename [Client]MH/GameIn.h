@@ -333,6 +333,9 @@ class CItemQualityChangeDlg;     //装备品质转换
 class CGradeChangeDlg;		//武器升阶值转移卷
 class VipDialog;               //VIP系统类引用
 class CCustomizingNameDialog;   //自定义称号
+#ifdef _MUTIPET_
+class PetMixDlg;
+#endif
 #define GAMEIN USINGTON(CGameIn)
 
 class CGameIn : public CGameState  
@@ -702,6 +705,9 @@ private:
 
 	VipDialog* m_VipDialog;          //VIP窗口定义
 	CCustomizingNameDialog* m_pCustomizingDlg;    //自定义称号
+#ifdef _MUTIPET_
+	PetMixDlg* m_PetMixDlg;//刀哥  3pet合成窗口
+#endif
 	BOOL	m_bInitForGame;
 	int		m_GameInInitKind;	
 	DWORD	m_MovePoint;
@@ -1549,6 +1555,12 @@ public:
 	//自定义称号
 	CCustomizingNameDialog* GetCustomizingDlg() { return m_pCustomizingDlg; }
 	void SetCustomizingDlg(CCustomizingNameDialog* dlg) { m_pCustomizingDlg = dlg; }
+
+#ifdef _MUTIPET_
+	PetMixDlg* GetPetMixDlg() { return  m_PetMixDlg; }
+	void SetPetMixDlg(PetMixDlg* dlg) { m_PetMixDlg = dlg; }
+
+#endif
 
 	SYSTEMTIME	GameinServerTime;			//辑滚俊辑 罐酒柯 某腐磐 肺弊牢 矫埃
 	DWORD				m_Clientdate;		//努扼捞攫飘俊辑 罐酒柯 某腐磐 肺弊牢 朝楼

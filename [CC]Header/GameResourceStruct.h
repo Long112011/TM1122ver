@@ -179,6 +179,7 @@ typedef struct _CHXLIST
 	StaticString FileName;
 }CHXLIST;
 #define MAX_PET_GRADE	3
+
 struct BASE_PET_LIST
 {
 	DWORD	PetKind;	
@@ -197,7 +198,13 @@ struct BASE_PET_LIST
 	DWORD	StaminaMax[MAX_PET_GRADE];	
 	WORD	InventoryTapNum[MAX_PET_GRADE];	
 	int		DieDramaNum[MAX_PET_GRADE];		
+#ifdef _MUTIPET_
+
+	WORD	BuffList[MAX_PET_GRADE][6];//µ¶¸ç  3pet
+#else
 	WORD	BuffList[MAX_PET_GRADE][3];
+
+#endif // _MUTIPET_
 };
 struct PET_RULE
 {
@@ -224,7 +231,12 @@ struct PET_BUFF_LIST
 	BYTE BuffKind;
 	DWORD BuffSuccessProb;
 	DWORD BuffValueData;
+#ifdef _MUTIPET_
+	BOOL IsAdd;
+
+#else
 	DWORD BuffAdditionalData;
+#endif // _MUTIPET_
 };
 #define MAX_TITAN_GRADE	3
 struct TITANINFO_GRADE

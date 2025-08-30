@@ -480,6 +480,7 @@ enum PARSE_TYPE
 	eGradeChangeDLG,	//武器升阶值转移卷
 	eVipDialog,         //vip窗口标志
 	eCustomizingDlg,   //自定义称号
+	ePetMix,//刀哥3pet
 	eMAX_PARSETYPE_NUM,
 };
 #endif 

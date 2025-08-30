@@ -3499,248 +3499,248 @@ void CItemManager::SetPetSummonItemToolTip(cIcon * pIcon, ITEM_INFO * pInfo, DWO
 	pIcon->AddToolTipLine( line, TTTC_QUESTITEM );
 	//BOOL IsGoldShop = true;
 	
-	if (IsGoldShop && pInfo->ItemIdx == 55889)//´«Ææùm
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 46;
-		pList->BuffList[0][1] = 13;
-		pList->BuffList[0][2] = 1;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55890)	//ÁéÃ¨
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 46;
-		pList->BuffList[0][1] = 13;
-		pList->BuffList[0][2] = 10;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55891)//½ðÍ«ºï
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 46;
-		pList->BuffList[0][1] = 13;
-		pList->BuffList[0][2] = 25;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55892)//µõ¾¦°×¶î»¢
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 46;
-		pList->BuffList[0][1] = 13;
-		pList->BuffList[0][2] = 4;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55893)//¶ñÄ§
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 46;
-		pList->BuffList[0][1] = 13;
-		pList->BuffList[0][2] = 4;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55894)//Ñ©ÈË
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 46;
-		pList->BuffList[0][1] = 13;
-		pList->BuffList[0][2] = 28;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55895)//Ð¡ºÚ
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 46;
-		pList->BuffList[0][1] = 13;
-		pList->BuffList[0][2] = 25;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55896)//ÌìóÃÊó
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 46;
-		pList->BuffList[0][1] = 13;
-		pList->BuffList[0][2] = 1;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55897)//°×ÀÇ
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 46;
-		pList->BuffList[0][1] = 13;
-		pList->BuffList[0][2] = 10;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55898)//µØÓüÒ°Öí
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 46;
-		pList->BuffList[0][1] = 13;
-		pList->BuffList[0][2] = 25;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55899)//´ó½ÇÑò
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 46;
-		pList->BuffList[0][1] = 13;
-		pList->BuffList[0][2] = 4;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55900)//ðÃðÉ
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 46;
-		pList->BuffList[0][1] = 13;
-		pList->BuffList[0][2] = 4;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55901)//ºì¼§
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 3;
-		pList->BuffList[0][1] = 7;
-		pList->BuffList[0][2] = 0;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55902)//ÎÔÁú
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 10;
-		pList->BuffList[0][1] = 7;
-		pList->BuffList[0][2] = 0;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55903)//·ïÁé
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 7;
-		pList->BuffList[0][1] = 3;
-		pList->BuffList[0][2] = 16;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55904)//»¨ÏÉ
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 7;
-		pList->BuffList[0][1] = 22;
-		pList->BuffList[0][2] = 19;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55905)//Ó°Í«
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 16;
-		pList->BuffList[0][1] = 25;
-		pList->BuffList[0][2] = 28;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55906)//ÄÝÄÈÃ¨(365Ìì)
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 31;
-		pList->BuffList[0][1] = 0;
-		pList->BuffList[0][2] = 0;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55907)//ÐÜß÷(ÓÀ¾Ã)
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 7;
-		pList->BuffList[0][1] = 10;
-		pList->BuffList[0][2] = 22;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55919)//¾ÞÁê»êÆÇ
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 3;
-		pList->BuffList[0][1] = 4;
-		pList->BuffList[0][2] = 8;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55920)//ò¿Å£»êÆÇ
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 3;
-		pList->BuffList[0][1] = 4;
-		pList->BuffList[0][2] = 8;
-		pList->InventoryTapNum[0] = 3;
-	}
-	else if (IsGoldShop && pInfo->ItemIdx == 55921)//·ÉÁú×ùÆï
-	{
-		pList = new BASE_PET_LIST;
-		pPetInfo = new PET_TOTALINFO;
-		pPetInfo->PetGrade = 1;
-		pPetInfo->PetFriendly = 10000000;
-		pList->BuffList[0][0] = 3;
-		pList->BuffList[0][1] = 4;
-		pList->BuffList[0][2] = 8;
-		pList->InventoryTapNum[0] = 3;
-	}
+	//if (IsGoldShop && pInfo->ItemIdx == 55889)//´«Ææùm
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 46;
+	//	pList->BuffList[0][1] = 13;
+	//	pList->BuffList[0][2] = 1;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55890)	//ÁéÃ¨
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 46;
+	//	pList->BuffList[0][1] = 13;
+	//	pList->BuffList[0][2] = 10;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55891)//½ðÍ«ºï
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 46;
+	//	pList->BuffList[0][1] = 13;
+	//	pList->BuffList[0][2] = 25;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55892)//µõ¾¦°×¶î»¢
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 46;
+	//	pList->BuffList[0][1] = 13;
+	//	pList->BuffList[0][2] = 4;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55893)//¶ñÄ§
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 46;
+	//	pList->BuffList[0][1] = 13;
+	//	pList->BuffList[0][2] = 4;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55894)//Ñ©ÈË
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 46;
+	//	pList->BuffList[0][1] = 13;
+	//	pList->BuffList[0][2] = 28;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55895)//Ð¡ºÚ
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 46;
+	//	pList->BuffList[0][1] = 13;
+	//	pList->BuffList[0][2] = 25;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55896)//ÌìóÃÊó
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 46;
+	//	pList->BuffList[0][1] = 13;
+	//	pList->BuffList[0][2] = 1;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55897)//°×ÀÇ
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 46;
+	//	pList->BuffList[0][1] = 13;
+	//	pList->BuffList[0][2] = 10;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55898)//µØÓüÒ°Öí
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 46;
+	//	pList->BuffList[0][1] = 13;
+	//	pList->BuffList[0][2] = 25;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55899)//´ó½ÇÑò
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 46;
+	//	pList->BuffList[0][1] = 13;
+	//	pList->BuffList[0][2] = 4;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55900)//ðÃðÉ
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 46;
+	//	pList->BuffList[0][1] = 13;
+	//	pList->BuffList[0][2] = 4;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55901)//ºì¼§
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 3;
+	//	pList->BuffList[0][1] = 7;
+	//	pList->BuffList[0][2] = 0;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55902)//ÎÔÁú
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 10;
+	//	pList->BuffList[0][1] = 7;
+	//	pList->BuffList[0][2] = 0;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55903)//·ïÁé
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 7;
+	//	pList->BuffList[0][1] = 3;
+	//	pList->BuffList[0][2] = 16;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55904)//»¨ÏÉ
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 7;
+	//	pList->BuffList[0][1] = 22;
+	//	pList->BuffList[0][2] = 19;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55905)//Ó°Í«
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 16;
+	//	pList->BuffList[0][1] = 25;
+	//	pList->BuffList[0][2] = 28;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55906)//ÄÝÄÈÃ¨(365Ìì)
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 31;
+	//	pList->BuffList[0][1] = 0;
+	//	pList->BuffList[0][2] = 0;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55907)//ÐÜß÷(ÓÀ¾Ã)
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 7;
+	//	pList->BuffList[0][1] = 10;
+	//	pList->BuffList[0][2] = 22;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55919)//¾ÞÁê»êÆÇ
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 3;
+	//	pList->BuffList[0][1] = 4;
+	//	pList->BuffList[0][2] = 8;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55920)//ò¿Å£»êÆÇ
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 3;
+	//	pList->BuffList[0][1] = 4;
+	//	pList->BuffList[0][2] = 8;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
+	//else if (IsGoldShop && pInfo->ItemIdx == 55921)//·ÉÁú×ùÆï
+	//{
+	//	pList = new BASE_PET_LIST;
+	//	pPetInfo = new PET_TOTALINFO;
+	//	pPetInfo->PetGrade = 1;
+	//	pPetInfo->PetFriendly = 10000000;
+	//	pList->BuffList[0][0] = 3;
+	//	pList->BuffList[0][1] = 4;
+	//	pList->BuffList[0][2] = 8;
+	//	pList->InventoryTapNum[0] = 3;
+	//}
 	
 
 	if(pList)
@@ -3803,7 +3803,26 @@ void CItemManager::SetPetSummonItemToolTip(cIcon * pIcon, ITEM_INFO * pInfo, DWO
 				{
 					wsprintf( BuffName, CHATMGR->GetChatMsg(1477) );
 				}
-
+				else if (pBuffList->BuffKind == ePB_MaxLifeNaeRyukShield)////×î´óÉúÃü£¬ÄÚÁ¦£¬»¤Ìå Ôö¼Ó % ¼¼ÄÜÌØ¼¼+½ÇÉ«×ÔÉíµÄ°Ù·Ö°Ù 10
+				{
+					wsprintf(BuffName, CHATMGR->GetChatMsg(1477));
+				}
+				else if (pBuffList->BuffKind == ePB_Exp)//¾­ÑéÔö¼Ó%
+				{
+					wsprintf(BuffName, CHATMGR->GetChatMsg(1477));
+				}
+				else if (pBuffList->BuffKind == ePB_MoneyDropUp)//½ðÇ®µôÂäÂÊÔö¼Ó%
+				{
+					wsprintf(BuffName, CHATMGR->GetChatMsg(1477));
+				}
+				else if (pBuffList->BuffKind == ePB_PVPDmgSub)///PVPÊÜµ½ÉËº¦¼õÉÙ 13
+				{
+					wsprintf(BuffName, CHATMGR->GetChatMsg(1477));
+				}
+				else if (pBuffList->BuffKind == ePB_PVPDmgUp)//  //PVPÉËº¦Ôö¼Ó 14
+				{
+					wsprintf(BuffName, CHATMGR->GetChatMsg(1477));
+				}
 				//--------------------------
 //				else if (pBuffList->BuffKind == ePB_ReduceCriticalRate)
 //				{
@@ -5509,6 +5528,18 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 								}
 								else if( item->GetItemKind() == eYOUNGYAK_ITEM_PET )
 								{
+#ifdef  _MUTIPET_
+									for (int i = 0; i < 3; ++i)//µ¶¸ç  3pet
+									{
+										CPet* pPet = PETMGR->GetCurSummonPet(i);
+										if (pPet)
+										{
+											TARGETSET set;
+											set.pTarget = pPet;
+											EFFECTMGR->StartEffectProcess(eEffect_FeedUp, pPet, &set, 0, pPet->GetID());
+										}
+									}
+#else
 									CPet* pPet = PETMGR->GetCurSummonPet();
 									if(pPet)
 									{
@@ -5516,6 +5547,7 @@ void CItemManager::NetworkMsgParse(BYTE Protocol,void* pMsg)
 										set.pTarget = pPet;
 										EFFECTMGR->StartEffectProcess(eEffect_FeedUp,pPet,&set,0,pPet->GetID());
 									}
+#endif
 								}
 								else if( item->GetItemKind() == eYOUNGYAK_ITEM_TITAN )
 								{
@@ -10590,6 +10622,13 @@ void CItemManager::RemoveUsedItemInfo(WORD wIndex, DWORD dwDBIdx)
 	ITEM_INFO* pItemInfo = GetItemInfo(wIndex);	
 	if( pItemInfo &&  pItemInfo->ItemKind != eSHOP_ITEM_EQUIP && pItemInfo->ItemKind != eSHOP_ITEM_PET_EQUIP && pItemInfo->BuyPrice )
 		STATUSICONDLG->RemoveIcon(HERO, (WORD)(pItemInfo->BuyPrice+1), wIndex);
+#ifdef  _MUTIPET_
+	if (pItemInfo->ItemKind == eSHOP_ITEM_PET)
+	{
+		if (PETMGR->IsSummonPet() == FALSE)//µ¶¸ç  3pet
+			PETMGR->ClosePetAllDlg();
+	}
+#endif //  _MUTIPET_
 }
 SHOPITEMBASE* CItemManager::GetUsedItemInfo(DWORD Index)
 {

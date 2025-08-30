@@ -2360,18 +2360,36 @@ void CPlayer::MoveToLogInPosition()
 	msg.cpos.Compress(&pos);
 	
 	CCharMove::SetPosition(this,&pos);
-	CPet* pPet = m_PetManager.GetCurSummonPet();
-	if(pPet)
-	{
-		CCharMove::SetPosition(pPet,&pos);
-		MOVE_POS	Msg;
+#ifdef _MUTIPET_
+	CPetManager* pMgr = &m_PetManager;
+	for (int i = 0; i < 3; ++i) {
+		CPet* pPet = pMgr->GetCurSummonPet(i);   // 0~MAX_MULTI_PET-1
+		if (!pPet) continue;
+
+		CCharMove::SetPosition(pPet, &pos);
+
+		MOVE_POS Msg;
 		Msg.Category = MP_MOVE;
 		Msg.Protocol = MP_MOVE_PET_WARP_ACK;
 		Msg.dwObjectID = GetID();
 		Msg.dwMoverID = pPet->GetID();
 		Msg.cpos.Compress(&pos);
-		PACKEDDATA_OBJ->QuickSend(this,&Msg,sizeof(Msg));
+		PACKEDDATA_OBJ->QuickSend(this, &Msg, sizeof(Msg));
 	}
+#else
+	CPet* pPet = m_PetManager.GetCurSummonPet();
+	if (pPet) {
+		CCharMove::SetPosition(pPet, &pos);
+
+		MOVE_POS Msg;
+		Msg.Category = MP_MOVE;
+		Msg.Protocol = MP_MOVE_PET_WARP_ACK;
+		Msg.dwObjectID = GetID();
+		Msg.dwMoverID = pPet->GetID();
+		Msg.cpos.Compress(&pos);
+		PACKEDDATA_OBJ->QuickSend(this, &Msg, sizeof(Msg));
+	}
+#endif
 
 	PACKEDDATA_OBJ->QuickSend(this,&msg,sizeof(msg));
 		
@@ -2738,6 +2756,22 @@ void CPlayer::ReviveLogIn()
 	msg.cpos.Compress(&pos);
 	
 	CCharMove::SetPosition(this,&pos);
+#ifdef  _MUTIPET_
+	for (int i = 0; i < 3; ++i)//독며  3pet
+	{
+		CPet* pPet = m_PetManager.GetCurSummonPet(i);
+		if (pPet == NULL)
+			continue;
+		CCharMove::SetPosition(pPet, &pos);
+		MOVE_POS	Msg;
+		Msg.Category = MP_MOVE;
+		Msg.Protocol = MP_MOVE_PET_WARP_ACK;
+		Msg.dwObjectID = GetID();
+		Msg.dwMoverID = pPet->GetID();
+		Msg.cpos.Compress(&pos);
+		PACKEDDATA_OBJ->QuickSend(this, &Msg, sizeof(Msg));
+	}
+#else
 	CPet* pPet = m_PetManager.GetCurSummonPet();
 	if(pPet)
 	{
@@ -2751,6 +2785,7 @@ void CPlayer::ReviveLogIn()
 		PACKEDDATA_OBJ->QuickSend(this,&Msg,sizeof(Msg));
 	}
 
+#endif //  _MUTIPET_
 	PACKEDDATA_OBJ->QuickSend(this,&msg,sizeof(msg));
 		
 	OBJECTSTATEMGR_OBJ->EndObjectState(this,eObjectState_Die);
@@ -2956,12 +2991,21 @@ void CPlayer::DoDie(CObject* pAttacker)
 		SendSingleSpeicalStateAck(State, false);
 	}
 	////////////////////////////////////////////////////////////////////////////////
-	
+#ifdef  _MUTIPET_
+	for (int i = 0; i < 3; ++i)//독며 3pet
+	{
+		CPet* pPet = m_PetManager.GetCurSummonPet(i);
+		if (pPet == NULL)
+			continue;
+		pPet->GetRandMotionNSpeech(ePM_MASTER_DIE, ePMF_ALWAYS);
+	}
+#else
 	CPet* pPet = GetCurPet();
 	if(pPet)
 	{
 		pPet->GetRandMotionNSpeech(ePM_MASTER_DIE, ePMF_ALWAYS);
 	}
+#endif //  _MUTIPET_
 	
 	//SW070531 펫 친밀도 보호기능
 	m_PetManager.SetReduceAmountPetFriendship(pAttacker);
@@ -4401,10 +4445,19 @@ void CPlayer::StateProcess()
 		if( IsPKMode() ) m_HeroInfo.LastPKModeEndTime = 0;
 		// ¨oA¡Æ¡I¨￢¡Æ ￥i¡¤ ⓒo¡¿ ¡Æⓒ¡CeA￠® AuAa		
 		UpdateCharacterInfoByTime(GetID(), GetPlayerExpPoint(), GetPlayerAbilityExpPoint(), GetMoney(), m_HeroInfo.Playtime, m_HeroInfo.LastPKModeEndTime );
-		
+#ifdef  _MUTIPET_
+		for (int i = 0; i < 3; ++i)//독며  3pet
+		{
+			CPet* pPet = m_PetManager.GetCurSummonPet(i);
+			if (pPet)
+			{
+				m_PetManager.UpdateCurPetInfo(pPet, TRUE);
+			}
+		};
+#else
 		//pet
 		m_PetManager.UpdateCurPetInfo();
-
+#endif //  _MUTIPET_
 		//SW070127 타이탄
 		m_TitanManager.UpDateCurTitanAndEquipItemInfo();
 
@@ -5844,10 +5897,25 @@ void CPlayer::IncreaseEventHammerCount()
 
 void CPlayer::SummonEventPetRndm()
 {
+#ifdef  _MUTIPET_
+	BOOL b = FALSE;
+	for (int i = 0; i < 3; ++i)//독며  3pet
+	{
+		CPet* pPet = m_PetManager.GetCurSummonPet(i);
+		if (pPet == NULL)
+		{
+			b = TRUE;
+			break;
+		}
+
+	}
+	if (!b)
+		return;
+#else
 	//현재 소환중인 펫이 있으면
 	if( m_PetManager.GetCurSummonPet() != NULL )
 		return;
-
+#endif //  _MUTIPET_
 	//30% 확률로 펫 소환.
 #define SUMMONRATE_EVENTPET 10
 	int rnd = rand()%100;

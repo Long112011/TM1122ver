@@ -2679,7 +2679,7 @@ copy ..\Obj\Mapserver\MapServer___Win32_Debug_CHINA\MapServer.pdb ..\ServerRelea
       <Optimization>Full</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>.\;..\[Lib]YHLibrary;..\[CC]ServerModule;..\[CC]Ability;..\[CC]BattleSystem;..\[CC]Skill;..\[CC]JACK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_MAPSERVER_;__MAPSERVER__;_FILE_BIN_;_KOR_LOCAL_;_DISTJ_;_TMMSO_;_JUEXING_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_MAPSERVER_;__MAPSERVER__;_FILE_BIN_;_KOR_LOCAL_;_DISTJ_;_TMMSO_;_JUEXING_;_MUTIPET_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>

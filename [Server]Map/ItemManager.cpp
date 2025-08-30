@@ -1830,7 +1830,9 @@ int CItemManager::UseItem(CPlayer* pPlayer, WORD TargetPos, WORD wItemIdx)
 		}
 		if (pItemInfo->ItemKind == eYOUNGYAK_ITEM_PET)
 		{
+#ifndef  _MUTIPET_
 			pPlayer->GetPetManager()->FeedUpPet(pItemInfo->LifeRecover);
+#endif //  _MUTIPET_
 			return eItemUseSuccess;
 		}
 		if (pItemInfo->ItemIdx == 8003 || pItemInfo->ItemIdx == 8004 || pItemInfo->ItemIdx == 8005 || pItemInfo->ItemIdx == 8006)
@@ -4435,7 +4437,20 @@ void CItemManager::NetworkMsgParse(DWORD dwConnectionIndex, BYTE Protocol, void*
 									  MSG_DWORD* pmsg = (MSG_DWORD*)pMsg;
 									  CPlayer* pPlayer = (CPlayer*)g_pUserTable->FindUser(pmsg->dwObjectID);
 									  if (!pPlayer)	return;
+#ifdef  _MUTIPET_
+									  BOOL b = FALSE;
+									  for (int i = 0; i < 3; ++i)//刀哥   3pet
+									  {
+										  if (pPlayer->GetPetManager()->GetCurSummonPet(i))
+										  {
+											  b = TRUE;
+											  break;
+										  }
+									  }
+									  if (!b) return;
+#else
 									  if (!pPlayer->GetPetManager()->GetCurSummonPet())	return;
+#endif //  _MUTIPET_
 									  PetInvenItemOptionInfo(pPlayer->GetID(), pPlayer->GetUserID(), TP_PETINVEN_START, TP_PETINVEN_END);
 	}
 		break;
@@ -9245,3 +9260,140 @@ DWORD CItemManager::GetItemRand()
 	if ((r % 6) == 2) return 1; //21%几率2,8,14,20,26,32,38,44,50,56,62,68,74,80,86,92,98,104,110,116,122
 	return 0;//79%几率失败
 }
+#ifdef  _MUTIPET_//多宠物
+int CItemManager::PetMix(CPlayer* pPlayer, MSG_DWORD8* pmsg, DWORD* Date)//刀哥  3pet
+{
+	if (!pPlayer) return 1;
+	if (pPlayer->GetID() != pmsg->dwObjectID)
+		return 1;
+	if (!CHKRT->ItemOf(pPlayer, pmsg->dwData1, pmsg->dwData0, 0, 0, CB_EXIST | CB_ICONIDX))
+		return 3;
+	if (pmsg->dwData0 != eIncantation_PetMix)
+		return 2;
+	if (!CHKRT->ItemOf(pPlayer, pmsg->dwData3, pmsg->dwData2, 0, 0, CB_EXIST | CB_ICONIDX))
+		return 4;
+	if (!CHKRT->ItemOf(pPlayer, pmsg->dwData5, pmsg->dwData4, 0, 0, CB_EXIST | CB_ICONIDX))
+		return 5;
+	ITEM_INFO* pOddsItem = NULL;
+	const ITEMBASE* pOddsBase = NULL;
+	if (pmsg->dwData6 > 0)
+	{
+		if (pmsg->dwData6 != eIncantation_PetMixDrug)
+			return 2;
+		if (!CHKRT->ItemOf(pPlayer, pmsg->dwData7, pmsg->dwData6, 0, 0, CB_EXIST | CB_ICONIDX))
+			return 6;
+		pOddsItem = GetItemInfo(pmsg->dwData6);
+		pOddsBase = GetItemInfoAbsIn(pPlayer, pmsg->dwData7);
+		if (!pOddsItem || !pOddsBase)
+			return 6;
+		if (pOddsBase->dwDBIdx == 0)
+			return 6;
+	}
+	ITEM_INFO* pShopItem = GetItemInfo(pmsg->dwData0);
+	ITEM_INFO* pBaseItem = GetItemInfo(pmsg->dwData2);
+	ITEM_INFO* pMaterialItem = GetItemInfo(pmsg->dwData4);
+	ITEMBASE* pShopBase = (ITEMBASE*)GetItemInfoAbsIn(pPlayer, pmsg->dwData1);
+	ITEMBASE* pBaseBase = (ITEMBASE*)GetItemInfoAbsIn(pPlayer, pmsg->dwData3);
+	ITEMBASE* pMaterialBase = (ITEMBASE*)GetItemInfoAbsIn(pPlayer, pmsg->dwData5);
+	if (!pShopItem || !pBaseItem || !pMaterialItem || !pShopBase || !pBaseBase || !pMaterialBase)
+		return 7;
+	if (pShopBase->dwDBIdx == 0 || pBaseBase->dwDBIdx == 0 || pMaterialBase->dwDBIdx == 0)
+		return 8;
+	ITEM_INFO* pRItemInfo = GetItemInfo(pBaseItem->GenGol);
+	if (!pRItemInfo || !pBaseItem->GenGol)
+		return 9;
+	if (pRItemInfo->ItemIdx != pBaseItem->GenGol)
+		return 9;
+	PET_TOTALINFO* pBasePetInfo = pPlayer->GetPetManager()->GetPetTotalInfo(pBaseBase->dwDBIdx);
+	PET_TOTALINFO* pMaterialPetInfo = pPlayer->GetPetManager()->GetPetTotalInfo(pMaterialBase->dwDBIdx);
+	if (!pBasePetInfo || !pMaterialPetInfo)
+		return 9;
+	if (pBaseItem->CheRyuk != pMaterialItem->CheRyuk)
+		return 9;
+	if (pBasePetInfo->PetGrade < 3 || pMaterialPetInfo->PetGrade < 3)
+		return 9;
+	if (pBasePetInfo->PetFriendly < GAMERESRCMNGR->GetPetRule()->MaxFriendship ||
+		pMaterialPetInfo->PetFriendly < GAMERESRCMNGR->GetPetRule()->MaxFriendship)
+		return 9;
+
+	DWORD SuccessRate = pBaseItem->MinChub;
+
+	if (SuccessRate > 100)
+		return 9;
+
+	WORD EmptyCellPos[255];
+	WORD EmptyCellNum;
+	CItemSlot* pSlot = pPlayer->GetSlot(eItemTable_ShopInven);
+	WORD obtainItemNum = GetCanBuyNumInSpace(pPlayer, pSlot, pRItemInfo->ItemIdx, 1, EmptyCellPos, EmptyCellNum, 0);
+	if (!obtainItemNum)
+		return 9;
+
+	DWORD Key = MakeNewKey();
+	char NameKey[MAX_NAME_LENGTH + 1];
+	sprintf(NameKey, "%d", Key);
+	*Date = 0;
+	if (pmsg->dwData6 > 0)
+	{
+		ITEMBASE* pOddsBase = (ITEMBASE*)GetItemInfoAbsIn(pPlayer, pmsg->dwData7);
+		ITEM_INFO* pOddItem = GetItemInfo(pmsg->dwData6);
+		if (!pOddsBase || !pOddItem)
+			return 6;
+		if (pOddsBase->dwDBIdx == 0)
+			return 6;
+		if (pOddsBase->ItemParam != 0)
+			return 6;
+		WORD Dur = 0;
+		if (SuccessRate + pOddItem->GenGol * pOddsBase->Durability > 100)
+		{
+			*Date = Dur = 100 - SuccessRate;
+			SuccessRate = 100;
+		}
+		else
+		{
+			*Date = Dur = pOddsBase->Durability;
+			SuccessRate += pOddItem->GenGol * pOddsBase->Durability;
+		}
+		if (EI_TRUE != DiscardItem(pPlayer, pmsg->dwData7, pmsg->dwData6, Dur))
+			return 10;
+		LogItemMoney(pPlayer->GetID(), NameKey, pPlayer->GetID(), pPlayer->GetObjectName(), eLog_ItemDestroyMix,
+			pOddsBase->Durability + 1, pOddsBase->Durability, 1, pmsg->dwData7, pOddsBase->dwDBIdx,
+			pmsg->dwData6, 0, pOddsBase->Durability, pPlayer->GetPlayerExpPoint());
+	}
+	if (EI_TRUE != DiscardItem(pPlayer, pmsg->dwData1, pmsg->dwData0, 1))
+		return 10;
+	MSG_ITEM_USE_ACK msg;
+	msg.Category = MP_ITEM;
+	msg.Protocol = MP_ITEM_USE_ACK;
+	msg.TargetPos = pmsg->dwData1;
+	msg.wItemIdx = pmsg->dwData0;
+	SendAckMsg(pPlayer, &msg, sizeof(msg));
+	if (EI_TRUE != DiscardItem(pPlayer, pmsg->dwData5, pmsg->dwData4, 1))
+		return 10;
+
+	LogItemMoney(pPlayer->GetID(), NameKey, pPlayer->GetID(), pPlayer->GetObjectName(), eLog_ItemDestroyMix,
+		pShopBase->Durability + 1, pShopBase->Durability, 1, pmsg->dwData1, pShopBase->dwDBIdx,
+		pmsg->dwData0, 0, pShopBase->Durability, pPlayer->GetPlayerExpPoint());
+	LogItemMoney(pPlayer->GetID(), NameKey, pPlayer->GetID(), pPlayer->GetObjectName(), eLog_ItemDestroyMix,
+		pMaterialBase->Durability + 1, pMaterialBase->Durability, 1, pmsg->dwData5, pMaterialBase->dwDBIdx,
+		pmsg->dwData4, 0, pMaterialBase->Durability, pPlayer->GetPlayerExpPoint());
+	WORD Seed = random(0, 100);
+	if (Seed <= SuccessRate)
+	{
+		if (EI_TRUE != DiscardItem(pPlayer, pmsg->dwData3, pmsg->dwData2, 1))
+			return 10;
+
+		LogItemMoney(pPlayer->GetID(), NameKey, pPlayer->GetID(), pPlayer->GetObjectName(), eLog_ItemDestroyMix,
+			pBaseBase->Durability + 1, pBaseBase->Durability, 1, pmsg->dwData3, pBaseBase->dwDBIdx,
+			pmsg->dwData2, 0, pBaseBase->Durability, pPlayer->GetPlayerExpPoint());
+
+		return ObtainItemEx(pPlayer, Alloc(pPlayer, MP_ITEM, MP_ITEM_MONSTER_OBTAIN_NOTIFY,
+			pPlayer->GetID(), 0, eLog_ItemObtainFromChangeItem, obtainItemNum, (DBResult)(ObtainItemDBResult)),
+			pRItemInfo->ItemIdx, obtainItemNum, EmptyCellPos, EmptyCellNum, EmptyCellNum, 1);
+		return 0;
+	}
+	else
+	{
+		return 100;
+	}
+}
+#endif //  _MUTIPET_

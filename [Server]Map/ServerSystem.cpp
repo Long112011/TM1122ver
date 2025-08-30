@@ -1818,8 +1818,18 @@ void CServerSystem::RemovePlayer(DWORD dwPlayerID, BOOL bRemoveFromUserTable )
 		///////////////////////////////////////////
 
 		CCharMove::ReleaseMove(pPlayer);
+#ifdef  _MUTIPET_
+		for (int i = 0; i < 3; ++i)//µ∂∏Á  3pet
+		{
+			CPet* pPet = pPlayer->GetPetManager()->GetCurSummonPet(i);
+			if (pPet)
+			{
+				pPlayer->GetPetManager()->RemovePet(pPet);
+			}
+		};
+#else
 		pPlayer->GetPetManager()->RemovePet();
-
+#endif //  _MUTIPET_
 //		g_Console.Log(eLogDisplay, 4, "DisconnectUser : %d %s", dwPlayerID, pPlayer->GetObjectName());
 		
 		BOOL rt = BATTLESYSTEM->DeleteObjectFromBattle(pPlayer);
@@ -1827,7 +1837,18 @@ void CServerSystem::RemovePlayer(DWORD dwPlayerID, BOOL bRemoveFromUserTable )
 	else		
 	{
 		CCharMove::ReleaseMove(pPlayer);
+#ifdef  _MUTIPET_
+		for (int i = 0; i < 3; ++i)//µ∂∏Á  3pet
+		{
+			CPet* pPet = pPlayer->GetPetManager()->GetCurSummonPet(i);
+			if (pPet)
+			{
+				pPlayer->GetPetManager()->RemovePet(pPet);
+			}
+		};
+#else
 		pPlayer->GetPetManager()->RemovePet();
+#endif //  _MUTIPET_
 	}
 
 	/*if(FBTIMERMGR->IsFBTimerMap()&&FBTIMERMGR->IsFBTimerChannel(pPlayer->GetChannelID()))  //CoNaN ?ÑÂ£∫Ë§í‰?Â•ÄÁ∑äÁ??øÂ??ÅÂ?Á≠âÔ??µÊ??ÑÁ?,?ÆÂ?Â∫ãÊ∫´Ë®ßÂü≠ 2018-12-10

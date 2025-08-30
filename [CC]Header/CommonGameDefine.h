@@ -1924,6 +1924,8 @@ enum
 	eIncantation_ReinforceReset = 55364,     // 强化重置符 - 約 40YB
 	eIncantation_MemoryMoveExtend30 = 58010, // 回忆延长30天 - 約 120G
 	eIncantation_MemoryMoveExtend = 55365,   // 回忆延长 - 約 60G
+	eIncantation_PetMix = 55366,        //宠物合成卷3pet
+	eIncantation_PetMixDrug = 55367,        //宠物合成助剂3pet
 	eIncantation_MemoryMoveExtend7 = 55390,  // 回忆延长7天 - 約 40G
 	eIncantation_MemoryMove2 = 55371,        // 双倍记忆移动 - 約 80G
 	eIncantation_ProtectAll1 = 55372,        // 全保护符（1次） - 約 10G
@@ -2412,7 +2414,7 @@ struct GUILDPOINT_INFO
 	DWORD GuildPlusTimeflg;
 	GUILDUSING_PLUSTIME_INFO GuildUsingPlusTimeInfo[eGPT_Kind_Max];
 };
-enum {eServerOnly, eServerNClient};
+enum {eServerOnly, eServerNClient, eServerBusiness};//刀哥交易所
 enum eItemOptions	
 {
 	eOPTS_ItemOption = 4,
@@ -2473,6 +2475,29 @@ enum EObjectKind
 	eObjectKind_Pet			= 128,
 	eObjectKind_Titan		= 255,	
 };
+#ifdef _MUTIPET_
+enum ePetBuffKind//刀哥  3pet
+{
+	ePB_None,
+	ePB_Demage_Percent = 1,
+	ePB_Dodge = 2,
+	ePB_MasterAllStatUp = 3,
+	ePB_Item_DoubleChance = 4,
+	ePB_NoForeAtkMonster = 5,
+	ePB_ReduceCriticalDmg = 6,
+	ePB_MasterAllStatRound = 7,
+	ePB_Item_RareProbUp = 8,
+	ePB_MussangTimeIncrease = 9,
+	ePB_MaxLifeNaeRyukShield,   //最大生命，内力，护体 增加 % 技能特技+角色自身的百分百 10
+	ePB_Exp,                    //经验增加 11
+	ePB_MoneyDropUp,            //游戏币掉落增加 12
+	ePB_PVPDmgSub,              //PVP受到伤害减少 13
+	ePB_PVPDmgUp,               //PVP伤害增加 14
+	ePB_ReduceDemageRate,	   //受到伤害减少百分比 15
+	ePB_Kind_Max
+};
+#endif // _MUTIPET_
+
 enum eObjectKindGroup
 {
 	eOBJECTKINDGROUP_NONE,	

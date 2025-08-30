@@ -2529,6 +2529,7 @@ void CPlayerAI::ProcessTambahan()
 DWORD bLaparError = 0;
 void CPlayerAI::AutoEatPet()
 {
+#ifndef  _MUTIPET_
 	CPet * m_HeroPet = HERO->GetPet();
 	if (!m_HeroPet) return;
 	if (PETMGR->IsCurPetStaminaFull())
@@ -2580,6 +2581,7 @@ void CPlayerAI::AutoEatPet()
 			}
 		}
 	}
+#endif //  _MUTIPET_
 }
 void CPlayerAI::AutoUseBuff()
 {
@@ -2670,6 +2672,7 @@ void CPlayerAI::AutoCallPet()
 			CHATMGR->AddMsg(CTC_SYSMSG, "%d", m_PetIdx);
 			if (ItemPet->GetItemKind() == eSHOP_ITEM_PET || ItemPet->GetItemKind() == eQUEST_ITEM_PET)
 			{
+#ifndef  _MUTIPET_
 				if (HERO)
 				{
 					if (HERO->GetPet() == NULL)
@@ -2677,6 +2680,7 @@ void CPlayerAI::AutoCallPet()
 						GAMEIN->GetInventoryDialog()->UseItem(ItemPet);
 					}
 				}
+#endif //  _MUTIPET_	
 			}
 		}
 	}

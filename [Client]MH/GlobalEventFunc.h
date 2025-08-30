@@ -488,6 +488,9 @@ extern void GGD_Func(LONG lId, void* p, DWORD we);// 武器升阶值转移卷
 extern void VIP_BtnFunc(LONG lId, void* p, DWORD we);//VIP系统
 //自定义称号
 extern void Customizing_DlgFunc(LONG lId, void* p, DWORD we);
+#ifdef  _MUTIPET_
+extern void PetMerge_DlgFunc(LONG lId, void* p, DWORD we);//刀哥  3pet
+#endif //  _MUTIPET_
 #endif //_GLOBALEVENTFUNC_H_
 
 

@@ -245,11 +245,11 @@ stDungeonKey* CGameResourceManager::GetDungeonKey(DWORD dwKeyIndex)
 BOOL CGameResourceManager::LoadPetList()
 {
 	CMHFile file;
-#ifdef _FILE_BIN_
-	if(!file.Init("./Resource/PetList.bin", "rb"))
+#ifdef _MUTIPET_
+	if(!file.Init("./Resource/PetList_muti.bin", "rb"))
 		return FALSE;
 #else
-	if(!file.Init("./Reource/PetList.txt", "rt))
+	if (!file.Init("./Resource/PetList.bin", "rb"))
 		return FALSE;
 #endif
 	int count = 0;
@@ -292,6 +292,18 @@ BOOL CGameResourceManager::LoadPetList()
 		pList->DieDramaNum[0]	= FindEffectNum(file.GetString());
 		pList->DieDramaNum[1]	= FindEffectNum(file.GetString());
 		pList->DieDramaNum[2]	= FindEffectNum(file.GetString());
+#ifdef _MUTIPET_
+
+		for (int i = 0; i < 3; ++i)
+		{
+			pList->BuffList[i][0] = file.GetWord();
+			pList->BuffList[i][1] = file.GetWord();
+			pList->BuffList[i][2] = file.GetWord();
+			pList->BuffList[i][3] = file.GetWord();//독며  3pet
+			pList->BuffList[i][4] = file.GetWord();
+			pList->BuffList[i][5] = file.GetWord();
+		}
+#else
 		for( int i = 0; i < 3; ++i )
 		{
 			pList->BuffList[i][0]	= file.GetWord();
@@ -301,6 +313,7 @@ BOOL CGameResourceManager::LoadPetList()
 		ASSERT(!m_PetListTable.GetData(pList->PetKind));
 		m_PetListTable.Add(pList, pList->PetKind);
 		++count;
+#endif // _MUTIPET_
 	}
 	return TRUE;
 }
@@ -418,6 +431,43 @@ BOOL CGameResourceManager::LoadPetRule()
 	}
 	return TRUE;
 }
+#ifdef _MUTIPET_
+BOOL CGameResourceManager::LoadPetBuffList()
+{
+	CMHFile file;
+	char szBuf[256] = { 0, };
+
+	if (!file.Init("./Resource/PetBuffList_muti.bin", "rb"))
+		return FALSE;
+
+	PET_BUFF_LIST* pList = NULL;
+
+	int BuffNum = file.GetInt();
+	m_pBuffList = new PET_BUFF_LIST[BuffNum];
+
+	int count = 0;
+	while (!file.IsEOF())
+	{
+		m_pBuffList[count].Idx = file.GetWord();
+
+
+			SafeStrCpy(m_pBuffList[count].BuffName, file.GetString(), MAX_NAME_LENGTH + 1);
+
+		m_pBuffList[count].BuffKind = file.GetByte();
+		m_pBuffList[count].BuffSuccessProb = file.GetDword();
+		m_pBuffList[count].BuffValueData = file.GetDword();
+		m_pBuffList[count].IsAdd = file.GetBool();//독며3pet
+
+		++count;
+
+		if (count == BuffNum)
+			break;
+	}
+
+	return TRUE;
+}
+#else
+
 BOOL CGameResourceManager::LoadPetBuffList()
 {
 	CMHFile file;
@@ -447,6 +497,7 @@ BOOL CGameResourceManager::LoadPetBuffList()
 	}
 	return TRUE;
 }
+#endif // _MUTIPET_
 PET_BUFF_LIST* CGameResourceManager::GetPetBuffInfo( int idx )
 {
 	if(idx == 0)	return NULL;

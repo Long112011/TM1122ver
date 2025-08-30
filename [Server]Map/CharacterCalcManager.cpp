@@ -187,7 +187,9 @@ void CCharacterCalcManager::CalcMaxLife(CPlayer * pPlayer)
 	{
 		MaxLife = 1;
 	}
-
+#ifdef  _MUTIPET_
+	pPlayer->GetPetManager()->GetPetBuffResultRt(ePB_MaxLifeNaeRyukShield, &MaxLife);//독며  3pet
+#endif //  _MUTIPET_
 	pPlayer->SetMaxLife(MaxLife);
 	
 	pPlayer->CheckLifeValid();
@@ -236,7 +238,9 @@ void CCharacterCalcManager::CalcMaxShield(CPlayer * pPlayer)
 	{
 		MaxShield = 1;
 	}
-
+#ifdef  _MUTIPET_
+	pPlayer->GetPetManager()->GetPetBuffResultRt(ePB_MaxLifeNaeRyukShield, &MaxShield);//독며  3pet
+#endif //  _MUTIPET_
 	pPlayer->SetMaxShield(MaxShield);
 
 	pPlayer->CheckShieldValid();
@@ -282,7 +286,9 @@ void CCharacterCalcManager::CalcMaxNaeRyuk(CPlayer * pPlayer)
 	{
 		MaxEnergy = 1;
 	}
-
+#ifdef  _MUTIPET_
+	pPlayer->GetPetManager()->GetPetBuffResultRt(ePB_MaxLifeNaeRyukShield, &MaxEnergy);//독며   3pet
+#endif //  _MUTIPET_
 	pPlayer->SetMaxNaeRyuk(MaxEnergy);
 
 	pPlayer->CheckNaeRyukValid();

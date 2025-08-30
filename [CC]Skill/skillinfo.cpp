@@ -211,8 +211,16 @@ BOOL CSkillInfo::IsExcutableSkillState(CObject* pObject,int SkillLevel, SKILLOPT
 			if(pObject->GetObjectKind() == eObjectKind_Player)
 			{
 				CPlayer* pPlayer = (CPlayer*)pObject;
+#ifdef  _MUTIPET_
+				for (int i = 0; i < 3; ++i)//독며3pet
+				{
+					if (pPlayer->GetPetManager()->GetCurSummonPet(i))
+						return FALSE;
+				}
+#else
 				if( pPlayer->GetPetManager()->GetCurSummonPet() )
 					return FALSE;
+#endif //  _MUTIPET_
 				if( pPlayer->IsVimuing() )
 					return FALSE;
 			}
@@ -381,11 +389,20 @@ BOOL CSkillInfo::IsExcutableSkillState(CHero* pHero,int SkillLevel, SKILLOPTION*
 		}
 		if(m_SkillInfo.SpecialState == eSingleSpecialState_Hide)
 		{
+#ifdef  _MUTIPET_
+			if (pHero->IsSummonPet())//독며  3pet
+			{
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1330));
+				return FALSE;
+			}
+#else
+
 			if(pHero->GetPet())
 			{
 				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1330));
 				return FALSE;
 			}
+#endif //  _MUTIPET_
 			if(VIMUMGR->IsVimuing())
 			{
 				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1330));

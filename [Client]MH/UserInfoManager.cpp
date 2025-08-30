@@ -405,7 +405,9 @@ void CUserInfoManager::LoadInterfaceInfo(char* strFilePath)
 	{
 		if (IsValidInterfacePos(pDlg->GetCaptionRect(), UII.DIALOG_INFO[eSD_PetInfo].lPosX, UII.DIALOG_INFO[eSD_PetInfo].lPosY))
 			pDlg->SetAbsXY(UII.DIALOG_INFO[eSD_PetInfo].lPosX, UII.DIALOG_INFO[eSD_PetInfo].lPosY);
+#ifndef  _MUTIPET_
 		PETMGR->SetPetDlgToggle(bPetDlgIsSmall);
+#endif //  _MUTIPET_
 	}	
 }
 void CUserInfoManager::SaveReconnectInterface(char* strFilePath)
@@ -625,6 +627,16 @@ void CUserInfoManager::SaveInterfaceInfo( char* strFilePath )
 				else						UII.DIALOG_INFO[eSD_Party].dwParam = 0;
 			}
 		}
+#ifdef  _MUTIPET_
+		pDlg = (cDialog*)PETMGR->GetPetStateDlg();//독며  3pet
+		if (pDlg)
+		{
+			UII.DIALOG_INFO[eSD_PetInfo].lPosX = (LONG)pDlg->GetAbsX();
+			UII.DIALOG_INFO[eSD_PetInfo].lPosY = (LONG)pDlg->GetAbsY();
+
+			UII.DIALOG_INFO[eSD_PetInfo].dwParam = TRUE;//PETMGR->GetPetDlgToggle();//독며  3pet
+		}
+#else
 		pDlg = PETMGR->GetCurPetStateDlg();
 		if (pDlg)
 		{
@@ -632,6 +644,7 @@ void CUserInfoManager::SaveInterfaceInfo( char* strFilePath )
 			UII.DIALOG_INFO[eSD_PetInfo].lPosY = (LONG)pDlg->GetAbsY();
 			UII.DIALOG_INFO[eSD_PetInfo].dwParam = PETMGR->GetPetDlgToggle();
 		}
+#endif //  _MUTIPET_
 	
 	HANDLE hFile = CreateFile( strFilePath, GENERIC_WRITE, 0, NULL, 
 								CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );

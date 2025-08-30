@@ -86,6 +86,10 @@
 #include "ItemQualityChangeDlg.h"
 #include "GradeChangeDlg.h"//ÎäÆ÷Éý½×Öµ×ªÒÆ¾í
 #include "CustomizingNameDlg.h"//	×Ô¶¨ÒåÃû×Ö¶Ô»°¿ò
+
+#ifdef _MUTIPET_
+#include "PetMixDlg.h"//µ¶¸ç  3pet
+#endif // _MUTIPET_
 extern  int  m_PetIdx;
 extern BOOL IsMultiPet;
 CInventoryExDialog::CInventoryExDialog()
@@ -500,12 +504,21 @@ void CInventoryExDialog::UseItem(CItem* pItem, BYTE ActionType)
 			return;
 		if (bits == eYOUNGYAK_ITEM_PET)
 		{
+#ifdef _MUTIPET_
+			if (!PETMGR->IsSummonPet())//µ¶¸ç  3pet
+			{
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1263));
+				return;
+			}
+#else
 			if (PETMGR->GetCurSummonPet() == NULL)
 			{
 				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1263));
 				return;
 			}
 		}
+		#endif // _MUTIPET_
+	}
 		else if (bits == eYOUNGYAK_ITEM_UPGRADE_PET)
 		{
 			if (HERO->GetState() != eObjectState_None && HERO->GetState() != eObjectState_Immortal)
@@ -826,6 +839,14 @@ void CInventoryExDialog::UseItem(CItem* pItem, BYTE ActionType)
 				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1254), DWORD(PETMGR->GetPetResummonRestTime() / 1000));
 				return;
 			}
+#ifdef _MUTIPET_
+			if (PETMGR->IsCurPetFull() && FALSE == PETMGR->IsCurPetSummonItem(pItem->GetDBIdx()))//µ¶¸ç  3pet
+			{
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1255));
+				return;
+			}
+
+#else
 			if (!IsMultiPet)
 			{
 				if (PETMGR->GetCurSummonPet() && FALSE == PETMGR->IsCurPetSummonItem(pItem->GetDBIdx()))
@@ -834,6 +855,7 @@ void CInventoryExDialog::UseItem(CItem* pItem, BYTE ActionType)
 					return;
 				}
 			}
+#endif // _MUTIPET_
 			if (FALSE == PETMGR->CheckPetAlive(pItem->GetDBIdx()))
 			{
 				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1249));
@@ -1323,6 +1345,21 @@ void CInventoryExDialog::UseItem(CItem* pItem, BYTE ActionType)
 			GAMEIN->GetPetRevivalDialog()->SetShopItemInfo(pItem->GetItemIdx(), pItem->GetPosition());
 			GAMEIN->GetPetRevivalDialog()->SetActive(TRUE);
 		}
+#ifdef _MUTIPET_
+		else if (pInfo->ItemIdx == eIncantation_PetMix)//µ¶¸ç 3pet
+		{
+			if (!GAMEIN->GetPetMixDlg()->IsActive())
+			{
+				GAMEIN->GetPetMixDlg()->Show(TRUE);
+				GAMEIN->GetPetMixDlg()->SetShopItemInfo(pItem->GetItemIdx(), pItem->GetPosition());
+			}
+			return;
+		}
+			if (pInfo->ItemIdx == eIncantation_PetMixDrug)
+			{
+				return;
+			}
+#endif // _MUTIPET_
 		else if (pInfo->ItemIdx == eIncantation_PetGrade2
 			|| pInfo->ItemIdx == eIncantation_PetGrade3)
 		{
@@ -1431,11 +1468,21 @@ void CInventoryExDialog::UseItem(CItem* pItem, BYTE ActionType)
 		}
 		else if (pInfo->ItemKind == eSHOP_ITEM_PET_EQUIP)
 		{
+#ifdef _MUTIPET_
+			if (!PETMGR->IsSummonPet())//µ¶¸ç  3pet
+			{
+				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1263));
+				return;
+			}
+
+
+#else
 			if (PETMGR->GetCurSummonPet() == NULL)
 			{
 				CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1263));
 				return;
 			}
+#endif // _MUTIPET_
 			CPetWearedExDialog* pPetEquipDlg = ((CPetInventoryDlg*)GAMEIN->GetPetInventoryDialog())->GetPetWearedDlg();
 			POSTYPE	EmptyPos = 0;
 			if (pPetEquipDlg->GetBlankPositionRestrictRef(EmptyPos))
@@ -1617,6 +1664,13 @@ void CInventoryExDialog::UseItem(CItem* pItem, BYTE ActionType)
 					CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1254), DWORD(PETMGR->GetPetResummonRestTime() / 1000));
 					return;
 				}
+#ifdef _MUTIPET_
+				if (PETMGR->IsCurPetFull() && FALSE == PETMGR->IsCurPetSummonItem(pItem->GetDBIdx()))//µ¶¸ç 3pet
+				{
+					CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1255));
+					return;
+				}
+#else
 				if (!IsMultiPet)
 				{
 					if (PETMGR->GetCurSummonPet() && FALSE == PETMGR->IsCurPetSummonItem(pItem->GetDBIdx())
@@ -1626,6 +1680,7 @@ void CInventoryExDialog::UseItem(CItem* pItem, BYTE ActionType)
 						return;
 					}
 				}
+#endif
 				if (FALSE == PETMGR->CheckPetAlive(pItem->GetDBIdx()))
 				{
 					CHATMGR->AddMsg(CTC_SYSMSG, CHATMGR->GetChatMsg(1249));

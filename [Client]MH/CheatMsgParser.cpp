@@ -427,70 +427,70 @@ BOOL CheatFunc(char* cheat)
 		NETWORK->Send(&msg,sizeof(msg));
 		return TRUE;
 	}
-	else if(strcmp(code, "PETST")==0)
-	{
-		CPet* pPet = PETMGR->GetCurSummonPet();
-		if(!pPet)
-		{
-			CHATMGR->AddMsg(CTC_CHEAT_2, "Warning : No Summoned Pet, Cheat denied" );
-			return TRUE;
-		}
+	//else if(strcmp(code, "PETST")==0)
+	//{
+	//	CPet* pPet = PETMGR->GetCurSummonPet();
+	//	if(!pPet)
+	//	{
+	//		CHATMGR->AddMsg(CTC_CHEAT_2, "Warning : No Summoned Pet, Cheat denied" );
+	//		return TRUE;
+	//	}
 
-		char szBuf[128] = {0,};
+	//	char szBuf[128] = {0,};
 
-		sscanf(cheat, "%s %s", code, szBuf);
-		strupr(szBuf);
+	//	sscanf(cheat, "%s %s", code, szBuf);
+	//	strupr(szBuf);
 
-		MSG_BYTE msg;
-		msg.Category = MP_CHEAT;
-		msg.Protocol = MP_CHEAT_PET_STAMINA;
-		msg.dwObjectID = HEROID;
+	//	MSG_BYTE msg;
+	//	msg.Category = MP_CHEAT;
+	//	msg.Protocol = MP_CHEAT_PET_STAMINA;
+	//	msg.dwObjectID = HEROID;
 
-		if(strcmp(szBuf, "MAX") == 0)
-		{
-			msg.bData = 1;
-		}
-		else if(strcmp(szBuf, "MIN") == 0)
-		{
-			msg.bData = 0;
-		}
-		else
-		{
-			CHATMGR->AddMsg(CTC_CHEAT_2, "Warning : Incorrect Arg.. , Cheat denied" );
-			return TRUE;
-		}
+	//	if(strcmp(szBuf, "MAX") == 0)
+	//	{
+	//		msg.bData = 1;
+	//	}
+	//	else if(strcmp(szBuf, "MIN") == 0)
+	//	{
+	//		msg.bData = 0;
+	//	}
+	//	else
+	//	{
+	//		CHATMGR->AddMsg(CTC_CHEAT_2, "Warning : Incorrect Arg.. , Cheat denied" );
+	//		return TRUE;
+	//	}
 
-		NETWORK->Send(&msg,sizeof(msg));
-		return TRUE;
-	}
+	//	NETWORK->Send(&msg,sizeof(msg));
+	//	return TRUE;
+	//}
 
-	else if(strcmp(code, "PETFR")==0)
-	{
-		CPet* pPet = PETMGR->GetCurSummonPet();
-		if(!pPet)
-		{
-			CHATMGR->AddMsg(CTC_CHEAT_2, "Warning : No Summoned Pet, Cheat denied" );
-			return TRUE;
-		}
+	//else if(strcmp(code, "PETFR")==0)
+	//{
+	//	CPet* pPet = PETMGR->GetCurSummonPet();
+	//	if(!pPet)
+	//	{
+	//		CHATMGR->AddMsg(CTC_CHEAT_2, "Warning : No Summoned Pet, Cheat denied" );
+	//		return TRUE;
+	//	}
 
-		DWORD dwNum = 0;
-		sscanf(cheat, "%s %d", code, &dwNum);
+	//	DWORD dwNum = 0;
+	//	sscanf(cheat, "%s %d", code, &dwNum);
 
-		if( 0 > dwNum || dwNum > 100 )
-		{
-			CHATMGR->AddMsg(CTC_CHEAT_2, "Warning : Value Limit is 0 to 100");
-			return TRUE;
-		}
+	//	if( 0 > dwNum || dwNum > 100 )
+	//	{
+	//		CHATMGR->AddMsg(CTC_CHEAT_2, "Warning : Value Limit is 0 to 100");
+	//		return TRUE;
+	//	}
 
-		MSG_DWORD msg;
-		msg.Category = MP_CHEAT;
-		msg.Protocol = MP_CHEAT_PET_FRIENDSHIP_SYN;
-		msg.dwObjectID = HEROID;
-		msg.dwData = dwNum * 100000;
+	//	MSG_DWORD msg;
+	//	msg.Category = MP_CHEAT;
+	//	msg.Protocol = MP_CHEAT_PET_FRIENDSHIP_SYN;
+	//	msg.dwObjectID = HEROID;
+	//	msg.dwData = dwNum * 100000;
 
-		NETWORK->Send(&msg,sizeof(msg));
-		return TRUE;
-	}
+	//	NETWORK->Send(&msg,sizeof(msg));
+	//	return TRUE;
+	//}
 
 	else if(strcmp(code, "CLSALFEH") == 0)
 	{
@@ -529,24 +529,24 @@ BOOL CheatFunc(char* cheat)
 		return TRUE;
 	}
 
-	else if(strcmp(code,"PSK")==0)
-	{
-		CPet* pPet = PETMGR->GetCurSummonPet();
-		if(!pPet)
-		{
+	//else if(strcmp(code,"PSK")==0)
+	//{
+	//	CPet* pPet = PETMGR->GetCurSummonPet();
+	//	if(!pPet)
+	//	{
 
-			CHATMGR->AddMsg(CTC_CHEAT_2, "Warning : No Summoned Pet, Cheat denied" );
-			return TRUE;
-		}
+	//		CHATMGR->AddMsg(CTC_CHEAT_2, "Warning : No Summoned Pet, Cheat denied" );
+	//		return TRUE;
+	//	}
 
-		MSGBASE msg;
-		msg.Category = MP_CHEAT;
-		msg.Protocol = MP_CHEAT_PET_SKILLREADY_SYN;
-		msg.dwObjectID = HEROID;
+	//	MSGBASE msg;
+	//	msg.Category = MP_CHEAT;
+	//	msg.Protocol = MP_CHEAT_PET_SKILLREADY_SYN;
+	//	msg.dwObjectID = HEROID;
 
-		NETWORK->Send(&msg,sizeof(msg));
-		return TRUE;
-	}
+	//	NETWORK->Send(&msg,sizeof(msg));
+	//	return TRUE;
+	//}
 	else if(strcmp(code, "ANSVH")==0)
 	{
 		DWORD PlayerID = 0;
@@ -2157,12 +2157,20 @@ void CCheatMsgParser::NetworkMsgParse(BYTE Category,BYTE Protocol,MSGBASE* pMsg)
 			info.MoveMode = eMoveMode_Run;
 			info.CurPosition = pos;
 			MOVEMGR->InitMove(HERO,&info);
-
+#ifdef  _MUTIPET_
+			for (int i = 0; i < 3; i++)//µ¶¸ç  3³èÎï
+			{
+				if (HERO->GetPet(i))
+				{
+					MOVEMGR->InitMove(HERO->GetPet(i), &info);
+				}
+			}
+#else
 			if(HERO->GetPet())
 			{
 				MOVEMGR->InitMove(HERO->GetPet(),&info);
 			}
-
+#endif //  _MUTIPET_
 			if (HERO->GetState() != eObjectState_Ungijosik)
 				OBJECTSTATEMGR->EndObjectState(HERO, eObjectState_Move);
 
